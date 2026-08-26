@@ -28,22 +28,7 @@ export function FidelitySeal({ kpi }: { kpi: Kpi }) {
 }
 
 function KpiValue({ value }: { value: string }) {
-  return (
-    <>
-      {formatPtNumbers(value)
-        .split(",")
-        .flatMap((part, i) =>
-          i === 0
-            ? [<span key={i}>{part}</span>]
-            : [
-                <span key={`s${i}`} className="mx-[-0.05em] inline-block">
-                  ,
-                </span>,
-                <span key={i}>{part}</span>,
-              ],
-        )}
-    </>
-  );
+  return <>{formatPtNumbers(value)}</>;
 }
 
 export function KpiTile({
