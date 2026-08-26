@@ -28,22 +28,7 @@ export function FidelitySeal({ kpi }: { kpi: Kpi }) {
 }
 
 function KpiValue({ value }: { value: string }) {
-  return (
-    <>
-      {formatPtNumbers(value)
-        .split(",")
-        .flatMap((part, i) =>
-          i === 0
-            ? [<span key={i}>{part}</span>]
-            : [
-                <span key={`s${i}`} className="mx-[-0.05em] inline-block">
-                  ,
-                </span>,
-                <span key={i}>{part}</span>,
-              ],
-        )}
-    </>
-  );
+  return <>{formatPtNumbers(value)}</>;
 }
 
 export function KpiTile({
@@ -59,15 +44,15 @@ export function KpiTile({
   return (
     <div
       className={cn(
-        "relative flex min-w-0 flex-col justify-center px-4 py-4 sm:h-32 sm:px-8 sm:py-0",
+        "relative flex min-w-0 flex-col justify-center px-4 py-4 sm:h-32 sm:py-0 sm:px-5 2xl:px-8",
         className,
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground sm:text-[32px] sm:leading-[40px]">
+        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground sm:text-[24px] sm:leading-[32px] @[720px]/kpi:text-[22px] @[720px]/kpi:leading-[30px] @[1000px]/kpi:text-[26px] @[1000px]/kpi:leading-[34px] @[1200px]/kpi:text-[32px] @[1200px]/kpi:leading-[40px]">
           <KpiValue value={kpi.value} />
         </div>
-        <span className="mt-1 scale-75 origin-top-right sm:mt-2 sm:scale-100">
+        <span className="mt-1 shrink-0 scale-75 origin-top-right sm:mt-2 sm:scale-100">
           <FidelitySeal kpi={kpi} />
         </span>
       </div>
@@ -131,28 +116,34 @@ export function KpiGroup({
   return (
     <div
       className={cn(
-        "grid grid-cols-2",
-        cols === 4 && "lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4",
-        cols === 3 && "lg:grid-cols-3",
+        "@container/kpi",
         !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
         className,
       )}
     >
-      {kpis.map((kpi) => (
-        <KpiTile
-          key={kpi.label}
-          kpi={kpi}
-          action={actions?.[kpi.label]}
-          className={cn(
-            "border-t border-border [&:nth-child(-n+2)]:border-t-0",
-            "border-l [&:nth-child(2n+1)]:border-l-0",
-            cols === 4 &&
-              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0 xl:[&:nth-child(2n+1)]:border-l-0 xl:[&:nth-child(n+3)]:border-t 2xl:[&:nth-child(2n+1)]:border-l 2xl:[&:nth-child(4n+1)]:border-l-0 2xl:[&:nth-child(n+3)]:border-t-0",
-            cols === 3 &&
-              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(3n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
-          )}
-        />
-      ))}
+      <div
+        className={cn(
+          "grid grid-cols-2",
+          cols === 4 && "@[720px]/kpi:grid-cols-4",
+          cols === 3 && "@[600px]/kpi:grid-cols-3",
+        )}
+      >
+        {kpis.map((kpi) => (
+          <KpiTile
+            key={kpi.label}
+            kpi={kpi}
+            action={actions?.[kpi.label]}
+            className={cn(
+              "border-t border-border [&:nth-child(-n+2)]:border-t-0",
+              "border-l [&:nth-child(2n+1)]:border-l-0",
+              cols === 4 &&
+                "@[720px]/kpi:[&:nth-child(2n+1)]:border-l @[720px]/kpi:[&:nth-child(4n+1)]:border-l-0 @[720px]/kpi:[&:nth-child(n+3)]:border-t-0",
+              cols === 3 &&
+                "@[600px]/kpi:[&:nth-child(2n+1)]:border-l @[600px]/kpi:[&:nth-child(3n+1)]:border-l-0 @[600px]/kpi:[&:nth-child(n+3)]:border-t-0",
+            )}
+          />
+        ))}
+      </div>
     </div>
   );
 }

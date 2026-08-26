@@ -167,7 +167,8 @@
 
 
 @utility num {
-  font-variant-numeric: tabular-nums;
+  /* lining-nums: a vírgula tabular do Manrope cria um falso espaço em "3,1". */
+  font-variant-numeric: lining-nums;
 }
 
 /* Gradiente das sombras de rolagem — único gradiente permitido */
