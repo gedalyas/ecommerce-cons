@@ -64,7 +64,7 @@ export function KpiTile({
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="t-kpi min-w-0 text-[24px] leading-[30px] text-foreground sm:text-[32px] sm:leading-[40px]">
+        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground sm:text-[32px] sm:leading-[40px]">
           <KpiValue value={kpi.value} />
         </div>
         <span className="mt-1 scale-75 origin-top-right sm:mt-2 sm:scale-100">
