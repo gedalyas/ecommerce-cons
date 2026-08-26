@@ -17,7 +17,7 @@ export function StatusBadge({ status }: { status: Pillar["status"] }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-sm px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.04em]",
+        "inline-flex h-[22px] items-center gap-1 rounded-sm px-2.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.04em]",
         badgeStyles[status],
       )}
     >
@@ -26,6 +26,7 @@ export function StatusBadge({ status }: { status: Pillar["status"] }) {
     </span>
   );
 }
+
 
 export function PillarCard({ pillar }: { pillar: Pillar }) {
   const blocked = pillar.status === "bloqueado";
