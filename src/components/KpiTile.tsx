@@ -117,7 +117,7 @@ export function KpiGroup({
     <div
       className={cn(
         "grid grid-cols-2",
-        cols === 4 && "lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4",
+        cols === 4 && "lg:grid-cols-4",
         cols === 3 && "lg:grid-cols-3",
         !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
         className,
