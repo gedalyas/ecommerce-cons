@@ -45,7 +45,7 @@ export function ScrollShadows({ top, bottom }: { top: boolean; bottom: boolean }
       <div
         aria-hidden="true"
         className={cn(
-          "scroll-shadow-bottom pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 backdrop-blur-[2px] transition-opacity duration-200",
+          "scroll-shadow-bottom pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 backdrop-blur-[1px] transition-opacity duration-200",
           bottom ? "opacity-100" : "opacity-0",
         )}
       />
