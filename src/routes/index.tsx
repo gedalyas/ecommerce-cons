@@ -55,7 +55,7 @@ const alertIcons = {
 
 function Dashboard() {
   return (
-    <div className="mx-auto max-w-5xl space-y-5 px-8 py-7">
+    <div className="mx-auto w-full max-w-5xl min-w-0 space-y-5 px-4 py-6 sm:px-6 xl:px-8 xl:py-7">
       <header>
         <h1 className="text-xl font-semibold tracking-tight text-foreground">Dashboard</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -63,7 +63,7 @@ function Dashboard() {
         </p>
       </header>
 
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {dashboardKpis.map((kpi) => (
           <KpiTile key={kpi.label} kpi={kpi} />
         ))}
@@ -77,11 +77,11 @@ function Dashboard() {
           {alerts.map((alert) => {
             const Icon = alertIcons[alert.icon];
             return (
-              <li key={alert.title} className="flex items-start gap-3 px-5 py-3.5">
+              <li key={alert.title} className="flex flex-wrap items-start gap-3 px-4 py-3.5 sm:px-5">
                 <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-warning-soft">
                   <Icon className="h-4 w-4 text-warning" />
                 </span>
-                <div className="flex-1">
+                <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium text-foreground">{alert.title}</div>
                   <p className="mt-0.5 text-xs text-muted-foreground">{alert.detail}</p>
                 </div>
@@ -102,13 +102,13 @@ function Dashboard() {
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Marco de maturidade</h2>
-            <span className="num ml-auto text-xs text-muted-foreground">2 de 4 critérios</span>
+            <span className="num ml-auto shrink-0 text-xs text-muted-foreground">2 de 4 critérios</span>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
             Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia.
           </p>
         </header>
-        <div className="grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4">
           {milestoneCriteria.map((c) => (
             <div key={c.name} className="rounded-md border border-border bg-background p-3.5">
               <div className="flex items-start gap-2">
@@ -150,8 +150,8 @@ function Dashboard() {
       </section>
 
       <section className="rounded-lg border border-border bg-card">
-        <header className="flex items-center justify-between border-b border-border px-5 py-3.5">
-          <h2 className="text-sm font-semibold text-foreground">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3.5 sm:px-5">
+          <h2 className="min-w-0 text-sm font-semibold text-foreground">
             Faturamento e margem · últimos 12 meses
           </h2>
           <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
@@ -163,7 +163,7 @@ function Dashboard() {
             </span>
           </div>
         </header>
-        <div className="h-72 p-5">
+        <div className="h-56 w-full min-w-0 p-3 sm:h-72 sm:p-5">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={monthlySeries} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
               <CartesianGrid stroke="var(--border)" vertical={false} />

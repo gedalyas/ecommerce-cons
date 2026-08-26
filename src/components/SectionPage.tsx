@@ -7,7 +7,7 @@ export function SectionPage({ slug }: { slug: keyof typeof sections }) {
   const section = sections[slug]!;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 px-8 py-7">
+    <div className="mx-auto w-full max-w-5xl min-w-0 space-y-5 px-4 py-6 sm:px-6 xl:px-8 xl:py-7">
       <header>
         <h1 className="text-xl font-semibold tracking-tight text-foreground">{section.title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{section.subtitle}</p>
