@@ -1,6 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Banknote, LayoutDashboard, Megaphone, Plug, Truck, Building2 } from "lucide-react";
-import { ScrollShadows, useScrollShadow } from "@/components/ScrollShadow";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
