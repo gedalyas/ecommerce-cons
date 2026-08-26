@@ -131,7 +131,7 @@ export function KpiGroup({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2",
+        "grid grid-cols-2",
         cols === 4 && "lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4",
         cols === 3 && "lg:grid-cols-3",
         !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
@@ -144,9 +144,8 @@ export function KpiGroup({
           kpi={kpi}
           action={actions?.[kpi.label]}
           className={cn(
-            "border-t border-border first:border-t-0",
-            "sm:border-l sm:[&:nth-child(2n+1)]:border-l-0",
-            "sm:[&:nth-child(-n+2)]:border-t-0",
+            "border-t border-border [&:nth-child(-n+2)]:border-t-0",
+            "border-l [&:nth-child(2n+1)]:border-l-0",
             cols === 4 &&
               "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0 xl:[&:nth-child(2n+1)]:border-l-0 xl:[&:nth-child(n+3)]:border-t 2xl:[&:nth-child(2n+1)]:border-l 2xl:[&:nth-child(4n+1)]:border-l-0 2xl:[&:nth-child(n+3)]:border-t-0",
             cols === 3 &&
