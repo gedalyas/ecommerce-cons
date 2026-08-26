@@ -44,15 +44,15 @@ export function KpiTile({
   return (
     <div
       className={cn(
-        "relative flex min-w-0 flex-col justify-center px-4 py-4 sm:h-32 sm:px-8 sm:py-0",
+        "relative flex min-w-0 flex-col justify-center px-4 py-4 sm:h-32 sm:py-0 sm:px-5 2xl:px-8",
         className,
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground sm:text-[32px] sm:leading-[40px]">
+        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground sm:text-[28px] sm:leading-[36px] 2xl:text-[32px] 2xl:leading-[40px]">
           <KpiValue value={kpi.value} />
         </div>
-        <span className="mt-1 scale-75 origin-top-right sm:mt-2 sm:scale-100">
+        <span className="mt-1 shrink-0 scale-75 origin-top-right sm:mt-2 sm:scale-100">
           <FidelitySeal kpi={kpi} />
         </span>
       </div>
