@@ -60,38 +60,10 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
         </div>
       ) : (
         <div className="space-y-6 p-5">
-          {(() => {
-            const cols = pillar.kpis.length >= 4 ? 4 : pillar.kpis.length === 3 ? 3 : 2;
-            return (
-              <div
-                className={cn(
-                  "grid grid-cols-1 gap-0 sm:grid-cols-2",
-                  cols === 4 && "lg:grid-cols-4",
-                  cols === 3 && "lg:grid-cols-3",
-                )}
-              >
-                {pillar.kpis.map((kpi) => (
-                  <KpiTile
-                    key={kpi.label}
-                    kpi={kpi}
-                    variant="plain"
-                    className={cn(
-                      // mobile: divisória horizontal
-                      "border-t border-border py-4 first:border-t-0 first:pt-0",
-                      // sm: 2 colunas, divisória vertical
-                      "sm:border-t-0 sm:border-l sm:py-0 sm:pl-6 sm:pr-6 sm:first:pt-0",
-                      "sm:[&:nth-child(2n+1)]:border-l-0 sm:[&:nth-child(2n+1)]:pl-0",
-                      "sm:[&:nth-child(n+3)]:mt-6 sm:[&:nth-child(n+3)]:border-t sm:[&:nth-child(n+3)]:pt-6",
-                      cols === 4 &&
-                        "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(2n+1)]:pl-6 lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(4n+1)]:pl-0 lg:[&:nth-child(n+3)]:mt-0 lg:[&:nth-child(n+3)]:border-t-0 lg:[&:nth-child(n+3)]:pt-0",
-                      cols === 3 &&
-                        "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(2n+1)]:pl-6 lg:[&:nth-child(3n+1)]:border-l-0 lg:[&:nth-child(3n+1)]:pl-0 lg:[&:nth-child(n+3)]:mt-0 lg:[&:nth-child(n+3)]:border-t-0 lg:[&:nth-child(n+3)]:pt-0",
-                    )}
-                  />
-                ))}
-              </div>
-            );
-          })()}
+          <div className="-mx-5 -mt-5">
+            <KpiGroup kpis={pillar.kpis} bare />
+          </div>
+
 
 
           {pillar.extra === "presenca-criativos" && (
