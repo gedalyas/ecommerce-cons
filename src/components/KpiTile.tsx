@@ -132,7 +132,7 @@ export function KpiGroup({
             "border-t border-border [&:nth-child(-n+2)]:border-t-0",
             "border-l [&:nth-child(2n+1)]:border-l-0",
             cols === 4 &&
-              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0 xl:[&:nth-child(2n+1)]:border-l-0 xl:[&:nth-child(n+3)]:border-t 2xl:[&:nth-child(2n+1)]:border-l 2xl:[&:nth-child(4n+1)]:border-l-0 2xl:[&:nth-child(n+3)]:border-t-0",
+              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
             cols === 3 &&
               "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(3n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
           )}
