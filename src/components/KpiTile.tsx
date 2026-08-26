@@ -55,6 +55,9 @@ export function KpiTile({ kpi, className }: { kpi: Kpi; className?: string }) {
           <span className="font-normal text-muted-foreground">vs mês anterior</span>
         </div>
       )}
+      {kpi.subNote && (
+        <div className="num mt-1 text-[13px] text-muted-foreground">{kpi.subNote}</div>
+      )}
     </div>
   );
 }
