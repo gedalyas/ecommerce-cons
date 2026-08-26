@@ -23,6 +23,7 @@ export type Pillar = {
   kpis: Kpi[];
   recommendations: Recommendation[];
   dataPending?: string;
+  extra?: "presenca-criativos";
 };
 
 export const fidelityLabel: Record<Fidelity, string> = {
@@ -291,6 +292,50 @@ export const sections: Record<
           { text: "Redistribuir 20% da verba de prospecção para remarketing", prazo: "até 06/09", responsavel: "Rafael (Mídia)" },
         ],
         dataPending: "Meta Ads com erro de autenticação desde 20/08 — números dos últimos 6 dias são estimados.",
+      },
+      {
+        title: "Presença e criativos",
+        status: "andamento",
+        extra: "presenca-criativos",
+        kpis: [
+          {
+            label: "Alcance mensal",
+            value: "184.200",
+            delta: "+6%",
+            deltaDirection: "up",
+            fidelity: "B",
+            fidelityNote: "Nível B — estimado a partir do relatório enviado manualmente em 02/08.",
+          },
+          {
+            label: "Engajamento",
+            value: "3,1%",
+            delta: "-0,4pp",
+            deltaDirection: "down",
+            fidelity: "B",
+            fidelityNote: "Nível B — média das interações informadas no relatório manual.",
+          },
+          {
+            label: "Criativos ativos",
+            value: "12",
+            delta: "+3",
+            deltaDirection: "up",
+            fidelity: "A",
+            fidelityNote: "Nível A — contagem das peças em veiculação nas plataformas de mídia.",
+          },
+          {
+            label: "Consistência de marca",
+            value: "68%",
+            delta: "+12pp",
+            deltaDirection: "up",
+            fidelity: "C",
+            fidelityNote: "Nível C — avaliação qualitativa da consultoria, indicativo apenas.",
+          },
+        ],
+        recommendations: [
+          { text: "Substituir o criativo 'Frete grátis' — CPA 90% acima da média", prazo: "até 03/09", responsavel: "Rafael (Mídia)" },
+          { text: "Padronizar o uso do logo entre loja, Instagram e anúncios", prazo: "até 20/09", responsavel: "Marina (Comercial)" },
+        ],
+        dataPending: "Instagram não conectado — alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
       },
       {
         title: "Retenção",
