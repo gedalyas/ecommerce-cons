@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AiPanel, AiDrawer } from "@/components/AiPanel";
 import { MobileNav } from "@/components/MobileNav";
+import { ScrollShadows, useScrollShadow } from "@/components/ScrollShadow";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function NotFoundComponent() {
@@ -131,16 +132,20 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { ref, top, bottom } = useScrollShadow<HTMLElement>();
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider delayDuration={150}>
-        <div className="flex min-h-screen w-full bg-background">
+        <div className="flex min-h-dvh w-full bg-background">
           <AppSidebar />
-          <main className="min-w-0 flex-1 pb-20 md:pb-0">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
+          <div className="relative min-w-0 flex-1">
+            <ScrollShadows top={top} bottom={bottom} />
+            <main ref={ref} id="app-scroll" className="h-dvh min-w-0 overflow-y-auto pb-20 md:pb-0">
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </main>
+          </div>
           <AiPanel />
           <AiDrawer />
           <MobileNav />
@@ -149,3 +154,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
