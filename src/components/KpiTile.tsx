@@ -54,7 +54,7 @@ export function KpiTile({
   kpi: Kpi;
   className?: string;
   /** Ação secundária opcional, alinhada à direita na linha do rótulo. */
-  action?: { label: string; onClick?: () => void };
+  action?: { label: string; onClick?: () => void } | undefined;
 }) {
   return (
     <div
