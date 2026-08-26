@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { AlertTriangle, Lock } from "lucide-react";
 import { KpiTile } from "@/components/KpiTile";
 import { RecommendationList } from "@/components/RecommendationList";
+import { PresencaCriativos } from "@/components/PresencaCriativos";
 import { cn } from "@/lib/utils";
 import { statusLabel, type Pillar } from "@/lib/mock-data";
 
@@ -73,7 +74,13 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
             ))}
           </div>
 
-          <div>
+          {pillar.extra === "presenca-criativos" && (
+            <div className="border-t border-border pt-8">
+              <PresencaCriativos />
+            </div>
+          )}
+
+          <div className={pillar.extra ? "border-t border-border pt-8" : undefined}>
             <div className="t-label mb-3 text-muted-foreground">Recomendações em aberto</div>
             {pillar.recommendations.length ? (
               <RecommendationList items={pillar.recommendations} />
