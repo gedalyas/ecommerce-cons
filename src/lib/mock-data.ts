@@ -5,6 +5,7 @@ export type Kpi = {
   value: string;
   delta?: string;
   deltaDirection?: "up" | "down" | "neutral";
+  subNote?: string;
   fidelity: Fidelity;
   fidelityNote: string;
 };
@@ -298,6 +299,15 @@ export const sections: Record<
         status: "andamento",
         extra: "presenca-criativos",
         kpis: [
+          {
+            label: "Seguidores",
+            value: "18.470",
+            delta: "+4,2%",
+            deltaDirection: "up",
+            subNote: "+742 no mês",
+            fidelity: "B",
+            fidelityNote: "Nível B — importado do relatório manual de 02/08. Conecte o Instagram para atualização diária.",
+          },
           {
             label: "Alcance mensal",
             value: "184.200",
