@@ -36,8 +36,7 @@ export function AppSidebar() {
         </div>
       </div>
 
-      <nav ref={ref} className="relative min-h-0 flex-1 overflow-y-auto py-2">
-        <ScrollShadows top={top} bottom={bottom} />
+      <nav className="relative min-h-0 flex-1 overflow-y-auto py-2">
         <div className="t-label hidden px-3 pb-2 pt-2 text-muted-foreground xl:block">Áreas</div>
         <ul>
           {mainItems.map((item) => (
