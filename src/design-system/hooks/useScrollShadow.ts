@@ -30,25 +30,3 @@ export function useScrollShadow<T extends HTMLElement>() {
 
   return { ref, ...state };
 }
-
-/** Gradientes fixos nas bordas da área rolável. */
-export function ScrollShadows({ top, bottom }: { top: boolean; bottom: boolean }) {
-  return (
-    <>
-      <div
-        aria-hidden="true"
-        className={cn(
-          "scroll-shadow-top pointer-events-none absolute inset-x-0 top-0 z-10 h-6 transition-opacity duration-200",
-          top ? "opacity-100" : "opacity-0",
-        )}
-      />
-      <div
-        aria-hidden="true"
-        className={cn(
-          "scroll-shadow-bottom pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 backdrop-blur-[1px] transition-opacity duration-200",
-          bottom ? "opacity-100" : "opacity-0",
-        )}
-      />
-    </>
-  );
-}
