@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet,
   Link,
   createRootRouteWithContext,
   useRouter,
@@ -8,15 +7,10 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { useRouterState } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { AppSidebar } from "@/components/AppSidebar";
-import { AiPanel, AiDrawer } from "@/components/AiPanel";
-import { MobileNav } from "@/components/MobileNav";
-import { ScrollShadows, useScrollShadow } from "@/components/ScrollShadow";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppShell } from "@/layout/AppShell";
 
 function NotFoundComponent() {
   return (
@@ -131,36 +125,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { ref, top, bottom } = useScrollShadow<HTMLElement>();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isAssistant = pathname === "/assistente";
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider delayDuration={150}>
-        <div className="flex min-h-dvh w-full bg-background">
-          <AppSidebar />
-          <div className="relative min-w-0 flex-1">
-            <ScrollShadows top={top} bottom={bottom} />
-            <main
-              ref={ref}
-              id="app-scroll"
-              className={
-                isAssistant
-                  ? "h-dvh min-w-0 overflow-hidden pb-16 md:pb-0"
-                  : "h-dvh min-w-0 overflow-y-auto pb-20 md:pb-0"
-              }
-            >
-              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-              <Outlet />
-            </main>
-          </div>
-          {!isAssistant && <AiPanel />}
-          {!isAssistant && <AiDrawer />}
-          <MobileNav />
-        </div>
-      </TooltipProvider>
+      <AppShell />
     </QueryClientProvider>
   );
 }
-

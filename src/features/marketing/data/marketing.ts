@@ -1,0 +1,161 @@
+import type { Section } from "@/design-system/patterns/SectionPage";
+
+export const marketingSection: Section = {
+  title: "Marketing",
+  subtitle: "Aquisição, conversão e retenção de clientes",
+  pillars: [
+    {
+      title: "Conversão",
+      status: "concluido",
+      kpis: [
+        {
+          label: "Taxa de conversão",
+          value: "1,84%",
+          delta: "+0,2pp",
+          deltaDirection: "up",
+          fidelity: "A",
+          fidelityNote: "Nível A — sessões e pedidos do Google Analytics.",
+        },
+        {
+          label: "Ticket médio",
+          value: "R$ 268",
+          delta: "+3%",
+          deltaDirection: "up",
+          fidelity: "A",
+          fidelityNote: "Nível A — receita dividida por pedidos pagos.",
+        },
+        {
+          label: "Abandono de carrinho",
+          value: "71%",
+          delta: "-2pp",
+          deltaDirection: "up",
+          fidelity: "B",
+          fidelityNote: "Nível B — eventos de checkout com perda parcial de rastreio no mobile.",
+        },
+      ],
+      recommendations: [
+        { text: "Testar frete grátis acima de R$ 249 na página de produto", prazo: "até 08/09", responsavel: "Marina (Comercial)" },
+      ],
+    },
+    {
+      title: "Aquisição",
+      status: "andamento",
+      kpis: [
+        {
+          label: "CAC",
+          value: "R$ 62",
+          delta: "+21%",
+          deltaDirection: "down",
+          fidelity: "A",
+          fidelityNote: "Nível A — investimento das plataformas dividido por novos clientes.",
+        },
+        {
+          label: "ROAS geral",
+          value: "3,1x",
+          delta: "-0,6x",
+          deltaDirection: "down",
+          fidelity: "B",
+          fidelityNote: "Nível B — Meta Ads sem sincronizar há 6 dias, valor projetado pela média.",
+        },
+        {
+          label: "Investimento em mídia",
+          value: "R$ 96.400",
+          delta: "+14%",
+          deltaDirection: "neutral",
+          fidelity: "B",
+          fidelityNote: "Nível B — inclui estimativa dos últimos 6 dias de Meta Ads.",
+        },
+        {
+          label: "Participação do maior canal",
+          value: "78%",
+          delta: "+5pp",
+          deltaDirection: "down",
+          fidelity: "C",
+          fidelityNote: "Nível C — atribuição de último clique, indicativo apenas de tendência.",
+        },
+      ],
+      recommendations: [
+        { text: "Pausar campanhas de Google Ads com CAC acima de R$ 70", prazo: "até 29/08", responsavel: "Rafael (Mídia)" },
+        { text: "Redistribuir 20% da verba de prospecção para remarketing", prazo: "até 06/09", responsavel: "Rafael (Mídia)" },
+      ],
+      dataPending: "Meta Ads com erro de autenticação desde 20/08 — números dos últimos 6 dias são estimados.",
+    },
+    {
+      title: "Presença e criativos",
+      status: "andamento",
+      extra: "presenca-criativos",
+      kpis: [
+        {
+          label: "Seguidores",
+          value: "18.470",
+          delta: "+4,2%",
+          deltaDirection: "up",
+          subNote: "+742 no mês",
+          fidelity: "B",
+          fidelityNote: "Nível B — importado do relatório manual de 02/08. Conecte o Instagram para atualização diária.",
+        },
+        {
+          label: "Alcance mensal",
+          value: "184.200",
+          delta: "+6%",
+          deltaDirection: "up",
+          fidelity: "B",
+          fidelityNote: "Nível B — estimado a partir do relatório enviado manualmente em 02/08.",
+        },
+        {
+          label: "Engajamento",
+          value: "3,1%",
+          delta: "-0,4pp",
+          deltaDirection: "down",
+          fidelity: "B",
+          fidelityNote: "Nível B — média das interações informadas no relatório manual.",
+        },
+        {
+          label: "Criativos ativos",
+          value: "12",
+          delta: "+3",
+          deltaDirection: "up",
+          fidelity: "A",
+          fidelityNote: "Nível A — contagem das peças em veiculação nas plataformas de mídia.",
+        },
+      ],
+      recommendations: [
+        { text: "Substituir o criativo 'Frete grátis' — CPA 90% acima da média", prazo: "até 03/09", responsavel: "Rafael (Mídia)" },
+        { text: "Padronizar o uso do logo entre loja, Instagram e anúncios", prazo: "até 20/09", responsavel: "Marina (Comercial)" },
+      ],
+      dataPending: "Instagram não conectado — seguidores, alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
+    },
+    {
+      title: "Retenção",
+      status: "nao-iniciado",
+      kpis: [
+        {
+          label: "Recompra 90 dias",
+          value: "14%",
+          delta: "+1pp",
+          deltaDirection: "up",
+          fidelity: "A",
+          fidelityNote: "Nível A — base de pedidos por CPF.",
+        },
+        {
+          label: "LTV 12 meses",
+          value: "R$ 384",
+          delta: "+2%",
+          deltaDirection: "up",
+          fidelity: "C",
+          fidelityNote: "Nível C — projeção sobre coorte parcial, indicativo.",
+        },
+      ],
+      recommendations: [
+        { text: "Montar fluxo de pós-compra por e-mail em 3 disparos", prazo: "até 18/09", responsavel: "Marina (Comercial)" },
+      ],
+      dataPending: "Sem integração com a ferramenta de e-mail — recompra por campanha não é medida.",
+    },
+    {
+      title: "Canais paralelos",
+      status: "bloqueado",
+      kpis: [],
+      recommendations: [],
+    },
+  ],
+};

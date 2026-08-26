@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SectionPage } from "@/components/SectionPage";
+import { DinheiroPage } from "@/features/dinheiro";
 
 export const Route = createFileRoute("/dinheiro")({
   head: () => ({
@@ -17,5 +17,5 @@ export const Route = createFileRoute("/dinheiro")({
       },
     ],
   }),
-  component: () => <SectionPage slug="dinheiro" />,
+  component: DinheiroPage,
 });
