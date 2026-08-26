@@ -333,12 +333,12 @@ export const sections: Record<
             fidelityNote: "Nível A — contagem das peças em veiculação nas plataformas de mídia.",
           },
           {
-            label: "Consistência de marca",
-            value: "68%",
-            delta: "+12pp",
+            label: "Criativos ativos",
+            value: "12",
+            delta: "+3",
             deltaDirection: "up",
-            fidelity: "C",
-            fidelityNote: "Nível C — avaliação qualitativa da consultoria, indicativo apenas.",
+            fidelity: "A",
+            fidelityNote: "Nível A — contagem das peças em veiculação nas plataformas de mídia.",
           },
         ],
         recommendations: [
