@@ -227,15 +227,19 @@ export function AiDrawer() {
       {!open && (
         <>
           {/* Mobile: o botão flutuante abre a página do Assistente em tela cheia. */}
-          <Button asChild className="fixed bottom-20 right-4 z-40 h-12 px-4 md:hidden">
+          <Button
+            asChild
+            className="fixed bottom-20 right-6 z-40 h-11 rounded-lg px-5 shadow-lg md:hidden"
+          >
             <Link to="/assistente">Assistente</Link>
           </Button>
           <Button
             onClick={() => setOpen(true)}
-            className="fixed bottom-6 right-4 z-40 hidden h-12 px-4 md:inline-flex"
+            className="fixed bottom-6 right-6 z-40 hidden h-11 rounded-lg px-5 shadow-lg md:inline-flex"
           >
             Assistente
           </Button>
+
         </>
       )}
 
