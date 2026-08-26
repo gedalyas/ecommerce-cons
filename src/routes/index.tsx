@@ -112,12 +112,13 @@ function Dashboard() {
           <header className="border-b border-border px-5 py-4">
             <h2 className="t-card-title text-foreground">Recomendações em aberto</h2>
           </header>
-          <div className="p-5">
+          <div className="px-5">
             <RecommendationList items={openRecommendations} />
           </div>
         </section>
 
-        <section className="pt-4">
+        <section>
+
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="t-card-title text-foreground">Faturamento e margem · últimos 12 meses</h2>
             <div className="t-meta flex items-center gap-4 text-muted-foreground">
