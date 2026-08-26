@@ -116,28 +116,34 @@ export function KpiGroup({
   return (
     <div
       className={cn(
-        "@container/kpi grid grid-cols-2",
-        cols === 4 && "@[720px]/kpi:grid-cols-4",
-        cols === 3 && "@[600px]/kpi:grid-cols-3",
+        "@container/kpi",
         !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
         className,
       )}
     >
-      {kpis.map((kpi) => (
-        <KpiTile
-          key={kpi.label}
-          kpi={kpi}
-          action={actions?.[kpi.label]}
-          className={cn(
-            "border-t border-border [&:nth-child(-n+2)]:border-t-0",
-            "border-l [&:nth-child(2n+1)]:border-l-0",
-            cols === 4 &&
-              "@[720px]/kpi:[&:nth-child(2n+1)]:border-l @[720px]/kpi:[&:nth-child(4n+1)]:border-l-0 @[720px]/kpi:[&:nth-child(n+3)]:border-t-0",
-            cols === 3 &&
-              "@[600px]/kpi:[&:nth-child(2n+1)]:border-l @[600px]/kpi:[&:nth-child(3n+1)]:border-l-0 @[600px]/kpi:[&:nth-child(n+3)]:border-t-0",
-          )}
-        />
-      ))}
+      <div
+        className={cn(
+          "grid grid-cols-2",
+          cols === 4 && "@[720px]/kpi:grid-cols-4",
+          cols === 3 && "@[600px]/kpi:grid-cols-3",
+        )}
+      >
+        {kpis.map((kpi) => (
+          <KpiTile
+            key={kpi.label}
+            kpi={kpi}
+            action={actions?.[kpi.label]}
+            className={cn(
+              "border-t border-border [&:nth-child(-n+2)]:border-t-0",
+              "border-l [&:nth-child(2n+1)]:border-l-0",
+              cols === 4 &&
+                "@[720px]/kpi:[&:nth-child(2n+1)]:border-l @[720px]/kpi:[&:nth-child(4n+1)]:border-l-0 @[720px]/kpi:[&:nth-child(n+3)]:border-t-0",
+              cols === 3 &&
+                "@[600px]/kpi:[&:nth-child(2n+1)]:border-l @[600px]/kpi:[&:nth-child(3n+1)]:border-l-0 @[600px]/kpi:[&:nth-child(n+3)]:border-t-0",
+            )}
+          />
+        ))}
+      </div>
     </div>
   );
 }
