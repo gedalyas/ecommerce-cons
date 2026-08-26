@@ -49,7 +49,21 @@ export function KpiTile({
         <span className="t-label min-w-0 flex-1 text-muted-foreground">{kpi.label}</span>
         <FidelitySeal kpi={kpi} />
       </div>
-      <div className="t-kpi mt-2 text-foreground">{formatPtNumbers(kpi.value)}</div>
+      <div className="t-kpi mt-2 text-foreground">
+        {formatPtNumbers(kpi.value)
+          .split(",")
+          .flatMap((part, i) =>
+            i === 0
+              ? [<span key={i}>{part}</span>]
+              : [
+                  <span key={`s${i}`} className="mx-[-0.05em] inline-block">
+                    ,
+                  </span>,
+                  <span key={i}>{part}</span>,
+                ],
+          )}
+      </div>
+
       {kpi.delta && (
         <div
           className={cn(
