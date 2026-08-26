@@ -10,11 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConexoesRouteImport } from './routes/conexoes'
 import { Route as DinheiroRouteImport } from './routes/dinheiro'
+import { Route as GestaoRouteImport } from './routes/gestao'
+import { Route as LogisticaRouteImport } from './routes/logistica'
+import { Route as MarketingRouteImport } from './routes/marketing'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConexoesRoute = ConexoesRouteImport.update({
+  id: '/conexoes',
+  path: '/conexoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DinheiroRoute = DinheiroRouteImport.update({
@@ -22,31 +31,70 @@ const DinheiroRoute = DinheiroRouteImport.update({
   path: '/dinheiro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GestaoRoute = GestaoRouteImport.update({
+  id: '/gestao',
+  path: '/gestao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogisticaRoute = LogisticaRouteImport.update({
+  id: '/logistica',
+  path: '/logistica',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingRoute = MarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/conexoes': typeof ConexoesRoute
   '/dinheiro': typeof DinheiroRoute
+  '/gestao': typeof GestaoRoute
+  '/logistica': typeof LogisticaRoute
+  '/marketing': typeof MarketingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/conexoes': typeof ConexoesRoute
   '/dinheiro': typeof DinheiroRoute
+  '/gestao': typeof GestaoRoute
+  '/logistica': typeof LogisticaRoute
+  '/marketing': typeof MarketingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/conexoes': typeof ConexoesRoute
   '/dinheiro': typeof DinheiroRoute
+  '/gestao': typeof GestaoRoute
+  '/logistica': typeof LogisticaRoute
+  '/marketing': typeof MarketingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dinheiro'
+  fullPaths:
+    '/' | '/conexoes' | '/dinheiro' | '/gestao' | '/logistica' | '/marketing'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dinheiro'
-  id: '__root__' | '/' | '/dinheiro'
+  to: '/' | '/conexoes' | '/dinheiro' | '/gestao' | '/logistica' | '/marketing'
+  id:
+    | '__root__'
+    | '/'
+    | '/conexoes'
+    | '/dinheiro'
+    | '/gestao'
+    | '/logistica'
+    | '/marketing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConexoesRoute: typeof ConexoesRoute
   DinheiroRoute: typeof DinheiroRoute
+  GestaoRoute: typeof GestaoRoute
+  LogisticaRoute: typeof LogisticaRoute
+  MarketingRoute: typeof MarketingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,6 +106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conexoes': {
+      id: '/conexoes'
+      path: '/conexoes'
+      fullPath: '/conexoes'
+      preLoaderRoute: typeof ConexoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dinheiro': {
       id: '/dinheiro'
       path: '/dinheiro'
@@ -65,12 +120,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DinheiroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gestao': {
+      id: '/gestao'
+      path: '/gestao'
+      fullPath: '/gestao'
+      preLoaderRoute: typeof GestaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logistica': {
+      id: '/logistica'
+      path: '/logistica'
+      fullPath: '/logistica'
+      preLoaderRoute: typeof LogisticaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketing': {
+      id: '/marketing'
+      path: '/marketing'
+      fullPath: '/marketing'
+      preLoaderRoute: typeof MarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConexoesRoute: ConexoesRoute,
   DinheiroRoute: DinheiroRoute,
+  GestaoRoute: GestaoRoute,
+  LogisticaRoute: LogisticaRoute,
+  MarketingRoute: MarketingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
