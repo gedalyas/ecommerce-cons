@@ -49,7 +49,7 @@ export function KpiTile({
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground sm:text-[24px] sm:leading-[32px] @[720px]/kpi:text-[22px] @[720px]/kpi:leading-[30px] @[1000px]/kpi:text-[26px] @[1000px]/kpi:leading-[34px] @[1200px]/kpi:text-[32px] @[1200px]/kpi:leading-[40px]">
+        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground 2xl:text-[26px] 2xl:leading-[34px]">
           <KpiValue value={kpi.value} />
         </div>
         <span className="mt-1 shrink-0 scale-75 origin-top-right sm:mt-2 sm:scale-100">
@@ -116,7 +116,6 @@ export function KpiGroup({
   return (
     <div
       className={cn(
-        "@container/kpi",
         !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
         className,
       )}
@@ -124,8 +123,8 @@ export function KpiGroup({
       <div
         className={cn(
           "grid grid-cols-2",
-          cols === 4 && "@[720px]/kpi:grid-cols-4",
-          cols === 3 && "@[600px]/kpi:grid-cols-3",
+          cols === 4 && "lg:grid-cols-4",
+          cols === 3 && "lg:grid-cols-3",
         )}
       >
         {kpis.map((kpi) => (
@@ -137,9 +136,9 @@ export function KpiGroup({
               "border-t border-border [&:nth-child(-n+2)]:border-t-0",
               "border-l [&:nth-child(2n+1)]:border-l-0",
               cols === 4 &&
-                "@[720px]/kpi:[&:nth-child(2n+1)]:border-l @[720px]/kpi:[&:nth-child(4n+1)]:border-l-0 @[720px]/kpi:[&:nth-child(n+3)]:border-t-0",
+                "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
               cols === 3 &&
-                "@[600px]/kpi:[&:nth-child(2n+1)]:border-l @[600px]/kpi:[&:nth-child(3n+1)]:border-l-0 @[600px]/kpi:[&:nth-child(n+3)]:border-t-0",
+                "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(3n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
             )}
           />
         ))}
