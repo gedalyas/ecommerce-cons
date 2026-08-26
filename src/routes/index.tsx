@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { KpiTile } from "@/components/KpiTile";
+import { KpiGroup } from "@/components/KpiTile";
 import { PageHeader } from "@/components/PageHeader";
 import { RecommendationList } from "@/components/RecommendationList";
 import {
