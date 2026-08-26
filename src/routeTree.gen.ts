@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as ConexoesRouteImport } from './routes/conexoes'
 import { Route as DinheiroRouteImport } from './routes/dinheiro'
 import { Route as GestaoRouteImport } from './routes/gestao'
@@ -19,6 +20,11 @@ import { Route as MarketingRouteImport } from './routes/marketing'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistenteRoute = AssistenteRouteImport.update({
+  id: '/assistente',
+  path: '/assistente',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConexoesRoute = ConexoesRouteImport.update({
@@ -49,6 +55,7 @@ const MarketingRoute = MarketingRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assistente': typeof AssistenteRoute
   '/conexoes': typeof ConexoesRoute
   '/dinheiro': typeof DinheiroRoute
   '/gestao': typeof GestaoRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assistente': typeof AssistenteRoute
   '/conexoes': typeof ConexoesRoute
   '/dinheiro': typeof DinheiroRoute
   '/gestao': typeof GestaoRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assistente': typeof AssistenteRoute
   '/conexoes': typeof ConexoesRoute
   '/dinheiro': typeof DinheiroRoute
   '/gestao': typeof GestaoRoute
@@ -75,12 +84,26 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/conexoes' | '/dinheiro' | '/gestao' | '/logistica' | '/marketing'
+    | '/'
+    | '/assistente'
+    | '/conexoes'
+    | '/dinheiro'
+    | '/gestao'
+    | '/logistica'
+    | '/marketing'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/conexoes' | '/dinheiro' | '/gestao' | '/logistica' | '/marketing'
+  to:
+    | '/'
+    | '/assistente'
+    | '/conexoes'
+    | '/dinheiro'
+    | '/gestao'
+    | '/logistica'
+    | '/marketing'
   id:
     | '__root__'
     | '/'
+    | '/assistente'
     | '/conexoes'
     | '/dinheiro'
     | '/gestao'
@@ -90,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssistenteRoute: typeof AssistenteRoute
   ConexoesRoute: typeof ConexoesRoute
   DinheiroRoute: typeof DinheiroRoute
   GestaoRoute: typeof GestaoRoute
@@ -104,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistente': {
+      id: '/assistente'
+      path: '/assistente'
+      fullPath: '/assistente'
+      preLoaderRoute: typeof AssistenteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conexoes': {
@@ -146,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssistenteRoute: AssistenteRoute,
   ConexoesRoute: ConexoesRoute,
   DinheiroRoute: DinheiroRoute,
   GestaoRoute: GestaoRoute,

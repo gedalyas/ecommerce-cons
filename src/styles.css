@@ -200,3 +200,46 @@
     outline-offset: 2px;
   }
 }
+
+/* Animações discretas do Assistente */
+@keyframes wave-bar {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.wave-bar {
+  animation: wave-bar 1s ease-in-out infinite;
+}
+
+@keyframes recording-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.recording-dot {
+  animation: recording-dot 1s ease-in-out infinite;
+}
+
+@keyframes typing-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  animation: typing-dot 1s ease-in-out infinite;
+}
