@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, Lock } from "lucide-react";
-import { KpiTile } from "@/components/KpiTile";
+import { KpiGroup } from "@/components/KpiTile";
 import { RecommendationList } from "@/components/RecommendationList";
 import { PresencaCriativos } from "@/components/PresencaCriativos";
 import { cn } from "@/lib/utils";
