@@ -64,7 +64,7 @@ export function KpiTile({
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="t-kpi min-w-0 truncate text-foreground">
+        <div className="t-kpi min-w-0 text-foreground">
           <KpiValue value={kpi.value} />
         </div>
         <span className="mt-2">
@@ -132,7 +132,7 @@ export function KpiGroup({
     <div
       className={cn(
         "grid grid-cols-1 sm:grid-cols-2",
-        cols === 4 && "lg:grid-cols-4",
+        cols === 4 && "lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4",
         cols === 3 && "lg:grid-cols-3",
         !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
         className,
@@ -148,7 +148,7 @@ export function KpiGroup({
             "sm:border-l sm:[&:nth-child(2n+1)]:border-l-0",
             "sm:[&:nth-child(-n+2)]:border-t-0",
             cols === 4 &&
-              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
+              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0 xl:[&:nth-child(2n+1)]:border-l-0 xl:[&:nth-child(n+3)]:border-t 2xl:[&:nth-child(2n+1)]:border-l 2xl:[&:nth-child(4n+1)]:border-l-0 2xl:[&:nth-child(n+3)]:border-t-0",
             cols === 3 &&
               "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(3n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
           )}
