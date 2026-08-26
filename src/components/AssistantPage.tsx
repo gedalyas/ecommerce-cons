@@ -7,8 +7,7 @@ import { cn } from "@/lib/utils";
 type Attachment = { name: string; size: string };
 
 type Message =
-  | { id: number; role: "user"; text?: string; file?: Attachment }
-  | { id: number; role: "user"; audio: string; text?: undefined }
+  | { id: number; role: "user"; text?: string; file?: Attachment; audio?: string }
   | { id: number; role: "ai"; context: string; parts: string[]; meeting?: boolean };
 
 const suggestions = [
@@ -220,8 +219,6 @@ export function AssistantPage() {
         <ScrollShadows top={top} bottom={bottom} />
         <div ref={scrollRef} className="h-full overflow-y-auto px-4 py-6 sm:px-6 xl:px-8">
           <div className="mx-auto w-full min-w-0 max-w-[760px]">
-            {empty ? null : null}
-
             <div className="mb-8">
               <h1 className="t-section-title text-foreground">Assistente</h1>
               <p className="t-body mt-2 text-muted-foreground">
@@ -229,6 +226,7 @@ export function AssistantPage() {
               </p>
             </div>
 
+            {empty && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {suggestions.map((s) => (
                 <button
@@ -242,13 +240,14 @@ export function AssistantPage() {
                 </button>
               ))}
             </div>
+            )}
 
             <div className="mt-8 space-y-6">
               {messages.map((m) =>
                 m.role === "user" ? (
                   <div key={m.id} className="flex justify-end">
                     <div className="min-w-0 max-w-[80%] rounded-lg bg-muted px-4 py-3">
-                      {"audio" in m && m.audio ? (
+                      {m.audio ? (
                         <div className="flex min-w-0 items-center gap-3">
                           <button
                             type="button"
@@ -264,7 +263,7 @@ export function AssistantPage() {
                         </div>
                       ) : (
                         <>
-                          {"file" in m && m.file && (
+                          {m.file && (
                             <div className="mb-3">
                               <FileChip file={m.file} />
                             </div>
