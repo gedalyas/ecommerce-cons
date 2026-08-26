@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { ArrowUp, PanelRightClose, PanelRightOpen, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollShadows, useScrollShadow } from "@/components/ScrollShadow";
+import { useScrollShadow } from "@/components/ScrollShadow";
 import { contextBySection, suggestionsBySection } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
