@@ -332,20 +332,12 @@ export const sections: Record<
             fidelity: "A",
             fidelityNote: "Nível A — contagem das peças em veiculação nas plataformas de mídia.",
           },
-          {
-            label: "Criativos ativos",
-            value: "12",
-            delta: "+3",
-            deltaDirection: "up",
-            fidelity: "A",
-            fidelityNote: "Nível A — contagem das peças em veiculação nas plataformas de mídia.",
-          },
         ],
         recommendations: [
           { text: "Substituir o criativo 'Frete grátis' — CPA 90% acima da média", prazo: "até 03/09", responsavel: "Rafael (Mídia)" },
           { text: "Padronizar o uso do logo entre loja, Instagram e anúncios", prazo: "até 20/09", responsavel: "Marina (Comercial)" },
         ],
-        dataPending: "Instagram não conectado — alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
+        dataPending: "Instagram não conectado — seguidores, alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
       },
       {
         title: "Retenção",
