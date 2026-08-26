@@ -51,27 +51,30 @@ function Dashboard() {
           ))}
         </div>
 
-        <section className="rounded-lg border border-border border-l-[3px] border-l-warning bg-card shadow-sm">
+        <section className="overflow-hidden rounded-lg border border-border border-l-[3px] border-l-warning bg-card shadow-sm">
           <header className="border-b border-border px-5 py-4">
             <h2 className="t-card-title text-foreground">Precisa da sua atenção</h2>
           </header>
-          <ul className="divide-y divide-border">
+          <ul className="divide-y divide-border px-5">
             {alerts.map((alert) => (
-              <li key={alert.title} className="flex flex-wrap items-start gap-3 px-5 py-4">
-                <div className="min-w-0 flex-1">
-                  <div className="text-[15px] font-semibold text-foreground">{alert.title}</div>
-                  <p className="t-meta mt-1 text-muted-foreground">{alert.detail}</p>
-                </div>
+              <li key={alert.title} className="group">
                 <Link
                   to={alert.to}
-                  className="rounded-md border border-border px-3 py-1 text-[13px] text-muted-foreground transition-colors duration-150 hover:border-border-strong hover:bg-muted"
+                  className="flex flex-wrap items-start gap-3 py-4 no-underline"
                 >
-                  {alert.origin}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[15px] font-semibold text-foreground">{alert.title}</div>
+                    <p className="t-meta mt-1 text-muted-foreground">{alert.detail}</p>
+                  </div>
+                  <span className="shrink-0 text-right text-[13px] text-muted-foreground transition-colors duration-150 group-hover:text-primary">
+                    {alert.origin}
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
         </section>
+
 
         <section className="rounded-lg border border-primary bg-success-soft shadow-sm">
           <header className="border-b border-border px-5 py-4">
