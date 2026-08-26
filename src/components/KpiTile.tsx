@@ -1,5 +1,5 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn, formatPtNumbers } from "@/lib/utils";
 import type { Kpi } from "@/lib/mock-data";
 
 const sealStyles = {
@@ -27,11 +27,21 @@ export function FidelitySeal({ kpi }: { kpi: Kpi }) {
   );
 }
 
-export function KpiTile({ kpi, className }: { kpi: Kpi; className?: string }) {
+export function KpiTile({
+  kpi,
+  className,
+  variant = "card",
+}: {
+  kpi: Kpi;
+  className?: string;
+  variant?: "card" | "plain";
+}) {
   return (
     <div
       className={cn(
-        "min-w-0 rounded-lg border border-border bg-card p-5 shadow-sm transition-shadow duration-150",
+        "min-w-0",
+        variant === "card" &&
+          "rounded-lg border border-border bg-card p-5 shadow-sm transition-shadow duration-150",
         className,
       )}
     >
@@ -39,7 +49,7 @@ export function KpiTile({ kpi, className }: { kpi: Kpi; className?: string }) {
         <span className="t-label min-w-0 flex-1 text-muted-foreground">{kpi.label}</span>
         <FidelitySeal kpi={kpi} />
       </div>
-      <div className="t-kpi mt-3 text-foreground">{kpi.value}</div>
+      <div className="t-kpi mt-2 text-foreground">{formatPtNumbers(kpi.value)}</div>
       {kpi.delta && (
         <div
           className={cn(
@@ -51,12 +61,14 @@ export function KpiTile({ kpi, className }: { kpi: Kpi; className?: string }) {
                 : "text-muted-foreground",
           )}
         >
-          <span>{kpi.delta}</span>
+          <span>{formatPtNumbers(kpi.delta)}</span>
           <span className="font-normal text-muted-foreground">vs mês anterior</span>
         </div>
       )}
       {kpi.subNote && (
-        <div className="num mt-1 text-[13px] text-muted-foreground">{kpi.subNote}</div>
+        <div className="num mt-1 text-[13px] text-muted-foreground">
+          {formatPtNumbers(kpi.subNote)}
+        </div>
       )}
     </div>
   );
