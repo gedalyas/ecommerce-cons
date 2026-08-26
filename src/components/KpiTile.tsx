@@ -88,7 +88,7 @@ export function KpiTile({
       </div>
 
       {kpi.delta && (
-        <div className="num mt-1 flex items-center gap-1 whitespace-nowrap text-[13px] leading-[18px]">
+        <div className="num mt-1 flex items-center gap-1 whitespace-nowrap text-[12px] leading-[16px] sm:text-[13px] sm:leading-[18px]">
           <span
             className={cn(
               "font-semibold",
@@ -101,11 +101,11 @@ export function KpiTile({
           >
             {formatPtNumbers(kpi.delta)}
           </span>
-          <span className="text-muted-foreground">vs mês anterior</span>
+          <span className="hidden text-muted-foreground sm:inline">vs mês anterior</span>
         </div>
       )}
       {kpi.subNote && (
-        <div className="num mt-1 truncate text-[13px] leading-[18px] text-muted-foreground">
+        <div className="num mt-1 truncate text-[12px] leading-[16px] text-muted-foreground sm:text-[13px] sm:leading-[18px]">
           {formatPtNumbers(kpi.subNote)}
         </div>
       )}
