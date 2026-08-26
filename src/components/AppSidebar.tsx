@@ -1,12 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  Banknote,
-  LayoutDashboard,
-  Megaphone,
-  Plug,
-  Truck,
-  Building2,
-} from "lucide-react";
+import { Banknote, LayoutDashboard, Megaphone, Plug, Truck, Building2 } from "lucide-react";
+import { ScrollShadows, useScrollShadow } from "@/components/ScrollShadow";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -20,34 +14,34 @@ const mainItems = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { ref, top, bottom } = useScrollShadow<HTMLElement>();
 
   const linkClass = (active: boolean) =>
     cn(
-      "flex min-h-11 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
+      "flex min-h-11 items-center gap-3 border-l-2 px-3 py-2 text-[15px] transition-colors duration-150",
       "justify-center xl:justify-start",
       active
-        ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-        : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+        ? "border-l-primary bg-accent font-semibold text-primary"
+        : "border-l-transparent text-foreground hover:bg-muted",
     );
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-18 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex xl:w-60">
-      <div className="border-b border-sidebar-border px-2 py-4 xl:px-4">
-        <div className="truncate text-center text-sm font-semibold tracking-tight text-sidebar-foreground xl:text-left">
+    <aside className="sticky top-0 hidden h-dvh w-18 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex xl:w-60">
+      <div className="border-b border-sidebar-border px-3 py-4 xl:px-4">
+        <div className="t-card-title truncate text-foreground">
           <span className="xl:hidden">NP</span>
           <span className="hidden xl:inline">Nome Provisório</span>
         </div>
-        <div className="mt-2 hidden rounded-md border border-sidebar-border bg-card px-2.5 py-1.5 xl:block">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Cliente</div>
-          <div className="truncate text-sm font-medium text-foreground">Loja Aurora</div>
+        <div className="mt-3 hidden xl:block">
+          <div className="t-label text-muted-foreground">Cliente</div>
+          <div className="mt-1 truncate text-[15px] font-semibold text-foreground">Loja Aurora</div>
         </div>
       </div>
 
-      <nav className="min-h-0 flex-1 overflow-y-auto p-2">
-        <div className="hidden px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground xl:block">
-          Áreas
-        </div>
-        <ul className="space-y-0.5">
+      <nav ref={ref} className="relative min-h-0 flex-1 overflow-y-auto py-2">
+        <ScrollShadows top={top} bottom={bottom} />
+        <div className="t-label hidden px-3 pb-2 pt-2 text-muted-foreground xl:block">Áreas</div>
+        <ul>
           {mainItems.map((item) => (
             <li key={item.to}>
               <Tooltip>
@@ -67,35 +61,31 @@ export function AppSidebar() {
 
         <div className="my-3 border-t border-sidebar-border" />
 
-        <div className="rounded-md bg-card/70 p-1">
-          <div className="hidden px-2 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground xl:block">
-            Infraestrutura
-          </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link to="/conexoes" className={cn(linkClass(pathname === "/conexoes"), "relative")}>
-                <Plug className="h-4 w-4 shrink-0" />
-                <span className="hidden flex-1 truncate xl:inline">Conexões</span>
-                <span
-                  className="absolute right-2 top-2 h-2 w-2 rounded-full bg-warning xl:static xl:right-auto xl:top-auto"
-                  aria-label="Há problema nas conexões"
-                />
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="xl:hidden">
-              Conexões
-            </TooltipContent>
-          </Tooltip>
-        </div>
+        <div className="t-label hidden px-3 pb-2 text-muted-foreground xl:block">Infraestrutura</div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link to="/conexoes" className={cn(linkClass(pathname === "/conexoes"), "relative")}>
+              <Plug className="h-4 w-4 shrink-0" />
+              <span className="hidden flex-1 truncate xl:inline">Conexões</span>
+              <span
+                className="absolute right-2 top-2 h-2 w-2 rounded-sm bg-warning xl:static xl:right-auto xl:top-auto"
+                aria-label="Há problema nas conexões"
+              />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="xl:hidden">
+            Conexões
+          </TooltipContent>
+        </Tooltip>
       </nav>
 
-      <div className="border-t border-sidebar-border px-2 py-4 xl:px-4">
-        <div className="hidden items-baseline justify-between text-xs xl:flex">
-          <span className="font-medium text-sidebar-foreground">Maturidade</span>
-          <span className="num text-muted-foreground">2 de 4 critérios</span>
+      <div className="border-t border-sidebar-border px-3 py-4 xl:px-4">
+        <div className="hidden items-baseline justify-between xl:flex">
+          <span className="t-meta font-semibold text-foreground">Maturidade</span>
+          <span className="num t-meta text-muted-foreground">2 de 4 critérios</span>
         </div>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
-          <div className="h-full w-1/2 rounded-full bg-primary" />
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-sm bg-muted">
+          <div className="h-full w-1/2 rounded-sm bg-primary" />
         </div>
       </div>
     </aside>

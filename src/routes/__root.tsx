@@ -14,21 +14,22 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AiPanel, AiDrawer } from "@/components/AiPanel";
 import { MobileNav } from "@/components/MobileNav";
+import { ScrollShadows, useScrollShadow } from "@/components/ScrollShadow";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="t-section-title text-foreground">404</h1>
+        <h2 className="t-card-title mt-4 text-foreground">Page not found</h2>
+        <p className="t-meta mt-2 text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.
         </p>
         <div className="mt-6">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-[13px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90"
           >
             Go home
           </Link>
@@ -48,10 +49,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="t-card-title text-foreground">This page didn't load</h1>
+        <p className="t-meta mt-2 text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -60,13 +59,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-[13px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90"
           >
             Try again
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-card px-4 text-[13px] font-semibold text-foreground transition-colors duration-150 hover:bg-muted"
           >
             Go home
           </a>
@@ -131,16 +130,20 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { ref, top, bottom } = useScrollShadow<HTMLElement>();
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider delayDuration={150}>
-        <div className="flex min-h-screen w-full bg-background">
+        <div className="flex min-h-dvh w-full bg-background">
           <AppSidebar />
-          <main className="min-w-0 flex-1 pb-20 md:pb-0">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
+          <div className="relative min-w-0 flex-1">
+            <ScrollShadows top={top} bottom={bottom} />
+            <main ref={ref} id="app-scroll" className="h-dvh min-w-0 overflow-y-auto pb-20 md:pb-0">
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </main>
+          </div>
           <AiPanel />
           <AiDrawer />
           <MobileNav />
@@ -149,3 +152,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

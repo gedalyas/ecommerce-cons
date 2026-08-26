@@ -1,14 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ArrowRight,
-  Check,
-  Megaphone,
-  PieChart,
-  Target,
-  TrendingDown,
-  X,
-} from "lucide-react";
-import {
   CartesianGrid,
   Line,
   LineChart,
@@ -18,6 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { KpiTile } from "@/components/KpiTile";
+import { PageHeader } from "@/components/PageHeader";
 import { RecommendationList } from "@/components/RecommendationList";
 import {
   alerts,
@@ -47,178 +39,158 @@ export const Route = createFileRoute("/")({
   component: Dashboard,
 });
 
-const alertIcons = {
-  "trending-down": TrendingDown,
-  megaphone: Megaphone,
-  "pie-chart": PieChart,
-} as const;
-
 function Dashboard() {
   return (
-    <div className="mx-auto w-full max-w-5xl min-w-0 space-y-5 px-4 py-6 sm:px-6 xl:px-8 xl:py-7">
-      <header>
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Visão consolidada de agosto de 2026 · Loja Aurora
-        </p>
-      </header>
+    <div className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-12 sm:px-6 xl:px-8">
+      <PageHeader title="Dashboard" subtitle="Visão consolidada de agosto de 2026 · Loja Aurora" />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
-        {dashboardKpis.map((kpi) => (
-          <KpiTile key={kpi.label} kpi={kpi} />
-        ))}
-      </div>
+      <div className="mt-6 space-y-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
+          {dashboardKpis.map((kpi) => (
+            <KpiTile key={kpi.label} kpi={kpi} />
+          ))}
+        </div>
 
-      <section className="rounded-lg border border-border bg-card">
-        <header className="border-b border-border px-5 py-3.5">
-          <h2 className="text-sm font-semibold text-foreground">Precisa da sua atenção</h2>
-        </header>
-        <ul className="divide-y divide-border">
-          {alerts.map((alert) => {
-            const Icon = alertIcons[alert.icon];
-            return (
-              <li key={alert.title} className="flex flex-wrap items-start gap-3 px-4 py-3.5 sm:px-5">
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-warning-soft">
-                  <Icon className="h-4 w-4 text-warning" />
-                </span>
+        <section className="rounded-lg border border-border border-l-[3px] border-l-warning bg-card shadow-sm">
+          <header className="border-b border-border px-5 py-4">
+            <h2 className="t-card-title text-foreground">Precisa da sua atenção</h2>
+          </header>
+          <ul className="divide-y divide-border">
+            {alerts.map((alert) => (
+              <li key={alert.title} className="flex flex-wrap items-start gap-3 px-5 py-4">
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium text-foreground">{alert.title}</div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{alert.detail}</p>
+                  <div className="text-[15px] font-semibold text-foreground">{alert.title}</div>
+                  <p className="t-meta mt-1 text-muted-foreground">{alert.detail}</p>
                 </div>
                 <Link
                   to={alert.to}
-                  className="mt-0.5 inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground hover:border-primary hover:text-primary"
+                  className="rounded-md border border-border px-3 py-1 text-[13px] text-muted-foreground transition-colors duration-150 hover:border-border-strong hover:bg-muted"
                 >
-                  {alert.origin} <ArrowRight className="h-3 w-3" />
+                  {alert.origin}
                 </Link>
               </li>
-            );
-          })}
-        </ul>
-      </section>
+            ))}
+          </ul>
+        </section>
 
-      <section className="rounded-lg border-2 border-primary/40 bg-card">
-        <header className="border-b border-border px-5 py-3.5">
-          <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-primary" />
-            <h2 className="text-sm font-semibold text-foreground">Marco de maturidade</h2>
-            <span className="num ml-auto shrink-0 text-xs text-muted-foreground">2 de 4 critérios</span>
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia.
-          </p>
-        </header>
-        <div className="grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
-          {milestoneCriteria.map((c) => (
-            <div key={c.name} className="rounded-md border border-border bg-background p-3.5">
-              <div className="flex items-start gap-2">
-                <span
-                  className={cn(
-                    "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full",
-                    c.achieved ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground",
-                  )}
-                >
-                  {c.achieved ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-                </span>
-                <span className="text-sm font-medium leading-snug text-foreground">{c.name}</span>
-              </div>
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-border">
-                <div
-                  className={cn("h-full rounded-full", c.achieved ? "bg-success" : "bg-warning")}
-                  style={{ width: `${c.progress}%` }}
-                />
-              </div>
-              <div className="mt-2 text-[11px] text-muted-foreground">
-                <span className={cn("font-medium", c.achieved ? "text-success" : "text-warning")}>
-                  {c.achieved ? "Atingido" : "Não atingido"}
-                </span>
-                {" · "}
-                {c.note}
-              </div>
+        <section className="rounded-lg border border-primary bg-success-soft shadow-sm">
+          <header className="border-b border-border px-5 py-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="t-card-title text-foreground">Marco de maturidade</h2>
+              <span className="num t-meta text-muted-foreground">2 de 4 critérios</span>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-border bg-card">
-        <header className="border-b border-border px-5 py-3.5">
-          <h2 className="text-sm font-semibold text-foreground">Recomendações em aberto</h2>
-        </header>
-        <div className="p-5">
-          <RecommendationList items={openRecommendations} />
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-border bg-card">
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3.5 sm:px-5">
-          <h2 className="min-w-0 text-sm font-semibold text-foreground">
-            Faturamento e margem · últimos 12 meses
-          </h2>
-          <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <span className="h-0.5 w-4 bg-chart-1" /> Faturamento
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-0.5 w-4 bg-chart-2" /> Margem %
-            </span>
+            <p className="t-meta mt-1 text-muted-foreground">
+              Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia.
+            </p>
+          </header>
+          <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
+            {milestoneCriteria.map((c) => (
+              <div key={c.name} className="min-w-0 rounded-lg border border-border bg-card p-5">
+                <div className="text-[15px] font-semibold leading-6 text-foreground">{c.name}</div>
+                <div className="mt-3 h-1 w-full overflow-hidden rounded-sm bg-muted">
+                  <div
+                    className={cn("h-full rounded-sm", c.achieved ? "bg-primary" : "bg-warning")}
+                    style={{ width: `${c.progress}%` }}
+                  />
+                </div>
+                <div className="t-meta mt-2 text-muted-foreground">
+                  <span className={cn("font-semibold", c.achieved ? "text-primary" : "text-warning")}>
+                    {c.achieved ? "Atingido" : "Não atingido"}
+                  </span>
+                  {" · "}
+                  {c.note}
+                </div>
+              </div>
+            ))}
           </div>
-        </header>
-        <div className="h-56 w-full min-w-0 p-3 sm:h-72 sm:p-5">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={monthlySeries} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid stroke="var(--border)" vertical={false} />
-              <XAxis
-                dataKey="mes"
-                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                stroke="var(--border)"
-              />
-              <YAxis
-                yAxisId="left"
-                tickFormatter={(v: number) => `${Math.round(v / 1000)}k`}
-                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                stroke="var(--border)"
-              />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
-                domain={[14, 26]}
-                tickFormatter={(v: number) => `${v}%`}
-                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                stroke="var(--border)"
-              />
-              <ChartTooltip
-                contentStyle={{
-                  borderRadius: 8,
-                  border: "1px solid var(--border)",
-                  background: "var(--card)",
-                  fontSize: 12,
-                }}
-                formatter={(value: number, name: string) =>
-                  name === "faturamento"
-                    ? [`R$ ${value.toLocaleString("pt-BR")}`, "Faturamento"]
-                    : [`${value}%`, "Margem"]
-                }
-              />
-              <Line
-                yAxisId="left"
-                type="monotone"
-                dataKey="faturamento"
-                stroke="var(--chart-1)"
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="margem"
-                stroke="var(--chart-2)"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
+        </section>
+
+        <section className="rounded-lg border border-border bg-card shadow-sm">
+          <header className="border-b border-border px-5 py-4">
+            <h2 className="t-card-title text-foreground">Recomendações em aberto</h2>
+          </header>
+          <div className="p-5">
+            <RecommendationList items={openRecommendations} />
+          </div>
+        </section>
+
+        <section className="pt-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="t-card-title text-foreground">Faturamento e margem · últimos 12 meses</h2>
+            <div className="t-meta flex items-center gap-4 text-muted-foreground">
+              <span className="flex items-center gap-2">
+                <span className="h-0.5 w-4 bg-chart-1" /> Faturamento
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-0.5 w-4 bg-chart-2" /> Margem %
+              </span>
+            </div>
+          </div>
+          <div className="mt-6 h-56 w-full min-w-0 sm:h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthlySeries} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid stroke="var(--grid)" vertical={false} />
+                <XAxis
+                  dataKey="mes"
+                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                  stroke="var(--border)"
+                />
+                <YAxis
+                  yAxisId="left"
+                  tickFormatter={(v: number) => `${Math.round(v / 1000)}k`}
+                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                  stroke="var(--border)"
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  domain={[14, 26]}
+                  tickFormatter={(v: number) => `${v}%`}
+                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                  stroke="var(--border)"
+                />
+                <ChartTooltip
+                  contentStyle={{
+                    borderRadius: 6,
+                    border: "none",
+                    background: "var(--foreground)",
+                    color: "var(--background)",
+                    fontSize: 13,
+                    boxShadow: "0 4px 12px rgba(16, 24, 40, 0.08)",
+                  }}
+                  labelStyle={{ color: "var(--background)" }}
+                  itemStyle={{ color: "var(--background)" }}
+                  formatter={(value: number, name: string) =>
+                    name === "faturamento"
+                      ? [`R$ ${value.toLocaleString("pt-BR")}`, "Faturamento"]
+                      : [`${value}%`, "Margem"]
+                  }
+                />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="faturamento"
+                  stroke="var(--chart-1)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={false}
+                  isAnimationActive={false}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="margem"
+                  stroke="var(--chart-2)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={false}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
