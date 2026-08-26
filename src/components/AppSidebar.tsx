@@ -13,7 +13,6 @@ const mainItems = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { ref, top, bottom } = useScrollShadow<HTMLElement>();
 
   const linkClass = (active: boolean) =>
     cn(
