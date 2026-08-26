@@ -32,16 +32,16 @@ export function KpiTile({ kpi, className }: { kpi: Kpi; className?: string }) {
     kpi.deltaDirection === "up" ? ArrowUpRight : kpi.deltaDirection === "down" ? ArrowDownRight : Minus;
 
   return (
-    <div className={cn("rounded-lg border border-border bg-card p-4", className)}>
-      <div className="flex items-start justify-between gap-2">
-        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+    <div className={cn("min-w-0 rounded-lg border border-border bg-card p-4", className)}>
+      <div className="flex min-h-8 items-start justify-between gap-2">
+        <span className="min-w-0 text-xs font-medium uppercase leading-4 tracking-wide text-muted-foreground">
           {kpi.label}
         </span>
         <FidelitySeal kpi={kpi} />
       </div>
       <div
         className={cn(
-          "num mt-3 text-2xl text-foreground",
+          "num mt-3 text-2xl tabular-nums text-foreground",
           kpi.fidelity === "A" ? "font-semibold" : "font-normal",
         )}
       >
@@ -50,7 +50,7 @@ export function KpiTile({ kpi, className }: { kpi: Kpi; className?: string }) {
       {kpi.delta && (
         <div
           className={cn(
-            "mt-1.5 flex items-center gap-1 text-xs font-medium",
+            "mt-1.5 flex items-center gap-1 whitespace-nowrap text-xs font-medium",
             kpi.deltaDirection === "up"
               ? "text-success"
               : kpi.deltaDirection === "down"
@@ -58,8 +58,8 @@ export function KpiTile({ kpi, className }: { kpi: Kpi; className?: string }) {
                 : "text-muted-foreground",
           )}
         >
-          <Icon className="h-3.5 w-3.5" />
-          <span className="num">{kpi.delta}</span>
+          <Icon className="h-3.5 w-3.5 shrink-0" />
+          <span className="num tabular-nums">{kpi.delta}</span>
           <span className="font-normal text-muted-foreground">vs mês anterior</span>
         </div>
       )}

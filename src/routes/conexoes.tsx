@@ -32,7 +32,7 @@ const statusMeta = {
 
 function Conexoes() {
   return (
-    <div className="mx-auto max-w-5xl space-y-5 px-8 py-7">
+    <div className="mx-auto w-full max-w-5xl min-w-0 space-y-5 px-4 py-6 sm:px-6 xl:px-8 xl:py-7">
       <header>
         <h1 className="text-xl font-semibold tracking-tight text-foreground">Conexões</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -40,7 +40,7 @@ function Conexoes() {
         </p>
       </header>
 
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm">
+      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm">
         <span className="h-2 w-2 rounded-full bg-warning" />
         <span className="num font-medium text-foreground">5 de 7 fontes ativas</span>
         <span className="text-muted-foreground">· 1 com erro, 1 não conectada</span>
@@ -52,20 +52,20 @@ function Conexoes() {
             const meta = statusMeta[c.status];
             const Icon = meta.icon;
             return (
-              <li key={c.name} className="flex flex-wrap items-center gap-3 px-5 py-3.5">
-                <div className="min-w-48 flex-1">
+              <li key={c.name} className="flex flex-col gap-2 px-4 py-3.5 md:flex-row md:flex-wrap md:items-center md:gap-3 md:px-5">
+                <div className="min-w-0 flex-1 md:min-w-48">
                   <div className="text-sm font-medium text-foreground">{c.name}</div>
                   <div className="text-xs text-muted-foreground">{c.type}</div>
                 </div>
-                <div className={cn("flex w-48 items-center gap-1.5 text-xs font-medium", meta.className)}>
+                <div className={cn("flex min-w-0 items-center gap-1.5 text-xs font-medium md:w-48", meta.className)}>
                   <Icon className="h-3.5 w-3.5" />
                   {meta.label}
                 </div>
-                <div className="num w-40 text-xs text-muted-foreground">{c.sync}</div>
+                <div className="num w-full text-xs text-muted-foreground md:w-40">{c.sync}</div>
                 <Button
                   variant={c.status === "erro" ? "default" : "outline"}
                   size="sm"
-                  className="h-8 text-xs"
+                  className="h-11 w-full text-xs md:h-8 md:w-auto"
                 >
                   {c.status === "nao-conectado" ? "Conectar" : "Reconectar"}
                 </Button>
@@ -76,13 +76,13 @@ function Conexoes() {
       </section>
 
       <section className="rounded-lg border border-border bg-card">
-        <header className="border-b border-border px-5 py-3.5">
+        <header className="border-b border-border px-4 py-3.5 sm:px-5">
           <h2 className="text-sm font-semibold text-foreground">Importação manual</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Extratos e planilhas que ainda não têm integração automática.
           </p>
         </header>
-        <div className="p-5">
+        <div className="p-4 sm:p-5">
           <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border bg-background px-6 py-10 text-center">
             <UploadCloud className="h-7 w-7 text-muted-foreground" />
             <div className="mt-3 text-sm font-medium text-foreground">
@@ -91,7 +91,7 @@ function Conexoes() {
             <p className="mt-1 text-xs text-muted-foreground">
               Formatos aceitos: .xlsx, .csv · até 10 MB
             </p>
-            <Button variant="outline" size="sm" className="mt-4 h-8 text-xs">
+            <Button variant="outline" size="sm" className="mt-4 h-11 text-xs md:h-8">
               Selecionar arquivo
             </Button>
           </div>

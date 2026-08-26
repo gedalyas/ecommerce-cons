@@ -12,7 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppSidebar } from "@/components/AppSidebar";
-import { AiPanel } from "@/components/AiPanel";
+import { AiPanel, AiDrawer } from "@/components/AiPanel";
+import { MobileNav } from "@/components/MobileNav";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function NotFoundComponent() {
@@ -134,13 +135,15 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider delayDuration={150}>
-        <div className="flex h-screen w-full overflow-hidden bg-background">
+        <div className="flex min-h-screen w-full bg-background">
           <AppSidebar />
-          <main className="h-screen flex-1 overflow-y-auto">
+          <main className="min-w-0 flex-1 pb-20 md:pb-0">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>
           <AiPanel />
+          <AiDrawer />
+          <MobileNav />
         </div>
       </TooltipProvider>
     </QueryClientProvider>
