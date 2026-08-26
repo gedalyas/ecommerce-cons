@@ -32,7 +32,7 @@ export function AiPanel() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [draft, setDraft] = useState("");
 
-  const suggestions = suggestionsBySection[pathname] ?? suggestionsBySection["/"];
+  const suggestions = suggestionsBySection[pathname] ?? suggestionsBySection["/"]!;
   const context = contextBySection[pathname] ?? "Dashboard";
 
   const send = (text: string) => {

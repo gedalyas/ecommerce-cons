@@ -4,7 +4,7 @@ import { PillarCard } from "@/components/PillarCard";
 import { sections } from "@/lib/mock-data";
 
 export function SectionPage({ slug }: { slug: keyof typeof sections }) {
-  const section = sections[slug];
+  const section = sections[slug]!;
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 px-8 py-7">
