@@ -5,6 +5,7 @@ export type Kpi = {
   value: string;
   delta?: string;
   deltaDirection?: "up" | "down" | "neutral";
+  subNote?: string;
   fidelity: Fidelity;
   fidelityNote: string;
 };
@@ -299,6 +300,15 @@ export const sections: Record<
         extra: "presenca-criativos",
         kpis: [
           {
+            label: "Seguidores",
+            value: "18.470",
+            delta: "+4,2%",
+            deltaDirection: "up",
+            subNote: "+742 no mês",
+            fidelity: "B",
+            fidelityNote: "Nível B — importado do relatório manual de 02/08. Conecte o Instagram para atualização diária.",
+          },
+          {
             label: "Alcance mensal",
             value: "184.200",
             delta: "+6%",
@@ -322,20 +332,12 @@ export const sections: Record<
             fidelity: "A",
             fidelityNote: "Nível A — contagem das peças em veiculação nas plataformas de mídia.",
           },
-          {
-            label: "Consistência de marca",
-            value: "68%",
-            delta: "+12pp",
-            deltaDirection: "up",
-            fidelity: "C",
-            fidelityNote: "Nível C — avaliação qualitativa da consultoria, indicativo apenas.",
-          },
         ],
         recommendations: [
           { text: "Substituir o criativo 'Frete grátis' — CPA 90% acima da média", prazo: "até 03/09", responsavel: "Rafael (Mídia)" },
           { text: "Padronizar o uso do logo entre loja, Instagram e anúncios", prazo: "até 20/09", responsavel: "Marina (Comercial)" },
         ],
-        dataPending: "Instagram não conectado — alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
+        dataPending: "Instagram não conectado — seguidores, alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
       },
       {
         title: "Retenção",

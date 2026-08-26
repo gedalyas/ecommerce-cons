@@ -96,9 +96,13 @@ export function PresencaCriativos() {
 
           <div className="min-w-0">
             <div className="t-meta mb-3 text-muted-foreground">Consistência</div>
-            <span className="inline-flex items-center rounded-sm border border-warning px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-warning">
-              Inconsistente
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center rounded-sm border border-warning px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-warning">
+                Inconsistente
+              </span>
+              <span className="num text-[17px] font-semibold text-foreground">68%</span>
+              {seal("C", "Nível C — avaliação qualitativa da consultoria, indicativo apenas.")}
+            </div>
             <ul className="mt-4 space-y-2">
               {consistencia.map((item) => (
                 <li key={item.text} className="flex items-start gap-2 text-[13px] text-foreground">
@@ -116,6 +120,30 @@ export function PresencaCriativos() {
       </Bloco>
 
       <Bloco title="Feed do Instagram">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="h-12 w-12 shrink-0 rounded-full border border-border bg-muted" />
+            <span className="truncate text-[15px] font-semibold text-foreground">@lojaaurora</span>
+          </div>
+          <div className="flex items-start gap-6 sm:gap-8">
+            <div className="min-w-0">
+              <div className="num text-[17px] font-semibold text-foreground">18.470</div>
+              <div className="t-label mt-1 text-muted-foreground">Seguidores</div>
+              <div className="num mt-1 text-[11px] text-primary">+4,2% no mês</div>
+            </div>
+            <div className="min-w-0">
+              <div className="num text-[17px] font-semibold text-foreground">284</div>
+              <div className="t-label mt-1 text-muted-foreground">Publicações</div>
+            </div>
+            <div className="min-w-0">
+              <div className="num text-[17px] font-semibold text-foreground">3,1%</div>
+              <div className="t-label mt-1 text-muted-foreground">Engajamento</div>
+            </div>
+            <div className="pt-1">
+              {seal("B", "Nível B — importado do relatório manual de 02/08. Conecte o Instagram para atualização diária.")}
+            </div>
+          </div>
+        </div>
         <div className="grid grid-cols-3 gap-3">
           {feed.map((item, i) => (
             <div key={i} className="min-w-0">
