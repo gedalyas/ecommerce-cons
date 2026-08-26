@@ -229,7 +229,7 @@ export function AiDrawer() {
           {/* Mobile: o botão flutuante abre a página do Assistente em tela cheia. */}
           <Button
             asChild
-            className="fixed bottom-20 right-6 z-40 h-11 rounded-lg px-5 shadow-lg md:hidden"
+            className="fixed bottom-20 right-4 z-40 h-11 rounded-lg px-4 shadow-lg md:hidden"
           >
             <Link to="/assistente">Assistente</Link>
           </Button>

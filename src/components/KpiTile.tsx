@@ -59,21 +59,21 @@ export function KpiTile({
   return (
     <div
       className={cn(
-        "flex min-w-0 flex-col justify-center px-8 py-5 sm:h-32 sm:py-0",
+        "relative flex min-w-0 flex-col justify-center px-4 py-4 sm:h-32 sm:px-8 sm:py-0",
         className,
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="t-kpi min-w-0 text-foreground">
+      <div className="flex items-start justify-between gap-2">
+        <div className="t-kpi min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground sm:text-[32px] sm:leading-[40px]">
           <KpiValue value={kpi.value} />
         </div>
-        <span className="mt-2">
+        <span className="mt-1 scale-75 origin-top-right sm:mt-2 sm:scale-100">
           <FidelitySeal kpi={kpi} />
         </span>
       </div>
 
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <span className="min-w-0 truncate text-[13px] leading-[18px] text-muted-foreground">
+      <div className="mt-1 flex items-center justify-between gap-2 sm:mt-2 sm:gap-3">
+        <span className="min-w-0 truncate text-[12px] leading-[16px] text-muted-foreground sm:text-[13px] sm:leading-[18px]">
           {kpi.label}
         </span>
         {action && (
@@ -88,7 +88,7 @@ export function KpiTile({
       </div>
 
       {kpi.delta && (
-        <div className="num mt-1 flex items-center gap-1 whitespace-nowrap text-[13px] leading-[18px]">
+        <div className="num mt-1 flex items-center gap-1 whitespace-nowrap text-[12px] leading-[16px] sm:text-[13px] sm:leading-[18px]">
           <span
             className={cn(
               "font-semibold",
@@ -101,11 +101,11 @@ export function KpiTile({
           >
             {formatPtNumbers(kpi.delta)}
           </span>
-          <span className="text-muted-foreground">vs mês anterior</span>
+          <span className="hidden text-muted-foreground sm:inline">vs mês anterior</span>
         </div>
       )}
       {kpi.subNote && (
-        <div className="num mt-1 truncate text-[13px] leading-[18px] text-muted-foreground">
+        <div className="num mt-1 truncate text-[12px] leading-[16px] text-muted-foreground sm:text-[13px] sm:leading-[18px]">
           {formatPtNumbers(kpi.subNote)}
         </div>
       )}
@@ -131,7 +131,7 @@ export function KpiGroup({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2",
+        "grid grid-cols-2",
         cols === 4 && "lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4",
         cols === 3 && "lg:grid-cols-3",
         !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
@@ -144,9 +144,8 @@ export function KpiGroup({
           kpi={kpi}
           action={actions?.[kpi.label]}
           className={cn(
-            "border-t border-border first:border-t-0",
-            "sm:border-l sm:[&:nth-child(2n+1)]:border-l-0",
-            "sm:[&:nth-child(-n+2)]:border-t-0",
+            "border-t border-border [&:nth-child(-n+2)]:border-t-0",
+            "border-l [&:nth-child(2n+1)]:border-l-0",
             cols === 4 &&
               "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0 xl:[&:nth-child(2n+1)]:border-l-0 xl:[&:nth-child(n+3)]:border-t 2xl:[&:nth-child(2n+1)]:border-l 2xl:[&:nth-child(4n+1)]:border-l-0 2xl:[&:nth-child(n+3)]:border-t-0",
             cols === 3 &&

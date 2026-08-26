@@ -44,7 +44,7 @@ function Dashboard() {
     <div className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-12 sm:px-6 xl:px-8">
       <PageHeader title="Dashboard" subtitle="Visão consolidada de agosto de 2026 · Loja Aurora" />
 
-      <div className="mt-6 space-y-8">
+      <div className="mt-6 space-y-6 sm:space-y-8">
         <KpiGroup kpis={dashboardKpis} />
 
 
