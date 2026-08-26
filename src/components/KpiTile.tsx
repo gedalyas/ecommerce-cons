@@ -27,63 +27,133 @@ export function FidelitySeal({ kpi }: { kpi: Kpi }) {
   );
 }
 
+function KpiValue({ value }: { value: string }) {
+  return (
+    <>
+      {formatPtNumbers(value)
+        .split(",")
+        .flatMap((part, i) =>
+          i === 0
+            ? [<span key={i}>{part}</span>]
+            : [
+                <span key={`s${i}`} className="mx-[-0.05em] inline-block">
+                  ,
+                </span>,
+                <span key={i}>{part}</span>,
+              ],
+        )}
+    </>
+  );
+}
+
 export function KpiTile({
   kpi,
   className,
-  variant = "card",
+  action,
 }: {
   kpi: Kpi;
   className?: string;
-  variant?: "card" | "plain";
+  /** Ação secundária opcional, alinhada à direita na linha do rótulo. */
+  action?: { label: string; onClick?: () => void } | undefined;
 }) {
   return (
     <div
       className={cn(
-        "min-w-0",
-        variant === "card" &&
-          "rounded-lg border border-border bg-card p-5 shadow-sm transition-shadow duration-150",
+        "flex min-w-0 flex-col justify-center px-8 py-5 sm:h-32 sm:py-0",
         className,
       )}
     >
-      <div className="flex h-8 items-start gap-1.5">
-        <span className="t-label min-w-0 flex-1 text-muted-foreground">{kpi.label}</span>
-        <FidelitySeal kpi={kpi} />
+      <div className="flex items-start justify-between gap-3">
+        <div className="t-kpi min-w-0 text-foreground">
+          <KpiValue value={kpi.value} />
+        </div>
+        <span className="mt-2">
+          <FidelitySeal kpi={kpi} />
+        </span>
       </div>
-      <div className="t-kpi mt-2 text-foreground">
-        {formatPtNumbers(kpi.value)
-          .split(",")
-          .flatMap((part, i) =>
-            i === 0
-              ? [<span key={i}>{part}</span>]
-              : [
-                  <span key={`s${i}`} className="mx-[-0.05em] inline-block">
-                    ,
-                  </span>,
-                  <span key={i}>{part}</span>,
-                ],
-          )}
+
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <span className="min-w-0 truncate text-[13px] leading-[18px] text-muted-foreground">
+          {kpi.label}
+        </span>
+        {action && (
+          <button
+            type="button"
+            onClick={action.onClick}
+            className="h-8 shrink-0 rounded-md bg-primary px-3 text-[13px] font-semibold text-primary-foreground transition-shadow duration-150 hover:shadow-md"
+          >
+            {action.label}
+          </button>
+        )}
       </div>
 
       {kpi.delta && (
-        <div
-          className={cn(
-            "num mt-2 flex items-center gap-1 whitespace-nowrap text-[13px] font-semibold",
-            kpi.deltaDirection === "up"
-              ? "text-success"
-              : kpi.deltaDirection === "down"
-                ? "text-destructive"
-                : "text-muted-foreground",
-          )}
-        >
-          <span>{formatPtNumbers(kpi.delta)}</span>
-          <span className="font-normal text-muted-foreground">vs mês anterior</span>
+        <div className="num mt-1 flex items-center gap-1 whitespace-nowrap text-[13px] leading-[18px]">
+          <span
+            className={cn(
+              "font-semibold",
+              kpi.deltaDirection === "up"
+                ? "text-success"
+                : kpi.deltaDirection === "down"
+                  ? "text-destructive"
+                  : "text-muted-foreground",
+            )}
+          >
+            {formatPtNumbers(kpi.delta)}
+          </span>
+          <span className="text-muted-foreground">vs mês anterior</span>
         </div>
       )}
       {kpi.subNote && (
-        <div className="num mt-1 text-[13px] text-muted-foreground">
+        <div className="num mt-1 truncate text-[13px] leading-[18px] text-muted-foreground">
           {formatPtNumbers(kpi.subNote)}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Grupo de métricas: um único contêiner com borda, tiles separados por divisórias. */
+export function KpiGroup({
+  kpis,
+  className,
+  bare = false,
+  actions,
+}: {
+  kpis: Kpi[];
+  className?: string;
+  /** Sem borda/fundo próprios (quando já está dentro de outro card). */
+  bare?: boolean;
+  actions?: Record<string, { label: string; onClick?: () => void }>;
+}) {
+  const cols = kpis.length >= 4 ? 4 : kpis.length === 3 ? 3 : 2;
+
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-1 sm:grid-cols-2",
+        cols === 4 && "lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4",
+        cols === 3 && "lg:grid-cols-3",
+        !bare && "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
+        className,
+      )}
+    >
+      {kpis.map((kpi) => (
+        <KpiTile
+          key={kpi.label}
+          kpi={kpi}
+          action={actions?.[kpi.label]}
+          className={cn(
+            "border-t border-border first:border-t-0",
+            "sm:border-l sm:[&:nth-child(2n+1)]:border-l-0",
+            "sm:[&:nth-child(-n+2)]:border-t-0",
+            cols === 4 &&
+              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0 xl:[&:nth-child(2n+1)]:border-l-0 xl:[&:nth-child(n+3)]:border-t 2xl:[&:nth-child(2n+1)]:border-l 2xl:[&:nth-child(4n+1)]:border-l-0 2xl:[&:nth-child(n+3)]:border-t-0",
+            cols === 3 &&
+              "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(3n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
+          )}
+        />
+      ))}
     </div>
   );
 }
