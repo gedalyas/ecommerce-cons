@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowUp, PanelRightClose, PanelRightOpen, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useScrollShadow } from "@/components/ScrollShadow";
-import { contextBySection, suggestionsBySection } from "@/lib/mock-data";
+import { Button } from "@/design-system/primitives/Button";
+import { useScrollShadow } from "@/design-system/hooks/useScrollShadow";
+import { contextBySection, suggestionsBySection } from "./data";
 import { cn } from "@/lib/utils";
 
 type Message = { role: "user" | "ai"; text: string; pillar?: string; meeting?: boolean };

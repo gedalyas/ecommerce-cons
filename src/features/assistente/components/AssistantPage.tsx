@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FileText, Mic, Paperclip, Play, Send, X } from "lucide-react";
-import { useScrollShadow, ScrollShadows } from "@/components/ScrollShadow";
+import { ScrollShadows, useScrollShadow } from "@/design-system/patterns/ScrollShadow";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

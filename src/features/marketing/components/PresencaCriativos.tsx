@@ -1,7 +1,7 @@
 import { Check, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FidelitySeal } from "@/components/KpiTile";
-import type { Fidelity } from "@/lib/mock-data";
+import { FidelityBadge } from "@/design-system/patterns/FidelityBadge";
+import type { Fidelity } from "@/design-system/patterns/FidelityBadge";
 
 const paleta = ["#1B4332", "#2D6A4F", "#D8F3DC", "#FFB703", "#212529"];
 
@@ -52,7 +52,7 @@ const paginas: { nome: string; visitas: string; conv: string; negativa?: boolean
 ];
 
 function seal(fidelity: Fidelity, note: string) {
-  return <FidelitySeal kpi={{ label: "", value: "", fidelity, fidelityNote: note }} />;
+  return <FidelityBadge fidelity={fidelity} note={note} />;
 }
 
 function Bloco({ title, children }: { title: string; children: React.ReactNode }) {
