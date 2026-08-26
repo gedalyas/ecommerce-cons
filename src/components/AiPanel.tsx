@@ -86,12 +86,11 @@ function AssistantConversation({
   draft: string;
   setDraft: (v: string) => void;
 }) {
-  const { ref, top, bottom } = useScrollShadow<HTMLDivElement>();
+  const { ref, top } = useScrollShadow<HTMLDivElement>();
 
   return (
     <>
       <div className="relative min-h-0 flex-1">
-        <ScrollShadows top={top} bottom={bottom} />
         <div ref={ref} className="h-full space-y-6 overflow-y-auto px-5 py-4">
           <div className="space-y-2">
             <div className="t-label text-muted-foreground">Perguntas sugeridas</div>

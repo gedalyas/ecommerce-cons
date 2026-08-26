@@ -1,6 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Banknote, LayoutDashboard, Megaphone, Plug, Truck, Building2 } from "lucide-react";
-import { ScrollShadows, useScrollShadow } from "@/components/ScrollShadow";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +13,6 @@ const mainItems = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { ref, top, bottom } = useScrollShadow<HTMLElement>();
 
   const linkClass = (active: boolean) =>
     cn(
@@ -38,8 +36,7 @@ export function AppSidebar() {
         </div>
       </div>
 
-      <nav ref={ref} className="relative min-h-0 flex-1 overflow-y-auto py-2">
-        <ScrollShadows top={top} bottom={bottom} />
+      <nav className="relative min-h-0 flex-1 overflow-y-auto py-2">
         <div className="t-label hidden px-3 pb-2 pt-2 text-muted-foreground xl:block">Áreas</div>
         <ul>
           {mainItems.map((item) => (
