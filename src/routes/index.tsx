@@ -45,11 +45,8 @@ function Dashboard() {
       <PageHeader title="Dashboard" subtitle="Visão consolidada de agosto de 2026 · Loja Aurora" />
 
       <div className="mt-6 space-y-8">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
-          {dashboardKpis.map((kpi) => (
-            <KpiTile key={kpi.label} kpi={kpi} />
-          ))}
-        </div>
+        <KpiGroup kpis={dashboardKpis} />
+
 
         <section className="overflow-hidden rounded-lg border border-border border-l-[3px] border-l-warning bg-card shadow-sm">
           <header className="border-b border-border px-5 py-4">
