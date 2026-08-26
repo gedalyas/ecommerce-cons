@@ -12,7 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppSidebar } from "@/components/AppSidebar";
-import { AiPanel } from "@/components/AiPanel";
+import { AiPanel, AiDrawer } from "@/components/AiPanel";
+import { MobileNav } from "@/components/MobileNav";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function NotFoundComponent() {
