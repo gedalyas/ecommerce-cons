@@ -30,8 +30,8 @@ export function MobileNav() {
             key={item.to}
             to={item.to}
             className={cn(
-              "flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 px-1 py-2 text-[10px]",
-              active ? "font-medium text-primary" : "text-sidebar-foreground/70",
+              "flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 px-1 py-2 text-[11px] transition-colors duration-150",
+              active ? "bg-accent font-semibold text-primary" : "text-muted-foreground",
             )}
           >
             <item.icon className="h-5 w-5 shrink-0" />
