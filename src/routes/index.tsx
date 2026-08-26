@@ -63,7 +63,7 @@ function Dashboard() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
         {dashboardKpis.map((kpi) => (
           <KpiTile key={kpi.label} kpi={kpi} />
         ))}
@@ -108,7 +108,7 @@ function Dashboard() {
             Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia.
           </p>
         </header>
-        <div className="grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4">
+        <div className="grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
           {milestoneCriteria.map((c) => (
             <div key={c.name} className="rounded-md border border-border bg-background p-3.5">
               <div className="flex items-start gap-2">
