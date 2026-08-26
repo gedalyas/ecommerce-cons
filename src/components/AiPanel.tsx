@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowUp, PanelRightClose, PanelRightOpen, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useScrollShadow } from "@/components/ScrollShadow";
@@ -225,12 +225,18 @@ export function AiDrawer() {
   return (
     <div className="xl:hidden">
       {!open && (
-        <Button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-20 right-4 z-40 h-12 px-4 md:bottom-6"
-        >
-          Assistente
-        </Button>
+        <>
+          {/* Mobile: o botão flutuante abre a página do Assistente em tela cheia. */}
+          <Button asChild className="fixed bottom-20 right-4 z-40 h-12 px-4 md:hidden">
+            <Link to="/assistente">Assistente</Link>
+          </Button>
+          <Button
+            onClick={() => setOpen(true)}
+            className="fixed bottom-6 right-4 z-40 hidden h-12 px-4 md:inline-flex"
+          >
+            Assistente
+          </Button>
+        </>
       )}
 
       {open && (

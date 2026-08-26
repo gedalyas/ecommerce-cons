@@ -1,9 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Banknote, LayoutDashboard, Megaphone, Plug, Truck, Building2 } from "lucide-react";
+import {
+  Banknote,
+  LayoutDashboard,
+  Megaphone,
+  MessageSquare,
+  Plug,
+  Truck,
+  Building2,
+} from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const mainItems = [
+  { label: "Assistente", to: "/assistente", icon: MessageSquare },
   { label: "Dashboard", to: "/", icon: LayoutDashboard },
   { label: "Dinheiro", to: "/dinheiro", icon: Banknote },
   { label: "Marketing", to: "/marketing", icon: Megaphone },

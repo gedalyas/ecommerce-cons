@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { useRouterState } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -131,6 +132,8 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { ref, top, bottom } = useScrollShadow<HTMLElement>();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAssistant = pathname === "/assistente";
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -139,13 +142,21 @@ function RootComponent() {
           <AppSidebar />
           <div className="relative min-w-0 flex-1">
             <ScrollShadows top={top} bottom={bottom} />
-            <main ref={ref} id="app-scroll" className="h-dvh min-w-0 overflow-y-auto pb-20 md:pb-0">
+            <main
+              ref={ref}
+              id="app-scroll"
+              className={
+                isAssistant
+                  ? "h-dvh min-w-0 overflow-hidden pb-16 md:pb-0"
+                  : "h-dvh min-w-0 overflow-y-auto pb-20 md:pb-0"
+              }
+            >
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </main>
           </div>
-          <AiPanel />
-          <AiDrawer />
+          {!isAssistant && <AiPanel />}
+          {!isAssistant && <AiDrawer />}
           <MobileNav />
         </div>
       </TooltipProvider>
