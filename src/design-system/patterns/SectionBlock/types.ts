@@ -3,7 +3,7 @@ import type { CardTone } from "../../primitives/Card";
 
 export type SectionBlockProps = {
   title?: string;
-  /** Texto alinhado à direita do título. */
+  /** Text right-aligned with the title. */
   meta?: ReactNode;
   description?: ReactNode;
   tone?: CardTone;

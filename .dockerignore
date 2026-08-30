@@ -1,0 +1,11 @@
+node_modules
+.output
+.tanstack
+.nitro
+.git
+.env
+*.log
+dist
+specs
+CLAUDE.md
+README.md

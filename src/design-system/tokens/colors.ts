@@ -1,7 +1,7 @@
 /**
- * Cores nomeadas por função. Fonte única de verdade.
- * Cada token expõe o valor bruto (espelho das variáveis em styles.css)
- * e a classe utilitária correspondente, que é o que os componentes usam.
+ * Colors named by role. Single source of truth.
+ * Each token exposes the raw value (mirroring the variables in styles.css)
+ * and the matching utility class, which is what components actually use.
  */
 export const color = {
   background: "#FAFAFA",

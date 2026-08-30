@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { shadowClass } from "../../tokens/shadows";
 import type { ScrollShadowsProps } from "./types";
 
-/** Gradientes fixos nas bordas de uma área rolável. */
+/** Fixed gradients pinned to the edges of a scrollable area. */
 export function ScrollShadows({ top, bottom }: ScrollShadowsProps) {
   return (
     <>

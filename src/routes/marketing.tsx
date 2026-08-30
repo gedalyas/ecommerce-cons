@@ -13,7 +13,8 @@ export const Route = createFileRoute("/marketing")({
       { property: "og:title", content: "Marketing · Loja Aurora" },
       {
         property: "og:description",
-        content: "CAC, ROAS, conversão e retenção da Loja Aurora com alertas de dados desatualizados.",
+        content:
+          "CAC, ROAS, conversão e retenção da Loja Aurora com alertas de dados desatualizados.",
       },
     ],
   }),

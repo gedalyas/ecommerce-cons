@@ -1,37 +1,46 @@
 # Design system
 
-Camada transversal ao produto. O **Dashboard** é a referência oficial de layout,
-espaçamento e responsividade: tudo aqui foi extraído dele.
+A cross-cutting layer, independent of any feature. The **Dashboard** is the
+canonical reference for layout, spacing and responsiveness: everything here was
+extracted from it.
 
-## Estrutura
+## Structure
 
-- `tokens/` — cor, tipografia, espaçamento, raio, sombra e breakpoints.
+- `tokens/` — color, typography, spacing, radius, shadow and breakpoints.
 - `primitives/` — Button, Badge, Card, Divider, Tooltip, Input, Skeleton.
-- `patterns/` — composições reutilizadas por mais de uma feature.
+- `patterns/` — compositions reused by more than one feature.
 - `hooks/` — `useBreakpoint`, `useScrollShadow`.
 
-## Pode
+## Allowed
 
-- Importar tokens e componentes por `@/design-system` ou pelo caminho da pasta.
-- Compor patterns dentro de uma feature.
-- Usar `layout.page`, `layout.blockStack`, `layout.cardPadding` para o ritmo da tela.
+- Import tokens and components from `@/design-system` or from the folder path.
+- Compose patterns inside a feature.
+- Use `layout.page`, `layout.blockStack`, `layout.cardPadding` for screen rhythm.
 
-## Não pode
+## Not allowed
 
-- Declarar cor, espaçamento, raio, sombra, tamanho de fonte ou breakpoint fora de
-  `tokens/`. Nenhuma tela sobrescreve isso localmente.
-- Criar breakpoint novo. Apenas `sm 640`, `md 768`, `lg 1024`, `xl 1280`, `2xl 1536`.
-- Formatar número, moeda, percentual ou data na tela — use `@/lib/format`.
-- Importar de dentro de uma feature. O fluxo é sempre feature → design system.
+- Declaring a color, spacing, radius, shadow, font size or breakpoint outside
+  `tokens/`. No screen overrides these locally.
+- Creating a new breakpoint. Only `sm 640`, `md 768`, `lg 1024`, `xl 1280`,
+  `2xl 1536`.
+- Formatting a number, currency, percentage or date in a screen — use
+  `@/lib/format`.
+- Importing from inside a feature. The dependency direction is always
+  feature → design system, never the reverse.
 
-## Layout de referência (Dashboard)
+## Reference layout (Dashboard)
 
-| Item | Valor |
-| --- | --- |
-| Contêiner | `max-w-5xl`, padding 16 / 24 (sm) / 32 (xl) |
-| Entre blocos | 24px no mobile, 32px a partir de sm |
-| Entre cards do mesmo grupo | 16px |
-| Padding de card | 20px |
-| Metric tile group | 2 colunas até lg, 4 (ou 3) a partir de lg |
-| Listas e tabelas | empilham em card abaixo de `md` |
-| Botão flutuante | 16px das bordas no mobile, 24px a partir de md |
+| Item                            | Value                                       |
+| ------------------------------- | ------------------------------------------- |
+| Container                       | `max-w-5xl`, padding 16 / 24 (sm) / 32 (xl) |
+| Between blocks                  | 24px on mobile, 32px from sm                |
+| Between cards in the same group | 16px                                        |
+| Card padding                    | 20px                                        |
+| Metric tile group               | 2 columns up to lg, 4 (or 3) from lg        |
+| Lists and tables                | stack into a card below `md`                |
+| Floating button                 | 16px from the edges on mobile, 24px from md |
+
+## Language
+
+Component names, props, types, comments and file names are in English. Only the
+strings rendered to the user are in Portuguese. See `specs/conventions.md`.

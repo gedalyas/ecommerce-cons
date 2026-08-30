@@ -32,14 +32,20 @@ export function DashboardPage() {
       <div className={cn(layout.headerGap, layout.blockStack)}>
         <MetricTileGroup metrics={dashboardKpis} />
 
-        <SectionBlock title="Precisa da sua atenção" tone="warning" bodyClassName={layout.cardPaddingX}>
+        <SectionBlock
+          title="Precisa da sua atenção"
+          tone="warning"
+          bodyClassName={layout.cardPaddingX}
+        >
           <ul className="divide-y divide-border">
             {alerts.map((alert) => (
               <li key={alert.title} className="group">
                 <Link to={alert.to} className="flex flex-wrap items-start gap-3 py-4 no-underline">
                   <div className="min-w-0 flex-1">
                     <div className="text-[15px] font-semibold text-foreground">{alert.title}</div>
-                    <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>{alert.detail}</p>
+                    <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
+                      {alert.detail}
+                    </p>
                   </div>
                   <span className="shrink-0 text-right text-[13px] text-muted-foreground transition-colors duration-150 group-hover:text-primary">
                     {alert.origin}
@@ -53,7 +59,11 @@ export function DashboardPage() {
         <SectionBlock
           title="Marco de maturidade"
           tone="highlight"
-          meta={<span className={cn(textClass.numeric, textClass.meta, "text-muted-foreground")}>2 de 4 critérios</span>}
+          meta={
+            <span className={cn(textClass.numeric, textClass.meta, "text-muted-foreground")}>
+              2 de 4 critérios
+            </span>
+          }
           description="Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia."
           bodyClassName="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4"
         >
@@ -100,7 +110,7 @@ export function DashboardPage() {
               <LineChart data={monthlySeries} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
                 <CartesianGrid stroke="var(--grid)" vertical={false} />
                 <XAxis
-                  dataKey="mes"
+                  dataKey="month"
                   tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                   stroke="var(--border)"
                 />
@@ -130,7 +140,7 @@ export function DashboardPage() {
                   labelStyle={{ color: "var(--background)" }}
                   itemStyle={{ color: "var(--background)" }}
                   formatter={(value: number, name: string) =>
-                    name === "faturamento"
+                    name === "revenue"
                       ? [formatCurrency(value), "Faturamento"]
                       : [formatPercent(value), "Margem"]
                   }
@@ -138,7 +148,7 @@ export function DashboardPage() {
                 <Line
                   yAxisId="left"
                   type="monotone"
-                  dataKey="faturamento"
+                  dataKey="revenue"
                   stroke="var(--chart-1)"
                   strokeWidth={2}
                   dot={false}
@@ -148,7 +158,7 @@ export function DashboardPage() {
                 <Line
                   yAxisId="right"
                   type="monotone"
-                  dataKey="margem"
+                  dataKey="margin"
                   stroke="var(--chart-2)"
                   strokeWidth={2}
                   dot={false}

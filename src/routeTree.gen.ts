@@ -9,77 +9,77 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AssistenteRouteImport } from './routes/assistente'
-import { Route as ConexoesRouteImport } from './routes/conexoes'
-import { Route as DinheiroRouteImport } from './routes/dinheiro'
-import { Route as GestaoRouteImport } from './routes/gestao'
-import { Route as LogisticaRouteImport } from './routes/logistica'
-import { Route as MarketingRouteImport } from './routes/marketing'
+import { Route as dashboardRouteImport } from './routes/dashboard'
+import { Route as assistantRouteImport } from './routes/assistant'
+import { Route as connectionsRouteImport } from './routes/connections'
+import { Route as moneyRouteImport } from './routes/money'
+import { Route as managementRouteImport } from './routes/management'
+import { Route as logisticsRouteImport } from './routes/logistics'
+import { Route as marketingRouteImport } from './routes/marketing'
 
-const IndexRoute = IndexRouteImport.update({
+const dashboardRoute = dashboardRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AssistenteRoute = AssistenteRouteImport.update({
+const assistantRoute = assistantRouteImport.update({
   id: '/assistente',
   path: '/assistente',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConexoesRoute = ConexoesRouteImport.update({
+const connectionsRoute = connectionsRouteImport.update({
   id: '/conexoes',
   path: '/conexoes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DinheiroRoute = DinheiroRouteImport.update({
+const moneyRoute = moneyRouteImport.update({
   id: '/dinheiro',
   path: '/dinheiro',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GestaoRoute = GestaoRouteImport.update({
+const managementRoute = managementRouteImport.update({
   id: '/gestao',
   path: '/gestao',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LogisticaRoute = LogisticaRouteImport.update({
+const logisticsRoute = logisticsRouteImport.update({
   id: '/logistica',
   path: '/logistica',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MarketingRoute = MarketingRouteImport.update({
+const marketingRoute = marketingRouteImport.update({
   id: '/marketing',
   path: '/marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/assistente': typeof AssistenteRoute
-  '/conexoes': typeof ConexoesRoute
-  '/dinheiro': typeof DinheiroRoute
-  '/gestao': typeof GestaoRoute
-  '/logistica': typeof LogisticaRoute
-  '/marketing': typeof MarketingRoute
+  '/': typeof dashboardRoute
+  '/assistente': typeof assistantRoute
+  '/conexoes': typeof connectionsRoute
+  '/dinheiro': typeof moneyRoute
+  '/gestao': typeof managementRoute
+  '/logistica': typeof logisticsRoute
+  '/marketing': typeof marketingRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/assistente': typeof AssistenteRoute
-  '/conexoes': typeof ConexoesRoute
-  '/dinheiro': typeof DinheiroRoute
-  '/gestao': typeof GestaoRoute
-  '/logistica': typeof LogisticaRoute
-  '/marketing': typeof MarketingRoute
+  '/': typeof dashboardRoute
+  '/assistente': typeof assistantRoute
+  '/conexoes': typeof connectionsRoute
+  '/dinheiro': typeof moneyRoute
+  '/gestao': typeof managementRoute
+  '/logistica': typeof logisticsRoute
+  '/marketing': typeof marketingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/assistente': typeof AssistenteRoute
-  '/conexoes': typeof ConexoesRoute
-  '/dinheiro': typeof DinheiroRoute
-  '/gestao': typeof GestaoRoute
-  '/logistica': typeof LogisticaRoute
-  '/marketing': typeof MarketingRoute
+  '/': typeof dashboardRoute
+  '/assistente': typeof assistantRoute
+  '/conexoes': typeof connectionsRoute
+  '/dinheiro': typeof moneyRoute
+  '/gestao': typeof managementRoute
+  '/logistica': typeof logisticsRoute
+  '/marketing': typeof marketingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,13 +112,13 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AssistenteRoute: typeof AssistenteRoute
-  ConexoesRoute: typeof ConexoesRoute
-  DinheiroRoute: typeof DinheiroRoute
-  GestaoRoute: typeof GestaoRoute
-  LogisticaRoute: typeof LogisticaRoute
-  MarketingRoute: typeof MarketingRoute
+  dashboardRoute: typeof dashboardRoute
+  assistantRoute: typeof assistantRoute
+  connectionsRoute: typeof connectionsRoute
+  moneyRoute: typeof moneyRoute
+  managementRoute: typeof managementRoute
+  logisticsRoute: typeof logisticsRoute
+  marketingRoute: typeof marketingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -127,62 +127,62 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof dashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assistente': {
       id: '/assistente'
       path: '/assistente'
       fullPath: '/assistente'
-      preLoaderRoute: typeof AssistenteRouteImport
+      preLoaderRoute: typeof assistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conexoes': {
       id: '/conexoes'
       path: '/conexoes'
       fullPath: '/conexoes'
-      preLoaderRoute: typeof ConexoesRouteImport
+      preLoaderRoute: typeof connectionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dinheiro': {
       id: '/dinheiro'
       path: '/dinheiro'
       fullPath: '/dinheiro'
-      preLoaderRoute: typeof DinheiroRouteImport
+      preLoaderRoute: typeof moneyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gestao': {
       id: '/gestao'
       path: '/gestao'
       fullPath: '/gestao'
-      preLoaderRoute: typeof GestaoRouteImport
+      preLoaderRoute: typeof managementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logistica': {
       id: '/logistica'
       path: '/logistica'
       fullPath: '/logistica'
-      preLoaderRoute: typeof LogisticaRouteImport
+      preLoaderRoute: typeof logisticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketing': {
       id: '/marketing'
       path: '/marketing'
       fullPath: '/marketing'
-      preLoaderRoute: typeof MarketingRouteImport
+      preLoaderRoute: typeof marketingRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AssistenteRoute: AssistenteRoute,
-  ConexoesRoute: ConexoesRoute,
-  DinheiroRoute: DinheiroRoute,
-  GestaoRoute: GestaoRoute,
-  LogisticaRoute: LogisticaRoute,
-  MarketingRoute: MarketingRoute,
+  dashboardRoute: dashboardRoute,
+  assistantRoute: assistantRoute,
+  connectionsRoute: connectionsRoute,
+  moneyRoute: moneyRoute,
+  managementRoute: managementRoute,
+  logisticsRoute: logisticsRoute,
+  marketingRoute: marketingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

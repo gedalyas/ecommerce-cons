@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { AlertBanner } from "@/design-system/patterns/AlertBanner";
 import { SectionPage } from "@/design-system/patterns/SectionPage";
 import type { Pillar } from "@/design-system/patterns/PillarCard";
-import { PresencaCriativos } from "./components/PresencaCriativos";
+import { CreativePresence } from "./components/CreativePresence";
 import { marketingSection } from "./data/marketing";
 
 export function MarketingPage() {
@@ -24,7 +24,7 @@ export function MarketingPage() {
         </AlertBanner>
       }
       renderExtra={(pillar: Pillar) =>
-        pillar.extra === "presenca-criativos" ? <PresencaCriativos /> : null
+        pillar.extra === "creative-presence" ? <CreativePresence /> : null
       }
     />
   );

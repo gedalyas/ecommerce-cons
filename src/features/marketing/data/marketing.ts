@@ -6,7 +6,7 @@ export const marketingSection: Section = {
   pillars: [
     {
       title: "Conversão",
-      status: "concluido",
+      status: "done",
       kpis: [
         {
           label: "Taxa de conversão",
@@ -34,12 +34,16 @@ export const marketingSection: Section = {
         },
       ],
       recommendations: [
-        { text: "Testar frete grátis acima de R$ 249 na página de produto", prazo: "até 08/09", responsavel: "Marina (Comercial)" },
+        {
+          text: "Testar frete grátis acima de R$ 249 na página de produto",
+          dueDate: "até 08/09",
+          owner: "Marina (Comercial)",
+        },
       ],
     },
     {
       title: "Aquisição",
-      status: "andamento",
+      status: "in-progress",
       kpis: [
         {
           label: "CAC",
@@ -75,15 +79,24 @@ export const marketingSection: Section = {
         },
       ],
       recommendations: [
-        { text: "Pausar campanhas de Google Ads com CAC acima de R$ 70", prazo: "até 29/08", responsavel: "Rafael (Mídia)" },
-        { text: "Redistribuir 20% da verba de prospecção para remarketing", prazo: "até 06/09", responsavel: "Rafael (Mídia)" },
+        {
+          text: "Pausar campanhas de Google Ads com CAC acima de R$ 70",
+          dueDate: "até 29/08",
+          owner: "Rafael (Mídia)",
+        },
+        {
+          text: "Redistribuir 20% da verba de prospecção para remarketing",
+          dueDate: "até 06/09",
+          owner: "Rafael (Mídia)",
+        },
       ],
-      dataPending: "Meta Ads com erro de autenticação desde 20/08 — números dos últimos 6 dias são estimados.",
+      dataPending:
+        "Meta Ads com erro de autenticação desde 20/08 — números dos últimos 6 dias são estimados.",
     },
     {
       title: "Presença e criativos",
-      status: "andamento",
-      extra: "presenca-criativos",
+      status: "in-progress",
+      extra: "creative-presence",
       kpis: [
         {
           label: "Seguidores",
@@ -92,7 +105,8 @@ export const marketingSection: Section = {
           deltaDirection: "up",
           subNote: "+742 no mês",
           fidelity: "B",
-          fidelityNote: "Nível B — importado do relatório manual de 02/08. Conecte o Instagram para atualização diária.",
+          fidelityNote:
+            "Nível B — importado do relatório manual de 02/08. Conecte o Instagram para atualização diária.",
         },
         {
           label: "Alcance mensal",
@@ -120,14 +134,23 @@ export const marketingSection: Section = {
         },
       ],
       recommendations: [
-        { text: "Substituir o criativo 'Frete grátis' — CPA 90% acima da média", prazo: "até 03/09", responsavel: "Rafael (Mídia)" },
-        { text: "Padronizar o uso do logo entre loja, Instagram e anúncios", prazo: "até 20/09", responsavel: "Marina (Comercial)" },
+        {
+          text: "Substituir o criativo 'Frete grátis' — CPA 90% acima da média",
+          dueDate: "até 03/09",
+          owner: "Rafael (Mídia)",
+        },
+        {
+          text: "Padronizar o uso do logo entre loja, Instagram e anúncios",
+          dueDate: "até 20/09",
+          owner: "Marina (Comercial)",
+        },
       ],
-      dataPending: "Instagram não conectado — seguidores, alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
+      dataPending:
+        "Instagram não conectado — seguidores, alcance e engajamento são estimados a partir do relatório enviado manualmente em 02/08.",
     },
     {
       title: "Retenção",
-      status: "nao-iniciado",
+      status: "not-started",
       kpis: [
         {
           label: "Recompra 90 dias",
@@ -147,13 +170,18 @@ export const marketingSection: Section = {
         },
       ],
       recommendations: [
-        { text: "Montar fluxo de pós-compra por e-mail em 3 disparos", prazo: "até 18/09", responsavel: "Marina (Comercial)" },
+        {
+          text: "Montar fluxo de pós-compra por e-mail em 3 disparos",
+          dueDate: "até 18/09",
+          owner: "Marina (Comercial)",
+        },
       ],
-      dataPending: "Sem integração com a ferramenta de e-mail — recompra por campanha não é medida.",
+      dataPending:
+        "Sem integração com a ferramenta de e-mail — recompra por campanha não é medida.",
     },
     {
       title: "Canais paralelos",
-      status: "bloqueado",
+      status: "blocked",
       kpis: [],
       recommendations: [],
     },

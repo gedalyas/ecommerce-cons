@@ -4,7 +4,7 @@ import { layout } from "../../tokens/spacing";
 import { cn } from "@/lib/utils";
 import type { SectionPageProps } from "./types";
 
-/** Template de tela de seção — mesmo contêiner e ritmo do Dashboard. */
+/** Section screen template - same container and rhythm as the Dashboard. */
 export function SectionPage({ section, banner, renderExtra }: SectionPageProps) {
   return (
     <div className={layout.page}>

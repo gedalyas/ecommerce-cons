@@ -107,7 +107,10 @@ function AssistantConversation({
 
           <div className="space-y-3 border-t border-border pt-4">
             {messages.map((m, i) => (
-              <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+              <div
+                key={i}
+                className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
+              >
                 <div
                   className={cn(
                     "min-w-0 max-w-[92%] rounded-lg px-3 py-2 t-meta",
@@ -169,7 +172,7 @@ function AssistantConversation({
   );
 }
 
-/** Painel fixo à direita, apenas em telas >= 1280px. */
+/** Docked right-hand panel, only on screens >= 1280px. */
 export function AiPanel() {
   const { messages, draft, setDraft, suggestions, context, send } = useAssistant();
   const [collapsed, setCollapsed] = useState(false);
@@ -208,7 +211,7 @@ export function AiPanel() {
   );
 }
 
-/** Botão flutuante + drawer, para telas < 1280px. */
+/** Floating button + drawer, for screens < 1280px. */
 export function AiDrawer() {
   const { messages, draft, setDraft, suggestions, context, send } = useAssistant();
   const [open, setOpen] = useState(false);
@@ -226,7 +229,7 @@ export function AiDrawer() {
     <div className="xl:hidden">
       {!open && (
         <>
-          {/* Mobile: o botão flutuante abre a página do Assistente em tela cheia. */}
+          {/* Mobile: the floating button opens the full-screen Assistant page. */}
           <Button
             asChild
             className="fixed bottom-20 right-4 z-40 h-11 rounded-lg px-4 shadow-lg md:hidden"
@@ -239,7 +242,6 @@ export function AiDrawer() {
           >
             Assistente
           </Button>
-
         </>
       )}
 

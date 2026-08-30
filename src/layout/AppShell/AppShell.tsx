@@ -6,7 +6,7 @@ import { BottomNav } from "../BottomNav";
 import { AssistantPanel } from "../AssistantPanel";
 import { AssistantFab } from "../AssistantFab";
 
-/** Casca do app: sidebar, área de conteúdo rolável, assistente e navegação inferior. */
+/** App shell: sidebar, scrollable content area, assistant and bottom nav. */
 export function AppShell() {
   const { ref, top, bottom } = useScrollShadow<HTMLElement>();
   const pathname = useRouterState({ select: (s) => s.location.pathname });

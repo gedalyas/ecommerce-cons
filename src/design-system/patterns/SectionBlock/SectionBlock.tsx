@@ -4,7 +4,7 @@ import { layout } from "../../tokens/spacing";
 import { textClass } from "../../tokens/typography";
 import type { SectionBlockProps } from "./types";
 
-/** Bloco de conteúdo: card com cabeçalho opcional e corpo. */
+/** Content block: a card with an optional header and a body. */
 export function SectionBlock({
   title,
   meta,

@@ -1,15 +1,43 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
-//     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
-//     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import tailwindcss from "@tailwindcss/vite";
+import viteReact from "@vitejs/plugin-react";
+import { nitro } from "nitro/vite";
+import { defineConfig } from "vite";
+import tsConfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
-    server: { entry: "server" },
+// Route files are named in English while the URLs stay in Portuguese, so the
+// filename can no longer double as the path. `routes.ts` maps one to the other.
+export default defineConfig(({ command }) => ({
+  server: { host: true, port: 8080 },
+  preview: { host: true, port: 8080 },
+  resolve: {
+    // Keep a single copy of React and the TanStack runtime: duplicates break
+    // hooks and the router context across the SSR/client boundary.
+    dedupe: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "@tanstack/react-query",
+      "@tanstack/query-core",
+    ],
   },
-});
+  plugins: [
+    tailwindcss(),
+    tsConfigPaths({ projects: ["./tsconfig.json"] }),
+    tanstackStart({
+      // Redirect the bundled server entry to src/server.ts (our SSR error wrapper).
+      server: { entry: "server" },
+      router: { virtualRouteConfig: "./src/routes.ts" },
+      // Fail the build instead of leaking a server-only module into the client bundle.
+      importProtection: {
+        behavior: "error",
+        client: { files: ["**/server/**"], specifiers: ["server-only"] },
+      },
+    }),
+    // Nitro owns the server build; the default preset targets Node, which is
+    // what the Docker image runs.
+    ...(command === "build" ? [nitro()] : []),
+    viteReact(),
+  ],
+}));

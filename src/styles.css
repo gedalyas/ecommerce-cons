@@ -6,17 +6,17 @@
 /*
  * Design system definition.
  *
- * Escala tipográfica: exatamente 6 tamanhos (t-label, t-meta, t-body,
- * t-card-title, t-section-title, t-kpi). Pesos: 400 e 600 apenas.
- * Espaçamento: 4, 8, 12, 16, 24, 32, 48px.
- * Raios: 8px card, 6px botão/input, 4px selo.
- * Sombras: shadow-sm (repouso), shadow-md (hover/overlay), shadow-lg (drawer/modal).
+ * Type scale: exactly 6 sizes (t-label, t-meta, t-body, t-card-title,
+ * t-section-title, t-kpi). Weights: 400 and 600 only.
+ * Spacing: 4, 8, 12, 16, 24, 32, 48px.
+ * Radii: 8px card, 6px button/input, 4px seal.
+ * Shadows: shadow-sm (rest), shadow-md (hover/overlay), shadow-lg (drawer/modal).
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px); /* 4px — selo */
-  --radius-md: calc(var(--radius) - 2px); /* 6px — botão, input */
-  --radius-lg: var(--radius); /* 8px — card */
+  --radius-sm: calc(var(--radius) - 4px); /* 4px - seal */
+  --radius-md: calc(var(--radius) - 2px); /* 6px - button, input */
+  --radius-lg: var(--radius); /* 8px - card */
   --radius-xl: var(--radius);
   --radius-2xl: var(--radius);
   --radius-3xl: var(--radius);
@@ -120,7 +120,7 @@
   --sidebar-ring: #0f6e56;
 }
 
-/* ---- Escala tipográfica (6 tamanhos, pesos 400/600) ---- */
+/* ---- Type scale (6 sizes, weights 400/600) ---- */
 
 @utility t-label {
   font-size: 11px;
@@ -159,19 +159,18 @@
   font-size: 32px;
   line-height: 40px;
   font-weight: 600;
-  /* lining-nums em vez de tabular-nums: a vírgula tabular do Manrope ocupa a
-     largura de um dígito e cria um falso espaço em valores como "3,1". */
+  /* lining-nums instead of tabular-nums: Manrope's tabular comma takes up a
+     full digit width and opens a fake gap in values like "3,1". */
   font-variant-numeric: lining-nums;
   letter-spacing: -0.02em;
 }
 
-
 @utility num {
-  /* lining-nums: a vírgula tabular do Manrope cria um falso espaço em "3,1". */
+  /* lining-nums: Manrope's tabular comma opens a fake gap in "3,1". */
   font-variant-numeric: lining-nums;
 }
 
-/* Gradiente das sombras de rolagem — único gradiente permitido */
+/* Scroll-shadow gradients - the only gradient allowed in the system */
 @utility scroll-shadow-top {
   background: linear-gradient(to bottom, rgba(16, 24, 40, 0.08), rgba(16, 24, 40, 0));
 }
@@ -205,7 +204,7 @@
   }
 }
 
-/* Animações discretas do Assistente */
+/* Subtle Assistant animations */
 @keyframes wave-bar {
   0%,
   100% {

@@ -5,16 +5,22 @@ import { cn } from "@/lib/utils";
 import type { MetricTileGroupProps } from "./types";
 
 /**
- * Grupo de métricas: um único contêiner com borda, tiles separados por
- * divisórias. 2 colunas até lg, 4 (ou 3) a partir de lg.
+ * Metric group: a single bordered container with tiles separated by
+ * dividers. 2 columns up to lg, 4 (or 3) from lg on.
  */
-export function MetricTileGroup({ metrics, className, bare = false, actions }: MetricTileGroupProps) {
+export function MetricTileGroup({
+  metrics,
+  className,
+  bare = false,
+  actions,
+}: MetricTileGroupProps) {
   const cols = metrics.length >= 4 ? 4 : metrics.length === 3 ? 3 : 2;
 
   return (
     <div
       className={cn(
-        !bare && cn("overflow-hidden border border-border bg-card", radiusClass.card, shadowClass.sm),
+        !bare &&
+          cn("overflow-hidden border border-border bg-card", radiusClass.card, shadowClass.sm),
         className,
       )}
     >

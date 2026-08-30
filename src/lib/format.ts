@@ -1,6 +1,6 @@
 /**
- * Formatação centralizada — Intl com locale pt-BR.
- * Nenhuma tela formata número, moeda, percentual ou data por conta própria.
+ * Centralized formatting - Intl with the pt-BR locale.
+ * No screen formats a number, currency, percentage or date on its own.
  */
 const LOCALE = "pt-BR";
 const cache = new Map<string, Intl.NumberFormat>();
@@ -28,7 +28,7 @@ export function formatCurrency(value: number, decimals = 0) {
   }).format(value);
 }
 
-/** Recebe o valor já em pontos percentuais (ex.: 19.2 → "19,2%"). */
+/** Takes the value already in percentage points (e.g. 19.2 -> "19,2%"). */
 export function formatPercent(value: number, decimals = 1) {
   return `${formatNumber(value, decimals)}%`;
 }
@@ -37,14 +37,17 @@ export function formatCompact(value: number) {
   return nf({ notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
-export function formatDate(value: Date | string, options: Intl.DateTimeFormatOptions = { day: "2-digit", month: "2-digit" }) {
+export function formatDate(
+  value: Date | string,
+  options: Intl.DateTimeFormatOptions = { day: "2-digit", month: "2-digit" },
+) {
   const date = typeof value === "string" ? new Date(value) : value;
   return new Intl.DateTimeFormat(LOCALE, options).format(date);
 }
 
 /**
- * Normaliza qualquer número presente numa string para o padrão pt-BR
- * (ponto como separador de milhar, vírgula decimal, sem espaços parasitas).
+ * Normalizes every number inside a string to the pt-BR convention
+ * (dot as thousands separator, decimal comma, no stray spaces).
  */
 export function formatPtNumbers(value: string) {
   return value

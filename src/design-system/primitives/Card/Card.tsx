@@ -10,11 +10,17 @@ const tones = {
   muted: "border-border bg-muted/40",
 } as const;
 
-/** Único contêiner com borda, raio 8px e shadow-sm. */
+/** The single container carrying border, 8px radius and shadow-sm. */
 export function Card({ tone = "default", className, children }: CardProps) {
   return (
     <section
-      className={cn("overflow-hidden border", radiusClass.card, shadowClass.sm, tones[tone], className)}
+      className={cn(
+        "overflow-hidden border",
+        radiusClass.card,
+        shadowClass.sm,
+        tones[tone],
+        className,
+      )}
     >
       {children}
     </section>

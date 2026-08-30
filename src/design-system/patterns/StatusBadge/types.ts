@@ -1,8 +1,8 @@
-export type PillarStatus = "concluido" | "andamento" | "nao-iniciado" | "bloqueado";
+export type PillarStatus = "done" | "in-progress" | "not-started" | "blocked";
 export const statusLabel: Record<PillarStatus, string> = {
-  concluido: "Concluído",
-  andamento: "Em andamento",
-  "nao-iniciado": "Não iniciado",
-  bloqueado: "Bloqueado",
+  done: "Concluído",
+  "in-progress": "Em andamento",
+  "not-started": "Não iniciado",
+  blocked: "Bloqueado",
 };
 export type StatusBadgeProps = { status: PillarStatus };

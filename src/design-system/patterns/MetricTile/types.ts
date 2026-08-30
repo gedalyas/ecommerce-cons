@@ -15,6 +15,6 @@ export type MetricTileAction = { label: string; onClick?: () => void };
 export type MetricTileProps = {
   metric: Metric;
   className?: string;
-  /** Ação secundária opcional, alinhada à direita na linha do rótulo. */
+  /** Optional secondary action, right-aligned on the label row. */
   action?: MetricTileAction | undefined;
 };

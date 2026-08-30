@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { DividerProps } from "./types";
 
-/** Divisória de 1px na cor de borda do sistema. */
+/** 1px divider in the system border color. */
 export function Divider({ orientation = "horizontal", className }: DividerProps) {
   return (
     <div

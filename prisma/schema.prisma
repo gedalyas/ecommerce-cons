@@ -1,0 +1,278 @@
+// Data model for the e-commerce consulting dashboard.
+//
+// The app still renders the mocks under src/features/*/data - this schema is the
+// target shape those mocks are migrating to. See specs/data-layer-migration.md.
+//
+// Naming: models and fields in English, @@map/@map to snake_case tables and
+// columns. Values that reach the screen (labels, notes, recommendations) are
+// stored in Portuguese because they are user-facing copy, not identifiers.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// Prisma 7 no longer accepts `url` here: the connection string for migrate and
+// introspection lives in prisma.config.ts, and the client gets a driver adapter.
+datasource db {
+  provider = "postgresql"
+}
+
+/// Data confidence seal shown next to every KPI.
+/// A = measured, B = approximated, C = indicative.
+enum Fidelity {
+  A
+  B
+  C
+
+  @@map("fidelity")
+}
+
+/// Direction of the month-over-month delta, as rendered (green/red/neutral).
+enum DeltaDirection {
+  UP
+  DOWN
+  NEUTRAL
+
+  @@map("delta_direction")
+}
+
+/// Progress of a pillar inside a section.
+enum PillarStatus {
+  DONE
+  IN_PROGRESS
+  NOT_STARTED
+  BLOCKED
+
+  @@map("pillar_status")
+}
+
+/// Sync state of an external data source.
+enum DataSourceStatus {
+  CONNECTED
+  ERROR
+  NOT_CONNECTED
+  MANUAL
+
+  @@map("data_source_status")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+
+  @@map("message_role")
+}
+
+/// A consulting client (the prototype ships a single one: "Loja Aurora").
+model Client {
+  id        String   @id @default(cuid())
+  /// URL-safe identifier, e.g. "loja-aurora".
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sections          Section[]
+  metrics           Metric[]
+  recommendations   Recommendation[]
+  alerts            Alert[]
+  milestoneCriteria MilestoneCriterion[]
+  dataSources       DataSource[]
+  monthlySnapshots  MonthlySnapshot[]
+  assistantMessages AssistantMessage[]
+
+  @@map("client")
+}
+
+/// A top-level area of the dashboard: money, marketing, logistics, management.
+model Section {
+  id       String @id @default(cuid())
+  clientId String @map("client_id")
+  /// Stable key used by the UI: "money" | "marketing" | "logistics" | "management".
+  key      String
+  /// Screen title, in Portuguese.
+  title    String
+  subtitle String
+  /// Display order in the sidebar.
+  position Int
+
+  client  Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  pillars Pillar[]
+
+  @@unique([clientId, key])
+  @@map("section")
+}
+
+/// A pillar inside a section, rendered as a card with KPIs and recommendations.
+model Pillar {
+  id          String       @id @default(cuid())
+  sectionId   String       @map("section_id")
+  /// Stable key, e.g. "acquisition".
+  key         String
+  title       String
+  status      PillarStatus
+  /// Footer note listing missing data, when there is any.
+  dataPending String?      @map("data_pending")
+  /// Id of feature-specific extra content, e.g. "creative-presence".
+  extra       String?
+  position    Int
+
+  section         Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  metrics         Metric[]
+  recommendations Recommendation[]
+
+  @@unique([sectionId, key])
+  @@map("pillar")
+}
+
+/// A KPI. Belongs to a pillar, or directly to the client when it is one of the
+/// four headline metrics on the dashboard.
+model Metric {
+  id             String          @id @default(cuid())
+  clientId       String          @map("client_id")
+  pillarId       String?         @map("pillar_id")
+  label          String
+  /// Pre-formatted display value ("R$ 487.300", "19,2%"). The raw number lives
+  /// in rawValue so charts and comparisons do not parse strings.
+  value          String
+  rawValue       Decimal?        @map("raw_value") @db.Decimal(14, 4)
+  unit           String?
+  delta          String?
+  deltaDirection DeltaDirection? @map("delta_direction")
+  subNote        String?         @map("sub_note")
+  fidelity       Fidelity
+  /// Tooltip explaining where the number came from.
+  fidelityNote   String          @map("fidelity_note")
+  /// True for the four headline KPIs on the dashboard.
+  isHeadline     Boolean         @default(false) @map("is_headline")
+  position       Int
+  measuredAt     DateTime?       @map("measured_at")
+
+  client Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  pillar Pillar? @relation(fields: [pillarId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, isHeadline])
+  @@index([pillarId])
+  @@map("metric")
+}
+
+/// An open recommendation. Belongs to a pillar, or directly to the client when
+/// it shows up in the dashboard "Recomendacoes em aberto" block.
+model Recommendation {
+  id        String    @id @default(cuid())
+  clientId  String    @map("client_id")
+  pillarId  String?   @map("pillar_id")
+  text      String
+  /// Display deadline, e.g. "até 05/09".
+  dueLabel  String    @map("due_label")
+  dueDate   DateTime? @map("due_date") @db.Date
+  /// Display owner, e.g. "Marina (Comercial)".
+  owner     String
+  doneAt    DateTime? @map("done_at")
+  position  Int
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  client Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  pillar Pillar? @relation(fields: [pillarId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, doneAt])
+  @@index([pillarId])
+  @@map("recommendation")
+}
+
+/// One of the "Precisa da sua atenção" cards on the dashboard.
+model Alert {
+  id        String    @id @default(cuid())
+  clientId  String    @map("client_id")
+  icon      String
+  title     String
+  detail    String
+  /// Section the alert came from, e.g. "Dinheiro".
+  origin    String
+  /// Destination path, e.g. "/dinheiro".
+  href      String
+  position  Int
+  createdAt DateTime  @default(now()) @map("created_at")
+  clearedAt DateTime? @map("cleared_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, clearedAt])
+  @@map("alert")
+}
+
+/// One of the four maturity-milestone criteria.
+model MilestoneCriterion {
+  id       String  @id @default(cuid())
+  clientId String  @map("client_id")
+  key      String
+  name     String
+  /// 0-100, drives the progress bar.
+  progress Int
+  achieved Boolean @default(false)
+  /// Short explanation, e.g. "CAC R$ 62 · meta R$ 41".
+  note     String
+  position Int
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, key])
+  @@map("milestone_criterion")
+}
+
+/// An external system feeding the dashboard (Bling, Meta Ads, ...).
+model DataSource {
+  id           String           @id @default(cuid())
+  clientId     String           @map("client_id")
+  name         String
+  /// Display category, e.g. "ERP", "Mídia paga".
+  kind         String
+  status       DataSourceStatus
+  lastSyncedAt DateTime?        @map("last_synced_at")
+  /// Display sync label, e.g. "hoje às 03:12". Derived from lastSyncedAt once
+  /// the UI reads from the database.
+  syncLabel    String           @map("sync_label")
+  position     Int
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, name])
+  @@map("data_source")
+}
+
+/// One point of the 12-month revenue/margin chart.
+model MonthlySnapshot {
+  id       String   @id @default(cuid())
+  clientId String   @map("client_id")
+  /// First day of the month the snapshot refers to.
+  month    DateTime @db.Date
+  /// Display label, e.g. "ago/26".
+  label    String
+  revenue  Decimal  @db.Decimal(14, 2)
+  /// Contribution margin in percentage points, e.g. 19.2.
+  margin   Decimal  @db.Decimal(5, 2)
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, month])
+  @@map("monthly_snapshot")
+}
+
+/// A message in the assistant panel. Replies are canned in the prototype.
+model AssistantMessage {
+  id         String      @id @default(cuid())
+  clientId   String      @map("client_id")
+  role       MessageRole
+  text       String
+  /// Origin pillar cited by the answer, e.g. "Marketing · Aquisição".
+  pillarRef  String?     @map("pillar_ref")
+  /// Whether the message offers the "Levar para a reunião" action.
+  forMeeting Boolean     @default(false) @map("for_meeting")
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, createdAt])
+  @@map("assistant_message")
+}

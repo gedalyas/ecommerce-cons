@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-/** Detecta se há conteúdo acima/abaixo do corte numa área rolável. */
+/** Detects whether there is content above/below the cut in a scrollable area. */
 export function useScrollShadow<T extends HTMLElement>() {
   const ref = useRef<T | null>(null);
   const [state, setState] = useState({ top: false, bottom: false });

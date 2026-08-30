@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-/** Cabeçalho fixo no topo da área de conteúdo; ganha sombra ao rolar. */
+/** Sticky header at the top of the content area; gains a shadow on scroll. */
 export function PageHeader({ title, subtitle }: { title: string; subtitle: string }) {
   const [scrolled, setScrolled] = useState(false);
 

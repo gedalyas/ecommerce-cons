@@ -1,0 +1,49 @@
+# Postgres always; the app only under the `app` profile.
+#
+#   make ecom   -> postgres in Docker, Vite dev server on the host (fast HMR)
+#   make up     -> postgres and the built app, both in Docker
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: ecommerce-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ecommerce}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ecommerce}
+      POSTGRES_DB: ${POSTGRES_DB:-ecommerce_insights}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # `make db-wait` and the app's depends_on both gate on this.
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-ecommerce} -d ${POSTGRES_DB:-ecommerce_insights}",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  app:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      # Inside the compose network the database answers at `postgres`, not localhost.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ecommerce}:${POSTGRES_PASSWORD:-ecommerce}@postgres:5432/${POSTGRES_DB:-ecommerce_insights}?schema=public
+    ports:
+      - "${PORT:-8080}:8080"
+
+volumes:
+  postgres-data:

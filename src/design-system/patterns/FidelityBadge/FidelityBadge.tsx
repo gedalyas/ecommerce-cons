@@ -9,7 +9,7 @@ const sealStyles = {
   C: "bg-muted text-chart-4",
 } as const;
 
-/** Selo A/B/C de 16x16px, raio 4px, 10px semibold, com tooltip explicativo. */
+/** 16x16px A/B/C seal, 4px radius, 10px semibold, with an explanatory tooltip. */
 export function FidelityBadge({ fidelity, note }: FidelityBadgeProps) {
   return (
     <Tooltip>

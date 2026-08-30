@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { formatPtNumbers } from "@/lib/format";
 import type { MetricTileProps } from "./types";
 
-/** Tile do metric tile group: valor acima, rótulo, variação. Sem borda própria. */
+/** Metric tile group cell: value on top, label, delta. No border of its own. */
 export function MetricTile({ metric, className, action }: MetricTileProps) {
   return (
     <div
@@ -15,7 +15,12 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className={cn(textClass.kpi, "min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground 2xl:text-[26px] 2xl:leading-[34px]")}>
+        <div
+          className={cn(
+            textClass.kpi,
+            "min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground 2xl:text-[26px] 2xl:leading-[34px]",
+          )}
+        >
           {formatPtNumbers(metric.value)}
         </div>
         <span className="mt-1 shrink-0 scale-75 origin-top-right sm:mt-2 sm:scale-100">
@@ -42,7 +47,12 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
       </div>
 
       {metric.delta && (
-        <div className={cn(textClass.numeric, "mt-1 flex items-center gap-1 whitespace-nowrap text-[12px] leading-[16px] sm:text-[13px] sm:leading-[18px]")}>
+        <div
+          className={cn(
+            textClass.numeric,
+            "mt-1 flex items-center gap-1 whitespace-nowrap text-[12px] leading-[16px] sm:text-[13px] sm:leading-[18px]",
+          )}
+        >
           <span
             className={cn(
               "font-semibold",
@@ -59,7 +69,12 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
         </div>
       )}
       {metric.subNote && (
-        <div className={cn(textClass.numeric, "mt-1 truncate text-[12px] leading-[16px] text-muted-foreground sm:text-[13px] sm:leading-[18px]")}>
+        <div
+          className={cn(
+            textClass.numeric,
+            "mt-1 truncate text-[12px] leading-[16px] text-muted-foreground sm:text-[13px] sm:leading-[18px]",
+          )}
+        >
           {formatPtNumbers(metric.subNote)}
         </div>
       )}

@@ -9,14 +9,16 @@ import { textClass } from "../../tokens/typography";
 import { cn } from "@/lib/utils";
 import type { PillarCardProps } from "./types";
 
-/** Card de pilar: único contêiner com borda, raio e sombra. */
+/** Pillar card: the single container carrying border, radius and shadow. */
 export function PillarCard({ pillar, extraSlot }: PillarCardProps) {
-  const blocked = pillar.status === "bloqueado";
-  const done = pillar.status === "concluido";
+  const blocked = pillar.status === "blocked";
+  const done = pillar.status === "done";
 
   return (
     <Card tone={blocked ? "muted" : "default"}>
-      <header className={cn("flex flex-wrap items-center justify-between gap-3", layout.cardHeader)}>
+      <header
+        className={cn("flex flex-wrap items-center justify-between gap-3", layout.cardHeader)}
+      >
         <h2
           className={cn(
             textClass.cardTitle,
@@ -52,7 +54,8 @@ export function PillarCard({ pillar, extraSlot }: PillarCardProps) {
               <RecommendationList items={pillar.recommendations} />
             ) : (
               <p className={cn(textClass.meta, "text-muted-foreground")}>
-                Nenhuma recomendação em aberto. Reveja os indicadores acima para propor a próxima ação.
+                Nenhuma recomendação em aberto. Reveja os indicadores acima para propor a próxima
+                ação.
               </p>
             )}
           </div>

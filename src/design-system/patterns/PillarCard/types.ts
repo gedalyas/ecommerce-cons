@@ -9,12 +9,12 @@ export type Pillar = {
   kpis: Metric[];
   recommendations: Recommendation[];
   dataPending?: string;
-  /** Identificador de conteúdo extra, resolvido pela feature dona da tela. */
+  /** Extra-content id, resolved by the feature that owns the screen. */
   extra?: string;
 };
 
 export type PillarCardProps = {
   pillar: Pillar;
-  /** Conteúdo específico da feature, exibido entre os KPIs e as recomendações. */
+  /** Feature-specific content, rendered between the KPIs and the recommendations. */
   extraSlot?: ReactNode;
 };

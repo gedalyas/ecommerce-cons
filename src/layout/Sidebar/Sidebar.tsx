@@ -67,7 +67,9 @@ export function AppSidebar() {
 
         <div className="my-3 border-t border-sidebar-border" />
 
-        <div className="t-label hidden px-3 pb-2 text-muted-foreground xl:block">Infraestrutura</div>
+        <div className="t-label hidden px-3 pb-2 text-muted-foreground xl:block">
+          Infraestrutura
+        </div>
         <Tooltip>
           <TooltipTrigger asChild>
             <Link to="/conexoes" className={cn(linkClass(pathname === "/conexoes"), "relative")}>
