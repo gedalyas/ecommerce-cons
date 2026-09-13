@@ -1,6 +1,7 @@
 # Connectors — how to make "conectar" a one-click thing (research and proposal)
 
-Status: **proposal 2026-09-13, waiting for approval** — no stage scheduled. Sources: the Prax
+Status: **approved 2026-09-13, in execution** — board in `connectors-tasks.md`; decision in
+`decisions/2026-09-13-connector-framework.md`. Sources: the Prax
 walkthrough (`prax-analytics-documentacao-completa.md` §16, §20) and the platforms'
 developer documentation — one sheet per platform in `docs/apis/` (auth, endpoints, limits,
 what still needs confirming).
