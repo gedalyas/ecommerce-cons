@@ -219,6 +219,12 @@ module load order cannot form a runtime cycle either.
   `SMTP_URL`) or the development file outbox; `app.ts` injects `mailer` and `appUrl` into
   the routers that send. Templates are pure functions (`authMail.ts`, tested); a service
   never builds a transport.
+- **Writes take the actor and record activity.** A service that mutates receives the
+  `AuthContext` (or the `Principal`) and calls `recordActivity(actor, clientId, detail)` from
+  `@/modules/audit/contract` after the write; the detail is one member of `AuditDetail`
+  (`audit.types.ts`) and the sentence comes from the pure `auditSummary` — a new action means
+  a new tuple entry in `contracts/audit`, a detail variant and a summary line, in that order.
+  Recording never throws.
 - **Imports are undoable.** Whatever writes rows for a CSV import records what it touched in
   the `UndoRecorder` (created → `previous = null`, replaced → snapshot) so
   `POST /imports/:id/undo` can restore it; a new kind of imported row needs its entity in

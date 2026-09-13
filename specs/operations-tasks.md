@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **O0–O3 done, O4 next** — last updated 2026-09-13
+Status: **O0–O4 done (2026-09-13)** — the operations plan is complete — last updated 2026-09-13
 
 ---
 
@@ -59,5 +59,11 @@ Status: **O0–O3 done, O4 next** — last updated 2026-09-13
 
 ## O4 — Docs and close
 
-- [ ] `specs/saas.md` (activity, archiving), CLAUDE.md (writes take the actor; audit rule),
+- [x] `specs/saas.md` (activity, archiving), CLAUDE.md (writes take the actor; audit rule),
       `specs/README.md` rows; board closed
+
+## Follow-ups (not scheduled)
+
+- Activity export (CSV) and filters by action/actor
+- Archiving a store also expires its pending invitations
+- Consultant assignments and archived stores in the mobile app's store switcher

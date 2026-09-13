@@ -1,6 +1,6 @@
 # Operations — activity log and store archiving
 
-Status: **approved 2026-09-13, in execution** — board in `operations-tasks.md`.
+Status: **delivered 2026-09-13** — board in `operations-tasks.md`; behaviour in `saas.md`.
 
 ## Why this round
 

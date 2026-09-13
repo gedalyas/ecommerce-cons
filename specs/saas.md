@@ -79,6 +79,22 @@ Staff edit through the pencil on each pillar (status, pendência, manual KPIs,
 recommendations) and on the dashboard milestone (progress, achieved, note). Clients read.
 The dashboard alerts stay derived from the data.
 
+## Activity log
+
+Every mutating path records an `audit_event` (actor name and role copied at write, a
+closed-set action from `contracts/audit`, a Portuguese summary, metadata): invitations,
+consultant assignment, connection requests and their resolution, registration, store
+created/updated/archived/restored, imports run and undone, pillar, manual KPI,
+recommendations and milestone. `/loja` › Atividade shows the store's log to everyone with the
+store; `/admin` › Atividade shows the stores the staff member sees (plus their own global
+events, such as inviting a consultant) with a store filter. Recording never fails the request.
+
+## Archiving a store
+
+An `ADMIN` archives a store from `/admin` › Lojas (`Client.archivedAt`); nothing is deleted.
+The client is refused by the API (403) and lands on `/loja-arquivada`; staff keep opening the
+store, marked "(arquivada)". "Reativar" undoes it; both are in the activity log.
+
 ## Clock
 
 `todayIso()` is the real date. `DEMO_TODAY` (API env) pins the clock for the development
