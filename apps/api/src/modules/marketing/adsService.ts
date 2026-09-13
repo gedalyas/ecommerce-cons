@@ -2,13 +2,11 @@ import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { AdPlatform } from "@ecommerce/database/enums";
 import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import type { AdSums } from "./marketingMetrics";
-import type { AdLevel, AdPlatformFilter } from "@ecommerce/contracts/marketing";
-
-export const adPlatformLabel: Record<AdPlatform, string> = {
-  META: "Meta Ads",
-  GOOGLE: "Google Ads",
-  TIKTOK: "TikTok Ads",
-};
+import {
+  adPlatformLabel,
+  type AdLevel,
+  type AdPlatformFilter,
+} from "@ecommerce/contracts/marketing";
 
 const platformClause = (platform: AdPlatformFilter) =>
   platform === "todas" ? Prisma.empty : Prisma.sql`and a.platform = ${platform}::ad_platform`;

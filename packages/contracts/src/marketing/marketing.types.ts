@@ -2,6 +2,12 @@ import type { BusinessUnit } from "../money/contract";
 
 export const adPlatforms = ["META", "GOOGLE", "TIKTOK"] as const;
 export type AdPlatform = (typeof adPlatforms)[number];
+
+export const adPlatformLabel: Record<AdPlatform, string> = {
+  META: "Meta Ads",
+  GOOGLE: "Google Ads",
+  TIKTOK: "TikTok Ads",
+};
 import type { ConsultingSection } from "../consulting/contract";
 import type { BreakdownSlice, MetricValue, SeriesPoint } from "../shared/metric.types";
 import type { BenchmarkVerdict, FunnelStep, RoasQuality } from "./marketingRules";

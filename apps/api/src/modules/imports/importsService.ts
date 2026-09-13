@@ -2,6 +2,7 @@ import {
   IMPORT_MAX_ROWS,
   type ImportJob,
   type ImportKind,
+  type ImportPreview,
   type ImportRowError,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
@@ -12,8 +13,10 @@ import { refreshCustomers } from "@/modules/customers/contract";
 import { HttpError, notFound } from "@/shared/http/httpError";
 import { CsvLimitError, decodeCsvBuffer, hasBinaryContent, parseCsv } from "./csvParse";
 import { importOutcome, type ImportCounts } from "./importOutcome";
+import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
 import { persistAdSpend, persistOrders, persistTraffic } from "./importsWriteService";
 import { mapAdSpend, mapOrders, mapTraffic } from "./mapRows";
+import { adSpendPreview, ordersPreview, trafficPreview, type PreviewBody } from "./previewRows";
 import { missingRequiredHeaders } from "./rowReader";
 
 export type UploadedFile = { name: string; size: number; buffer: Buffer };
@@ -36,6 +39,11 @@ const dataSourceOf: Record<ImportKind, (rows: { platform?: string }[]) => Connec
   ],
   TRAFFIC: () => [manualConnector, "ga4"],
 };
+
+type Mapped =
+  | { kind: "ORDERS"; orders: OrderInput[]; errors: ImportRowError[] }
+  | { kind: "AD_SPEND"; rows: AdSpendRow[]; errors: ImportRowError[] }
+  | { kind: "TRAFFIC"; rows: TrafficRow[]; errors: ImportRowError[] };
 
 type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: ConnectorKey[] };
 
@@ -61,40 +69,74 @@ function tableOf(kind: ImportKind, file: UploadedFile) {
   return table;
 }
 
-async function process(clientId: string, kind: ImportKind, file: UploadedFile): Promise<Processed> {
+function mapTable(kind: ImportKind, file: UploadedFile): { total: number; mapped: Mapped } {
   const table = tableOf(kind, file);
+  const total = table.rows.length;
   switch (kind) {
+    case "ORDERS":
+      return { total, mapped: { kind, ...mapOrders(table.header, table.rows) } };
+    case "AD_SPEND":
+      return { total, mapped: { kind, ...mapAdSpend(table.header, table.rows) } };
+    case "TRAFFIC":
+      return { total, mapped: { kind, ...mapTraffic(table.header, table.rows) } };
+  }
+}
+
+async function process(clientId: string, kind: ImportKind, file: UploadedFile): Promise<Processed> {
+  const { total, mapped } = mapTable(kind, file);
+  const rejected = mapped.errors.length;
+  switch (mapped.kind) {
     case "ORDERS": {
-      const { orders, errors } = mapOrders(table.header, table.rows);
-      const written = await persistOrders(clientId, orders);
-      const importedRows = orders
+      const written = await persistOrders(clientId, mapped.orders);
+      const imported = mapped.orders
         .filter((_, i) => i < written)
         .reduce((s, o) => s + o.rows.length, 0);
       return {
-        counts: { total: table.rows.length, imported: importedRows, rejected: errors.length },
-        errors,
+        counts: { total, imported, rejected },
+        errors: mapped.errors,
         sources: dataSourceOf.ORDERS([]),
       };
     }
     case "AD_SPEND": {
-      const { rows, errors } = mapAdSpend(table.header, table.rows);
-      const written = await persistAdSpend(clientId, rows);
+      const imported = await persistAdSpend(clientId, mapped.rows);
       return {
-        counts: { total: table.rows.length, imported: written, rejected: errors.length },
-        errors,
-        sources: dataSourceOf.AD_SPEND(rows),
+        counts: { total, imported, rejected },
+        errors: mapped.errors,
+        sources: dataSourceOf.AD_SPEND(mapped.rows),
       };
     }
     case "TRAFFIC": {
-      const { rows, errors } = mapTraffic(table.header, table.rows);
-      const written = await persistTraffic(clientId, rows);
+      const imported = await persistTraffic(clientId, mapped.rows);
       return {
-        counts: { total: table.rows.length, imported: written, rejected: errors.length },
-        errors,
+        counts: { total, imported, rejected },
+        errors: mapped.errors,
         sources: dataSourceOf.TRAFFIC([]),
       };
     }
   }
+}
+
+function previewBodyOf(mapped: Mapped): PreviewBody {
+  switch (mapped.kind) {
+    case "ORDERS":
+      return ordersPreview(mapped.orders);
+    case "AD_SPEND":
+      return adSpendPreview(mapped.rows);
+    case "TRAFFIC":
+      return trafficPreview(mapped.rows);
+  }
+}
+
+export function previewImport(kind: ImportKind, file: UploadedFile): ImportPreview {
+  const { total, mapped } = mapTable(kind, file);
+  const rejected = mapped.errors.length;
+  const valid = mapped.kind === "ORDERS" ? total - rejected : mapped.rows.length;
+  return {
+    kind,
+    counts: { total, valid, rejected },
+    errors: mapped.errors.slice(0, ERRORS_KEPT),
+    ...previewBodyOf(mapped),
+  };
 }
 
 async function stampDataSources(clientId: string, keys: ConnectorKey[], now: Date) {

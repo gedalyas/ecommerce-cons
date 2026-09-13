@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **A0–A3 done, A4 next** — last updated 2026-09-13
+Status: **A0–A4 done, A5 next** — last updated 2026-09-13
 
 ---
 
@@ -61,13 +61,17 @@ Status: **A0–A3 done, A4 next** — last updated 2026-09-13
 
 ## A4 — Import preview
 
-- [ ] Contracts: `ImportPreview` (`kind`, `counts { total, valid, rejected }`, `errors`,
+- [x] Contracts: `ImportPreview` (`kind`, `counts { total, valid, rejected }`, `errors`,
       `columns`, `sample` — first 10 mapped rows as display strings), `IMPORT_PREVIEW_ROWS`
-- [ ] API: `POST /imports/preview` (same limiter family, own count; multipart; no write);
+- [x] API: `POST /imports/preview` (same limiter family, own count; multipart; no write);
       pure `previewRows.ts` (mapped rows → display columns per kind) with tests
-- [ ] Web: `ImportPanel` becomes choose → preview (counts, sample table, first errors) →
+- [x] Web: `ImportPanel` becomes choose → preview (counts, sample table, first errors) →
       "Importar N linhas" → result; cancel returns to the file step
-- [ ] Flow: preview a file with a bad row → counts match → confirm → job listed
+- [x] Flow: preview a file with a bad row (2 of 3 valid, the error listed, history
+      untouched) → cancel → preview again → "Importar 2 linhas" → job PARCIAL listed; a wrong
+      header answers 400 without writing; `e2e_preview.mjs`
+- [x] `adPlatformLabel` moved from `marketing/adsService` to `contracts/marketing` (the
+      preview and the marketing screen share it); order status shown with its label
 
 ## A5 — Import undo
 

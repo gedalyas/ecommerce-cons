@@ -1,4 +1,4 @@
-export { adPlatforms, discountMetricKeys } from "./marketing.types";
+export { adPlatformLabel, adPlatforms, discountMetricKeys } from "./marketing.types";
 export type {
   AdPlatform,
   TrafficAggregate,

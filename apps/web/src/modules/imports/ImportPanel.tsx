@@ -9,6 +9,7 @@ import {
   templateRows,
   type ImportJob,
   type ImportKind,
+  type ImportPreview,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
 import { Button } from "@/shared/ui/Button";
@@ -22,29 +23,48 @@ import { cn } from "@/shared/utils/cn";
 import { downloadCsv } from "@/shared/utils/csv";
 import { formatFileSize, importFileProblem } from "./importFile";
 import { importHistoryColumns } from "./importHistoryColumns";
+import { ImportPreviewCard } from "./ImportPreviewCard";
 import { ImportResult } from "./ImportResult";
-import { uploadImportFn } from "./importsController";
+import { previewImportFn, uploadImportFn } from "./importsController";
 
 const kindOptions = importKinds.map((key) => ({ key, label: importKindLabel[key] }));
 
+const csvForm = (kind: ImportKind, file: File) => {
+  const form = new FormData();
+  form.append("kind", kind);
+  form.append("file", file, file.name);
+  return form;
+};
+
 function useImportUpload() {
   const upload = useServerFn(uploadImportFn);
+  const previewFn = useServerFn(previewImportFn);
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [job, setJob] = useState<ImportJob | null>(null);
 
-  const submit = async (kind: ImportKind, file: File) => {
+  const preview_ = async (kind: ImportKind, file: File) => {
     setBusy(true);
     setMessage(null);
     setJob(null);
     try {
-      const form = new FormData();
-      form.append("kind", kind);
-      form.append("file", file, file.name);
-      const result = await upload({ data: form });
+      const result = await previewFn({ data: csvForm(kind, file) });
+      if (result.ok) setPreview(result.data);
+      else setMessage(result.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const submit = async (kind: ImportKind, file: File) => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const result = await upload({ data: csvForm(kind, file) });
       if (result.ok) {
-        setJob(result.job);
+        setJob(result.data);
+        setPreview(null);
         await router.invalidate();
       } else {
         setMessage(result.message);
@@ -53,7 +73,11 @@ function useImportUpload() {
       setBusy(false);
     }
   };
-  return { busy, message, setMessage, job, submit };
+  const reset = () => {
+    setPreview(null);
+    setMessage(null);
+  };
+  return { busy, message, setMessage, preview, job, previewFile: preview_, submit, reset };
 }
 
 function TemplateColumns({ kind }: { kind: ImportKind }) {
@@ -95,10 +119,10 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement>(null);
-  const { busy, message, setMessage, job, submit } = useImportUpload();
+  const { busy, message, setMessage, preview, job, previewFile, submit, reset } = useImportUpload();
 
   const pick = (candidate: File | null) => {
-    setMessage(null);
+    reset();
     if (!candidate) return;
     const problem = importFileProblem(candidate.name, candidate.size);
     if (problem) {
@@ -123,7 +147,10 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
       <SegmentedControl
         options={kindOptions}
         value={kind}
-        onChange={setKind}
+        onChange={(next) => {
+          reset();
+          setKind(next);
+        }}
         label="Tipo de dado"
       />
       <TemplateColumns kind={kind} />
@@ -173,15 +200,26 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
         </p>
       )}
 
-      <div className="flex justify-end">
-        <Button
-          disabled={!file || busy}
-          onClick={() => file && void submit(kind, file)}
-          className="h-11 w-full md:h-9 md:w-auto"
-        >
-          {busy ? "Importando…" : `Importar ${importKindLabel[kind].toLowerCase()}`}
-        </Button>
-      </div>
+      {!preview && (
+        <div className="flex justify-end">
+          <Button
+            disabled={!file || busy}
+            onClick={() => file && void previewFile(kind, file)}
+            className="h-11 w-full md:h-9 md:w-auto"
+          >
+            {busy ? "Lendo…" : `Conferir ${importKindLabel[kind].toLowerCase()}`}
+          </Button>
+        </div>
+      )}
+
+      {preview && file && (
+        <ImportPreviewCard
+          preview={preview}
+          busy={busy}
+          onConfirm={() => void submit(kind, file)}
+          onCancel={reset}
+        />
+      )}
 
       {job && <ImportResult job={job} />}
 

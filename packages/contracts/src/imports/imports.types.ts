@@ -37,3 +37,28 @@ export type ImportJob = {
 };
 
 export type ImportsScreen = { jobs: ImportJob[] };
+
+export const IMPORT_PREVIEW_ROWS = 10;
+
+export const importPreviewColumnTypes = ["text", "date", "integer", "currency"] as const;
+export type ImportPreviewColumnType = (typeof importPreviewColumnTypes)[number];
+
+export type ImportPreviewColumn = { key: string; header: string; type: ImportPreviewColumnType };
+
+export type ImportPreviewCell = string | number | null;
+
+export type ImportPreviewSummary = {
+  count: number;
+  label: string;
+  from: string | null;
+  to: string | null;
+};
+
+export type ImportPreview = {
+  kind: ImportKind;
+  counts: { total: number; valid: number; rejected: number };
+  errors: ImportRowError[];
+  summary: ImportPreviewSummary;
+  columns: ImportPreviewColumn[];
+  sample: Record<string, ImportPreviewCell>[];
+};

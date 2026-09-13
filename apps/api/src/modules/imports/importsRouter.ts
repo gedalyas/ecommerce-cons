@@ -7,6 +7,7 @@ import { HttpError } from "@/shared/http/httpError";
 import { importsController, type ImportsDependencies } from "./importsController";
 
 const UPLOADS_PER_15_MIN = 10;
+const PREVIEWS_PER_15_MIN = 30;
 
 function singleCsv() {
   const upload = multer({
@@ -36,16 +37,28 @@ function singleCsv() {
 export function createImportsRouter(deps: ImportsDependencies): Router {
   const router = Router();
   const controller = importsController(deps);
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: UPLOADS_PER_15_MIN,
-    standardHeaders: true,
-    legacyHeaders: false,
-    skip: () => !deps.rateLimited,
-    message: { message: "Muitos envios. Aguarde alguns minutos." },
-  });
+  const limiter = (limit: number) =>
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit,
+      standardHeaders: true,
+      legacyHeaders: false,
+      skip: () => !deps.rateLimited,
+      message: { message: "Muitos envios. Aguarde alguns minutos." },
+    });
 
-  router.post("/imports", limiter, singleCsv(), asyncHandler(controller.upload));
+  router.post(
+    "/imports",
+    limiter(UPLOADS_PER_15_MIN),
+    singleCsv(),
+    asyncHandler(controller.upload),
+  );
+  router.post(
+    "/imports/preview",
+    limiter(PREVIEWS_PER_15_MIN),
+    singleCsv(),
+    asyncHandler(controller.preview),
+  );
   router.get("/imports", asyncHandler(controller.list));
   router.get("/imports/templates", controller.templates);
   router.get("/imports/:id", asyncHandler(controller.one));

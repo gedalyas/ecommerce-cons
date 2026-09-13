@@ -13,7 +13,7 @@ import {
   truncUnit,
   type Window,
 } from "@ecommerce/contracts/shared/periodWindow";
-import { adPlatformLabel, adsByLevel, adsByPlatform, adsByPlatformBucket } from "./adsService";
+import { adsByLevel, adsByPlatform, adsByPlatformBucket } from "./adsService";
 import {
   newBuyers,
   newBuyersByBucket,
@@ -38,6 +38,7 @@ import type {
   AdMetric,
   MarketingSearch,
 } from "@ecommerce/contracts/marketing";
+import { adPlatformLabel } from "@ecommerce/contracts/marketing";
 import {
   channelPerformance,
   deriveAdRow,
