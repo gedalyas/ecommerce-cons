@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 4 done (2026-09-12) — Produtos live; Stage 5 (Clientes + Recompra) is next** — last updated 2026-09-12
+Status: **Stage 5 done (2026-09-12) — Clientes live; Stage 6 (Marketing data) is next** — last updated 2026-09-12
 
 ---
 
@@ -244,28 +244,31 @@ contracts.
 
 ## Stage 5 — Clientes + Recompra (`/clientes`)
 
-- [ ] Route `customers.tsx` ↔ `/clientes`, tabs `?aba=rfm|recompra|ltv-cac`
-- [ ] Customer aggregate refresh job (seed-time + callable): counts, totals,
-      recency, R/F/M quintiles, segment label (Campeões, Leais, Em risco,
-      Hibernando, …)
-- [ ] `orderNumberForCustomer` populated (`row_number()` per customer,
-      capped at 7+ in queries)
-- [ ] **RFM**: treemap by segment (size = customers, toggle = revenue)
-- [ ] **RFM**: customer DataTable (nome, email, telefone, segmento, pedidos,
-      total) + CSV — this export is the campaign list
-- [ ] **RFM**: filter panel — compras entre, primeira compra, última compra,
-      comprou/não comprou produto (stackable rules), segmentos, origem,
-      dias sem comprar, gateway/método, UF/cidade, cupons (incluir/excluir),
-      range sliders (total vendido, pedidos) fed by min/max endpoints
-- [ ] **Recompra**: KPIs phrased as business questions (receita, pedidos,
+- [x] Route `customers.tsx` ↔ `/clientes`, tabs `?aba=rfm|recompra|ltv-cac`;
+      sidebar "Dados" entry
+- [x] Customer aggregate refresh (seed-time + "Recalcular segmentos" POST):
+      counts, totals, recency, R/F/M scores, segment label —
+      `refreshCustomerAggregates`, rules in `rfmSegments.ts` (tested)
+- [x] Order number per customer — `row_number()` over paid orders in the
+      queries (the seeded column counts every order, so ranking is recomputed)
+- [x] **RFM**: treemap by segment (size = customers, toggle = revenue)
+- [x] **RFM**: customer DataTable in remote mode + CSV of the filtered set —
+      the campaign list
+- [x] **RFM**: filter panel — compras/primeira/última compra entre, comprou /
+      não comprou produto, segmentos, origem, dias sem comprar, gateway/método,
+      UF/cidade, cupons (incluir/excluir), total vendido and pedidos ranges
+      with the base's min/max as hint (number inputs instead of sliders)
+- [x] **Recompra**: KPIs phrased as business questions (receita, pedidos,
       clientes blocks)
-- [ ] **Recompra**: intervals between orders (2nd … 7th+), compra × recompra
+- [x] **Recompra**: intervals between orders (2nd … 7th+), compra × recompra
       donut, revenue and AOV by order number
-- [ ] **LTV e CAC**: LTV, CAC, LTV/CAC (≥ 3 reference), frequência, novos
-      clientes; LTV×CAC over time, CAC×novos clientes, CAC×CPA, retention
-      by order number
-- [ ] Marketing Retenção pillar (Recompra 90 dias, LTV 12 meses) derived
-- [ ] Write `specs/customers.md`
+- [x] **LTV e CAC**: LTV, CAC, LTV/CAC (≥ 3 reference), frequência, novos
+      clientes; LTV×CAC over time, CAC×novos clientes, CAC×CPA, retention by
+      order number (`repurchaseMetrics.ts`, tested)
+- [x] Marketing Retenção pillar (Recompra 90 dias, LTV 12 meses) derived —
+      injected by the route to keep marketing → customers → money → marketing
+      out of the graph (cycle ratchet stays at 0)
+- [x] Write `specs/customers.md`
 
 ---
 
