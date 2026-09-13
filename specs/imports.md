@@ -7,11 +7,11 @@ Modules: `apps/api/src/modules/imports` (upload, parsing, persistence, history) 
 
 ## Kinds and templates
 
-| Kind       | Label           | Writes                                                       | Idempotency                                                        |
-| ---------- | --------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| Kind       | Label           | Writes                                                                                     | Idempotency                                                                     |
+| ---------- | --------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
 | `ORDERS`   | Pedidos         | `sales_order` + `order_item`; `customer` and `product`/`product_variant` created on demand | order replaced by `numero` (items replaced), customer by e-mail, variant by SKU |
-| `AD_SPEND` | Mídia paga      | `ad_spend_daily`                                             | the (plataforma, data) pairs present in the file are replaced      |
-| `TRAFFIC`  | Tráfego do site | `traffic_daily`                                              | upsert by (data, origem, meio)                                     |
+| `AD_SPEND` | Mídia paga      | `ad_spend_daily`                                                                           | the (plataforma, data) pairs present in the file are replaced                   |
+| `TRAFFIC`  | Tráfego do site | `traffic_daily`                                                                            | upsert by (data, origem, meio)                                                  |
 
 Headers are Portuguese, accent- and case-insensitive (`Preço Unitário` → `preco_unitario`).
 Required columns are marked with `*` on the screen; the model CSV ("Baixar modelo") has the

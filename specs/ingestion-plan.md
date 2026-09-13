@@ -1,6 +1,6 @@
 # Ingestion plan — CSV imports through Conexões
 
-Status: **approved 2026-09-13, in execution** — board in `ingestion-tasks.md`.
+Status: **delivered 2026-09-13** — board in `ingestion-tasks.md`; screen and endpoint documented in `imports.md`.
 
 ## Why
 

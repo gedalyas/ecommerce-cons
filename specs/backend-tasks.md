@@ -132,7 +132,8 @@ Status: **B0–B8 done (2026-09-13)** — the backend plan is complete; the web 
 ## Follow-ups (not scheduled)
 
 - `apps/mobile` (React Native) importing `@ecommerce/contracts`; the API is ready for it
-- Real ingestion: CSV import through Conexões, connectors, a worker sharing `packages/database`
+- Real ingestion: CSV import through Conexões — done (`ingestion-plan.md`); connectors and a
+  worker sharing `packages/database` remain
 - Multi-client onboarding (users, invitations), password reset, roles beyond the token claim
 - OpenAPI generated from the zod schemas if a non-TypeScript client appears
 - Drop the `alert`, `monthly_snapshot` and headline `metric` rows nothing reads anymore

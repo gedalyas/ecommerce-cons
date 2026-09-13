@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **I4 done (2026-09-13)** — last updated 2026-09-13
+Status: **I0–I5 done (2026-09-13)** — the ingestion plan is complete — last updated 2026-09-13
 
 ---
 
@@ -65,5 +65,13 @@ Status: **I4 done (2026-09-13)** — last updated 2026-09-13
 
 ## I5 — Docs
 
-- [ ] `specs/imports.md`, `specs/connections.md` updated, CLAUDE.md "File input" rewritten for
-      the implemented pipeline, board closed
+- [x] `specs/imports.md`, `specs/connections.md`, `product-overview.md` and the specs index
+      updated; CLAUDE.md "File input" rewritten around the implemented pipeline; board closed
+
+## Follow-ups (not scheduled)
+
+- `.xlsx` behind a worker thread; bigger files (streaming multipart)
+- Connectors (Bling, Shopify/Nuvemshop, Meta, Google Ads, GA4) reusing the mappers and the
+  persistence; a scheduler / worker sharing `packages/database`
+- Import preview (first rows mapped, before writing) and per-import rollback
+- Per-product sessions (needs a fourth kind: GA4 page report)

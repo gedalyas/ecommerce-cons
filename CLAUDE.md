@@ -86,7 +86,7 @@ packages/*  → node_modules only; contracts has no React, no Prisma, no TanStac
 **A module is a business capability, not an entity.** `orders`, `customers`, `money`,
 `marketing`, `products`, `logistics`, `goals`, `dashboard`, `connections`, `assistant`,
 `management`, `consulting`, `alerts` (API only), `analysis`, `influencers`, `auth`, `health`
-(API only). If describing the module needs an "and", it is two modules — a sibling top-level
+(API only), `imports` (CSV ingestion). If describing the module needs an "and", it is two modules — a sibling top-level
 folder, never a subfolder (`MAX_MODULE_DEPTH = 0`). Which files go along is decided by the
 direction of the dependency, not by the name.
 
@@ -342,12 +342,17 @@ Rules, in the order they bite:
 
 ## File input
 
-There is no upload in the product today (only CSV export). The day one appears, in the API,
-the seven rules are the Arko ones, in this order and never inverted: rate limit → byte ceiling
-on both ends (the front's never larger than the server's) → declared extension and mime →
-magic byte of the content → parser contained (worker, memory and time cap). Nobody unzips a
-user's archive; a size or type error answers JSON with 413/415/400 and a Portuguese message;
-limits are measured, never guessed; when in doubt be permissive — an absent `File.type` passes.
+The one upload is the CSV import on Conexões (`apps/api/src/modules/imports`,
+`specs/imports.md`). Any new upload copies its pipeline, in this order and never inverted:
+rate limit → byte ceiling on both ends (`IMPORT_MAX_BYTES` in contracts; the web's never
+larger than the server's) → declared extension and mime (`uploadRules.ts`) → content check
+(NUL bytes, decodable text, expected header — CSV has no magic byte, so this is it) → parser
+contained (row cap + time budget today; a worker thread when `.xlsx` or bigger files arrive,
+see `decisions/2026-09-13-csv-import-without-worker.md`). Nobody unzips a user's archive; a
+size or type error answers JSON with 413/415/400/422 and a Portuguese message; limits are
+measured (largest legitimate export × 10), never guessed; when in doubt be permissive — an
+absent `File.type` passes. The web validates to answer fast (`importFile.ts`); the API is
+what protects.
 
 ## Git
 
@@ -375,4 +380,5 @@ re-open it in six months.
 | Metric shapes (`MetricValue`, `Series`) | `packages/contracts/src/shared/metric.types.ts`, `metricValue.ts`, `metricFormat.ts`                     |
 | The demo clock                          | `packages/contracts/src/shared/clock.ts` (`PROTOTYPE_TODAY = 2026-09-10`)                                |
 | Auth, session, API client               | `apps/api/src/modules/auth`, `apps/web/src/shared/dependencies/`, `apps/web/src/modules/auth`            |
+| CSV import pipeline and templates       | `specs/imports.md`, `apps/api/src/modules/imports`, `packages/contracts/src/imports`                     |
 | Design-system day-to-day rules          | `apps/web/src/shared/ui/README.md`, `specs/design-system.md`                                             |

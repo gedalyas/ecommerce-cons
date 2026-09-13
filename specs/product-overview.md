@@ -29,7 +29,8 @@ questions grounded in the client's own numbers.
   copy; the data screens (Pedidos, Produtos, Clientes, Dinheiro › DRE,
   Marketing, Metas, Métricas, Influenciadores) are computed from the facts.
 - The assistant replies with canned text.
-- The upload area in Conexões is visual only.
+- Real data enters through the CSV import on Conexões (orders, ad spend, traffic — see
+  [imports.md](imports.md)); connectors to ERPs and ad platforms are the next step.
 
 ## Core concepts
 
