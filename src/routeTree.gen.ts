@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as dashboardRouteImport } from './routes/dashboard'
 import { Route as assistantRouteImport } from './routes/assistant'
+import { Route as customersRouteImport } from './routes/customers'
 import { Route as connectionsRouteImport } from './routes/connections'
 import { Route as moneyRouteImport } from './routes/money'
 import { Route as managementRouteImport } from './routes/management'
@@ -27,6 +28,11 @@ const dashboardRoute = dashboardRouteImport.update({
 const assistantRoute = assistantRouteImport.update({
   id: '/assistente',
   path: '/assistente',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const customersRoute = customersRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const connectionsRoute = connectionsRouteImport.update({
@@ -68,6 +74,7 @@ const productsRoute = productsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
   '/assistente': typeof assistantRoute
+  '/clientes': typeof customersRoute
   '/conexoes': typeof connectionsRoute
   '/dinheiro': typeof moneyRoute
   '/gestao': typeof managementRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
   '/assistente': typeof assistantRoute
+  '/clientes': typeof customersRoute
   '/conexoes': typeof connectionsRoute
   '/dinheiro': typeof moneyRoute
   '/gestao': typeof managementRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof dashboardRoute
   '/assistente': typeof assistantRoute
+  '/clientes': typeof customersRoute
   '/conexoes': typeof connectionsRoute
   '/dinheiro': typeof moneyRoute
   '/gestao': typeof managementRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/assistente'
+    | '/clientes'
     | '/conexoes'
     | '/dinheiro'
     | '/gestao'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/assistente'
+    | '/clientes'
     | '/conexoes'
     | '/dinheiro'
     | '/gestao'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/assistente'
+    | '/clientes'
     | '/conexoes'
     | '/dinheiro'
     | '/gestao'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   dashboardRoute: typeof dashboardRoute
   assistantRoute: typeof assistantRoute
+  customersRoute: typeof customersRoute
   connectionsRoute: typeof connectionsRoute
   moneyRoute: typeof moneyRoute
   managementRoute: typeof managementRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/assistente'
       fullPath: '/assistente'
       preLoaderRoute: typeof assistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes': {
+      id: '/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof customersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conexoes': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   dashboardRoute: dashboardRoute,
   assistantRoute: assistantRoute,
+  customersRoute: customersRoute,
   connectionsRoute: connectionsRoute,
   moneyRoute: moneyRoute,
   managementRoute: managementRoute,

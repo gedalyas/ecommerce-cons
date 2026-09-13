@@ -1,5 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { getRetentionSummary } from "@/modules/customers/contract";
 import { Marketing } from "@/modules/marketing/contract";
+import { RequestError } from "@/shared/ui/RequestError";
+import { layout } from "@/shared/styles/spacing";
 
 export const Route = createFileRoute("/marketing")({
   head: () => ({
@@ -18,5 +21,22 @@ export const Route = createFileRoute("/marketing")({
       },
     ],
   }),
-  component: Marketing,
+  // The composition root feeds the Retenção pillar from the customers module.
+  loader: () => getRetentionSummary(),
+  component: RouteComponent,
+  errorComponent: RouteError,
 });
+
+function RouteComponent() {
+  const data = Route.useLoaderData();
+  return <Marketing retention={data} />;
+}
+
+function RouteError() {
+  const router = useRouter();
+  return (
+    <div className={layout.page}>
+      <RequestError className="mt-6" onRetry={() => void router.invalidate()} />
+    </div>
+  );
+}

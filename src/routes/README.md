@@ -16,6 +16,7 @@ stay in Portuguese (see `specs/conventions.md`).
 | `/assistente` | `assistant.tsx`   |
 | `/pedidos`    | `orders.tsx`      |
 | `/produtos`   | `products.tsx`    |
+| `/clientes`   | `customers.tsx`   |
 
 Adding a screen means adding the file here **and** a `route()` entry in
 `src/routes.ts` — a new file alone is not picked up.

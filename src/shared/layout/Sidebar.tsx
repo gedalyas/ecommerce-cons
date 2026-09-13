@@ -6,6 +6,7 @@ import {
   MessageSquare,
   Package,
   Plug,
+  Users,
   ShoppingBag,
   Truck,
   Building2,
@@ -25,6 +26,7 @@ const mainItems = [
 const dataItems = [
   { label: "Pedidos", to: "/pedidos", icon: ShoppingBag },
   { label: "Produtos", to: "/produtos", icon: Package },
+  { label: "Clientes", to: "/clientes", icon: Users },
 ];
 
 export function Sidebar() {
