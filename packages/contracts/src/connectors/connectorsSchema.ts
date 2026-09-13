@@ -29,11 +29,12 @@ export const connectorCallbackSchema = z
   .object({
     code: z.string().min(1).optional(),
     auth_code: z.string().min(1).optional(),
+    spapi_oauth_code: z.string().min(1).optional(),
     state: z.string().min(1),
   })
   .passthrough()
   .transform((query) => ({
-    code: query.code ?? query.auth_code ?? "",
+    code: query.code ?? query.auth_code ?? query.spapi_oauth_code ?? "",
     state: query.state,
     query: Object.fromEntries(
       Object.entries(query).flatMap(([k, v]) => (typeof v === "string" ? [[k, v]] : [])),

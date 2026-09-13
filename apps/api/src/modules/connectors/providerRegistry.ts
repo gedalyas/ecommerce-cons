@@ -1,5 +1,6 @@
 import type { ConnectorKey } from "@ecommerce/contracts/connectors";
 import type { Env } from "@/shared/config/env";
+import { amazonProvider } from "./amazonProvider";
 import { blingProvider } from "./blingProvider";
 import type { ConnectorProvider, ProviderRegistry } from "./connectorProvider.types";
 import { ga4Provider } from "./ga4Provider";
@@ -107,6 +108,26 @@ function mercadoLivreOf(env: Env): ConnectorProvider[] {
   ];
 }
 
+function amazonOf(env: Env): ConnectorProvider[] {
+  if (!env.AMAZON_APP_ID || !env.AMAZON_LWA_CLIENT_ID || !env.AMAZON_LWA_CLIENT_SECRET) return [];
+  return [
+    amazonProvider({
+      appId: env.AMAZON_APP_ID,
+      clientId: env.AMAZON_LWA_CLIENT_ID,
+      clientSecret: env.AMAZON_LWA_CLIENT_SECRET,
+      consentUrl: env.AMAZON_CONSENT_URL,
+      tokenUrl: env.AMAZON_TOKEN_URL,
+      apiUrl: env.AMAZON_API_URL,
+      marketplaceId: env.AMAZON_MARKETPLACE_ID,
+      draft: env.AMAZON_APP_DRAFT,
+      ordersIntervalMs: env.AMAZON_ORDERS_INTERVAL_MS,
+      itemsIntervalMs: env.AMAZON_ITEMS_INTERVAL_MS,
+      userAgent: env.CONNECTOR_USER_AGENT,
+      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+    }),
+  ];
+}
+
 function tiktokOf(env: Env): ConnectorProvider[] {
   if (!env.TIKTOK_APP_ID || !env.TIKTOK_APP_SECRET) return [];
   return [
@@ -129,6 +150,7 @@ export function providersOf(env: Env): ProviderRegistry {
     ...metaOf(env),
     ...shopifyOf(env),
     ...mercadoLivreOf(env),
+    ...amazonOf(env),
     ...tiktokOf(env),
   ];
   return new Map<ConnectorKey, ConnectorProvider>(providers.map((p) => [p.key, p]));

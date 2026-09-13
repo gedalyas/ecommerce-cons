@@ -33,6 +33,22 @@ const envSchema = z.object({
   MERCADO_LIVRE_CLIENT_SECRET: z.string().default(""),
   MERCADO_LIVRE_AUTH_URL: z.string().url().default("https://auth.mercadolivre.com.br"),
   MERCADO_LIVRE_API_URL: z.string().url().default("https://api.mercadolibre.com"),
+  AMAZON_APP_ID: z.string().default(""),
+  AMAZON_LWA_CLIENT_ID: z.string().default(""),
+  AMAZON_LWA_CLIENT_SECRET: z.string().default(""),
+  AMAZON_CONSENT_URL: z
+    .string()
+    .url()
+    .default("https://sellercentral.amazon.com.br/apps/authorize/consent"),
+  AMAZON_TOKEN_URL: z.string().url().default("https://api.amazon.com/auth/o2/token"),
+  AMAZON_API_URL: z.string().url().default("https://sellingpartnerapi-na.amazon.com"),
+  AMAZON_MARKETPLACE_ID: z.string().default("A2Q3Y263D00KWC"),
+  AMAZON_APP_DRAFT: z
+    .string()
+    .default("true")
+    .transform((value) => value !== "false"),
+  AMAZON_ORDERS_INTERVAL_MS: z.coerce.number().int().min(0).max(120000).default(60000),
+  AMAZON_ITEMS_INTERVAL_MS: z.coerce.number().int().min(0).max(120000).default(2000),
   GOOGLE_CLIENT_ID: z.string().default(""),
   GOOGLE_CLIENT_SECRET: z.string().default(""),
   GOOGLE_AUTH_URL: z.string().url().default("https://accounts.google.com/o/oauth2/v2/auth"),

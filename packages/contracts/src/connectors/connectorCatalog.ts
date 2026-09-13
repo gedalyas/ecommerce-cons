@@ -3,6 +3,7 @@ export const connectorKeys = [
   "shopify",
   "nuvemshop",
   "mercado_livre",
+  "amazon",
   "vtex",
   "meta_ads",
   "google_ads",
@@ -101,6 +102,15 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Vendas e compradores do marketplace.",
+  },
+  {
+    key: "amazon",
+    label: "Amazon",
+    kind: "marketplace",
+    feeds: ["orders"],
+    availability: "request",
+    authPattern: "oauth",
+    description: "Vendas do marketplace (Selling Partner API).",
   },
   {
     key: "vtex",

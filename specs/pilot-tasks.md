@@ -2,7 +2,7 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0–P1 done, P2 next** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
+Status: **P0–P2 done, P3 next** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
@@ -42,11 +42,17 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
 
 ## P2 — Amazon
 
-- [ ] Catalog: `amazon`, docs sheet `docs/apis/amazon.md`, env
-      `AMAZON_APP_ID/LWA_CLIENT_ID/LWA_CLIENT_SECRET/CONSENT_URL/TOKEN_URL/API_URL/MARKETPLACE_ID`
-- [ ] `amazonProvider` (consent URL, `spapi_oauth_code` exchange, refresh, Orders v0 with
-      `NextToken` and self-pacing, order items per order) + pure `amazonOrders` with test
-- [ ] Stub `amazon_stub.mjs` (:4017) + `e2e_amazon.mjs`
+- [x] Catalog: `amazon` (marketplace), docs sheet `docs/apis/amazon.md`, env
+      `AMAZON_APP_ID/LWA_CLIENT_ID/LWA_CLIENT_SECRET/CONSENT_URL/TOKEN_URL/API_URL/MARKETPLACE_ID`,
+      `AMAZON_APP_DRAFT` (adds `version=beta`), `AMAZON_ORDERS_INTERVAL_MS` /
+      `AMAZON_ITEMS_INTERVAL_MS`; the callback schema also accepts `spapi_oauth_code`
+- [x] `amazonProvider`: consent URL, code exchange keeping `selling_partner_id` as the
+      external id, refresh 10 min before expiry (refresh token does not rotate), `getOrders`
+      by `LastUpdatedAfter` (before = now − 2 min) with `NextToken`, `getOrderItems` per
+      order, both paced (burst then interval); pure `amazonOrders` (status map, UF from the
+      state name, line price ÷ quantity, synthetic buyer without the restricted data token) + test
+- [x] Stub `amazon_stub.mjs` (:4017) + `e2e_amazon.mjs`: Conectar → consent → callback →
+      READY "Vendedor A1SELLERBR" → 3 orders (PAID, PENDING, CANCELLED) → manual sync
 
 ## P3 — Instagram + Facebook organic
 

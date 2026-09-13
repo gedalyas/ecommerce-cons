@@ -11,6 +11,7 @@ construída (o que foi confirmado no código vale mais do que o que a doc públi
 | Bling                           | ERP         | OAuth (área do integrador) | [bling.md](bling.md)                 |
 | Shopify                         | E-commerce  | OAuth (app público)        | [shopify.md](shopify.md)             |
 | Mercado Livre                   | Marketplace | OAuth (aplicação)          | [mercado-livre.md](mercado-livre.md) |
+| Amazon                          | Marketplace | Login with Amazon (SP-API) | [amazon.md](amazon.md)               |
 | Meta Ads (Facebook / Instagram) | Mídia paga  | OAuth (Facebook Login)     | [meta-ads.md](meta-ads.md)           |
 | Google Ads                      | Mídia paga  | OAuth (Google Cloud)       | [google-ads.md](google-ads.md)       |
 | Google Analytics 4              | Analytics   | OAuth (Google Cloud)       | [ga4.md](ga4.md)                     |
