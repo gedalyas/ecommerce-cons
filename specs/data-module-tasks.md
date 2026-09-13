@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 2 done (2026-09-12) — Pedidos live; Stage 3 (Custos + DRE) is next** — last updated 2026-09-12
+Status: **Stage 3 done (2026-09-12) — Custos + DRE live; Stage 4 (Produtos) is next** — last updated 2026-09-12
 
 ---
 
@@ -195,23 +195,25 @@ contracts.
 
 ## Stage 3 — Custos + DRE (extend `/dinheiro`)
 
-- [ ] Tabs on Dinheiro: `?aba=visao|dre|custos` (keep pillars in `visao`)
-- [ ] Cost taxonomy constants (3 categories × subcategories from doc §10.2)
-- [ ] Cost registry table (Nome · Descrição · Início · Fim · Canal ·
-      Categoria · Subcategoria · Frequência · Valor)
-- [ ] "Adicionar custo ou despesa" form with 8 frequencies + validity window
-- [ ] Server functions with write path (`createCost`, `updateCost`,
-      `deleteCost`) — CSRF middleware already in place
-- [ ] Unsaved-changes guard on the form
-- [ ] Cost engine: expand recurring/per-order/percentage costs into daily
-      amounts for any window
-- [ ] DRE query: Receita → Custos → Lucro bruto → Despesas de marketing →
-      Margem de contribuição → Despesas operacionais → Lucro líquido
-- [ ] DRE matrix table (metric × bucket) with CSV
-- [ ] Indicadores gerenciais KPI row
-- [ ] Dinheiro pillars (Margem de contribuição, CMV, taxa do adquirente,
-      custo de frete/pedido) read derived values
-- [ ] Update `specs/sections.md` (money) + write `specs/finance.md`
+- [x] Tabs on Dinheiro: `?aba=visao|dre|custos` (pillars stay in `visao`)
+- [x] Cost taxonomy constants (3 categories × subcategories from doc §10.2) —
+      `costTaxonomy.ts`
+- [x] Cost registry table (Nome · Descrição · Início · Fim · Canal ·
+      Categoria · Subcategoria · Frequência · Valor) with edit/delete and CSV
+- [x] "Adicionar custo ou despesa" dialog form with 8 frequencies + validity
+      window (react-hook-form + zod, validated on both sides)
+- [x] Server functions with write path (`createCostRule`, `updateCostRule`,
+      `deleteCostRule`, POST) — first real writes of the product
+- [x] Unsaved-changes guard on the form (`useBlocker` + confirm dialog +
+      `beforeunload`)
+- [x] Cost engine — built in Stage 1 (`costEngine.ts`, tested)
+- [x] DRE: Receita → Custos → Lucro bruto → Despesas de marketing → Margem de
+      contribuição → Despesas operacionais → Lucro líquido (`dre.ts`, tested)
+- [x] DRE matrix table (line × bucket, period total with variation) with CSV
+- [x] Indicadores gerenciais KPI row (7 ratios with comparison)
+- [x] Dinheiro pillars (Margem de contribuição, CMV, taxa do adquirente,
+      custo de frete/pedido) read the DRE indicators
+- [x] Update `specs/sections.md` (money) + write `specs/finance.md`
 
 ---
 

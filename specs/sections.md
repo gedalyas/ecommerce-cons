@@ -1,7 +1,10 @@
 # Sections: Dinheiro, Marketing, Logística, Gestão
 
 All four share the same anatomy, rendered by the `SectionPage` pattern:
-`PageHeader` + optional alert banner + a stack of `PillarCard`s.
+`PageHeader` + optional alert banner + a stack of `PillarCard`s. Dinheiro
+adds a period/channel controls row and tabs (Visão · DRE · Custos) — see
+`finance.md`; its Visão tab renders the pillars below with four KPIs read
+from the live DRE.
 
 ## PillarCard anatomy
 
