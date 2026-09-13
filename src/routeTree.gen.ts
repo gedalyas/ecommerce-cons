@@ -17,6 +17,7 @@ import { Route as managementRouteImport } from './routes/management'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as marketingRouteImport } from './routes/marketing'
 import { Route as ordersRouteImport } from './routes/orders'
+import { Route as productsRouteImport } from './routes/products'
 
 const dashboardRoute = dashboardRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const ordersRoute = ordersRouteImport.update({
   path: '/pedidos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const productsRoute = productsRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/pedidos': typeof ordersRoute
+  '/produtos': typeof productsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/pedidos': typeof ordersRoute
+  '/produtos': typeof productsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/pedidos': typeof ordersRoute
+  '/produtos': typeof productsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/logistica'
     | '/marketing'
     | '/pedidos'
+    | '/produtos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/logistica'
     | '/marketing'
     | '/pedidos'
+    | '/produtos'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/logistica'
     | '/marketing'
     | '/pedidos'
+    | '/produtos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   logisticsRoute: typeof logisticsRoute
   marketingRoute: typeof marketingRoute
   ordersRoute: typeof ordersRoute
+  productsRoute: typeof productsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ordersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produtos': {
+      id: '/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof productsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   logisticsRoute: logisticsRoute,
   marketingRoute: marketingRoute,
   ordersRoute: ordersRoute,
+  productsRoute: productsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

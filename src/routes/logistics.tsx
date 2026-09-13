@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Logistics } from "@/modules/logistics/contract";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { Logistics, getLogisticsScreen } from "@/modules/logistics/contract";
+import { RequestError } from "@/shared/ui/RequestError";
+import { layout } from "@/shared/styles/spacing";
 
 export const Route = createFileRoute("/logistica")({
   head: () => ({
@@ -17,5 +19,21 @@ export const Route = createFileRoute("/logistica")({
       },
     ],
   }),
-  component: Logistics,
+  loader: () => getLogisticsScreen(),
+  component: RouteComponent,
+  errorComponent: RouteError,
 });
+
+function RouteComponent() {
+  const data = Route.useLoaderData();
+  return <Logistics data={data} />;
+}
+
+function RouteError() {
+  const router = useRouter();
+  return (
+    <div className={layout.page}>
+      <RequestError className="mt-6" onRetry={() => void router.invalidate()} />
+    </div>
+  );
+}

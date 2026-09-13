@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Megaphone,
   MessageSquare,
+  Package,
   Plug,
   ShoppingBag,
   Truck,
@@ -21,7 +22,10 @@ const mainItems = [
   { label: "Gestão", to: "/gestao", icon: Building2 },
 ];
 
-const dataItems = [{ label: "Pedidos", to: "/pedidos", icon: ShoppingBag }];
+const dataItems = [
+  { label: "Pedidos", to: "/pedidos", icon: ShoppingBag },
+  { label: "Produtos", to: "/produtos", icon: Package },
+];
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
