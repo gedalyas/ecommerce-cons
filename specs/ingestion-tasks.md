@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **I0 done (2026-09-13)** — last updated 2026-09-13
+Status: **I2 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -15,15 +15,18 @@ Status: **I0 done (2026-09-13)** — last updated 2026-09-13
 
 ## I1 — `contracts/imports`
 
-- [ ] `importKinds` + labels, `importStatuses` + labels, `ImportJob`, `ImportRowError`,
-      `ImportsScreen` shapes; `importTemplates` (columns: key, header, required, type) per kind
-- [ ] Value parsers (`importValues.ts`, tested): pt-BR/ISO dates, `1.234,56` numbers,
-      `sim/não`, enums by label or key
-- [ ] Schemas: `importKindSchema` (form field), `IMPORT_MAX_BYTES = 10 MB` shared by both ends
+- [x] `importKinds` + labels, `importStatuses` + labels, `ImportJob`, `ImportRowError`,
+      `ImportsScreen` shapes; `importTemplates` (columns: key, header, required, type,
+      example, options) per kind, `requiredHeaders`, `templateRows`
+- [x] Value parsers (`importValues.ts`, tested): pt-BR/ISO dates, `1.234,56` numbers,
+      integers, options by label, `normalizeHeader` (BOM, accents, case)
+- [x] Schemas: `importKindSchema`, `importIdSchema`; `IMPORT_MAX_BYTES`, `IMPORT_MAX_ROWS`,
+      `IMPORT_ACCEPTED_EXTENSIONS` shared by both ends
 
 ## I2 — Database
 
-- [ ] `ImportKind`, `ImportStatus` enums; `ImportJob` model; migration
+- [x] `ImportKind`, `ImportStatus` enums; `ImportJob` model (client, optional user, counts,
+      JSON errors); migration `20260913163835_import_jobs`
 
 ## I3 — API `imports` module
 

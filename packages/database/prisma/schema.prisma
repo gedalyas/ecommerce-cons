@@ -72,6 +72,46 @@ enum UserRole {
   @@map("user_role")
 }
 
+enum ImportKind {
+  ORDERS
+  AD_SPEND
+  TRAFFIC
+
+  @@map("import_kind")
+}
+
+enum ImportStatus {
+  DONE
+  PARTIAL
+  FAILED
+
+  @@map("import_status")
+}
+
+/// One CSV upload through Conexões: what was sent, what got in, what was rejected.
+model ImportJob {
+  id           String       @id @default(cuid())
+  clientId     String       @map("client_id")
+  userId       String?      @map("user_id")
+  kind         ImportKind
+  status       ImportStatus
+  fileName     String       @map("file_name")
+  fileSize     Int          @map("file_size")
+  rowsTotal    Int          @map("rows_total")
+  rowsImported Int          @map("rows_imported")
+  rowsRejected Int          @map("rows_rejected")
+  /// First row errors, [{ row, message }], capped at 50.
+  errors       Json
+  createdAt    DateTime     @default(now()) @map("created_at")
+  finishedAt   DateTime?    @map("finished_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([clientId, createdAt])
+  @@map("import_job")
+}
+
 /// Someone who signs in: a consultant of the agency or a person at the client.
 /// One user belongs to one client (the consultant sees the client they work on).
 model User {
@@ -87,6 +127,7 @@ model User {
 
   client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
+  importJobs    ImportJob[]
 
   @@index([clientId])
   @@map("user")
@@ -538,6 +579,7 @@ model Client {
   adSpendRegionDaily AdSpendRegionDaily[]
   influencers        Influencer[]
   users              User[]
+  importJobs         ImportJob[]
 
   @@map("client")
 }
