@@ -9,6 +9,7 @@ const aggregate: OrdersAggregate = {
   capturedOrders: 340,
   cogs: 45_000,
   repeatOrders: 45,
+  productRevenue: 92_000,
   items: 510,
   discounts: 6_000,
   shipping: 4_500,

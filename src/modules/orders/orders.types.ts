@@ -19,7 +19,8 @@ export type OrdersAggregate = {
   cogs: number;
   /** Paid orders that are the customer's second or later order. */
   repeatOrders: number;
-  /** Units, discounts and shipping of the paid orders. */
+  /** Product revenue (before discounts), units, discounts and shipping of the paid orders. */
+  productRevenue: number;
   items: number;
   discounts: number;
   shipping: number;

@@ -117,6 +117,7 @@ async function bucketFacts(
     capturedOrders: 0,
     cogs: 0,
     repeatOrders: 0,
+    productRevenue: 0,
     items: 0,
     discounts: 0,
     shipping: 0,

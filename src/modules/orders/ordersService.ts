@@ -55,6 +55,7 @@ type AggregateRow = {
   captured: number;
   captured_orders: number;
   repeat_orders: number;
+  product_revenue: number;
   items: number;
   discounts: number;
   shipping: number;
@@ -71,6 +72,7 @@ const toAggregate = (r: AggregateRow | undefined, cogs: number): OrdersAggregate
   capturedOrders: r?.captured_orders ?? 0,
   cogs,
   repeatOrders: r?.repeat_orders ?? 0,
+  productRevenue: r?.product_revenue ?? 0,
   items: r?.items ?? 0,
   discounts: r?.discounts ?? 0,
   shipping: r?.shipping ?? 0,
@@ -84,6 +86,7 @@ const aggregateColumns = Prisma.sql`
   coalesce(sum(o.total_price), 0)::float8 as captured,
   count(*)::int as captured_orders,
   count(*) filter (where o.financial_status = 'PAID' and o.order_number_for_customer >= 2)::int as repeat_orders,
+  coalesce(sum(o.product_revenue) filter (where o.financial_status = 'PAID'), 0)::float8 as product_revenue,
   coalesce(sum(o.items_count) filter (where o.financial_status = 'PAID'), 0)::int as items,
   coalesce(sum(o.total_discounts) filter (where o.financial_status = 'PAID'), 0)::float8 as discounts,
   coalesce(sum(o.shipping_revenue) filter (where o.financial_status = 'PAID'), 0)::float8 as shipping,
