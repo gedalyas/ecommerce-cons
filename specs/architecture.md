@@ -1,11 +1,25 @@
 # Architecture — modules, contracts and cycle control
 
 **Status: in force since 2026-09-12** (decision:
-`decisions/2026-09-12-modules-contracts-cycle-ratchet.md`). This is the living
-rulebook; the boundaries are enforced by `eslint.config.js` and
-`scripts/checkCycles.ts`. The source of the rules is `architecture-reference.md`
-(the `arko_frontend` + `arko_backend` dossier); this document only adapts them
-to one repo running React 19 + TanStack Start SSR + Prisma 7.
+`decisions/2026-09-12-modules-contracts-cycle-ratchet.md`), **extended to
+workspaces on 2026-09-13** (`decisions/2026-09-13-workspaces-api-contracts.md`).
+This is the living rulebook; the boundaries are enforced by each workspace's
+`eslint.config.js` and `scripts/checkCycles.ts`. The source of the rules is
+`architecture-reference.md` (the `arko_frontend` + `arko_backend` dossier).
+
+Since 2026-09-13 the repository has four workspaces — `apps/web` (TanStack
+Start, the UI and its BFF server functions), `apps/api` (Express 4 + Zod +
+Prisma 7, the backend the web and the mobile app share), `packages/contracts`
+(the shapes, schemas and closed sets every client imports) and
+`packages/database` (Prisma schema, migrations, seed, client). The rules
+below were written for the single-app layout and still hold inside each
+workspace; `CLAUDE.md` is the up-to-date statement of them, including the
+dependency direction between workspaces (`web → contracts`;
+`api → contracts, database`; packages import nothing from an app), the
+`contract.server.ts` file that no longer exists (the API's `contract.ts`
+publishes the service functions; the web has no services) and the API layers
+(router factory → controller → service → rules). Read this document for the
+why and the history; read `CLAUDE.md` for the how.
 
 ## 1. The rule
 

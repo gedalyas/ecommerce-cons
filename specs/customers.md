@@ -81,4 +81,4 @@ behind CAC) and the cycle ratchet would fail.
 `routes/customers.tsx` → `getCustomersScreen` → `customersScreenService.ts`
 → `rfmService.ts` (filters, table, segments, refresh) and
 `repurchaseService.ts` (ranked orders, LTV/CAC with the money cost engine
-and the marketing ad spend through their `contract.server.ts`).
+and the marketing ad spend through their the API module `contract.ts`).

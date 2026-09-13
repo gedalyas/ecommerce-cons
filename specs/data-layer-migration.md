@@ -10,8 +10,8 @@ same role `goalsFixture.ts` and `influencersFixture.ts` play. What stays:
 the assistant's canned replies (`assistantReplies.ts`) — the product decision
 is that the assistant answers with fixed text until an LLM is wired.
 
-The reading side lives in `src/modules/consulting` (`sectionFor`,
-`milestoneCriteriaFor`, `openRecommendationsFor` on `contract.server.ts`;
+The reading side now lives in `apps/api/src/modules/consulting` (`sectionFor`,
+`milestoneCriteriaFor`, `openRecommendationsFor` on the API module `contract.ts`;
 `getMilestoneSummary` on `contract.ts`) and `src/modules/connections`
 (`dataSourcesFor`, `getConnectionsScreen`, `getConnectionsHealth`). Each area
 screen's service composes its section with its live data (`moneyScreen`,

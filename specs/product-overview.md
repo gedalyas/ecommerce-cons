@@ -9,17 +9,22 @@ the numbers, and drives the engagement through four areas — **Dinheiro**,
 and open recommendations. An AI assistant sits beside every screen and answers
 questions grounded in the client's own numbers.
 
-## Current stage: single-client prototype on a real database
+## Current stage: web + API on a real database, login, one client
 
-- One repository holds both halves: the server side is the `*Controller.ts`
-  (TanStack Start server functions) and `*Service.ts` (Prisma/PostgreSQL)
-  files of each module. Every screen reads its loader payload from the
-  database; nothing renders a fixture.
-- No login, no real integrations: the data is a deterministic seed
-  (`prisma/seed.ts` + `seedAnalytics.ts`) describing one client ("Loja
-  Aurora") with 18 months of orders ending on 2026-09-10. Connecting real
-  sources (ERP, storefront, ad platforms, GA4) is the next backend stage —
-  see [data-layer-migration.md](data-layer-migration.md).
+- One repository, npm workspaces: `apps/api` (Express 4 + Zod + Prisma 7,
+  `/api/v1`, JWT) is the backend the web and the coming React Native app
+  share; `apps/web` (TanStack Start, SSR) signs in at `/entrar` and calls the
+  API from its server functions; `packages/contracts` holds the shapes,
+  schemas and closed sets both clients import — see
+  [backend-plan.md](backend-plan.md).
+- Every screen reads its loader payload from the API; nothing renders a
+  fixture. Login is email + password (seed user
+  `consultor@lojaaurora.com.br`), one user per client.
+- No real integrations: the data is a deterministic seed
+  (`packages/database/prisma/seed.ts` + `seedAnalytics.ts`) describing one
+  client ("Loja Aurora") with 18 months of orders ending on 2026-09-10.
+  Connecting real sources (ERP, storefront, ad platforms, GA4) is the next
+  backend stage.
 - The consulting layer (pillars, KPIs, recommendations, milestone) is seeded
   copy; the data screens (Pedidos, Produtos, Clientes, Dinheiro › DRE,
   Marketing, Metas, Métricas, Influenciadores) are computed from the facts.

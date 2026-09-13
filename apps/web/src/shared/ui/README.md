@@ -1,4 +1,4 @@
-# Design system (`src/shared/ui`)
+# Design system (`apps/web/src/shared/ui`)
 
 Part of the shared kernel: it knows no domain. The **Dashboard** is the
 canonical reference for layout, spacing and responsiveness: everything here was

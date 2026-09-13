@@ -60,7 +60,7 @@ plus the catalog filters. One row per variant (`deriveInventory`, tested):
 
 ## Logística
 
-`inventoryHealthFor` (products `contract.server.ts`) feeds the Logística
+`inventoryHealthFor` (products the API module `contract.ts`) feeds the Logística
 pillars: **Ruptura de estoque** = variants with stock 0 ÷ variants (A, from
 the ERP balance) and **Cobertura de estoque** = total stock ÷ Σ daily
 velocity (B). The other Logística KPIs stay on fixtures.
@@ -70,4 +70,4 @@ velocity (B). The other Logística KPIs stay on fixtures.
 `routes/products.tsx` → `getProductsScreen` → `productsScreenService.ts`
 (assembles the tab from the pure core) → `productsService.ts` (catalog
 sales, inventory facts, bought-together pairs, filter options). Summary KPIs
-reuse `ordersAggregate` through the orders `contract.server.ts`.
+reuse `ordersAggregate` through the orders the API module `contract.ts`.

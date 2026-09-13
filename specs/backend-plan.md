@@ -1,6 +1,6 @@
 # Backend plan — workspaces, `apps/api` and `packages/contracts`
 
-Status: **approved 2026-09-13, in execution** — board in `backend-tasks.md`.
+Status: **delivered 2026-09-13** — board in `backend-tasks.md`; `CLAUDE.md` is the rulebook for the resulting layout.
 
 ## Why
 

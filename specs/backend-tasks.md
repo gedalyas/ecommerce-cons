@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B7 done (2026-09-13)** — the web runs entirely on the API — last updated 2026-09-13
+Status: **B0–B8 done (2026-09-13)** — the backend plan is complete; the web runs entirely on the API — last updated 2026-09-13
 
 ---
 
@@ -124,5 +124,15 @@ Status: **B7 done (2026-09-13)** — the web runs entirely on the API — last u
 
 ## B8 — Rulebook
 
-- [ ] `CLAUDE.md` rewritten for the three workspaces; `specs/architecture.md`, `README.md`,
-      `product-overview.md`, `conventions.md` updated; this board closed
+- [x] `CLAUDE.md` rewritten for the four workspaces (layout, dependency direction, the API
+      layers, the BFF, contracts and enum parity, per-workspace ratchets, git scopes);
+      `README.md`, `specs/product-overview.md`, `conventions.md`, `architecture.md` (status
+      note pointing at `CLAUDE.md`), `specs/README.md` and `data-layer-migration.md` updated
+
+## Follow-ups (not scheduled)
+
+- `apps/mobile` (React Native) importing `@ecommerce/contracts`; the API is ready for it
+- Real ingestion: CSV import through Conexões, connectors, a worker sharing `packages/database`
+- Multi-client onboarding (users, invitations), password reset, roles beyond the token claim
+- OpenAPI generated from the zod schemas if a non-TypeScript client appears
+- Drop the `alert`, `monthly_snapshot` and headline `metric` rows nothing reads anymore
