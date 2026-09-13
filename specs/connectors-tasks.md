@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **K0–K6 done, K7 (docs) next** — last updated 2026-09-13
+Status: **K0–K7 done (2026-09-13)** — the connectors plan is complete; the platform apps and reviews (Davi) remain — last updated 2026-09-13
 
 ---
 
@@ -134,5 +134,20 @@ Status: **K0–K6 done, K7 (docs) next** — last updated 2026-09-13
 
 ## K7 — Docs and close
 
-- [ ] `specs/connections.md`, `docs/apis/*` updated with what the code confirmed, CLAUDE.md
-      (provider rule, worker), "Solicitar conexão" retired for live connectors
+- [x] `specs/connections.md` (connect flow, stepper, worker, readiness), `docs/apis/*` ("No
+      código" section per platform), CLAUDE.md (provider rule, worker script), README
+      (worker, env per connector); "Solicitar conexão" is shown only for connectors without a
+      registered provider
+
+## Follow-ups (not scheduled)
+
+- Product/customer syncs (costs and stock from Nuvemshop/Shopify/Bling products; today only
+  orders create products with no cost)
+- Platform webhooks for near-real-time orders (Nuvemshop `order/paid`, Shopify
+  `orders/paid`) — the hourly sync covers it for now
+- A TikTok stub e2e; the Google Ads region breakdown (`geographic_view`) for
+  `ad_spend_region_daily`
+- Re-authorisation prompt on the row when a refresh token dies (Bling 30 days, Google
+  consent in testing)
+- The Prax-style "Atualizar status" button and the data-readiness bypass are not needed:
+  screens already render empty states

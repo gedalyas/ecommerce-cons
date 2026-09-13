@@ -64,3 +64,7 @@ confirmar formato e assinatura. Não obrigatório: o sync incremental resolve.
 - <https://developer.bling.com.br/bling-api>
 - <https://developer.bling.com.br/aplicativos>
 - <https://developer.bling.com.br/referencia>
+
+## No código
+
+Implementado em `blingProvider.ts` (K3): token com Basic, refresh 10 min antes de expirar, lista por `dataAlteracaoInicial/Final` + detalhe por pedido, contatos em cache no `raw_record`, mapeamento de situações em `Connection.settings.statusMap` (tela "Configurar" em Conexões); salvar o mapeamento re-mapeia os pedidos guardados.

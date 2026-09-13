@@ -29,3 +29,7 @@ Categoria: mídia paga. Alimenta `ad_spend_daily`.
 ## Fontes
 
 - <https://business-api.tiktok.com/portal/docs>
+
+## No código
+
+Implementado em `tiktokAdsProvider.ts` (K6): `auth_code` → token + `advertiser_ids`, relatório integrado no nível de anúncio em blocos de 30 dias. Ainda sem stub de e2e.

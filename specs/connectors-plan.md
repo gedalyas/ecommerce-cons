@@ -1,7 +1,9 @@
 # Connectors — how to make "conectar" a one-click thing (research and proposal)
 
-Status: **approved 2026-09-13, in execution** — board in `connectors-tasks.md`; decision in
-`decisions/2026-09-13-connector-framework.md`. Sources: the Prax
+Status: **delivered 2026-09-13** (K0–K7) — board in `connectors-tasks.md`; decision in
+`decisions/2026-09-13-connector-framework.md`; behaviour in `connections.md`. Every provider
+ran against a local stub of its platform; the real apps, credentials and reviews are the
+consultancy's next step (list at the end). Sources: the Prax
 walkthrough (`prax-analytics-documentacao-completa.md` §16, §20) and the platforms'
 developer documentation — one sheet per platform in `docs/apis/` (auth, endpoints, limits,
 what still needs confirming).

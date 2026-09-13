@@ -43,6 +43,7 @@ npm run check:cycles  # web, api and contracts; CI adds --max-files 0
 npm test              # vitest projects: web, api, contracts, database, scripts
 npm run format:check  # prettier, one config at the root
 npm run build         # web (Nitro output) + api (esbuild bundle in apps/api/dist)
+npm run dev:worker -w apps/api   # the pg-boss worker alone (root `npm run dev` starts api + worker + web)
 npm run db:migrate | db:seed | db:seed:dev | db:generate | db:studio | db:reset   # proxies to packages/database
 # db:seed creates the admin only (ADMIN_EMAIL / ADMIN_PASSWORD); db:seed:dev adds "Loja Exemplo" for local work
 ```
@@ -225,6 +226,17 @@ module load order cannot form a runtime cycle either.
   (`audit.types.ts`) and the sentence comes from the pure `auditSummary` — a new action means
   a new tuple entry in `contracts/audit`, a detail variant and a summary line, in that order.
   Recording never throws.
+- **Connectors are providers behind one framework.** A platform integration is a
+  `ConnectorProvider` (`modules/connectors/<platform>Provider.ts`: `authorizeUrl`,
+  `exchangeCode`, `refresh?`, `describeSettings?`, `backfill`, `sync`) plus a pure
+  `<platform>Orders.ts` / `<platform>Rows.ts` mapper with its test; it is registered in
+  `providerRegistry.ts` only when its env credentials exist, and the API flips the
+  catalog's availability to `oauth` for registered providers — the web needs no
+  per-environment knowledge. A provider never touches Prisma: it receives a `SyncContext`
+  (`saveRaw`, `readRaw`, `listRaw`, `writeOrders`, `writeAdSpend`, `writeTraffic`, the
+  cursor and the settings) and returns the new cursor. Credentials are sealed with the vault
+  and only opened inside the worker. Test a provider against a local stub of the platform
+  (`*_stub.mjs` in the scratchpad) by pointing its `*_URL` env at it.
 - **Imports are undoable.** Whatever writes rows for a CSV import records what it touched in
   the `UndoRecorder` (created → `previous = null`, replaced → snapshot) so
   `POST /imports/:id/undo` can restore it; a new kind of imported row needs its entity in

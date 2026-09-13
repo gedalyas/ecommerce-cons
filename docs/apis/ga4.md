@@ -47,3 +47,7 @@ mudam por até 48 h — re-sincronizar os últimos 3 dias a cada rodada.
 
 - <https://developers.google.com/analytics/devguides/reporting/data/v1/basics>
 - <https://developers.google.com/analytics/devguides/config/admin/v1>
+
+## No código
+
+Implementado em `ga4Provider.ts` (K4): propriedades de `accountSummaries`, dois `runReport` por bloco (sessões e eventos do funil) pivotados em `traffic_daily`.

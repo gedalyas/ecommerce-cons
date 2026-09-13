@@ -14,8 +14,11 @@ active; the detail agrees in number and disappears when nothing is wrong).
 ## Source list
 
 Columns (stacked cards below `md`): Fonte (name + category), Status, última
-sincronização, and an action button — "Reconectar" (primary variant when the
-status is `error`) or "Conectar".
+sincronização, and an action. The action depends on the connector: **"Conectar"** when the
+API has a provider registered for it (`availability` flipped to `oauth` — the app
+credentials are in the env), **"Solicitar conexão"** otherwise, "Importar CSV" for the manual
+source. A connected row shows "Sincronizar", "Desconectar" and, for connectors with
+settings (ERP status mapping, Google/Meta/TikTok account or property), "Configurar".
 
 | Source                | Category          | Status                       | Sync             |
 | --------------------- | ----------------- | ---------------------------- | ---------------- |
@@ -41,6 +44,31 @@ The Meta Ads error is the thread that ties screens together: the orange dot on
 the sidebar's Conexões item, the Marketing banner, the "Aquisição" pillar's
 data pendency and the assistant's caveat about estimated numbers all stem from
 it.
+
+## Connecting a platform
+
+"Conectar" opens a dialog (with the store domain when the pattern is domain + OAuth —
+Nuvemshop, Shopify), then `POST /connectors/:key/authorize` answers the platform's
+authorization URL and the browser goes there. The platform redirects to the public
+`GET /connectors/:key/callback?code&state`; the signed `state` (JWT, 10 minutes) carries the
+store, the user and the connector, the provider exchanges the code, the credentials are
+sealed (AES-256-GCM, `CREDENTIALS_KEY`) into `connection`, the data source becomes
+`CONNECTED`, any open request is closed and a `connector.backfill` job is queued. The browser
+lands back on `/conexoes?conectado=<key>` ("X conectado. O histórico está sendo importado").
+
+Under the row a **stepper** follows `Connection.stage`: Fonte autorizada → Importando dados
+→ Processando análises → Pronto para usar (an error lands on the import step with the
+message). The worker (`apps/api/src/worker.ts`, pg-boss on the same Postgres) runs the
+backfill (the last `CONNECTOR_BACKFILL_MONTHS`, default 18), then `connector.sync` every
+hour for every ready connection; providers keep a cursor and re-read a small overlap.
+Every pulled row is stored as it came in `raw_record`; orders, ad spend and traffic are then
+written through the same write service the CSV import uses, so the dashboards do not know
+the source. Providers today: Nuvemshop, Bling (with the status mapping), Google Ads, GA4,
+Meta Ads, Shopify, TikTok Ads — one sheet each in `docs/apis/`, plan in
+`connectors-plan.md`.
+
+The shell shows "Conecte uma fonte de dados da loja" (`GET /data-readiness`) until the store
+has a connection, an import or orders.
 
 ## Manual import
 

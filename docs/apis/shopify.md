@@ -52,3 +52,7 @@ backfill grande.
 - <https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/generate-app-access-tokens-admin>
 - <https://ezapps.io/blogs/shopify-oauth-access-tokens-guide>
 - <https://shopify.dev/docs/api/admin-graphql>
+
+## No código
+
+Implementado em `shopifyProvider.ts` (K6): domínio normalizado para `loja.myshopify.com`, HMAC do callback verificado, token offline, GraphQL `orders` ordenado por `updated_at` com cursor.

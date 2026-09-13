@@ -62,3 +62,7 @@ esperando `x-rate-limit-reset`.
 - <https://tiendanube.github.io/api-documentation/authentication>
 - <https://dev.nuvemshop.com.br/en/docs/developer-tools/nuvemshop-api>
 - <https://tiendanube.github.io/api-documentation/resources/order>
+
+## No código
+
+Implementado em `apps/api/src/modules/connectors/nuvemshopProvider.ts` (K2, 2026-09-13): OAuth, backfill por `updated_at_min` em páginas de 200, sync incremental com sobreposição de 1 dia. Cabeçalho enviado: `Authentication` **e** `Authorization` (os dois, até confirmar qual a API aceita).

@@ -54,3 +54,7 @@ insights assíncronos (`POST /insights` → `report_run_id`) para períodos long
 - <https://developers.meta.com/blog/updates-to-ads-management-standard-access-feature/>
 - <https://developers.facebook.com/docs/marketing-api/insights>
 - <https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived>
+
+## No código
+
+Implementado em `metaAdsProvider.ts` (K5): token curto → longa duração (renovado com menos de 7 dias), contas de `/me/adaccounts`, insights diários no nível de anúncio em blocos de 31 dias seguindo `paging.next`.

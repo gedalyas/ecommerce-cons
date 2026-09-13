@@ -37,6 +37,12 @@ loja de desenvolvimento com 18 meses de dados sintéticos, rode `npm run db:seed
 "Loja Exemplo", usuários `cliente@lojaexemplo.dev` e `consultor@ecommerce-insights.dev`,
 senha `SEED_USER_PASSWORD`) e mantenha `DEMO_TODAY=2026-09-10` no `.env`.
 
+`npm run dev` sobe a API, o **worker** (sincronizações dos conectores, pg-boss no próprio
+Postgres) e o web. Os conectores (Nuvemshop, Bling, Google Ads, GA4, Meta Ads, Shopify,
+TikTok) só aparecem como "Conectar" quando as credenciais do app da plataforma estão no
+`.env` (`NUVEMSHOP_*`, `BLING_*`, `GOOGLE_*`, `META_*`, `SHOPIFY_*`, `TIKTOK_*`); o que cada
+plataforma exige está em `docs/apis/`. `CREDENTIALS_KEY` cifra os tokens guardados.
+
 Convites e redefinição de senha chegam por e-mail. Sem `SMTP_URL` no `.env`, em
 desenvolvimento cada mensagem vira um arquivo em `apps/api/outbox/` (abra o `.txt` e siga o
 link); com `SMTP_URL` (`smtp://usuario:senha@host:587`) e `MAIL_FROM`, a API envia de verdade.

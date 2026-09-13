@@ -51,3 +51,7 @@ Basic: 15 000 operações/dia por projeto; `searchStream` conta 1 operação por
 - <https://developers.google.com/google-ads/api/docs/api-policy/access-levels>
 - <https://ppc.land/google-drops-developer-tokens-from-ads-api-access-decisions/>
 - <https://developers.google.com/google-ads/api/docs/query/overview>
+
+## No código
+
+Implementado em `googleAdsProvider.ts` (K4) sobre `googleAuth.ts` (um client OAuth para Ads e GA4): contas de `listAccessibleCustomers`, `searchStream` em blocos de 31 dias; `developer-token` e `login-customer-id` vão nos cabeçalhos enquanto existirem.
