@@ -84,7 +84,7 @@ export const saveConnectorSettingsFn = createServerFn({ method: "POST" })
       () =>
         apiFetch<void>(`/connectors/${encodeURIComponent(data.key)}/settings`, {
           method: "PUT",
-          body: { statusMap: data.statusMap },
+          body: { statusMap: data.statusMap, accountId: data.accountId },
         }),
       "Não foi possível salvar o mapeamento.",
     ),

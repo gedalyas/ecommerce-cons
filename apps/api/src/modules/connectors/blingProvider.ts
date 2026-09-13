@@ -258,7 +258,9 @@ export function blingProvider(config: BlingConfig): ConnectorProvider {
       });
       return credentialsOf(token, now);
     },
-    describeSettings: async (credentials) => statusOptions(config, credentials as BlingCredentials),
+    describeSettings: async (credentials) => ({
+      statuses: await statusOptions(config, credentials as BlingCredentials),
+    }),
     backfill: (context) =>
       pullOrders(config, context, monthsAgo(context.now, config.backfillMonths)),
     sync(context) {

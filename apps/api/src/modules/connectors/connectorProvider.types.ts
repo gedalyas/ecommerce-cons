@@ -1,5 +1,6 @@
 import type {
   AuthPattern,
+  ConnectorAccountOption,
   ConnectorKey,
   ConnectorStatusOption,
 } from "@ecommerce/contracts/connectors";
@@ -11,6 +12,12 @@ export type Authorized = {
   credentials: Credentials;
   externalId: string;
   externalLabel: string;
+  settings?: Record<string, unknown>;
+};
+
+export type ProviderSettings = {
+  statuses?: ConnectorStatusOption[];
+  accounts?: ConnectorAccountOption[];
 };
 
 export type RawKind = "order" | "product" | "customer" | "ad_insight" | "traffic";
@@ -52,7 +59,7 @@ export type ConnectorProvider = {
   exchangeCode(params: ExchangeParams): Promise<Authorized>;
   fromCredentials?(fields: Record<string, string>): Promise<Authorized>;
   refresh?(credentials: Credentials, now: Date): Promise<Credentials | null>;
-  describeSettings?(credentials: Credentials): Promise<ConnectorStatusOption[]>;
+  describeSettings?(credentials: Credentials): Promise<ProviderSettings>;
   backfill(context: SyncContext): Promise<SyncResult>;
   sync(context: SyncContext): Promise<SyncResult>;
 };

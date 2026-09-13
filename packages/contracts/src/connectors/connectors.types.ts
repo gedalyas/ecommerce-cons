@@ -75,9 +75,13 @@ export const statusMappingTargetLabel: Record<StatusMappingTarget, string> = {
 
 export type ConnectorStatusOption = { id: string; label: string };
 
+export type ConnectorAccountOption = { id: string; label: string };
+
 export type ConnectorSettings = {
   statuses: ConnectorStatusOption[];
   statusMap: Record<string, StatusMappingTarget>;
+  accounts: ConnectorAccountOption[];
+  accountId: string | null;
 };
 
 export type DataReadiness = {

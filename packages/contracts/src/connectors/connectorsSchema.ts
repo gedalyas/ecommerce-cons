@@ -20,7 +20,8 @@ export const connectorCredentialsSchema = z.object({
 export type ConnectorCredentialsInput = z.infer<typeof connectorCredentialsSchema>;
 
 export const connectorSettingsSchema = z.object({
-  statusMap: z.record(z.string().min(1), z.enum(statusMappingTargets)),
+  statusMap: z.record(z.string().min(1), z.enum(statusMappingTargets)).default({}),
+  accountId: z.string().trim().max(120).nullable().default(null),
 });
 export type ConnectorSettingsInput = z.infer<typeof connectorSettingsSchema>;
 

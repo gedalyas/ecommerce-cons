@@ -111,9 +111,9 @@ function ConnectionButtons({
   };
   return (
     <div className="flex flex-wrap gap-1">
-      {connector.kind === "erp" && (
+      {connector.kind !== "storefront" && (
         <Button variant="outline" size="sm" disabled={busy} onClick={() => onSettings(connector)}>
-          Situações
+          Configurar
         </Button>
       )}
       <Button

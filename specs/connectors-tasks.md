@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **K0–K3 done, K4 (Google) next** — last updated 2026-09-13
+Status: **K0–K4 done, K5 (Meta) next** — last updated 2026-09-13
 
 ---
 
@@ -90,8 +90,21 @@ Status: **K0–K3 done, K4 (Google) next** — last updated 2026-09-13
 
 ## K4 — Google (Ads + GA4)
 
-- [ ] One Google OAuth provider with both scopes; account/property pickers; Ads daily
-      insights → `AdSpendRow`; GA4 sessions/funnel → `TrafficRow`
+- [x] `googleAuth.ts`: one OAuth client for both connectors (offline access, consent
+      prompt, refresh 5 minutes before expiry, refresh token kept across refreshes);
+      `googleAdsProvider` (accessible customers as the account picker, `searchStream` GAQL
+      in 31-day chunks, `developer-token` / `login-customer-id` headers) with the pure
+      `googleAdsRows` (micros → reais, campaign/ad group/ad hierarchy); `ga4Provider`
+      (properties from `accountSummaries`, sessions + funnel `runReport`s in 31-day chunks)
+      with the pure `ga4Rows` (funnel events pivoted onto the session rows). Both keep a
+      3-day overlap on incremental syncs
+- [x] Settings generalised: `ConnectorSettings` carries `accounts` + `accountId` besides the
+      status map; the provider seeds `accountId` when only one account/property exists,
+      otherwise the sync fails with "Escolha a conta…" until the user picks one in the
+      "Configurar" dialog (Select "Conta ou propriedade")
+- [x] Flow (`e2e_google.mjs` + `google_stub.mjs` on :4012): Google Ads with two accounts →
+      clear error → pick the second → sync → campaign rows on /marketing; GA4 with one
+      property → chosen automatically → traffic rows; readiness lists the three connectors
 
 ## K5 — Meta Ads
 

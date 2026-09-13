@@ -28,6 +28,15 @@ const envSchema = z.object({
   BLING_AUTH_URL: z.string().url().default("https://www.bling.com.br"),
   BLING_API_URL: z.string().url().default("https://www.bling.com.br/Api/v3"),
   BLING_MIN_INTERVAL_MS: z.coerce.number().int().min(0).max(5000).default(350),
+  GOOGLE_CLIENT_ID: z.string().default(""),
+  GOOGLE_CLIENT_SECRET: z.string().default(""),
+  GOOGLE_AUTH_URL: z.string().url().default("https://accounts.google.com/o/oauth2/v2/auth"),
+  GOOGLE_TOKEN_URL: z.string().url().default("https://oauth2.googleapis.com/token"),
+  GOOGLE_ADS_API_URL: z.string().url().default("https://googleads.googleapis.com/v19"),
+  GOOGLE_ADS_DEVELOPER_TOKEN: z.string().default(""),
+  GOOGLE_ADS_LOGIN_CUSTOMER_ID: z.string().default(""),
+  GA4_DATA_API_URL: z.string().url().default("https://analyticsdata.googleapis.com/v1beta"),
+  GA4_ADMIN_API_URL: z.string().url().default("https://analyticsadmin.googleapis.com/v1beta"),
   MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
   SMTP_URL: z
     .string()

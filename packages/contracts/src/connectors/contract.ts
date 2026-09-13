@@ -33,6 +33,7 @@ export type {
   ConnectionRequestStatus,
   ConnectionStage,
   ConnectionSummary,
+  ConnectorAccountOption,
   ConnectorSettings,
   ConnectorStatusOption,
   DataReadiness,

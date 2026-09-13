@@ -27,6 +27,7 @@ export function StatusMappingDialog({
   const router = useRouter();
   const [settings, setSettings] = useState<ConnectorSettings | null>(null);
   const [statusMap, setStatusMap] = useState<Record<string, StatusMappingTarget>>({});
+  const [accountId, setAccountId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +39,7 @@ export function StatusMappingDialog({
       .then((loaded) => {
         setSettings(loaded);
         setStatusMap(loaded.statusMap);
+        setAccountId(loaded.accountId ?? loaded.accounts[0]?.id ?? null);
       })
       .catch(() => setError("Não foi possível ler as situações da plataforma."));
   }, [connector, load]);
@@ -46,7 +48,7 @@ export function StatusMappingDialog({
     if (!connector) return;
     setBusy(true);
     setError(null);
-    const result = await save({ data: { key: connector.key, statusMap } });
+    const result = await save({ data: { key: connector.key, statusMap, accountId } });
     setBusy(false);
     if (!result.ok) {
       setError(result.message);
@@ -60,16 +62,40 @@ export function StatusMappingDialog({
     <Dialog
       open={connector !== null}
       onOpenChange={(open) => !open && !busy && onClose()}
-      title={connector ? `Situações do ${connector.label}` : ""}
-      description="Diga o que cada situação do ERP significa para os indicadores. Salvar dispara uma nova sincronização."
+      title={connector ? `Configurações · ${connector.label}` : ""}
+      description="Salvar dispara uma nova sincronização."
     >
       <div className="grid gap-3">
         {!settings && !error && (
           <p className={cn(textClass.meta, "text-muted-foreground")}>Lendo as situações…</p>
         )}
-        {settings?.statuses.length === 0 && (
+        {settings && settings.accounts.length > 0 && (
+          <div className="grid gap-1">
+            <span className={cn(textClass.label, "text-muted-foreground")}>
+              Conta ou propriedade usada nos indicadores
+            </span>
+            <Select value={accountId ?? ""} onValueChange={setAccountId}>
+              <SelectTrigger aria-label="Conta">
+                <SelectValue placeholder="Escolha" />
+              </SelectTrigger>
+              <SelectContent>
+                {settings.accounts.map((account) => (
+                  <SelectItem key={account.id} value={account.id}>
+                    {account.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        {settings && settings.statuses.length > 0 && (
           <p className={cn(textClass.meta, "text-muted-foreground")}>
-            A plataforma não devolveu situações.
+            Diga o que cada situação do ERP significa para os indicadores.
+          </p>
+        )}
+        {settings && settings.statuses.length === 0 && settings.accounts.length === 0 && (
+          <p className={cn(textClass.meta, "text-muted-foreground")}>
+            A plataforma não devolveu nada para configurar.
           </p>
         )}
         {settings && settings.statuses.length > 0 && (

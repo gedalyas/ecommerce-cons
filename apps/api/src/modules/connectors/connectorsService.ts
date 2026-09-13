@@ -110,6 +110,7 @@ async function saveConnection(
     stage: "AUTHORIZED" as const,
     lastError: null,
     authorizedBy: owner.userId,
+    ...(authorized.settings ? { settings: authorized.settings as Prisma.InputJsonObject } : {}),
   };
   const connection = await prismaClient.connection.upsert({
     where: { clientId_connectorKey: { clientId: owner.clientId, connectorKey: key } },
@@ -248,11 +249,21 @@ export async function connectorSettings(
   const provider = providerOf(deps, key);
   if (!provider.describeSettings) throw new HttpError(422, "Este conector não tem configurações.");
   const row = await connectionRow(auth, key);
-  const statuses = await provider.describeSettings(deps.vault.open(row.credentials));
-  const stored = (row.settings as { statusMap?: Record<string, StatusMappingTarget> } | null)
-    ?.statusMap;
-  return { statuses, statusMap: { ...defaultStatusMap(statuses), ...(stored ?? {}) } };
+  const described = await provider.describeSettings(deps.vault.open(row.credentials));
+  const stored = (row.settings ?? {}) as StoredSettings;
+  const statuses = described.statuses ?? [];
+  return {
+    statuses,
+    statusMap: { ...defaultStatusMap(statuses), ...(stored.statusMap ?? {}) },
+    accounts: described.accounts ?? [],
+    accountId: stored.accountId ?? null,
+  };
 }
+
+type StoredSettings = {
+  statusMap?: Record<string, StatusMappingTarget>;
+  accountId?: string | null;
+};
 
 export async function saveConnectorSettings(
   auth: AuthContext,
@@ -262,10 +273,13 @@ export async function saveConnectorSettings(
 ): Promise<void> {
   providerOf(deps, key);
   const row = await connectionRow(auth, key);
-  await prismaClient.connection.update({
-    where: { id: row.id },
-    data: { settings: { statusMap: input.statusMap } },
-  });
+  const stored = (row.settings ?? {}) as StoredSettings;
+  const settings = {
+    ...stored,
+    statusMap: input.statusMap,
+    accountId: input.accountId ?? stored.accountId ?? null,
+  } as Prisma.InputJsonObject;
+  await prismaClient.connection.update({ where: { id: row.id }, data: { settings } });
   await deps.jobs.send(
     SYNC_QUEUE,
     { connectionId: row.id, reprocess: true },
