@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  Activity,
   Banknote,
   LayoutDashboard,
   Megaphone,
@@ -29,6 +30,7 @@ const dataItems = [
   { label: "Produtos", to: "/produtos", icon: Package },
   { label: "Clientes", to: "/clientes", icon: Users },
   { label: "Metas", to: "/metas", icon: Target },
+  { label: "Métricas", to: "/metricas", icon: Activity },
 ];
 
 export function Sidebar() {

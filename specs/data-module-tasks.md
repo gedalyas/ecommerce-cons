@@ -302,7 +302,9 @@ contracts.
 
 ## Backlog (post-Stage 6, being worked in this order: Metas → Alerts → Métricas → Regiões → Influenciadores)
 
-- [ ] Narrative AI analysis per metric with driver trees (doc §11)
+- [x] Narrative analysis per metric with driver trees (2026-09-13): `/metricas`,
+      14 metrics, trees in code, rule-generated text (an AI key would turn the
+      same tree into natural language); `specs/analysis.md`
 - [x] Alerts derived from data (2026-09-13): `src/modules/alerts`, five of the
       six Prax alerts on the Dashboard (product conversion needs per-product
       sessions); read/resolved state is a follow-up

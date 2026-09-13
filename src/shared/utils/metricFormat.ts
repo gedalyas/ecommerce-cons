@@ -19,7 +19,7 @@ export function formatMetric(value: number | null, unit: MetricUnit) {
   if (value == null) return "—";
   switch (unit) {
     case "currency":
-      return formatCurrency(value);
+      return formatCurrency(value, Math.abs(value) < 10 ? 2 : 0);
     case "count":
       return formatNumber(value);
     case "percent":

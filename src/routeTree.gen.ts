@@ -18,6 +18,7 @@ import { Route as managementRouteImport } from './routes/management'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as marketingRouteImport } from './routes/marketing'
 import { Route as goalsRouteImport } from './routes/goals'
+import { Route as analysisRouteImport } from './routes/analysis'
 import { Route as ordersRouteImport } from './routes/orders'
 import { Route as productsRouteImport } from './routes/products'
 
@@ -66,6 +67,11 @@ const goalsRoute = goalsRouteImport.update({
   path: '/metas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const analysisRoute = analysisRouteImport.update({
+  id: '/metricas',
+  path: '/metricas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ordersRoute = ordersRouteImport.update({
   id: '/pedidos',
   path: '/pedidos',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
+  '/metricas': typeof analysisRoute
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
+  '/metricas': typeof analysisRoute
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
+  '/metricas': typeof analysisRoute
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/logistica'
     | '/marketing'
     | '/metas'
+    | '/metricas'
     | '/pedidos'
     | '/produtos'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/logistica'
     | '/marketing'
     | '/metas'
+    | '/metricas'
     | '/pedidos'
     | '/produtos'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/logistica'
     | '/marketing'
     | '/metas'
+    | '/metricas'
     | '/pedidos'
     | '/produtos'
   fileRoutesById: FileRoutesById
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   logisticsRoute: typeof logisticsRoute
   marketingRoute: typeof marketingRoute
   goalsRoute: typeof goalsRoute
+  analysisRoute: typeof analysisRoute
   ordersRoute: typeof ordersRoute
   productsRoute: typeof productsRoute
 }
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof goalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/metricas': {
+      id: '/metricas'
+      path: '/metricas'
+      fullPath: '/metricas'
+      preLoaderRoute: typeof analysisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pedidos': {
       id: '/pedidos'
       path: '/pedidos'
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   logisticsRoute: logisticsRoute,
   marketingRoute: marketingRoute,
   goalsRoute: goalsRoute,
+  analysisRoute: analysisRoute,
   ordersRoute: ordersRoute,
   productsRoute: productsRoute,
 }

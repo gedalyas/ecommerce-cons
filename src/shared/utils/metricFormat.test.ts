@@ -28,6 +28,7 @@ describe("metricValue", () => {
 describe("formatMetric", () => {
   it("formats by unit in pt-BR", () => {
     expect(formatMetric(1234.5, "currency")).toBe("R$ 1.235");
+    expect(formatMetric(1.254, "currency")).toBe("R$ 1,25");
     expect(formatMetric(1234, "count")).toBe("1.234");
     expect(formatMetric(19.25, "percent")).toBe("19,3%");
     expect(formatMetric(3.1, "multiplier")).toBe("3,10x");
