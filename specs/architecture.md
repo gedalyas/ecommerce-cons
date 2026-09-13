@@ -167,7 +167,8 @@ the `await import()` workaround in `features/orders/api.ts` goes away.
 | Entry → orchestrator → pure core; `now` and data as parameters                                                                 | —                                                                                                   | convention + review |
 | Module named by capability, not by entity or audience                                                                          | —                                                                                                   | convention + review |
 
-`.github/workflows/ci.yml` runs typecheck, `lint --max-warnings 0`,
+`.github/workflows/ci.yml` runs typecheck, `lint --max-warnings 31` (function-size
+warnings: `max-lines-per-function` 50/150, `max-params` 5, `max-depth` 4, measured 2026-09-13),
 `check:cycles --max-files 0`, tests, prettier and build. The two numeric caps
 only go down; whoever lowers a count lowers the cap in the same PR.
 

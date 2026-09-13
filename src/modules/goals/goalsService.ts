@@ -211,6 +211,37 @@ const round = (v: number, decimals = 0) => {
   return Math.round(v * f) / f;
 };
 
+type MonthHistory = {
+  orders: Awaited<ReturnType<typeof ordersByBucket>>[number];
+  sessions: number;
+  spend: number;
+  platformFee: number;
+  salesMarketing: number;
+};
+
+const suggestedMonth = (month: number, h: MonthHistory): GoalMonth => ({
+  month,
+  totalSold: round(h.orders.revenue * GROWTH),
+  averageTicket: round(h.orders.revenue / h.orders.orders),
+  conversionRate: h.sessions > 0 ? round((h.orders.ecommerce.orders / h.sessions) * 100, 2) : 0,
+  paidTraffic: round((h.spend + h.platformFee) * GROWTH),
+  otherMarketing: round(h.salesMarketing),
+  repurchaseRate: round((h.orders.repeatOrders / h.orders.orders) * 100, 1),
+});
+
+const averageMonth = (months: GoalMonth[]): Omit<GoalMonth, "month"> => {
+  const avg = (pick: (m: GoalMonth) => number, decimals = 0) =>
+    round(months.reduce((s, m) => s + pick(m), 0) / months.length, decimals);
+  return {
+    totalSold: avg((m) => m.totalSold),
+    averageTicket: avg((m) => m.averageTicket),
+    conversionRate: avg((m) => m.conversionRate, 2),
+    paidTraffic: avg((m) => m.paidTraffic),
+    otherMarketing: avg((m) => m.otherMarketing),
+    repurchaseRate: avg((m) => m.repurchaseRate, 1),
+  };
+};
+
 /**
  * A plan for `year` from the previous year's monthly actuals plus 10%.
  * Months without history take the average of the months that have it.
@@ -237,37 +268,24 @@ export async function suggestPlan(clientSlug: string, year: number): Promise<Goa
     const am = a.get(month);
     const spend = am?.spend ?? 0;
     const last = new Date(Date.UTC(previous, month, 0)).getUTCDate();
-    const calendar = {
-      inicio: `${previous}-${String(month).padStart(2, "0")}-01`,
-      fim: `${previous}-${String(month).padStart(2, "0")}-${last}`,
-    };
-    const costs = expandCosts(rules, calendar, {
-      ecommerce: om.ecommerce,
-      marketplace: om.marketplace,
-      adSpend: spend,
-    });
-    const sessions = t.get(month)?.sessions ?? 0;
-    months.push({
-      month,
-      totalSold: round(om.revenue * GROWTH),
-      averageTicket: round(om.revenue / om.orders),
-      conversionRate: sessions > 0 ? round((om.ecommerce.orders / sessions) * 100, 2) : 0,
-      paidTraffic: round((spend + (am?.platformFee ?? 0)) * GROWTH),
-      otherMarketing: round(costs.salesMarketing),
-      repurchaseRate: round((om.repeatOrders / om.orders) * 100, 1),
-    });
+    const mm = String(month).padStart(2, "0");
+    const costs = expandCosts(
+      rules,
+      { inicio: `${previous}-${mm}-01`, fim: `${previous}-${mm}-${last}` },
+      { ecommerce: om.ecommerce, marketplace: om.marketplace, adSpend: spend },
+    );
+    months.push(
+      suggestedMonth(month, {
+        orders: om,
+        sessions: t.get(month)?.sessions ?? 0,
+        spend,
+        platformFee: am?.platformFee ?? 0,
+        salesMarketing: costs.salesMarketing,
+      }),
+    );
   }
   if (months.length === 0) return [];
-  const avg = (pick: (m: GoalMonth) => number, decimals = 0) =>
-    round(months.reduce((s, m) => s + pick(m), 0) / months.length, decimals);
-  const filler: Omit<GoalMonth, "month"> = {
-    totalSold: avg((m) => m.totalSold),
-    averageTicket: avg((m) => m.averageTicket),
-    conversionRate: avg((m) => m.conversionRate, 2),
-    paidTraffic: avg((m) => m.paidTraffic),
-    otherMarketing: avg((m) => m.otherMarketing),
-    repurchaseRate: avg((m) => m.repurchaseRate, 1),
-  };
+  const filler = averageMonth(months);
   const have = new Map(months.map((m) => [m.month, m]));
   return Array.from({ length: 12 }, (_, i) => have.get(i + 1) ?? { month: i + 1, ...filler });
 }

@@ -136,8 +136,26 @@ export default tseslint.config(
       "no-duplicate-imports": ["error", { allowSeparateTypeImports: true }],
       "no-restricted-syntax": ["error", ...englishIdentifiers],
       "max-lines": ["error", { max: 600, skipBlankLines: true, skipComments: true }],
+      "max-lines-per-function": ["warn", { max: 50, skipBlankLines: true, skipComments: true }],
+      "max-params": ["warn", 5],
+      "max-depth": ["warn", 4],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports", fixStyle: "inline-type-imports" },
+      ],
       ...restrictedImports([extinct, moduleExposesOnlyContract, dependenciesOnlyInService]),
     },
+  },
+  {
+    // A component is a render tree, a test file is a suite, a route file is a table.
+    files: ["**/*.tsx"],
+    rules: {
+      "max-lines-per-function": ["warn", { max: 150, skipBlankLines: true, skipComments: true }],
+    },
+  },
+  {
+    files: ["**/*.test.{ts,tsx}", "src/routes/**/*.tsx", "src/routes.ts"],
+    rules: { "max-lines-per-function": "off" },
   },
   {
     // The seed and the operational scripts are not product code.

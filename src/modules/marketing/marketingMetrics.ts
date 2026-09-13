@@ -93,6 +93,25 @@ export type ChannelFacts = {
 const costsOf = (lines: readonly MarketingCostLine[], unit: MarketingCostLine["businessUnit"]) =>
   lines.filter((l) => l.businessUnit === unit).reduce((s, l) => s + l.amount, 0);
 
+const channelRow = (
+  key: ChannelPerformanceRow["key"],
+  label: string,
+  investment: number,
+  revenue: number,
+  orders: number,
+  sessions: number | null,
+): ChannelPerformanceRow => ({
+  key,
+  label,
+  investment,
+  revenue,
+  orders,
+  roi: investment > 0 ? ((revenue - investment) / investment) * 100 : null,
+  roas: ratio(revenue, investment),
+  cpa: investment > 0 ? ratio(investment, orders) : null,
+  conversionRate: sessions == null ? null : percent(orders, sessions),
+});
+
 /** E-commerce, marketplace and total rows; costs shared by both units are split by revenue. */
 export function channelPerformance(facts: ChannelFacts): ChannelPerformanceRow[] {
   const both = costsOf(facts.costLines, "BOTH");
@@ -102,48 +121,31 @@ export function channelPerformance(facts: ChannelFacts): ChannelPerformanceRow[]
     facts.media + costsOf(facts.costLines, "ECOMMERCE") + both * ecommerceShare;
   const marketplaceInvestment =
     costsOf(facts.costLines, "MARKETPLACE") + both * (1 - ecommerceShare);
-  const row = (
-    key: ChannelPerformanceRow["key"],
-    label: string,
-    investment: number,
-    revenue: number,
-    orders: number,
-    sessions: number | null,
-  ): ChannelPerformanceRow => ({
-    key,
-    label,
-    investment,
-    revenue,
-    orders,
-    roi: investment > 0 ? ((revenue - investment) / investment) * 100 : null,
-    roas: ratio(revenue, investment),
-    cpa: investment > 0 ? ratio(investment, orders) : null,
-    conversionRate: sessions == null ? null : percent(orders, sessions),
-  });
+  const { ecommerce, marketplace } = facts;
   return [
-    row(
+    channelRow(
       "ecommerce",
       "E-commerce",
       ecommerceInvestment,
-      facts.ecommerce.revenue,
-      facts.ecommerce.orders,
-      facts.ecommerce.sessions,
+      ecommerce.revenue,
+      ecommerce.orders,
+      ecommerce.sessions,
     ),
-    row(
+    channelRow(
       "marketplace",
       "Marketplace",
       marketplaceInvestment,
-      facts.marketplace.revenue,
-      facts.marketplace.orders,
+      marketplace.revenue,
+      marketplace.orders,
       null,
     ),
-    row(
+    channelRow(
       "total",
       "Total",
       ecommerceInvestment + marketplaceInvestment,
       totalRevenue,
-      facts.ecommerce.orders + facts.marketplace.orders,
-      facts.ecommerce.sessions,
+      ecommerce.orders + marketplace.orders,
+      ecommerce.sessions,
     ),
   ];
 }
