@@ -1,7 +1,12 @@
 import { useServerFn } from "@tanstack/react-start";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
-import { formatCurrency, formatDate, formatNumber, formatPercent } from "@/shared/utils/format";
+import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  formatPercent,
+} from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   OrdersFilterOptions,

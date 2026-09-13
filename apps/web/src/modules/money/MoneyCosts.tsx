@@ -6,7 +6,7 @@ import { Button } from "@/shared/ui/Button";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
 import { Dialog } from "@/shared/ui/Dialog";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
-import { formatCurrency, formatDate, formatPercent } from "@/shared/utils/format";
+import { formatCurrency, formatDate, formatPercent } from "@ecommerce/contracts/shared/format";
 import { CostForm } from "./CostForm";
 import {
   businessUnitLabel,

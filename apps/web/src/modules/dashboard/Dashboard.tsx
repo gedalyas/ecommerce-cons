@@ -15,8 +15,8 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatDate, formatPeriodLabel } from "@/shared/utils/format";
-import { formatMetric } from "@/shared/utils/metricFormat";
+import { formatDate, formatPeriodLabel } from "@ecommerce/contracts/shared/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import type { Granularity } from "@ecommerce/contracts/shared/period";
 import type {
   DashboardMatrixRow,

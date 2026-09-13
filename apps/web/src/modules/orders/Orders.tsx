@@ -5,7 +5,7 @@ import { TabBar } from "@/shared/ui/TabBar";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
-import { formatPeriodLabel } from "@/shared/utils/format";
+import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import type { OrdersScreen } from "@ecommerce/contracts/orders";
 import { OrdersApproval } from "./OrdersApproval";
 import { OrdersList } from "./OrdersList";

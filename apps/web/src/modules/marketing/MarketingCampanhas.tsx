@@ -5,7 +5,7 @@ import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatCurrency, formatMultiplier } from "@/shared/utils/format";
+import { formatCurrency, formatMultiplier } from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { levelColumns, platformColumns } from "./adsColumns";
 import type {

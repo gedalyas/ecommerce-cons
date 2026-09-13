@@ -1,6 +1,6 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { cn } from "@/shared/utils/cn";
-import { formatMetric, formatMetricCompact } from "@/shared/utils/metricFormat";
+import { formatMetric, formatMetricCompact } from "@ecommerce/contracts/shared/metricFormat";
 import type { MetricUnit } from "@ecommerce/contracts/shared/metric.types";
 import { textClass } from "@/shared/styles/typography";
 

@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/Popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { useBreakpoint } from "@/shared/hooks/useBreakpoint";
 import { cn } from "@/shared/utils/cn";
-import { formatPeriodLabel } from "@/shared/utils/format";
+import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import {
   comparisonLabel,
   comparisons,

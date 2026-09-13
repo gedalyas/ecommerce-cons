@@ -7,7 +7,7 @@ import { TimeSeriesChart } from "@/shared/ui/TimeSeriesChart";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatNumber } from "@/shared/utils/format";
+import { formatNumber } from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   CustomersRepurchase as CustomersRepurchaseData,

@@ -3,7 +3,7 @@ import { isValidElement, useMemo, useState, type ReactNode } from "react";
 import { Button } from "./Button";
 import { cn } from "@/shared/utils/cn";
 import { downloadCsv, type CsvCell } from "@/shared/utils/csv";
-import { formatNumber } from "@/shared/utils/format";
+import { formatNumber } from "@ecommerce/contracts/shared/format";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { textClass } from "@/shared/styles/typography";
 import type { DataTableColumn, DataTableProps, DataTableSort } from "./dataTable.types";

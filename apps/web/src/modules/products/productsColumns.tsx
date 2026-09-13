@@ -1,5 +1,10 @@
 import type { DataTableColumn } from "@/shared/ui/DataTable";
-import { formatCurrency, formatDate, formatNumber, formatPercent } from "@/shared/utils/format";
+import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  formatPercent,
+} from "@ecommerce/contracts/shared/format";
 import type { InventoryRow, ProductRow } from "@ecommerce/contracts/products";
 
 const round2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);

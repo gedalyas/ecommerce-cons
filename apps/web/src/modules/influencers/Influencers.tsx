@@ -14,7 +14,7 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatPeriodLabel } from "@/shared/utils/format";
+import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { InfluencerForm } from "./InfluencerForm";
 import { influencerColumns } from "./influencerColumns";

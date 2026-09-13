@@ -1,0 +1,1 @@
+export { createManagementRouter } from "./managementRouter";

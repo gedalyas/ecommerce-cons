@@ -8,8 +8,8 @@ import {
   YAxis,
 } from "recharts";
 import { cn } from "@/shared/utils/cn";
-import { formatDate } from "@/shared/utils/format";
-import { formatMetric, formatMetricCompact } from "@/shared/utils/metricFormat";
+import { formatDate } from "@ecommerce/contracts/shared/format";
+import { formatMetric, formatMetricCompact } from "@ecommerce/contracts/shared/metricFormat";
 import type { Granularity } from "@ecommerce/contracts/shared/period";
 import { textClass } from "@/shared/styles/typography";
 import type { TimeSeriesChartProps } from "./timeSeriesChart.types";

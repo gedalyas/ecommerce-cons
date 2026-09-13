@@ -1,7 +1,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { cn } from "@/shared/utils/cn";
-import { formatPercent } from "@/shared/utils/format";
-import { formatMetric } from "@/shared/utils/metricFormat";
+import { formatPercent } from "@ecommerce/contracts/shared/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import { textClass } from "@/shared/styles/typography";
 import type { DonutBreakdownProps } from "./donutBreakdown.types";
 

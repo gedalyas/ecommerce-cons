@@ -1,6 +1,6 @@
 import { cn } from "@/shared/utils/cn";
-import { formatVariation } from "@/shared/utils/format";
-import { formatMetric } from "@/shared/utils/metricFormat";
+import { formatVariation } from "@ecommerce/contracts/shared/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import type { IndicatorCarouselProps } from "./indicatorCarousel.types";

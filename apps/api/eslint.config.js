@@ -7,19 +7,19 @@ import tseslint from "typescript-eslint";
 const MAX_MODULE_DEPTH = 0;
 
 const moduleExposesOnlyContract = {
-  regex: "^@/modules/\w+/(?!contract(\.ts)?$)",
+  regex: "^@/modules/\\w+/(?!contract(\\.ts)?$)",
   message:
     "A module only exposes contract.ts. Import from @/modules/<domain>/contract or add the line there.",
 };
 
 const insideModuleIsRelative = {
-  regex: "^@/modules/(?!\w+/contract(\.ts)?$)",
+  regex: "^@/modules/(?!\\w+/contract(\\.ts)?$)",
   message:
     "Inside a module the import is relative (./file). From another module, only @/modules/<domain>/contract.",
 };
 
 const crossingUsesAlias = (depth) => ({
-  regex: `^(\.\./){${depth + 1}}`,
+  regex: `^(\\.\\./){${depth + 1}}`,
   message:
     "A relative import left the module. Cross the boundary through an alias: @/shared/... or @/modules/<domain>/contract.",
 });

@@ -18,7 +18,7 @@ import {
   formatNumber,
   formatPercent,
   formatPeriodLabel,
-} from "@/shared/utils/format";
+} from "@ecommerce/contracts/shared/format";
 import type {
   BoughtTogetherRow,
   InventoryRow,

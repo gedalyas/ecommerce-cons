@@ -8,8 +8,8 @@ import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatDate } from "@/shared/utils/format";
-import { formatMetric } from "@/shared/utils/metricFormat";
+import { formatDate } from "@ecommerce/contracts/shared/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import {
   deriveGoal,
   goalDefinitions,

@@ -1,0 +1,1 @@
+export { createGoalsRouter } from "./goalsRouter";

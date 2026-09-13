@@ -11,8 +11,8 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatPeriodLabel, formatVariation } from "@/shared/utils/format";
-import { formatMetric } from "@/shared/utils/metricFormat";
+import { formatPeriodLabel, formatVariation } from "@ecommerce/contracts/shared/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import {
   analysisMetricKeys,

@@ -1,5 +1,5 @@
 import { cn } from "@/shared/utils/cn";
-import { formatMetric } from "@/shared/utils/metricFormat";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import type { MetricUnit } from "@ecommerce/contracts/shared/metric.types";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";

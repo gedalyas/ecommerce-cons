@@ -9,7 +9,7 @@ import type { Metric } from "@/shared/ui/metricTile.types";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
-import { formatPeriodLabel } from "@/shared/utils/format";
+import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import type { DreIndicator, MoneyScreen, MoneyTab } from "@ecommerce/contracts/money";
 import { MoneyCosts } from "./MoneyCosts";
 import { MoneyDre } from "./MoneyDre";

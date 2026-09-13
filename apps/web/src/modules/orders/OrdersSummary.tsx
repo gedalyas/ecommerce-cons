@@ -12,8 +12,8 @@ import {
   formatNumber,
   formatPercent,
   formatPeriodLabel,
-} from "@/shared/utils/format";
-import { formatMetric } from "@/shared/utils/metricFormat";
+} from "@ecommerce/contracts/shared/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   OrdersSourceRow,

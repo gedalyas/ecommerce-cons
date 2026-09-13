@@ -5,7 +5,7 @@ import {
   formatMultiplier,
   formatNumber,
   formatPercent,
-} from "@/shared/utils/format";
+} from "@ecommerce/contracts/shared/format";
 import type { AdPerformanceRow, AdLevel } from "@ecommerce/contracts/marketing";
 import { roasQualityLabel, type RoasQuality } from "@ecommerce/contracts/marketing";
 

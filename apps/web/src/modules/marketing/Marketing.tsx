@@ -11,7 +11,11 @@ import { metricToTile } from "@/shared/ui/metricToTile";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
-import { formatCurrency, formatPeriodLabel, formatPercent } from "@/shared/utils/format";
+import {
+  formatCurrency,
+  formatPeriodLabel,
+  formatPercent,
+} from "@ecommerce/contracts/shared/format";
 import type { MetricValue } from "@ecommerce/contracts/shared/metric.types";
 import { CreativePresence } from "./CreativePresence";
 import type {

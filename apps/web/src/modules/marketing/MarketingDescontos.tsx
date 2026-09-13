@@ -4,7 +4,7 @@ import { metricToTile } from "@/shared/ui/metricToTile";
 import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { layout } from "@/shared/styles/spacing";
-import { formatCurrency, formatNumber, formatPercent } from "@/shared/utils/format";
+import { formatCurrency, formatNumber, formatPercent } from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   DiscountCodeRow,

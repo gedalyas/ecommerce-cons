@@ -2,7 +2,7 @@ import { FidelityBadge } from "./FidelityBadge";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatPtNumbers } from "@/shared/utils/format";
+import { formatPtNumbers } from "@ecommerce/contracts/shared/format";
 import type { MetricTileProps } from "./metricTile.types";
 
 export type { Metric, MetricTileAction, MetricTileProps } from "./metricTile.types";

@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B5 done (2026-09-13)** — last updated 2026-09-13
+Status: **B6 done (2026-09-13)** — the web still runs on its own services until B7 — last updated 2026-09-13
 
 ---
 
@@ -93,10 +93,21 @@ Status: **B5 done (2026-09-13)** — last updated 2026-09-13
 
 ## B6 — API modules (services copied, endpoints live)
 
-- [ ] consulting, connections, alerts (no dependencies)
-- [ ] orders, products, marketing, money, customers (facts and screens)
-- [ ] goals, influencers, analysis, logistics, management, dashboard
-- [ ] Enum-parity tests; every endpoint smoke-tested with curl + bearer
+- [x] Services, screen services and server-only rules (with their tests) copied from the
+      web into `apps/api/src/modules/<domain>/`; `clientSlug` parameters became `clientId`
+      (the token carries it); each module's `contract.ts` exports its router factory and
+      the service functions other API modules call
+- [x] Controllers (`req.query` → `screenQuery` = period + the screen's zod schema after
+      `coerceQuery`, tested; bodies through `parseOrThrow`) and router factories per module;
+      `app.ts` mounts every router behind `requireAuth` and injects `marketingCostLines` and
+      `retentionSummary` into the marketing router (the `/marketing?aba=visao` payload now
+      carries `retention`)
+- [x] `format.ts` and `metricFormat.ts` moved to `contracts/shared` (the alert, narrative
+      and sync-label rules format text; the mobile app will need the same pt-BR formatters)
+- [x] Enum-parity tests (money, marketing, influencers, connections, consulting, auth);
+      smoke against the dev API with a bearer token: 29 GET endpoints 200 with the expected
+      shapes, cost and influencer create/update/delete (201/200/204), invalid body 422,
+      missing token 401
 
 ## B7 — Web BFF
 

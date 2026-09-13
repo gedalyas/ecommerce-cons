@@ -1,4 +1,4 @@
-import type { MetricUnit } from "@ecommerce/contracts/shared/metric.types";
+import type { MetricUnit } from "./metric.types";
 import { formatCurrency, formatMultiplier, formatNumber, formatPercent } from "./format";
 
 export function formatMetric(value: number | null, unit: MetricUnit) {

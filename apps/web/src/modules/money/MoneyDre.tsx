@@ -8,7 +8,7 @@ import {
   formatDate,
   formatPeriodLabel,
   formatVariation,
-} from "@/shared/utils/format";
+} from "@ecommerce/contracts/shared/format";
 import { variationOf } from "@ecommerce/contracts/shared/metricValue";
 import type { Granularity, PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type { DreMatrixRow, MoneyDre as MoneyDreData } from "@ecommerce/contracts/money";

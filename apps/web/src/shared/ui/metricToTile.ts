@@ -1,6 +1,6 @@
 import type { Metric } from "./metricTile.types";
-import { formatMetric } from "@/shared/utils/metricFormat";
-import { formatVariation } from "@/shared/utils/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
+import { formatVariation } from "@ecommerce/contracts/shared/format";
 import type { KpiCardProps } from "./kpiCard.types";
 
 /**

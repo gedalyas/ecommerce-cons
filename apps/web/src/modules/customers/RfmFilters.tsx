@@ -3,7 +3,7 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { cn } from "@/shared/utils/cn";
-import { formatCurrency } from "@/shared/utils/format";
+import { formatCurrency } from "@ecommerce/contracts/shared/format";
 import { textClass } from "@/shared/styles/typography";
 import type { RfmFilterOptions } from "@ecommerce/contracts/customers";
 import {

@@ -9,7 +9,7 @@ import { layout } from "@/shared/styles/spacing";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatCurrency, formatDate, formatNumber } from "@/shared/utils/format";
+import { formatCurrency, formatDate, formatNumber } from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   CustomersRfm as CustomersRfmData,

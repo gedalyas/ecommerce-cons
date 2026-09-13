@@ -13,7 +13,7 @@ import {
   formatMultiplier,
   formatNumber,
   formatPercent,
-} from "@/shared/utils/format";
+} from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   ChannelPerformanceRow,

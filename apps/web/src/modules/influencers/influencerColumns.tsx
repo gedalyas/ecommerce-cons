@@ -1,7 +1,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/Button";
 import type { DataTableColumn } from "@/shared/ui/DataTable";
-import { formatCurrency, formatNumber, formatPercent } from "@/shared/utils/format";
+import { formatCurrency, formatNumber, formatPercent } from "@ecommerce/contracts/shared/format";
 import type { InfluencerRow } from "@ecommerce/contracts/influencers";
 
 const money = (v: number | null) => (v == null ? "—" : formatCurrency(v));
