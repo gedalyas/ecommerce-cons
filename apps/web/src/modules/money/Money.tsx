@@ -9,7 +9,7 @@ import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import type { MoneyScreen, MoneyTab } from "@ecommerce/contracts/money";
-import { sectionOf } from "@/modules/consulting/contract";
+import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
 import { MoneyCosts } from "./MoneyCosts";
 import { MoneyDre } from "./MoneyDre";
 
@@ -48,7 +48,11 @@ export function Money({ data }: { data: MoneyScreen }) {
         {data.aba === "visao" && (
           <div className={layout.groupStack}>
             {sectionOf(data.section, comparisonLabel).pillars.map((pillar) => (
-              <PillarCard key={pillar.title} pillar={pillar} />
+              <PillarCard
+                key={pillar.title}
+                pillar={pillar}
+                actionSlot={pillarActionOf(data.section)(pillar)}
+              />
             ))}
           </div>
         )}

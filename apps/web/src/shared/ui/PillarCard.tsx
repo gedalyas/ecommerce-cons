@@ -12,7 +12,7 @@ import type { PillarCardProps } from "./pillarCard.types";
 export type { Pillar, PillarCardProps } from "./pillarCard.types";
 
 /** Pillar card: the single container carrying border, radius and shadow. */
-export function PillarCard({ pillar, extraSlot }: PillarCardProps) {
+export function PillarCard({ pillar, extraSlot, actionSlot }: PillarCardProps) {
   const blocked = pillar.status === "blocked";
   const done = pillar.status === "done";
 
@@ -30,7 +30,10 @@ export function PillarCard({ pillar, extraSlot }: PillarCardProps) {
         >
           {pillar.title}
         </h2>
-        <StatusBadge status={pillar.status} />
+        <div className="flex items-center gap-2">
+          {actionSlot}
+          <StatusBadge status={pillar.status} />
+        </div>
       </header>
 
       {blocked ? (

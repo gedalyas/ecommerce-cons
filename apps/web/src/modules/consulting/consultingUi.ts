@@ -59,6 +59,7 @@ export function recommendationOf(r: ConsultingRecommendation): Recommendation {
 
 export function pillarOf(pillar: ConsultingPillar, comparisonLabel: string): Pillar {
   return {
+    key: pillar.key,
     title: pillar.title,
     status: pillar.status,
     kpis: pillar.kpis.map((kpi) => metricTileOf(kpi, comparisonLabel)),

@@ -7,7 +7,7 @@ import type { SectionPageProps } from "./sectionPage.types";
 export type { Section, SectionPageProps } from "./sectionPage.types";
 
 /** Section screen template - same container and rhythm as the Dashboard. */
-export function SectionPage({ section, banner, renderExtra }: SectionPageProps) {
+export function SectionPage({ section, banner, renderExtra, renderAction }: SectionPageProps) {
   return (
     <div className={layout.page}>
       <PageHeader title={section.title} subtitle={section.subtitle} />
@@ -20,6 +20,7 @@ export function SectionPage({ section, banner, renderExtra }: SectionPageProps) 
               key={pillar.title}
               pillar={pillar}
               {...(renderExtra?.(pillar) ? { extraSlot: renderExtra(pillar) } : {})}
+              {...(renderAction?.(pillar) ? { actionSlot: renderAction(pillar) } : {})}
             />
           ))}
         </div>

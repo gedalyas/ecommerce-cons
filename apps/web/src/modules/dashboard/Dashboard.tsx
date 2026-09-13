@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouteContext } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChannelToggle } from "@/shared/ui/ChannelToggle";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
@@ -9,7 +9,7 @@ import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { PageHeader } from "@/shared/ui/PageHeader";
 import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { RecommendationList } from "@/shared/ui/RecommendationList";
-import { recommendationOf } from "@/modules/consulting/contract";
+import { MilestoneEditor, recommendationOf } from "@/modules/consulting/contract";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { TimeSeriesChart } from "@/shared/ui/TimeSeriesChart";
 import { usePeriod } from "@/shared/hooks/usePeriod";
@@ -48,6 +48,8 @@ const bucketHeader = (bucket: string, por: Granularity) => {
 };
 
 export function Dashboard({ data }: { data: DashboardOverview }) {
+  const { session } = useRouteContext({ from: "__root__" });
+  const canEdit = session?.user.role !== "CLIENT";
   const { period, setPeriod, comparison } = usePeriod();
   const [selected, setSelected] = useState<DashboardMetricKey>("totalSold");
 
@@ -205,8 +207,11 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
           title="Marco de maturidade"
           tone="highlight"
           meta={
-            <span className={cn(textClass.numeric, textClass.meta, "text-muted-foreground")}>
-              {data.milestone.achieved} de {data.milestone.total} critérios
+            <span className="flex items-center gap-2">
+              <span className={cn(textClass.numeric, textClass.meta, "text-muted-foreground")}>
+                {data.milestone.achieved} de {data.milestone.total} critérios
+              </span>
+              {canEdit && <MilestoneEditor criteria={data.milestone.criteria} />}
             </span>
           }
           description="Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia."

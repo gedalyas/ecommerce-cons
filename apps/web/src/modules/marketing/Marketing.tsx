@@ -10,7 +10,7 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
-import { sectionOf } from "@/modules/consulting/contract";
+import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
 import { CreativePresence } from "./CreativePresence";
 import type { MarketingScreen, MarketingVisao, StaleSource } from "@ecommerce/contracts/marketing";
 import { MarketingCampanhas } from "./MarketingCampanhas";
@@ -56,6 +56,7 @@ function MarketingVisaoTab({
   return (
     <SectionPage
       section={sectionOf(data.section, comparisonLabel)}
+      renderAction={pillarActionOf(data.section)}
       banner={staleSource ? <StaleSourceBanner source={staleSource} /> : undefined}
       renderExtra={(pillar: Pillar) =>
         pillar.extra === "creative-presence" ? <CreativePresence /> : null

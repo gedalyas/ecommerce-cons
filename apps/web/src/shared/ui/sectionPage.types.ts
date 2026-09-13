@@ -9,4 +9,6 @@ export type SectionPageProps = {
   banner?: ReactNode;
   /** A pillar's extra content, resolved by the feature. */
   renderExtra?: (pillar: Pillar) => ReactNode;
+  /** A pillar's header control, resolved by the feature. */
+  renderAction?: (pillar: Pillar) => ReactNode;
 };

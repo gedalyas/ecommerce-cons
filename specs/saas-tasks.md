@@ -5,7 +5,7 @@ something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **S1–S4 done (2026-09-13)** — last updated 2026-09-13
+Status: **S1–S5 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -88,8 +88,12 @@ today)`; `PROTOTYPE_TODAY` is gone
 
 ## S5 — Consulting layer per store
 
-- [ ] Pillar status / pendency editing, recommendations CRUD, milestone editing on the area
-      screens for `CONSULTANT`/`ADMIN`
+- [x] `PillarEditor` (pencil in the pillar header when `section.canEdit`): status +
+      pendency, manual KPI values (value, variação, selo, nota), recommendations (add, mark
+      done, delete); `MilestoneEditor` on the dashboard for staff (progress, achieved, note);
+      `PillarCard`/`SectionPage` gained an `actionSlot`/`renderAction`; BFF server functions
+      in `consulting/consultingController.ts`. Browser check: consultant edits everything on
+      Loja Exemplo, the client sees the results with no edit controls
 
 ## S6 — Docs
 
