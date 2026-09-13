@@ -8,7 +8,7 @@ import {
 } from "./tokens";
 
 const secret = "a-test-secret-with-at-least-32-characters";
-const auth = { userId: "u1", clientId: "c1", role: "CONSULTANT" as const };
+const auth = { userId: "u1", role: "CONSULTANT" as const };
 
 describe("access tokens", () => {
   it("round-trips the auth context", () => {

@@ -1,6 +1,6 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { ordersAggregate } from "@/modules/orders/contract";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { currentDay } from "@/shared/config/clock";
 import { metricValue } from "@ecommerce/contracts/shared/metricValue";
 import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { resolvePeriod, type Window } from "@ecommerce/contracts/shared/periodWindow";
@@ -49,12 +49,8 @@ async function inventoryRows(
   clientId: string,
   filters: CatalogFilters | null,
 ): Promise<InventoryRow[]> {
-  const facts = await inventoryFacts(
-    clientId,
-    new Date(`${PROTOTYPE_TODAY}T00:00:00.000Z`),
-    filters,
-  );
-  return facts.map((f) => deriveInventory(f, PROTOTYPE_TODAY));
+  const facts = await inventoryFacts(clientId, new Date(`${currentDay()}T00:00:00.000Z`), filters);
+  return facts.map((f) => deriveInventory(f, currentDay()));
 }
 
 const summaryDefinitions: Omit<ProductsSummaryMetric, "metric">[] = [

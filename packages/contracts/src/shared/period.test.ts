@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  defaultPeriodSearch,
+  defaultPeriodSearchFor,
   fromIsoDate,
   matchingPreset,
   parsePeriodSearch,
@@ -67,10 +67,15 @@ describe("resolveComparison", () => {
 
 describe("parsePeriodSearch", () => {
   it("falls back to the defaults for missing or malformed values", () => {
-    expect(parsePeriodSearch({})).toEqual(defaultPeriodSearch);
+    const defaults = defaultPeriodSearchFor("2026-09-10");
+    expect(defaults).toMatchObject({ inicio: "2026-08-12", fim: "2026-09-10", por: "dia" });
+    expect(parsePeriodSearch({}, "2026-09-10")).toEqual(defaults);
     expect(
-      parsePeriodSearch({ inicio: "not-a-date", por: "hora", comparar: "x", canal: "loja" }),
-    ).toEqual(defaultPeriodSearch);
+      parsePeriodSearch(
+        { inicio: "not-a-date", por: "hora", comparar: "x", canal: "loja" },
+        "2026-09-10",
+      ),
+    ).toEqual(defaults);
     expect(parsePeriodSearch({ canal: "marketplace" }).canal).toBe("marketplace");
   });
 

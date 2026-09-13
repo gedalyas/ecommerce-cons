@@ -1,7 +1,8 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { currentDay } from "@/shared/config/clock";
 import { dataSourcesFor } from "@/modules/connections/contract";
 import { sectionFor } from "@/modules/consulting/contract";
+import { marketingLiveKpis } from "./marketingLiveKpis";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract";
 import type { SeriesPoint } from "@ecommerce/contracts/shared/metric.types";
 import { metricValue } from "@ecommerce/contracts/shared/metricValue";
@@ -30,6 +31,7 @@ import type {
   MarketingDiscounts,
   MarketingOverview,
   MarketingRegions,
+  MarketingRetention,
   MarketingScreen,
   MarketingSummary,
   MarketingVisao,
@@ -63,7 +65,7 @@ const costsTotal = (lines: readonly MarketingCostLine[]) => lines.reduce((s, l) 
 
 const lifetimeWindow = (): Window => ({
   start: new Date("2000-01-01T00:00:00.000Z"),
-  end: new Date(new Date(`${PROTOTYPE_TODAY}T00:00:00.000Z`).getTime() + 86_400_000),
+  end: new Date(new Date(`${currentDay()}T00:00:00.000Z`).getTime() + 86_400_000),
 });
 
 const fill = (buckets: string[], points: Map<string, number>): SeriesPoint[] =>
@@ -394,16 +396,23 @@ export async function marketingScreen(
 export async function marketingVisao(
   clientId: string,
   input: MarketingInput,
-): Promise<Omit<MarketingVisao, "retention">> {
-  const [overview, section, sources] = await Promise.all([
+  retention: MarketingRetention,
+  canEdit: boolean,
+): Promise<MarketingVisao> {
+  const [overview, sources] = await Promise.all([
     marketingOverview(clientId, input),
-    sectionFor(clientId, "marketing"),
     dataSourcesFor(clientId),
   ]);
+  const section = await sectionFor(
+    clientId,
+    "marketing",
+    marketingLiveKpis(overview, retention),
+    canEdit,
+  );
   const staleSources = sources
     .filter((s) => s.status === "ERROR")
     .map((s) => ({ name: s.name, syncLabel: s.syncLabel }));
-  return { overview, section, staleSources };
+  return { overview, section, staleSources, retention };
 }
 
 async function marketingRegions(

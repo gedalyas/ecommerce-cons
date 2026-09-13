@@ -1,26 +1,24 @@
 import { createHash, randomBytes } from "node:crypto";
 import jwt from "jsonwebtoken";
-import type { AuthContext } from "@/shared/http/auth.types";
+import type { Principal } from "@/shared/http/auth.types";
 
 export const ACCESS_TOKEN_SECONDS = 15 * 60;
 export const REFRESH_TOKEN_SECONDS = 30 * 24 * 60 * 60;
 
-type AccessClaims = { sub: string; clientId: string; role: AuthContext["role"] };
+type AccessClaims = { sub: string; role: Principal["role"] };
 
-export function signAccessToken(auth: AuthContext, secret: string): string {
-  const claims: AccessClaims = { sub: auth.userId, clientId: auth.clientId, role: auth.role };
+export function signAccessToken(principal: Principal, secret: string): string {
+  const claims: AccessClaims = { sub: principal.userId, role: principal.role };
   return jwt.sign(claims, secret, { algorithm: "HS256", expiresIn: ACCESS_TOKEN_SECONDS });
 }
 
-export function verifyAccessToken(token: string, secret: string): AuthContext | null {
+export function verifyAccessToken(token: string, secret: string): Principal | null {
   try {
     const payload = jwt.verify(token, secret, { algorithms: ["HS256"] });
     if (typeof payload === "string") return null;
-    const { sub, clientId, role } = payload as jwt.JwtPayload & Partial<AccessClaims>;
-    if (typeof sub !== "string" || typeof clientId !== "string" || typeof role !== "string") {
-      return null;
-    }
-    return { userId: sub, clientId, role };
+    const { sub, role } = payload as jwt.JwtPayload & Partial<AccessClaims>;
+    if (typeof sub !== "string" || typeof role !== "string") return null;
+    return { userId: sub, role };
   } catch {
     return null;
   }

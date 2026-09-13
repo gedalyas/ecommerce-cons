@@ -7,5 +7,6 @@ export function createConnectionsRouter(): Router {
   const controller = connectionsController();
   router.get("/connections", asyncHandler(controller.screen));
   router.get("/connections/health", asyncHandler(controller.health));
+  router.post("/connections/:key/request", asyncHandler(controller.request));
   return router;
 }

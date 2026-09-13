@@ -1,0 +1,23 @@
+import type { RequestHandler } from "express";
+import { forbidden, HttpError, unauthorized } from "@/shared/http/httpError";
+import { storeAccessOf } from "./authService";
+import { canAccessStore, defaultStoreOf } from "./storeAccess";
+
+export const CLIENT_HEADER = "x-client-id";
+
+export const resolveClient: RequestHandler = (req, _res, next) => {
+  const principal = req.principal;
+  if (!principal) {
+    next(unauthorized());
+    return;
+  }
+  storeAccessOf(principal)
+    .then((access) => {
+      const requested = req.header(CLIENT_HEADER)?.trim() || defaultStoreOf(access);
+      if (!requested) throw new HttpError(400, "Informe a loja (cabeçalho x-client-id).");
+      if (!canAccessStore(access, requested)) throw forbidden("Você não tem acesso a esta loja.");
+      req.auth = { ...principal, clientId: requested };
+      next();
+    })
+    .catch(next);
+};

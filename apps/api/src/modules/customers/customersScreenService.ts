@@ -1,5 +1,5 @@
 import { prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { currentDay } from "@/shared/config/clock";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { toWindow } from "@ecommerce/contracts/shared/periodWindow";
 import type {
@@ -45,10 +45,10 @@ export async function refreshCustomers(clientId: string): Promise<number> {
 
 /** Recompra 90 dias and LTV 12 meses - the Marketing › Retenção pillar reads them through the route. */
 export async function retentionSummary(clientId: string): Promise<RetentionSummary> {
-  const today = new Date(`${PROTOTYPE_TODAY}T00:00:00.000Z`);
+  const today = new Date(`${currentDay()}T00:00:00.000Z`);
   const days = (n: number) => new Date(today.getTime() - n * 86_400_000).toISOString().slice(0, 10);
-  const last90 = toWindow({ inicio: days(89), fim: PROTOTYPE_TODAY });
-  const last365 = toWindow({ inicio: days(364), fim: PROTOTYPE_TODAY });
+  const last90 = toWindow({ inicio: days(89), fim: currentDay() });
+  const last365 = toWindow({ inicio: days(364), fim: currentDay() });
   const [repeat, ltv] = await Promise.all([
     prismaClient.$queryRaw<{ orders: number; repeat_orders: number }[]>`
       with ranked as (

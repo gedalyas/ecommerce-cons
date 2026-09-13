@@ -1,5 +1,5 @@
 import { prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { currentDay } from "@/shared/config/clock";
 import { customersAggregate } from "@/modules/customers/contract";
 import {
   adSpendAggregate,
@@ -152,7 +152,7 @@ async function goalsSummary(
     inicio,
     fim,
   );
-  const elapsed = elapsedPercent(inicio, fim, PROTOTYPE_TODAY);
+  const elapsed = elapsedPercent(inicio, fim, currentDay());
   const cards: GoalCard[] = goalDefinitions.map((d) => {
     const g = goal?.[d.key] ?? null;
     const a = actual[d.key];

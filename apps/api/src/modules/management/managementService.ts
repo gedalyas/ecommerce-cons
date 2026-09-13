@@ -1,6 +1,9 @@
-import { sectionFor } from "@/modules/consulting/contract";
 import type { ManagementScreen } from "@ecommerce/contracts/management";
+import { sectionFor } from "@/modules/consulting/contract";
 
-export async function managementScreen(clientId: string): Promise<ManagementScreen> {
-  return { section: await sectionFor(clientId, "management") };
+export async function managementScreen(
+  clientId: string,
+  canEdit: boolean,
+): Promise<ManagementScreen> {
+  return { section: await sectionFor(clientId, "management", {}, canEdit) };
 }

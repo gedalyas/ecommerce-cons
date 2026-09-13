@@ -5,6 +5,7 @@ import {
   type ImportRowError,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
+import type { ConnectorKey } from "@ecommerce/contracts/connectors";
 import { prismaClient } from "@ecommerce/database/client";
 import type { ImportStatus } from "@ecommerce/database/enums";
 import { refreshCustomers } from "@/modules/customers/contract";
@@ -21,19 +22,22 @@ const PARSE_BUDGET_MS = 20_000;
 const ERRORS_KEPT = 50;
 const HISTORY_SIZE = 20;
 
-const dataSourceOf: Record<ImportKind, (rows: { platform?: string }[]) => string[]> = {
-  ORDERS: () => ["Loja"],
+const manualConnector: ConnectorKey = "manual_csv";
+
+const dataSourceOf: Record<ImportKind, (rows: { platform?: string }[]) => ConnectorKey[]> = {
+  ORDERS: () => [manualConnector],
   AD_SPEND: (rows) => [
+    manualConnector,
     ...new Set(
-      rows.map((r) =>
-        r.platform === "META" ? "Meta Ads" : r.platform === "GOOGLE" ? "Google Ads" : "TikTok Ads",
+      rows.map((r): ConnectorKey =>
+        r.platform === "META" ? "meta_ads" : r.platform === "GOOGLE" ? "google_ads" : "tiktok_ads",
       ),
     ),
   ],
-  TRAFFIC: () => ["Google Analytics"],
+  TRAFFIC: () => [manualConnector, "ga4"],
 };
 
-type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: string[] };
+type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: ConnectorKey[] };
 
 function tableOf(kind: ImportKind, file: UploadedFile) {
   if (hasBinaryContent(file.buffer)) {
@@ -93,13 +97,13 @@ async function process(clientId: string, kind: ImportKind, file: UploadedFile): 
   }
 }
 
-async function stampDataSources(clientId: string, names: string[], now: Date) {
+async function stampDataSources(clientId: string, keys: ConnectorKey[], now: Date) {
   await prismaClient.dataSource.updateMany({
-    where: { clientId, name: { in: names }, status: { in: ["NOT_CONNECTED", "ERROR"] } },
+    where: { clientId, connectorKey: { in: keys }, status: { in: ["NOT_CONNECTED", "ERROR"] } },
     data: { status: "MANUAL" },
   });
   await prismaClient.dataSource.updateMany({
-    where: { clientId, name: { in: names } },
+    where: { clientId, connectorKey: { in: keys } },
     data: { lastSyncedAt: now },
   });
 }

@@ -1,8 +1,13 @@
 import type { Request, Response } from "express";
-import { loginSchema, refreshSchema } from "@ecommerce/contracts/auth";
-import { authOf } from "@/shared/http/authOf";
+import {
+  invitationLookupSchema,
+  loginSchema,
+  refreshSchema,
+  registerSchema,
+} from "@ecommerce/contracts/auth";
+import { principalOf } from "@/shared/http/authOf";
 import { parseOrThrow } from "@/shared/http/validate";
-import { currentUser, login, logout, refresh } from "./authService";
+import { currentUser, invitationFor, login, logout, refresh, register } from "./authService";
 
 export type AuthDependencies = { secret: string; now: () => Date };
 
@@ -21,8 +26,16 @@ export function authController({ secret, now }: AuthDependencies) {
       await logout(input.refreshToken, now());
       res.status(204).end();
     },
+    async register(req: Request, res: Response) {
+      const input = parseOrThrow(registerSchema, req.body);
+      res.status(201).json(await register(input, secret, now()));
+    },
+    async invitation(req: Request, res: Response) {
+      const { email } = parseOrThrow(invitationLookupSchema, req.query);
+      res.json(await invitationFor(email));
+    },
     async me(req: Request, res: Response) {
-      res.json({ user: await currentUser(authOf(req).userId) });
+      res.json({ user: await currentUser(principalOf(req).userId) });
     },
   };
 }

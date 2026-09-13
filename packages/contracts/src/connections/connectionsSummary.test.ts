@@ -3,6 +3,7 @@ import type { DataSourceState } from "./connections.types";
 import { connectionsSummaryOf, hasErrorSource, summaryDetail } from "./connectionsSummary";
 
 const source = (name: string, status: DataSourceState["status"]): DataSourceState => ({
+  connectorKey: "bling",
   name,
   kind: "ERP",
   status,

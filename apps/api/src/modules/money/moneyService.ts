@@ -1,6 +1,7 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { prismaClient } from "@ecommerce/database/client";
 import { sectionFor } from "@/modules/consulting/contract";
+import { moneyLiveKpis } from "./moneyLiveKpis";
 import { adSpendAggregate, adSpendByBucket } from "@/modules/marketing/contract";
 import type { AdSpendAggregate } from "@ecommerce/contracts/marketing";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract";
@@ -338,10 +339,13 @@ async function moneyTab(
 export async function moneyScreen(
   clientId: string,
   search: PeriodSearch & MoneySearch,
+  canEdit: boolean,
 ): Promise<MoneyScreen> {
-  const [section, tab] = await Promise.all([
-    sectionFor(clientId, "money"),
-    moneyTab(clientId, search),
-  ]);
+  const tab = await moneyTab(clientId, search);
+  const indicators =
+    tab.aba === "visao"
+      ? tab.indicators
+      : (await windowDre(clientId, search, await costRulesFor(clientId))).indicators;
+  const section = await sectionFor(clientId, "money", moneyLiveKpis(indicators), canEdit);
   return { section, ...tab };
 }

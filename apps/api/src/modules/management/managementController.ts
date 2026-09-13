@@ -5,7 +5,8 @@ import { managementScreen } from "./managementService";
 export function managementController() {
   return {
     async screen(req: Request, res: Response) {
-      res.json(await managementScreen(authOf(req).clientId));
+      const auth = authOf(req);
+      res.json(await managementScreen(auth.clientId, auth.role !== "CLIENT"));
     },
   };
 }

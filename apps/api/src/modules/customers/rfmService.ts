@@ -1,5 +1,5 @@
 import { Prisma, prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { currentDay } from "@/shared/config/clock";
 import type {
   RfmCustomerRow,
   RfmFilterOptions,
@@ -250,7 +250,7 @@ export async function rfmFilterOptions(clientId: string): Promise<RfmFilterOptio
  * Runs in chunks so a 30k-customer base updates in seconds.
  */
 export async function refreshCustomerAggregates(clientId: string): Promise<number> {
-  const today = new Date(`${PROTOTYPE_TODAY}T00:00:00.000Z`);
+  const today = new Date(`${currentDay()}T00:00:00.000Z`);
   const rows = await prismaClient.$queryRaw<
     { id: string; first_at: Date | null; last_at: Date | null; orders: number; total: number }[]
   >`

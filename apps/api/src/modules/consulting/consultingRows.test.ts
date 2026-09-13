@@ -1,75 +1,100 @@
 import { describe, expect, it } from "vitest";
-import { milestoneSummaryOf, toMetric, toPillar, toSection } from "./consultingRows";
+import { buildSection, milestoneSummaryOf, toMilestone } from "./consultingRows";
 
-const metric = {
-  label: "CAC",
-  value: "R$ 62",
-  delta: "+21%",
-  deltaDirection: "DOWN" as const,
-  subNote: null,
-  fidelity: "A" as const,
-  fidelityNote: "Nível A — mídia sobre novos clientes.",
+const live = {
+  contributionMarginRate: {
+    metric: { value: 19.2, unit: "percent" as const, previous: 21, variation: -8.6 },
+    goodWhen: "up" as const,
+    fidelity: "B" as const,
+    fidelityNote: "Nível B — regras de custo informadas.",
+  },
 };
 
-const pillar = {
-  title: "Aquisição",
-  status: "IN_PROGRESS" as const,
-  dataPending: "Meta Ads sem sincronizar",
-  extra: null,
-  metrics: [metric],
-  recommendations: [{ text: "Pausar campanha X", dueLabel: "até 05/09", owner: "Marina" }],
-};
-
-describe("toMetric", () => {
-  it("maps the enum direction to the tile key and drops absent optionals", () => {
-    expect(toMetric(metric)).toEqual({
-      label: "CAC",
-      value: "R$ 62",
-      delta: "+21%",
-      deltaDirection: "down",
+describe("buildSection", () => {
+  it("renders the template with the store's status, live values and manual values", () => {
+    const section = buildSection("money", {
+      pillars: [{ key: "organization", status: "IN_PROGRESS", dataPending: "Falta o extrato." }],
+      recommendations: [
+        {
+          id: "r1",
+          pillarKey: "organization",
+          text: "Fechar o mês",
+          dueDate: new Date("2026-09-30T00:00:00Z"),
+          owner: "Ana",
+          doneAt: null,
+        },
+        {
+          id: "r2",
+          pillarKey: "organization",
+          text: "Feito",
+          dueDate: new Date("2026-09-01T00:00:00Z"),
+          owner: "Ana",
+          doneAt: new Date(),
+        },
+      ],
+      manual: [
+        {
+          pillarKey: "organization",
+          kpiKey: "freeCash",
+          value: "R$ 214.000",
+          delta: null,
+          fidelity: "A",
+          note: "extrato",
+          updatedAt: new Date("2026-09-10T00:00:00Z"),
+        },
+      ],
+      live,
+      canEdit: true,
+    });
+    expect(section.title).toBe("Dinheiro");
+    const [organization, costs] = section.pillars;
+    expect(organization).toMatchObject({
+      key: "organization",
+      status: "in-progress",
+      dataPending: "Falta o extrato.",
+    });
+    expect(organization!.recommendations.map((r) => r.id)).toEqual(["r1"]);
+    expect(organization!.recommendations[0]!.dueDate).toBe("2026-09-30");
+    const [margin, freeCash, cashCycle] = organization!.kpis;
+    expect(margin).toMatchObject({ source: "live", live: { fidelity: "B" } });
+    expect(freeCash).toMatchObject({
+      source: "manual",
+      manual: { value: "R$ 214.000" },
       fidelity: "A",
-      fidelityNote: "Nível A — mídia sobre novos clientes.",
     });
+    expect(cashCycle).toMatchObject({ source: "manual", manual: null, fidelity: null });
+    expect(costs).toMatchObject({ key: "costs", status: "not-started" });
+    expect(costs!.kpis[0]).toMatchObject({ source: "live", live: null });
   });
 
-  it("keeps a sub note when present", () => {
-    expect(toMetric({ ...metric, subNote: "por cliente" }).subNote).toBe("por cliente");
+  it("marks milestone-gated pillars blocked when the store has no row yet", () => {
+    const section = buildSection("marketing", {
+      pillars: [],
+      recommendations: [],
+      manual: [],
+      live: {},
+      canEdit: false,
+    });
+    expect(section.pillars.find((p) => p.key === "parallelChannels")!.status).toBe("blocked");
+    expect(section.canEdit).toBe(false);
   });
 });
 
-describe("toPillar", () => {
-  it("maps the status, the KPIs and the recommendations", () => {
-    const result = toPillar(pillar);
-    expect(result.status).toBe("in-progress");
-    expect(result.kpis).toHaveLength(1);
-    expect(result.recommendations[0]).toEqual({
-      text: "Pausar campanha X",
-      dueDate: "até 05/09",
-      owner: "Marina",
+describe("toMilestone / milestoneSummaryOf", () => {
+  it("fills the template from the rows and counts the achieved criteria", () => {
+    const criteria = toMilestone([
+      { key: "cashRunway", progress: 100, achieved: true, note: "ok" },
+    ]);
+    expect(criteria).toHaveLength(4);
+    expect(criteria.find((c) => c.key === "cashRunway")).toMatchObject({
+      achieved: true,
+      note: "ok",
+      name: "Caixa de 90 dias",
     });
-    expect(result.dataPending).toBe("Meta Ads sem sincronizar");
-    expect("extra" in result).toBe(false);
-  });
-});
-
-describe("toSection", () => {
-  it("keeps the title, the subtitle and the pillar order", () => {
-    const section = toSection({
-      title: "Marketing",
-      subtitle: "Aquisição e retenção",
-      pillars: [pillar, { ...pillar, title: "Retenção", status: "BLOCKED" }],
+    expect(criteria.find((c) => c.key === "cacBelowLtv")).toMatchObject({
+      achieved: false,
+      progress: 0,
     });
-    expect(section.pillars.map((p) => p.title)).toEqual(["Aquisição", "Retenção"]);
-    expect(section.pillars[1]!.status).toBe("blocked");
-  });
-});
-
-describe("milestoneSummaryOf", () => {
-  it("counts the achieved criteria over the total", () => {
-    const criterion = { key: "a", name: "A", progress: 100, achieved: true, note: "" };
-    expect(
-      milestoneSummaryOf([criterion, { ...criterion, achieved: false, progress: 40 }]),
-    ).toEqual({ achieved: 1, total: 2 });
-    expect(milestoneSummaryOf([])).toEqual({ achieved: 0, total: 0 });
+    expect(milestoneSummaryOf(criteria)).toEqual({ achieved: 1, total: 4 });
   });
 });

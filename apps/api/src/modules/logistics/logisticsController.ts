@@ -5,7 +5,8 @@ import { logisticsScreen } from "./logisticsService";
 export function logisticsController() {
   return {
     async screen(req: Request, res: Response) {
-      res.json(await logisticsScreen(authOf(req).clientId));
+      const auth = authOf(req);
+      res.json(await logisticsScreen(auth.clientId, auth.role !== "CLIENT"));
     },
   };
 }

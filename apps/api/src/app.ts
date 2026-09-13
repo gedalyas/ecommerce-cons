@@ -1,7 +1,8 @@
 import cors from "cors";
 import express, { type Express } from "express";
 import { createAnalysisRouter } from "@/modules/analysis/contract";
-import { createAuthRouter, createRequireAuth } from "@/modules/auth/contract";
+import { createAdminRouter } from "@/modules/admin/contract";
+import { createAuthRouter, createRequireAuth, resolveClient } from "@/modules/auth/contract";
 import { createConnectionsRouter } from "@/modules/connections/contract";
 import { createConsultingRouter } from "@/modules/consulting/contract";
 import { createCustomersRouter, retentionSummary } from "@/modules/customers/contract";
@@ -16,6 +17,7 @@ import { createMarketingRouter } from "@/modules/marketing/contract";
 import { createMoneyRouter, marketingCostLines } from "@/modules/money/contract";
 import { createOrdersRouter } from "@/modules/orders/contract";
 import { createProductsRouter } from "@/modules/products/contract";
+import { createStoreOnboardingRouter, createStoreRouter } from "@/modules/store/contract";
 import type { Env } from "@/shared/config/env";
 import { errorHandler } from "@/shared/http/errorHandler";
 import { notFound } from "@/shared/http/httpError";
@@ -34,7 +36,15 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
   app.use(API_PREFIX, createHealthRouter());
   app.use(API_PREFIX, createAuthRouter({ secret: env.JWT_SECRET, now }, requireAuth));
 
-  const protectedRouters = [
+  app.use(
+    API_PREFIX,
+    requireAuth,
+    createAdminRouter({ now }),
+    createStoreOnboardingRouter({ now }),
+  );
+
+  const storeRouters = [
+    createStoreRouter({ now }),
     createDashboardRouter(),
     createOrdersRouter(),
     createProductsRouter(),
@@ -47,10 +57,10 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
     createAnalysisRouter(),
     createInfluencersRouter(),
     createConnectionsRouter(),
-    createConsultingRouter(),
+    createConsultingRouter({ now }),
     createImportsRouter({ now }),
   ];
-  app.use(API_PREFIX, requireAuth, ...protectedRouters);
+  app.use(API_PREFIX, requireAuth, resolveClient, ...storeRouters);
 
   app.use((_req, _res, next) => next(notFound("Rota não encontrada")));
   app.use(errorHandler);

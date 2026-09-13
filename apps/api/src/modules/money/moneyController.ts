@@ -17,7 +17,14 @@ const idSchema = z.string().min(1);
 export function moneyController() {
   return {
     async screen(req: Request, res: Response) {
-      res.json(await moneyScreen(authOf(req).clientId, screenQuery(req, moneySearchSchema)));
+      const auth = authOf(req);
+      res.json(
+        await moneyScreen(
+          auth.clientId,
+          screenQuery(req, moneySearchSchema),
+          auth.role !== "CLIENT",
+        ),
+      );
     },
     async marketingCostLines(req: Request, res: Response) {
       res.json(await marketingCostLines(authOf(req).clientId, periodOf(req)));

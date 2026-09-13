@@ -7,7 +7,8 @@
   "exports": {
     "./client": "./src/client.ts",
     "./enums": "./src/generated/prisma/enums.ts",
-    "./passwordHash": "./src/passwordHash.ts"
+    "./passwordHash": "./src/passwordHash.ts",
+    "./provisionStore": "./src/provisionStore.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -18,7 +19,8 @@
     "seed": "tsx prisma/seed.ts",
     "studio": "prisma studio",
     "reset": "prisma migrate reset --force",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed:dev": "tsx prisma/seedDev.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -34,6 +36,7 @@
     "prisma": "^7.10.0",
     "tsx": "^4.20.0",
     "typescript": "^5.8.3",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "@ecommerce/contracts": "*"
   }
 }

@@ -16,7 +16,7 @@ import {
   subYears,
   endOfMonth,
 } from "date-fns";
-import { PROTOTYPE_TODAY } from "./clock";
+import { todayIso } from "./clock";
 
 export const granularities = ["dia", "semana", "mes", "ano"] as const;
 export type Granularity = (typeof granularities)[number];
@@ -125,15 +125,16 @@ export const periodPresets: readonly PeriodPreset[] = [
   },
 ];
 
-export const defaultPeriodSearch: PeriodSearch = {
-  ...periodPresets.find((p) => p.key === "ultimos-30-dias")!.range(fromIsoDate(PROTOTYPE_TODAY)),
-  por: "dia",
-  comparar: "periodo-anterior",
-  canal: "todos",
-};
+export function defaultPeriodSearchFor(today: string): PeriodSearch {
+  return {
+    ...periodPresets.find((p) => p.key === "ultimos-30-dias")!.range(fromIsoDate(today)),
+    por: "dia",
+    comparar: "periodo-anterior",
+    canal: "todos",
+  };
+}
 
-/** Key of the preset that matches the range exactly, if any. */
-export function matchingPreset(range: DateRange, today = fromIsoDate(PROTOTYPE_TODAY)) {
+export function matchingPreset(range: DateRange, today = fromIsoDate(todayIso())) {
   return periodPresets.find((p) => {
     const r = p.range(today);
     return r.inicio === range.inicio && r.fim === range.fim;
@@ -177,12 +178,14 @@ function isIsoDate(value: unknown): value is string {
  */
 export function parsePeriodSearch(
   input: Partial<Record<keyof PeriodSearch, unknown>>,
+  today: string = todayIso(),
 ): PeriodSearch {
-  let inicio = isIsoDate(input["inicio"]) ? input["inicio"] : defaultPeriodSearch.inicio;
-  let fim = isIsoDate(input["fim"]) ? input["fim"] : defaultPeriodSearch.fim;
+  const defaults = defaultPeriodSearchFor(today);
+  let inicio = isIsoDate(input["inicio"]) ? input["inicio"] : defaults.inicio;
+  let fim = isIsoDate(input["fim"]) ? input["fim"] : defaults.fim;
   if (inicio > fim) [inicio, fim] = [fim, inicio];
-  const por = granularities.find((g) => g === input["por"]) ?? defaultPeriodSearch.por;
-  const comparar = comparisons.find((c) => c === input["comparar"]) ?? defaultPeriodSearch.comparar;
-  const canal = channels.find((c) => c === input["canal"]) ?? defaultPeriodSearch.canal;
+  const por = granularities.find((g) => g === input["por"]) ?? defaults.por;
+  const comparar = comparisons.find((c) => c === input["comparar"]) ?? defaults.comparar;
+  const canal = channels.find((c) => c === input["canal"]) ?? defaults.canal;
   return { inicio, fim, por, comparar, canal };
 }

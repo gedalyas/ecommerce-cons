@@ -1,27 +1,50 @@
 import { describe, expect, it } from "vitest";
 import type { DataSourceState } from "@ecommerce/contracts/connections";
-import { fidelityFor } from "./dashboardFidelity";
+import { feedFidelity, fidelityFor } from "./dashboardFidelity";
+
+const source = (
+  connectorKey: DataSourceState["connectorKey"],
+  status: DataSourceState["status"],
+  syncLabel = "hoje às 03:12",
+): DataSourceState => ({ connectorKey, name: connectorKey, kind: "x", status, syncLabel });
 
 const sources: DataSourceState[] = [
-  { name: "Bling", kind: "ERP", status: "CONNECTED", syncLabel: "hoje às 03:12" },
-  { name: "Loja", kind: "Plataforma", status: "CONNECTED", syncLabel: "hoje às 03:14" },
-  { name: "Meta Ads", kind: "Mídia paga", status: "ERROR", syncLabel: "há 6 dias" },
-  { name: "Google Ads", kind: "Mídia paga", status: "CONNECTED", syncLabel: "hoje às 03:20" },
-  { name: "Google Analytics", kind: "Analytics", status: "CONNECTED", syncLabel: "hoje às 03:20" },
+  source("shopify", "CONNECTED"),
+  source("meta_ads", "ERROR", "há 6 dias"),
+  source("google_ads", "NOT_CONNECTED", "—"),
+  source("ga4", "CONNECTED"),
+  source("manual_csv", "MANUAL", "hoje às 10:00"),
 ];
 
+describe("feedFidelity", () => {
+  it("takes the best source that provides the feed", () => {
+    expect(feedFidelity("orders", sources)).toEqual({ fidelity: "A", reason: null });
+    expect(feedFidelity("ad_spend", sources).fidelity).toBe("B");
+    expect(feedFidelity("ad_spend", [source("meta_ads", "ERROR", "há 6 dias")]).reason).toContain(
+      "sem sincronizar",
+    );
+  });
+
+  it("is C with a reason when nothing provides the feed", () => {
+    expect(feedFidelity("traffic", [source("shopify", "CONNECTED")])).toEqual({
+      fidelity: "C",
+      reason: "nenhuma fonte de tráfego conectada",
+    });
+  });
+});
+
 describe("fidelityFor", () => {
-  it("is A when every source of the metric is connected", () => {
+  it("is A when every feed of the metric has a connected source", () => {
     expect(fidelityFor("totalSold", sources)).toEqual({
       fidelity: "A",
-      note: "Nível A — calculado sobre Bling, Loja.",
+      note: "Nível A — calculado sobre pedidos.",
     });
   });
 
-  it("degrades to B and names the source when one is in error", () => {
+  it("degrades to the weakest feed and explains it", () => {
     const result = fidelityFor("marketingInvestment", sources);
     expect(result.fidelity).toBe("B");
-    expect(result.note).toContain("Meta Ads sem sincronizar (há 6 dias)");
+    expect(result.note).toContain("Nível B");
   });
 
   it("caps metrics that depend on informed costs at B", () => {
@@ -31,16 +54,7 @@ describe("fidelityFor", () => {
     expect(result.note).toContain("custos e taxas informados pelo cliente");
   });
 
-  it("is C when a required source is missing or not connected", () => {
-    expect(
-      fidelityFor(
-        "conversionRate",
-        sources.filter((s) => s.name !== "Google Analytics"),
-      ).fidelity,
-    ).toBe("C");
-    const off = sources.map((s) =>
-      s.name === "Loja" ? { ...s, status: "NOT_CONNECTED" as const } : s,
-    );
-    expect(fidelityFor("orders", off).fidelity).toBe("C");
+  it("is C when a feed has no source at all", () => {
+    expect(fidelityFor("conversionRate", [source("shopify", "CONNECTED")]).fidelity).toBe("C");
   });
 });

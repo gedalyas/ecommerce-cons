@@ -1,8 +1,10 @@
-import type { ConnectionsSummary, DataSourceState } from "./connections.types";
+import type { ConnectionsSummary, DataSourceStatus } from "./connections.types";
 
-const activeStatuses = new Set<DataSourceState["status"]>(["CONNECTED", "MANUAL"]);
+type WithStatus = { status: DataSourceStatus };
 
-export function connectionsSummaryOf(sources: readonly DataSourceState[]): ConnectionsSummary {
+const activeStatuses = new Set<DataSourceStatus>(["CONNECTED", "MANUAL"]);
+
+export function connectionsSummaryOf(sources: readonly WithStatus[]): ConnectionsSummary {
   return {
     total: sources.length,
     active: sources.filter((s) => activeStatuses.has(s.status)).length,
@@ -11,7 +13,7 @@ export function connectionsSummaryOf(sources: readonly DataSourceState[]): Conne
   };
 }
 
-export function hasErrorSource(sources: readonly DataSourceState[]): boolean {
+export function hasErrorSource(sources: readonly WithStatus[]): boolean {
   return sources.some((s) => s.status === "ERROR");
 }
 

@@ -6,12 +6,12 @@ export function createRequireAuth(secret: string): RequestHandler {
   return (req, _res, next) => {
     const header = req.header("authorization") ?? "";
     const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-    const auth = token ? verifyAccessToken(token, secret) : null;
-    if (!auth) {
+    const principal = token ? verifyAccessToken(token, secret) : null;
+    if (!principal) {
       next(unauthorized());
       return;
     }
-    req.auth = auth;
+    req.principal = principal;
     next();
   };
 }

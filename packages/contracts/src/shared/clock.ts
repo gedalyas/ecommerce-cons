@@ -1,1 +1,3 @@
-export const PROTOTYPE_TODAY = "2026-09-10";
+export function todayIso(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}

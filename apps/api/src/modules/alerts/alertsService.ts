@@ -1,4 +1,4 @@
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { currentDay } from "@/shared/config/clock";
 import { trafficAggregate } from "@/modules/marketing/contract";
 import { ordersAggregate } from "@/modules/orders/contract";
 import { inventoryFacts, productSales } from "@/modules/products/contract";
@@ -30,7 +30,7 @@ const productPairs = (
 
 export async function alertFactsFor(
   clientId: string,
-  today = PROTOTYPE_TODAY,
+  today: string = currentDay(),
 ): Promise<AlertFacts> {
   const { current, previous } = weekWindows(today);
   const [orders, ordersBefore, traffic, trafficBefore, products, productsBefore, variants] =
@@ -58,6 +58,9 @@ export async function alertFactsFor(
   };
 }
 
-export async function alertsFor(clientId: string, today = PROTOTYPE_TODAY): Promise<AlertItem[]> {
+export async function alertsFor(
+  clientId: string,
+  today: string = currentDay(),
+): Promise<AlertItem[]> {
   return deriveAlerts(await alertFactsFor(clientId, today));
 }

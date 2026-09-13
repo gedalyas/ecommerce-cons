@@ -18,15 +18,19 @@ export type MarketingDependencies = {
 export function marketingController({ costLinesFor, retentionFor }: MarketingDependencies) {
   return {
     async screen(req: Request, res: Response) {
-      const { clientId } = authOf(req);
+      const { clientId, role } = authOf(req);
       const search = screenQuery(req, marketingSearchSchema);
       const custos = await costLinesFor(clientId, search);
       const screen: MarketingScreen =
         search.aba === "visao"
           ? {
               aba: "visao",
-              ...(await marketingVisao(clientId, { ...search, custos })),
-              retention: await retentionFor(clientId),
+              ...(await marketingVisao(
+                clientId,
+                { ...search, custos },
+                await retentionFor(clientId),
+                role !== "CLIENT",
+              )),
             }
           : await marketingScreen(clientId, { ...search, custos });
       res.json(screen);

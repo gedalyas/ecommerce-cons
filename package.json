@@ -23,7 +23,8 @@
     "db:seed": "npm run seed -w packages/database",
     "db:studio": "npm run studio -w packages/database",
     "db:reset": "npm run reset -w packages/database",
-    "favicon": "node scripts/generate-favicon.mjs"
+    "favicon": "node scripts/generate-favicon.mjs",
+    "db:seed:dev": "npm run seed:dev -w packages/database"
   },
   "overrides": {
     "rolldown": "1.2.1"

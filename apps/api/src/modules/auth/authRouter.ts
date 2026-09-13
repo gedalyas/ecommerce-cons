@@ -17,6 +17,8 @@ export function createAuthRouter(deps: AuthDependencies, requireAuth: RequestHan
   });
 
   router.post("/auth/login", loginLimiter, asyncHandler(controller.login));
+  router.post("/auth/register", loginLimiter, asyncHandler(controller.register));
+  router.get("/auth/invitation", loginLimiter, asyncHandler(controller.invitation));
   router.post("/auth/refresh", asyncHandler(controller.refresh));
   router.post("/auth/logout", asyncHandler(controller.logout));
   router.get("/me", requireAuth, asyncHandler(controller.me));

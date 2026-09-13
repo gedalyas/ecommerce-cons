@@ -29,15 +29,6 @@ enum Fidelity {
   @@map("fidelity")
 }
 
-/// Direction of the month-over-month delta, as rendered (green/red/neutral).
-enum DeltaDirection {
-  UP
-  DOWN
-  NEUTRAL
-
-  @@map("delta_direction")
-}
-
 /// Progress of a pillar inside a section.
 enum PillarStatus {
   DONE
@@ -58,18 +49,21 @@ enum DataSourceStatus {
   @@map("data_source_status")
 }
 
-enum MessageRole {
-  USER
-  ASSISTANT
-
-  @@map("message_role")
-}
-
 enum UserRole {
+  ADMIN
   CONSULTANT
   CLIENT
 
   @@map("user_role")
+}
+
+enum ConnectionRequestStatus {
+  REQUESTED
+  IN_PROGRESS
+  DONE
+  DECLINED
+
+  @@map("connection_request_status")
 }
 
 enum ImportKind {
@@ -112,11 +106,11 @@ model ImportJob {
   @@map("import_job")
 }
 
-/// Someone who signs in: a consultant of the agency or a person at the client.
-/// One user belongs to one client (the consultant sees the client they work on).
+/// Someone who signs in. CLIENT users belong to one store; consultants and admins have none
+/// and reach stores through assignments (or everything, for admins).
 model User {
   id           String   @id @default(cuid())
-  clientId     String   @map("client_id")
+  clientId     String?  @map("client_id")
   email        String   @unique
   name         String
   /// scrypt hash, "salt:hash" in hex.
@@ -125,12 +119,45 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  refreshTokens RefreshToken[]
-  importJobs    ImportJob[]
+  client             Client?                @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  refreshTokens      RefreshToken[]
+  importJobs         ImportJob[]
+  assignments        ConsultantAssignment[]
+  invitationsSent    Invitation[]
+  connectionRequests ConnectionRequest[]
 
   @@index([clientId])
   @@map("user")
+}
+
+model ConsultantAssignment {
+  id           String   @id @default(cuid())
+  consultantId String   @map("consultant_id")
+  clientId     String   @map("client_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  consultant User   @relation(fields: [consultantId], references: [id], onDelete: Cascade)
+  client     Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([consultantId, clientId])
+  @@map("consultant_assignment")
+}
+
+/// An e-mail released to use the product; a CLIENT invitation without a store lets the
+/// invitee create one on first access.
+model Invitation {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  role        UserRole
+  clientId    String?   @map("client_id")
+  invitedById String?   @map("invited_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  acceptedAt  DateTime? @map("accepted_at")
+
+  client    Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  invitedBy User?   @relation(fields: [invitedById], references: [id], onDelete: SetNull)
+
+  @@map("invitation")
 }
 
 /// Rotating refresh tokens; only the sha256 of the token is stored.
@@ -552,121 +579,69 @@ model CostExpense {
   @@map("cost_expense")
 }
 
-/// A consulting client (the prototype ships a single one: "Loja Aurora").
+/// A store: the tenant. Every fact table hangs from it.
 model Client {
-  id        String   @id @default(cuid())
-  /// URL-safe identifier, e.g. "loja-aurora".
-  slug      String   @unique
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                 String    @id @default(cuid())
+  /// URL-safe identifier, e.g. "loja-exemplo".
+  slug               String    @unique
+  name               String
+  segment            String?
+  /// Connector key of the storefront/ERP the store runs on.
+  platform           String?
+  monthlyRevenueBand String?   @map("monthly_revenue_band")
+  timezone           String    @default("America/Sao_Paulo")
+  onboardedAt        DateTime? @map("onboarded_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
 
-  sections           Section[]
-  metrics            Metric[]
+  users              User[]
+  consultants        ConsultantAssignment[]
+  invitations        Invitation[]
+  pillars            Pillar[]
   recommendations    Recommendation[]
-  alerts             Alert[]
   milestoneCriteria  MilestoneCriterion[]
+  manualKpiValues    ManualKpiValue[]
   dataSources        DataSource[]
-  monthlySnapshots   MonthlySnapshot[]
-  assistantMessages  AssistantMessage[]
+  connectionRequests ConnectionRequest[]
+  importJobs         ImportJob[]
   products           Product[]
   customers          Customer[]
   orders             Order[]
   trafficDaily       TrafficDaily[]
   adSpendDaily       AdSpendDaily[]
+  adSpendRegionDaily AdSpendRegionDaily[]
   costExpenses       CostExpense[]
   goals              Goal[]
-  adSpendRegionDaily AdSpendRegionDaily[]
   influencers        Influencer[]
-  users              User[]
-  importJobs         ImportJob[]
 
   @@map("client")
 }
 
-/// A top-level area of the dashboard: money, marketing, logistics, management.
-model Section {
-  id       String @id @default(cuid())
-  clientId String @map("client_id")
-  /// Stable key used by the UI: "money" | "marketing" | "logistics" | "management".
-  key      String
-  /// Screen title, in Portuguese.
-  title    String
-  subtitle String
-  /// Display order in the sidebar.
-  position Int
-
-  client  Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  pillars Pillar[]
-
-  @@unique([clientId, key])
-  @@map("section")
-}
-
-/// A pillar inside a section, rendered as a card with KPIs and recommendations.
+/// One pillar of the engagement for one store; the titles and the KPI list come from the
+/// template in contracts, the status and the pending note are the consultant's.
 model Pillar {
   id          String       @id @default(cuid())
-  sectionId   String       @map("section_id")
-  /// Stable key, e.g. "acquisition".
+  clientId    String       @map("client_id")
+  areaKey     String       @map("area_key")
   key         String
-  title       String
   status      PillarStatus
-  /// Footer note listing missing data, when there is any.
   dataPending String?      @map("data_pending")
-  /// Id of feature-specific extra content, e.g. "creative-presence".
-  extra       String?
   position    Int
 
-  section         Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  metrics         Metric[]
+  client          Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
   recommendations Recommendation[]
 
-  @@unique([sectionId, key])
+  @@unique([clientId, key])
+  @@index([clientId, areaKey])
   @@map("pillar")
 }
 
-/// A KPI. Belongs to a pillar, or directly to the client when it is one of the
-/// four headline metrics on the dashboard.
-model Metric {
-  id             String          @id @default(cuid())
-  clientId       String          @map("client_id")
-  pillarId       String?         @map("pillar_id")
-  label          String
-  /// Pre-formatted display value ("R$ 487.300", "19,2%"). The raw number lives
-  /// in rawValue so charts and comparisons do not parse strings.
-  value          String
-  rawValue       Decimal?        @map("raw_value") @db.Decimal(14, 4)
-  unit           String?
-  delta          String?
-  deltaDirection DeltaDirection? @map("delta_direction")
-  subNote        String?         @map("sub_note")
-  fidelity       Fidelity
-  /// Tooltip explaining where the number came from.
-  fidelityNote   String          @map("fidelity_note")
-  /// True for the four headline KPIs on the dashboard.
-  isHeadline     Boolean         @default(false) @map("is_headline")
-  position       Int
-  measuredAt     DateTime?       @map("measured_at")
-
-  client Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  pillar Pillar? @relation(fields: [pillarId], references: [id], onDelete: Cascade)
-
-  @@index([clientId, isHeadline])
-  @@index([pillarId])
-  @@map("metric")
-}
-
-/// An open recommendation. Belongs to a pillar, or directly to the client when
-/// it shows up in the dashboard "Recomendacoes em aberto" block.
 model Recommendation {
   id        String    @id @default(cuid())
   clientId  String    @map("client_id")
   pillarId  String?   @map("pillar_id")
   text      String
-  /// Display deadline, e.g. "até 05/09".
-  dueLabel  String    @map("due_label")
-  dueDate   DateTime? @map("due_date") @db.Date
-  /// Display owner, e.g. "Marina (Comercial)".
+  dueDate   DateTime  @map("due_date") @db.Date
   owner     String
   doneAt    DateTime? @map("done_at")
   position  Int
@@ -680,38 +655,14 @@ model Recommendation {
   @@map("recommendation")
 }
 
-/// One of the "Precisa da sua atenção" cards on the dashboard.
-model Alert {
-  id        String    @id @default(cuid())
-  clientId  String    @map("client_id")
-  icon      String
-  title     String
-  detail    String
-  /// Section the alert came from, e.g. "Dinheiro".
-  origin    String
-  /// Destination path, e.g. "/dinheiro".
-  href      String
-  position  Int
-  createdAt DateTime  @default(now()) @map("created_at")
-  clearedAt DateTime? @map("cleared_at")
-
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-
-  @@index([clientId, clearedAt])
-  @@map("alert")
-}
-
-/// One of the four maturity-milestone criteria.
 model MilestoneCriterion {
   id       String  @id @default(cuid())
   clientId String  @map("client_id")
   key      String
-  name     String
   /// 0-100, drives the progress bar.
-  progress Int
+  progress Int     @default(0)
   achieved Boolean @default(false)
-  /// Short explanation, e.g. "CAC R$ 62 · meta R$ 41".
-  note     String
+  note     String  @default("")
   position Int
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
@@ -720,10 +671,29 @@ model MilestoneCriterion {
   @@map("milestone_criterion")
 }
 
-/// An external system feeding the dashboard (Bling, Meta Ads, ...).
+/// A KPI the consultant informs by hand for a pillar (no data source feeds it).
+model ManualKpiValue {
+  id        String   @id @default(cuid())
+  clientId  String   @map("client_id")
+  pillarKey String   @map("pillar_key")
+  kpiKey    String   @map("kpi_key")
+  value     String
+  delta     String?
+  fidelity  Fidelity
+  note      String   @default("")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, pillarKey, kpiKey])
+  @@map("manual_kpi_value")
+}
+
 model DataSource {
   id           String           @id @default(cuid())
   clientId     String           @map("client_id")
+  /// Key in the connector catalog (contracts), e.g. "meta_ads".
+  connectorKey String           @map("connector_key")
   name         String
   /// Display category, e.g. "ERP", "Mídia paga".
   kind         String
@@ -733,42 +703,24 @@ model DataSource {
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
-  @@unique([clientId, name])
+  @@unique([clientId, connectorKey])
   @@map("data_source")
 }
 
-/// One point of the 12-month revenue/margin chart.
-model MonthlySnapshot {
-  id       String   @id @default(cuid())
-  clientId String   @map("client_id")
-  /// First day of the month the snapshot refers to.
-  month    DateTime @db.Date
-  /// Display label, e.g. "ago/26".
-  label    String
-  revenue  Decimal  @db.Decimal(14, 2)
-  /// Contribution margin in percentage points, e.g. 19.2.
-  margin   Decimal  @db.Decimal(5, 2)
+model ConnectionRequest {
+  id            String                  @id @default(cuid())
+  clientId      String                  @map("client_id")
+  connectorKey  String                  @map("connector_key")
+  status        ConnectionRequestStatus @default(REQUESTED)
+  note          String                  @default("")
+  requestedById String?                 @map("requested_by_id")
+  createdAt     DateTime                @default(now()) @map("created_at")
+  resolvedAt    DateTime?               @map("resolved_at")
 
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client      Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  requestedBy User?  @relation(fields: [requestedById], references: [id], onDelete: SetNull)
 
-  @@unique([clientId, month])
-  @@map("monthly_snapshot")
+  @@index([clientId, status])
+  @@map("connection_request")
 }
 
-/// A message in the assistant panel. Replies are canned in the prototype.
-model AssistantMessage {
-  id         String      @id @default(cuid())
-  clientId   String      @map("client_id")
-  role       MessageRole
-  text       String
-  /// Origin pillar cited by the answer, e.g. "Marketing · Aquisição".
-  pillarRef  String?     @map("pillar_ref")
-  /// Whether the message offers the "Levar para a reunião" action.
-  forMeeting Boolean     @default(false) @map("for_meeting")
-  createdAt  DateTime    @default(now()) @map("created_at")
-
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-
-  @@index([clientId, createdAt])
-  @@map("assistant_message")
-}
