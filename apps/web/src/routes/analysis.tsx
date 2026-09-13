@@ -9,13 +9,13 @@ export const Route = createFileRoute("/metricas")({
   search: { middlewares: [stripSearchParams(defaultAnalysisSearch)] },
   head: () => ({
     meta: [
-      { title: "Métricas · Loja Aurora | Diagnóstico por métrica" },
+      { title: "Métricas · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Diagnóstico de uma métrica da Loja Aurora: veredito, comparação, série temporal e os drivers que explicam o resultado.",
+          "Diagnóstico de uma métrica da loja: veredito, comparação, série temporal e os drivers que explicam o resultado.",
       },
-      { property: "og:title", content: "Métricas · Loja Aurora" },
+      { property: "og:title", content: "Métricas · E-commerce Insights" },
     ],
   }),
   loaderDeps: ({ search }) => search,

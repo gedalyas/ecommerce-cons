@@ -5,11 +5,11 @@ import {
   createRootRouteWithContext,
   redirect,
   retainSearchParams,
-  stripSearchParams,
   useNavigate,
   useRouter,
   HeadContent,
   Scripts,
+  type SearchMiddleware,
   type SearchSchemaInput,
 } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -17,19 +17,34 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "@/shared/styles/global.css?url";
 import { reportError } from "@/shared/utils/errorReporting";
+import { todayIso } from "@ecommerce/contracts/shared/clock";
 import {
-  defaultPeriodSearch,
+  defaultPeriodSearchFor,
   parsePeriodSearch,
   type PeriodSearch,
 } from "@ecommerce/contracts/shared/period";
 import { AppShell } from "@/shared/layout/AppShell";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
-import { getSessionUser, logoutFn } from "@/modules/auth/contract";
+import { getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
 import { getConnectionsHealth } from "@/modules/connections/contract";
 import { getMilestoneSummary } from "@/modules/consulting/contract";
 
 const SHELL_STALE_MS = 5 * 60_000;
+
+const periodKeys = ["inicio", "fim", "por", "comparar", "canal"] as const;
+
+const stripPeriodDefaults: SearchMiddleware<PeriodSearch> = ({ search, next }) => {
+  const result = next(search);
+  const defaults = defaultPeriodSearchFor(todayIso());
+  const stripped = { ...result } as Record<string, unknown>;
+  for (const key of periodKeys) if (stripped[key] === defaults[key]) delete stripped[key];
+  return stripped as PeriodSearch;
+};
 const LOGIN_PATH = "/entrar";
+const PUBLIC_PATHS = ["/entrar", "/cadastro"];
+const ONBOARDING_PATH = "/configurar-loja";
+const ADMIN_PATH = "/admin";
+const NO_STORE_PATHS = ["/configurar-loja", "/admin"];
 const emptyStatus = { maturity: { achieved: 0, total: 0 }, connectionsAlert: false };
 
 function NotFoundComponent() {
@@ -96,20 +111,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   search: {
     middlewares: [
       retainSearchParams(["inicio", "fim", "por", "comparar", "canal"]),
-      stripSearchParams(defaultPeriodSearch),
+      stripPeriodDefaults,
     ],
   },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Loja Aurora · Consultoria de e-commerce" },
+      { title: "E-commerce Insights" },
       {
         name: "description",
         content:
           "Painel de consultoria de e-commerce: indicadores de dinheiro, marketing, logística e gestão em um só lugar.",
       },
-      { property: "og:title", content: "Loja Aurora · Consultoria de e-commerce" },
+      { property: "og:title", content: "E-commerce Insights" },
       {
         property: "og:description",
         content: "Indicadores de dinheiro, marketing, logística e gestão em um só painel.",
@@ -133,17 +148,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
-  loader: async ({ location }) => {
-    const user = await getSessionUser();
-    if (!user) {
-      if (location.pathname !== LOGIN_PATH) throw redirect({ to: LOGIN_PATH });
-      return { user: null, status: emptyStatus };
+  beforeLoad: async ({ location }) => {
+    const session = await getSessionState();
+    if (!session) {
+      if (!PUBLIC_PATHS.includes(location.pathname)) throw redirect({ to: LOGIN_PATH });
+      return { session: null };
     }
+    const { user, activeStore } = session;
+    if (!activeStore) {
+      const allowed = NO_STORE_PATHS.includes(location.pathname);
+      if (!allowed) {
+        throw redirect({ to: user.role === "CLIENT" ? ONBOARDING_PATH : "/admin" });
+      }
+      return { session };
+    }
+    if (location.pathname === ONBOARDING_PATH) throw redirect({ to: "/" });
+    if (location.pathname === ADMIN_PATH && user.role === "CLIENT") throw redirect({ to: "/" });
+    return { session };
+  },
+  loaderDeps: () => ({}),
+  loader: async ({ context }) => {
+    if (!context.session?.activeStore) return { status: emptyStatus };
     const [maturity, connections] = await Promise.all([
       getMilestoneSummary(),
       getConnectionsHealth(),
     ]);
-    return { user, status: { maturity, connectionsAlert: connections.hasError } };
+    return { status: { maturity, connectionsAlert: connections.hasError } };
   },
   staleTime: SHELL_STALE_MS,
   shellComponent: RootShell,
@@ -168,17 +198,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { user, status } = Route.useLoaderData();
+  const { session } = Route.useRouteContext();
+  const { status } = Route.useLoaderData();
+  const user = session?.user ?? null;
+  const activeStore = session?.activeStore ?? null;
   const router = useRouter();
   const navigate = useNavigate();
   const logout = useServerFn(logoutFn);
+  const select = useServerFn(selectStoreFn);
 
   if (!user) return <Outlet />;
+  if (!activeStore && user.role === "CLIENT") return <Outlet />;
 
   const signOut = async () => {
     await logout();
     await router.invalidate();
     await navigate({ to: LOGIN_PATH });
+  };
+  const switchStore = async (clientId: string) => {
+    await select({ data: { clientId } });
+    await router.invalidate();
+    await navigate({ to: "/" });
   };
 
   return (
@@ -187,7 +227,14 @@ function RootComponent() {
         assistant={<AssistantPanel />}
         assistantFab={<AssistantFab />}
         status={status}
-        account={{ name: user.name, onSignOut: () => void signOut() }}
+        account={{
+          name: user.name,
+          role: user.role,
+          onSignOut: () => void signOut(),
+          store: activeStore ? { id: activeStore.id, name: activeStore.name } : null,
+          stores: user.stores.map((s) => ({ id: s.id, name: s.name })),
+          onSelectStore: (id) => void switchStore(id),
+        }}
       />
     </QueryClientProvider>
   );

@@ -9,13 +9,13 @@ export const Route = createFileRoute("/metas")({
   search: { middlewares: [stripSearchParams(defaultGoalsSearch)] },
   head: () => ({
     meta: [
-      { title: "Metas · Loja Aurora | Realizado × meta e planejamento" },
+      { title: "Metas · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Metas da Loja Aurora: realizado contra meta com caminho para a meta, e o planejamento anual com seis direcionadores por mês.",
+          "Metas da loja: realizado contra meta com caminho para a meta, e o planejamento anual com seis direcionadores por mês.",
       },
-      { property: "og:title", content: "Metas · Loja Aurora" },
+      { property: "og:title", content: "Metas · E-commerce Insights" },
     ],
   }),
   loaderDeps: ({ search }) => search,

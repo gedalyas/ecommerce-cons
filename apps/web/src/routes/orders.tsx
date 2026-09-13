@@ -9,13 +9,13 @@ export const Route = createFileRoute("/pedidos")({
   search: { middlewares: [stripSearchParams(defaultOrdersSearch)] },
   head: () => ({
     meta: [
-      { title: "Pedidos · Loja Aurora | Captura, aprovação e lista" },
+      { title: "Pedidos · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Pedidos da Loja Aurora: receita capturada e paga, taxa de aprovação por status, método e gateway, e a lista transacional com custo e margem.",
+          "Pedidos da loja: receita capturada e paga, taxa de aprovação por status, método e gateway, e a lista transacional com custo e margem.",
       },
-      { property: "og:title", content: "Pedidos · Loja Aurora" },
+      { property: "og:title", content: "Pedidos · E-commerce Insights" },
     ],
   }),
   loaderDeps: ({ search }) => search,

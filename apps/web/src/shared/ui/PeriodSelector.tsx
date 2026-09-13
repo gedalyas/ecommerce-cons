@@ -21,7 +21,7 @@ import {
   toIsoDate,
   type PeriodSearch,
 } from "@ecommerce/contracts/shared/period";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { todayIso } from "@ecommerce/contracts/shared/clock";
 import { textClass } from "@/shared/styles/typography";
 import type { PeriodSelectorProps } from "./periodSelector.types";
 
@@ -34,7 +34,7 @@ export type { PeriodSelectorProps } from "./periodSelector.types";
 export function PeriodSelector({
   value,
   onChange,
-  today = PROTOTYPE_TODAY,
+  today = todayIso(),
   className,
 }: PeriodSelectorProps) {
   const [open, setOpen] = useState(false);

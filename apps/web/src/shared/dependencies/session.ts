@@ -1,7 +1,13 @@
 import { useSession as startSession } from "@tanstack/react-start/server";
 import type { AuthUser } from "@ecommerce/contracts/auth";
 
-export type SessionData = { accessToken: string; refreshToken: string; user: AuthUser };
+export type SessionData = {
+  accessToken: string;
+  refreshToken: string;
+  user: AuthUser;
+  userRefreshedAt: number;
+  activeClientId: string | null;
+};
 
 const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 

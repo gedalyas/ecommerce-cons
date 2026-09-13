@@ -79,7 +79,7 @@ export function Analysis({ data }: { data: AnalysisScreen }) {
     <div className={layout.page}>
       <PageHeader
         title="Métricas"
-        subtitle={`Diagnóstico de ${data.metric.label} em ${formatPeriodLabel(period.inicio, period.fim)} · Loja Aurora`}
+        subtitle={`Diagnóstico de ${data.metric.label} em ${formatPeriodLabel(period.inicio, period.fim)}`}
       />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>

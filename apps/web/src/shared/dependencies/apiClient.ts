@@ -36,10 +36,15 @@ function bodyOf(body: unknown): { headers: Record<string, string>; body: BodyIni
   return { headers: { "content-type": "application/json" }, body: JSON.stringify(body) };
 }
 
-async function send(path: string, init: ApiRequest, token: string | null) {
+type Credentials = { token: string; clientId: string | null } | null;
+
+async function send(path: string, init: ApiRequest, credentials: Credentials) {
   const encoded = bodyOf(init.body);
   const headers: Record<string, string> = { accept: "application/json", ...encoded.headers };
-  if (token) headers["authorization"] = `Bearer ${token}`;
+  if (credentials) {
+    headers["authorization"] = `Bearer ${credentials.token}`;
+    if (credentials.clientId) headers["x-client-id"] = credentials.clientId;
+  }
   const response = await fetch(`${baseUrl()}${path}${toQueryString(init.query)}`, {
     method: init.method ?? "GET",
     headers,
@@ -66,17 +71,18 @@ async function refreshedToken(): Promise<string | null> {
 
 export async function apiFetch<T>(path: string, init: ApiRequest = {}): Promise<T> {
   const auth = init.auth ?? true;
-  let token: string | null = null;
+  let credentials: Credentials = null;
   if (auth) {
     const session = await appSession();
-    token = session.data.accessToken ?? null;
+    const token = session.data.accessToken ?? null;
     if (!token) throw redirect({ to: LOGIN_PATH });
+    credentials = { token, clientId: session.data.activeClientId ?? null };
   }
-  let result = await send(path, init, token);
-  if (auth && result.status === 401) {
+  let result = await send(path, init, credentials);
+  if (auth && credentials && result.status === 401) {
     const fresh = await refreshedToken();
     if (!fresh) throw redirect({ to: LOGIN_PATH });
-    result = await send(path, init, fresh);
+    result = await send(path, init, { ...credentials, token: fresh });
   }
   if (!result.ok) {
     const body = (result.body ?? { message: "Falha na requisição" }) as ApiError;

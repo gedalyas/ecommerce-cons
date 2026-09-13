@@ -6,7 +6,7 @@ import { parseOrThrow } from "@/shared/http/validate";
 import { importJobOf, importsScreen, runImport } from "./importsService";
 import { fileTypeProblem } from "./uploadRules";
 
-export type ImportsDependencies = { now: () => Date };
+export type ImportsDependencies = { now: () => Date; rateLimited: boolean };
 
 export function importsController({ now }: ImportsDependencies) {
   return {

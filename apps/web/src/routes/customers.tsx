@@ -9,13 +9,13 @@ export const Route = createFileRoute("/clientes")({
   search: { middlewares: [stripSearchParams(defaultCustomersSearch)] },
   head: () => ({
     meta: [
-      { title: "Clientes · Loja Aurora | RFM, recompra, LTV e CAC" },
+      { title: "Clientes · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Clientes da Loja Aurora: segmentação RFM com filtros acionáveis, recompra por ordem de compra e a economia unitária da aquisição (LTV e CAC).",
+          "Clientes da loja: segmentação RFM com filtros acionáveis, recompra por ordem de compra e a economia unitária da aquisição (LTV e CAC).",
       },
-      { property: "og:title", content: "Clientes · Loja Aurora" },
+      { property: "og:title", content: "Clientes · E-commerce Insights" },
     ],
   }),
   loaderDeps: ({ search }) => search,

@@ -6,17 +6,16 @@ import { layout } from "@/shared/styles/spacing";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard · Loja Aurora | Consultoria de e-commerce" },
+      { title: "Dashboard · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Painel de consultoria de e-commerce da Loja Aurora: faturamento, margem, CAC, recompra, alertas e marco de maturidade.",
+          "Painel de consultoria de e-commerce da loja: faturamento, margem, CAC, recompra, alertas e marco de maturidade.",
       },
-      { property: "og:title", content: "Dashboard · Loja Aurora" },
+      { property: "og:title", content: "Dashboard · E-commerce Insights" },
       {
         property: "og:description",
-        content:
-          "Faturamento, margem, CAC e recompra da Loja Aurora em um só painel de consultoria.",
+        content: "Faturamento, margem, CAC e recompra da loja em um só painel de consultoria.",
       },
     ],
   }),

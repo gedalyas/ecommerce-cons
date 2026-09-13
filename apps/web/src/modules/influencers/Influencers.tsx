@@ -121,7 +121,7 @@ export function Influencers({ data }: { data: InfluencersScreen }) {
     <div className={layout.page}>
       <PageHeader
         title="Influenciadores"
-        subtitle={`Parcerias, remuneração e o retorno de cada cupom em ${formatPeriodLabel(period.inicio, period.fim)} · Loja Aurora`}
+        subtitle={`Parcerias, remuneração e o retorno de cada cupom em ${formatPeriodLabel(period.inicio, period.fim)}`}
       />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>

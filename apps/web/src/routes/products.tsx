@@ -9,13 +9,13 @@ export const Route = createFileRoute("/produtos")({
   search: { middlewares: [stripSearchParams(defaultProductsSearch)] },
   head: () => ({
     meta: [
-      { title: "Produtos · Loja Aurora | Vendas, curva ABC e estoque" },
+      { title: "Produtos · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Produtos da Loja Aurora: mais e menos vendidos, curva ABC, risco de estoque, rupturas e a posição de estoque por variante.",
+          "Produtos da loja: mais e menos vendidos, curva ABC, risco de estoque, rupturas e a posição de estoque por variante.",
       },
-      { property: "og:title", content: "Produtos · Loja Aurora" },
+      { property: "og:title", content: "Produtos · E-commerce Insights" },
     ],
   }),
   loaderDeps: ({ search }) => search,

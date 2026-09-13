@@ -14,7 +14,10 @@ import {
   Target,
   Truck,
   Building2,
+  Settings,
+  ShieldCheck,
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
 import { cn } from "@/shared/utils/cn";
 import type { ShellAccount, ShellStatus } from "./shellStatus.types";
@@ -55,12 +58,29 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
     <aside className="sticky top-0 hidden h-dvh w-18 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex xl:w-60">
       <div className="border-b border-sidebar-border px-3 py-4 xl:px-4">
         <div className="t-card-title truncate text-foreground">
-          <span className="xl:hidden">NP</span>
-          <span className="hidden xl:inline">Nome Provisório</span>
+          <span className="xl:hidden">EI</span>
+          <span className="hidden xl:inline">E-commerce Insights</span>
         </div>
         <div className="mt-3 hidden xl:block">
-          <div className="t-label text-muted-foreground">Cliente</div>
-          <div className="mt-1 truncate text-[15px] font-semibold text-foreground">Loja Aurora</div>
+          <div className="t-label text-muted-foreground">Loja</div>
+          {account.stores.length > 1 ? (
+            <Select value={account.store?.id ?? ""} onValueChange={account.onSelectStore}>
+              <SelectTrigger className="mt-1 h-9" aria-label="Trocar de loja">
+                <SelectValue placeholder="Escolha a loja" />
+              </SelectTrigger>
+              <SelectContent>
+                {account.stores.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="mt-1 truncate text-[15px] font-semibold text-foreground">
+              {account.store?.name ?? "Nenhuma loja"}
+            </div>
+          )}
         </div>
       </div>
 
@@ -127,6 +147,30 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
             Conexões
           </TooltipContent>
         </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link to="/loja" className={linkClass(pathname === "/loja")}>
+              <Settings className="h-4 w-4 shrink-0" />
+              <span className="hidden flex-1 truncate xl:inline">Loja</span>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="xl:hidden">
+            Loja
+          </TooltipContent>
+        </Tooltip>
+        {account.role !== "CLIENT" && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link to="/admin" className={linkClass(pathname === "/admin")}>
+                <ShieldCheck className="h-4 w-4 shrink-0" />
+                <span className="hidden flex-1 truncate xl:inline">Administração</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="xl:hidden">
+              Administração
+            </TooltipContent>
+          </Tooltip>
+        )}
       </nav>
 
       <div className="border-t border-sidebar-border px-3 py-3 xl:px-4">

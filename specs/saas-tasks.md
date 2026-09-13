@@ -5,7 +5,7 @@ something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **S1–S3 done (2026-09-13)** — the web adapts in S4 — last updated 2026-09-13
+Status: **S1–S4 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -62,16 +62,29 @@ Status: **S1–S3 done (2026-09-13)** — the web adapts in S4 — last updated 
       `store` profile (segments, revenue bands); `admin` shapes and schemas;
       `ConsultingMetric` is now live (numbers) or manual (consultant text)
 - [x] Real clock: `todayIso()`, `defaultPeriodSearchFor(today)`, `parsePeriodSearch(input,
-    today)`; `PROTOTYPE_TODAY` is gone
+today)`; `PROTOTYPE_TODAY` is gone
 
 ## S4 — Web
 
-- [ ] `/cadastro`, `/configurar-loja`, `/loja`; sidebar with the store name and the switcher;
-      session carries `activeClientId`; BFF sends `x-client-id`
-- [ ] `/admin`: stores, consultants, invitations, connection requests
-- [ ] Conexões on the catalog with "Solicitar conexão"; empty states across the data screens
-- [ ] Headless-browser flow: admin invites → invitee registers → configures the store →
-      empty dashboard → imports a CSV → numbers appear; consultant sees only assigned stores
+- [x] Session carries `activeClientId` (+ `userRefreshedAt`; the user is refreshed from `/me`
+      when stale or store-less); `apiFetch` sends `x-client-id`; the root `beforeLoad` guards
+      every navigation (no session → `/entrar`; no store → `/configurar-loja` for clients,
+      `/admin` for staff; clients never reach `/admin`) and the loader keeps the shell status
+- [x] `/cadastro` (`Register`, invitation lookup while typing), `/configurar-loja`
+      (`StoreOnboarding`), `/loja` (`StoreSettings`), shared `StoreForm`; `AuthCard` shared by
+      the auth pages; the sidebar shows the active store, a switcher when the user has more
+      than one, "Loja" and (staff) "Administração"; "Loja Aurora" and "Nome Provisório" gone
+- [x] `/admin`: stores with consultant assignment (admin), invitations (form + revoke),
+      connection requests (status select)
+- [x] Conexões on the catalog: status, sync label, feeds, "Solicitar conexão" dialog,
+      "Importar CSV" anchor; area screens render `ConsultingSection` through
+      `consulting/consultingUi.ts` (tested): live KPIs formatted with the comparison, manual
+      KPIs with the consultant's value or the hint, empty live KPIs as "—" with a C seal
+- [x] Headless browser: admin invites client + consultant → client registers (invite shown)
+      → creates the store → empty dashboard (0 de 4 critérios) → nine screens render → requests
+      a connector → imports 3 orders → Pedidos lists them → `/admin` redirects home;
+      consultant registers → `/admin` with no stores → admin assigns via the multiselect →
+      consultant sees the store and its screens
 
 ## S5 — Consulting layer per store
 

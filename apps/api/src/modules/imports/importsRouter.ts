@@ -41,6 +41,7 @@ export function createImportsRouter(deps: ImportsDependencies): Router {
     limit: UPLOADS_PER_15_MIN,
     standardHeaders: true,
     legacyHeaders: false,
+    skip: () => !deps.rateLimited,
     message: { message: "Muitos envios. Aguarde alguns minutos." },
   });
 

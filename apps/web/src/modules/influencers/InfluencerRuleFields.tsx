@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { todayIso } from "@ecommerce/contracts/shared/clock";
 import { FormField as Field } from "@/shared/ui/FormField";
 import {
   influencerRuleTypeLabel,
@@ -41,7 +41,7 @@ export function RuleFields({ form }: { form: Form }) {
           append({
             type: "MONTHLY",
             value: 0,
-            startDate: PROTOTYPE_TODAY,
+            startDate: todayIso(),
             endDate: "",
             cap: null,
             notes: "",

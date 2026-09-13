@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/shared/ui/Textarea";
 import { cn } from "@/shared/utils/cn";
 import { textClass } from "@/shared/styles/typography";
-import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { todayIso } from "@ecommerce/contracts/shared/clock";
 import {
   businessUnits,
   costCategories,
@@ -32,7 +32,7 @@ const emptyInput: CostInput = {
   subcategory: "other",
   frequency: "MONTHLY",
   value: 0,
-  startDate: PROTOTYPE_TODAY.slice(0, 8) + "01",
+  startDate: todayIso().slice(0, 8) + "01",
   endDate: null,
 };
 

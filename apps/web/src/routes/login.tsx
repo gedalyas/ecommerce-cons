@@ -1,16 +1,16 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Login, getSessionUser } from "@/modules/auth/contract";
+import { Login, getSessionState } from "@/modules/auth/contract";
 
 export const Route = createFileRoute("/entrar")({
   head: () => ({
     meta: [
       { title: "Entrar · E-commerce Insights" },
-      { name: "description", content: "Acesse o painel de consultoria de e-commerce." },
+      { name: "description", content: "Acesse o painel da sua loja." },
       { name: "robots", content: "noindex" },
     ],
   }),
   beforeLoad: async () => {
-    if (await getSessionUser()) throw redirect({ to: "/" });
+    if (await getSessionState()) throw redirect({ to: "/" });
   },
   component: Login,
 });

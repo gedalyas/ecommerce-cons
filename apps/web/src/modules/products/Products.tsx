@@ -141,10 +141,7 @@ export function Products({ data }: { data: ProductsScreen }) {
 
   return (
     <div className={layout.page}>
-      <PageHeader
-        title="Produtos"
-        subtitle={`Vendas, curva ABC e estoque · ${periodLabel} · Loja Aurora`}
-      />
+      <PageHeader title="Produtos" subtitle={`Vendas, curva ABC e estoque · ${periodLabel}`} />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
         {data.aba !== "estoque" && (

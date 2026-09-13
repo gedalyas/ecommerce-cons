@@ -9,17 +9,16 @@ export const Route = createFileRoute("/marketing")({
   search: { middlewares: [stripSearchParams(defaultMarketingSearch)] },
   head: () => ({
     meta: [
-      { title: "Marketing · Loja Aurora | CAC, conversão e retenção" },
+      { title: "Marketing · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Marketing da Loja Aurora: desempenho por canal, funil de conversão, campanhas por plataforma e cupons, com CAC, ROAS e recompra.",
+          "Marketing da loja: desempenho por canal, funil de conversão, campanhas por plataforma e cupons, com CAC, ROAS e recompra.",
       },
-      { property: "og:title", content: "Marketing · Loja Aurora" },
+      { property: "og:title", content: "Marketing · E-commerce Insights" },
       {
         property: "og:description",
-        content:
-          "CAC, ROAS, conversão e retenção da Loja Aurora com alertas de dados desatualizados.",
+        content: "CAC, ROAS, conversão e retenção da loja com alertas de dados desatualizados.",
       },
     ],
   }),

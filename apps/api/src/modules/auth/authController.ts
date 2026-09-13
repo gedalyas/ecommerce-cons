@@ -9,7 +9,7 @@ import { principalOf } from "@/shared/http/authOf";
 import { parseOrThrow } from "@/shared/http/validate";
 import { currentUser, invitationFor, login, logout, refresh, register } from "./authService";
 
-export type AuthDependencies = { secret: string; now: () => Date };
+export type AuthDependencies = { secret: string; now: () => Date; rateLimited: boolean };
 
 export function authController({ secret, now }: AuthDependencies) {
   return {

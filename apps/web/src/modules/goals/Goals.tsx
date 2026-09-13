@@ -44,8 +44,8 @@ export function Goals({ data }: { data: GoalsScreen }) {
         title="Metas"
         subtitle={
           data.aba === "resumo"
-            ? `Realizado × meta em ${formatPeriodLabel(data.summary.window.inicio, data.summary.window.fim)} · Loja Aurora`
-            : "Seis direcionadores por mês, oito métricas derivadas · Loja Aurora"
+            ? `Realizado × meta em ${formatPeriodLabel(data.summary.window.inicio, data.summary.window.fim)}`
+            : "Seis direcionadores por mês, oito métricas derivadas"
         }
       />
 

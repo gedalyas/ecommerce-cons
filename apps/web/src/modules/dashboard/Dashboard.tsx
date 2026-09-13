@@ -9,6 +9,7 @@ import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { PageHeader } from "@/shared/ui/PageHeader";
 import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { RecommendationList } from "@/shared/ui/RecommendationList";
+import { recommendationOf } from "@/modules/consulting/contract";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { TimeSeriesChart } from "@/shared/ui/TimeSeriesChart";
 import { usePeriod } from "@/shared/hooks/usePeriod";
@@ -101,7 +102,7 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
     <div className={layout.page}>
       <PageHeader
         title="Dashboard"
-        subtitle={`Visão consolidada de ${formatPeriodLabel(period.inicio, period.fim)} · Loja Aurora`}
+        subtitle={`Visão consolidada de ${formatPeriodLabel(period.inicio, period.fim)}`}
       />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
@@ -225,14 +226,14 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
                   {c.achieved ? "Atingido" : "Não atingido"}
                 </span>
                 {" · "}
-                {c.note}
+                {c.note || c.hint}
               </div>
             </div>
           ))}
         </SectionBlock>
 
         <SectionBlock title="Recomendações em aberto" bodyClassName={layout.cardPaddingX}>
-          <RecommendationList items={data.recommendations} />
+          <RecommendationList items={data.recommendations.map(recommendationOf)} />
         </SectionBlock>
       </div>
     </div>

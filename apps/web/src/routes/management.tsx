@@ -6,16 +6,16 @@ import { layout } from "@/shared/styles/spacing";
 export const Route = createFileRoute("/gestao")({
   head: () => ({
     meta: [
-      { title: "Gestão · Loja Aurora | Risco, delegação e tecnologia" },
+      { title: "Gestão · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Pilares de Gestão da Loja Aurora: blindagem contra concentração de receita, delegação de processos e tecnologia.",
+          "Pilares de Gestão da loja: blindagem contra concentração de receita, delegação de processos e tecnologia.",
       },
-      { property: "og:title", content: "Gestão · Loja Aurora" },
+      { property: "og:title", content: "Gestão · E-commerce Insights" },
       {
         property: "og:description",
-        content: "Concentração de receita, meses de caixa e delegação de processos da Loja Aurora.",
+        content: "Concentração de receita, meses de caixa e delegação de processos da loja.",
       },
     ],
   }),

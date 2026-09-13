@@ -12,13 +12,13 @@ export const Route = createFileRoute("/influenciadores")({
   search: { middlewares: [stripSearchParams(defaultInfluencersSearch)] },
   head: () => ({
     meta: [
-      { title: "Influenciadores · Loja Aurora | Hub de parcerias" },
+      { title: "Influenciadores · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Hub de influenciadores da Loja Aurora: cadastro de parcerias, regras de remuneração, cupons e o ROI de cada uma.",
+          "Hub de influenciadores da loja: cadastro de parcerias, regras de remuneração, cupons e o ROI de cada uma.",
       },
-      { property: "og:title", content: "Influenciadores · Loja Aurora" },
+      { property: "og:title", content: "Influenciadores · E-commerce Insights" },
     ],
   }),
   loaderDeps: ({ search }) => search,

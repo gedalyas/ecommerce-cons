@@ -27,6 +27,7 @@ export const API_PREFIX = "/api/v1";
 export function createApp(env: Env, now: () => Date = () => new Date()): Express {
   const app = express();
   const requireAuth = createRequireAuth(env.JWT_SECRET);
+  const rateLimited = env.NODE_ENV !== "development";
 
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
@@ -34,7 +35,7 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
   app.use(express.json({ limit: "1mb" }));
 
   app.use(API_PREFIX, createHealthRouter());
-  app.use(API_PREFIX, createAuthRouter({ secret: env.JWT_SECRET, now }, requireAuth));
+  app.use(API_PREFIX, createAuthRouter({ secret: env.JWT_SECRET, now, rateLimited }, requireAuth));
 
   app.use(
     API_PREFIX,
@@ -58,7 +59,7 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
     createInfluencersRouter(),
     createConnectionsRouter(),
     createConsultingRouter({ now }),
-    createImportsRouter({ now }),
+    createImportsRouter({ now, rateLimited }),
   ];
   app.use(API_PREFIX, requireAuth, resolveClient, ...storeRouters);
 

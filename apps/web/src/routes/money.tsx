@@ -9,16 +9,16 @@ export const Route = createFileRoute("/dinheiro")({
   search: { middlewares: [stripSearchParams(defaultMoneySearch)] },
   head: () => ({
     meta: [
-      { title: "Dinheiro · Loja Aurora | Margem, custos e caixa" },
+      { title: "Dinheiro · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Pilares de Dinheiro da Loja Aurora: organização financeira, custos e taxas, DRE gerencial e o cadastro de custos que alimenta as margens.",
+          "Pilares de Dinheiro da loja: organização financeira, custos e taxas, DRE gerencial e o cadastro de custos que alimenta as margens.",
       },
-      { property: "og:title", content: "Dinheiro · Loja Aurora" },
+      { property: "og:title", content: "Dinheiro · E-commerce Insights" },
       {
         property: "og:description",
-        content: "Margem, custos, taxas, DRE e caixa da Loja Aurora com recomendações em aberto.",
+        content: "Margem, custos, taxas, DRE e caixa da loja com recomendações em aberto.",
       },
     ],
   }),

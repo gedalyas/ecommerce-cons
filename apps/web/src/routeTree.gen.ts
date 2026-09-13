@@ -10,14 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as dashboardRouteImport } from './routes/dashboard'
+import { Route as adminRouteImport } from './routes/admin'
 import { Route as assistantRouteImport } from './routes/assistant'
+import { Route as registerRouteImport } from './routes/register'
 import { Route as customersRouteImport } from './routes/customers'
 import { Route as connectionsRouteImport } from './routes/connections'
+import { Route as storeOnboardingRouteImport } from './routes/storeOnboarding'
 import { Route as moneyRouteImport } from './routes/money'
 import { Route as loginRouteImport } from './routes/login'
 import { Route as managementRouteImport } from './routes/management'
 import { Route as influencersRouteImport } from './routes/influencers'
 import { Route as logisticsRouteImport } from './routes/logistics'
+import { Route as storeRouteImport } from './routes/store'
 import { Route as marketingRouteImport } from './routes/marketing'
 import { Route as goalsRouteImport } from './routes/goals'
 import { Route as analysisRouteImport } from './routes/analysis'
@@ -29,9 +33,19 @@ const dashboardRoute = dashboardRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const adminRoute = adminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const assistantRoute = assistantRouteImport.update({
   id: '/assistente',
   path: '/assistente',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const registerRoute = registerRouteImport.update({
+  id: '/cadastro',
+  path: '/cadastro',
   getParentRoute: () => rootRouteImport,
 } as any)
 const customersRoute = customersRouteImport.update({
@@ -42,6 +56,11 @@ const customersRoute = customersRouteImport.update({
 const connectionsRoute = connectionsRouteImport.update({
   id: '/conexoes',
   path: '/conexoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const storeOnboardingRoute = storeOnboardingRouteImport.update({
+  id: '/configurar-loja',
+  path: '/configurar-loja',
   getParentRoute: () => rootRouteImport,
 } as any)
 const moneyRoute = moneyRouteImport.update({
@@ -67,6 +86,11 @@ const influencersRoute = influencersRouteImport.update({
 const logisticsRoute = logisticsRouteImport.update({
   id: '/logistica',
   path: '/logistica',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const storeRoute = storeRouteImport.update({
+  id: '/loja',
+  path: '/loja',
   getParentRoute: () => rootRouteImport,
 } as any)
 const marketingRoute = marketingRouteImport.update({
@@ -97,14 +121,18 @@ const productsRoute = productsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
+  '/admin': typeof adminRoute
   '/assistente': typeof assistantRoute
+  '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
   '/conexoes': typeof connectionsRoute
+  '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/entrar': typeof loginRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
+  '/loja': typeof storeRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
   '/metricas': typeof analysisRoute
@@ -113,14 +141,18 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
+  '/admin': typeof adminRoute
   '/assistente': typeof assistantRoute
+  '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
   '/conexoes': typeof connectionsRoute
+  '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/entrar': typeof loginRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
+  '/loja': typeof storeRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
   '/metricas': typeof analysisRoute
@@ -130,14 +162,18 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof dashboardRoute
+  '/admin': typeof adminRoute
   '/assistente': typeof assistantRoute
+  '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
   '/conexoes': typeof connectionsRoute
+  '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/entrar': typeof loginRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
+  '/loja': typeof storeRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
   '/metricas': typeof analysisRoute
@@ -148,14 +184,18 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/assistente'
+    | '/cadastro'
     | '/clientes'
     | '/conexoes'
+    | '/configurar-loja'
     | '/dinheiro'
     | '/entrar'
     | '/gestao'
     | '/influenciadores'
     | '/logistica'
+    | '/loja'
     | '/marketing'
     | '/metas'
     | '/metricas'
@@ -164,14 +204,18 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/assistente'
+    | '/cadastro'
     | '/clientes'
     | '/conexoes'
+    | '/configurar-loja'
     | '/dinheiro'
     | '/entrar'
     | '/gestao'
     | '/influenciadores'
     | '/logistica'
+    | '/loja'
     | '/marketing'
     | '/metas'
     | '/metricas'
@@ -180,14 +224,18 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/assistente'
+    | '/cadastro'
     | '/clientes'
     | '/conexoes'
+    | '/configurar-loja'
     | '/dinheiro'
     | '/entrar'
     | '/gestao'
     | '/influenciadores'
     | '/logistica'
+    | '/loja'
     | '/marketing'
     | '/metas'
     | '/metricas'
@@ -197,14 +245,18 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   dashboardRoute: typeof dashboardRoute
+  adminRoute: typeof adminRoute
   assistantRoute: typeof assistantRoute
+  registerRoute: typeof registerRoute
   customersRoute: typeof customersRoute
   connectionsRoute: typeof connectionsRoute
+  storeOnboardingRoute: typeof storeOnboardingRoute
   moneyRoute: typeof moneyRoute
   loginRoute: typeof loginRoute
   managementRoute: typeof managementRoute
   influencersRoute: typeof influencersRoute
   logisticsRoute: typeof logisticsRoute
+  storeRoute: typeof storeRoute
   marketingRoute: typeof marketingRoute
   goalsRoute: typeof goalsRoute
   analysisRoute: typeof analysisRoute
@@ -221,11 +273,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof adminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/assistente': {
       id: '/assistente'
       path: '/assistente'
       fullPath: '/assistente'
       preLoaderRoute: typeof assistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro': {
+      id: '/cadastro'
+      path: '/cadastro'
+      fullPath: '/cadastro'
+      preLoaderRoute: typeof registerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/clientes': {
@@ -240,6 +306,13 @@ declare module '@tanstack/react-router' {
       path: '/conexoes'
       fullPath: '/conexoes'
       preLoaderRoute: typeof connectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configurar-loja': {
+      id: '/configurar-loja'
+      path: '/configurar-loja'
+      fullPath: '/configurar-loja'
+      preLoaderRoute: typeof storeOnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dinheiro': {
@@ -275,6 +348,13 @@ declare module '@tanstack/react-router' {
       path: '/logistica'
       fullPath: '/logistica'
       preLoaderRoute: typeof logisticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loja': {
+      id: '/loja'
+      path: '/loja'
+      fullPath: '/loja'
+      preLoaderRoute: typeof storeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketing': {
@@ -317,14 +397,18 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   dashboardRoute: dashboardRoute,
+  adminRoute: adminRoute,
   assistantRoute: assistantRoute,
+  registerRoute: registerRoute,
   customersRoute: customersRoute,
   connectionsRoute: connectionsRoute,
+  storeOnboardingRoute: storeOnboardingRoute,
   moneyRoute: moneyRoute,
   loginRoute: loginRoute,
   managementRoute: managementRoute,
   influencersRoute: influencersRoute,
   logisticsRoute: logisticsRoute,
+  storeRoute: storeRoute,
   marketingRoute: marketingRoute,
   goalsRoute: goalsRoute,
   analysisRoute: analysisRoute,

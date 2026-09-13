@@ -28,7 +28,7 @@ export function Orders({ data }: { data: OrdersScreen }) {
     <div className={layout.page}>
       <PageHeader
         title="Pedidos"
-        subtitle={`Captura, aprovação e detalhe dos pedidos de ${formatPeriodLabel(period.inicio, period.fim)} · Loja Aurora`}
+        subtitle={`Captura, aprovação e detalhe dos pedidos de ${formatPeriodLabel(period.inicio, period.fim)}`}
       />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>

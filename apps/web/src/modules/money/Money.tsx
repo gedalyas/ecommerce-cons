@@ -4,13 +4,12 @@ import { PageHeader } from "@/shared/ui/PageHeader";
 import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { PillarCard } from "@/shared/ui/PillarCard";
 import { TabBar } from "@/shared/ui/TabBar";
-import { metricToTile } from "@/shared/ui/metricToTile";
-import type { Metric } from "@/shared/ui/metricTile.types";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
-import type { DreIndicator, MoneyScreen, MoneyTab } from "@ecommerce/contracts/money";
+import type { MoneyScreen, MoneyTab } from "@ecommerce/contracts/money";
+import { sectionOf } from "@/modules/consulting/contract";
 import { MoneyCosts } from "./MoneyCosts";
 import { MoneyDre } from "./MoneyDre";
 
@@ -19,31 +18,6 @@ const tabs = [
   { key: "dre", label: "DRE" },
   { key: "custos", label: "Custos" },
 ] as const;
-
-const liveKpi: Record<string, DreIndicator["key"]> = {
-  "Margem de contribuição": "contributionMarginRate",
-  CMV: "cogsRate",
-  "Taxa média do adquirente": "sellingCostRate",
-  "Custo de frete / pedido": "shippingCostPerOrder",
-};
-
-function withLiveKpis(kpis: Metric[], indicators: DreIndicator[], comparisonLabel: string) {
-  return kpis.map((kpi) => {
-    const key = liveKpi[kpi.label];
-    const indicator = key ? indicators.find((i) => i.key === key) : undefined;
-    return indicator
-      ? metricToTile({
-          label: kpi.label,
-          metric: indicator.metric,
-          comparisonLabel,
-          goodWhen: indicator.goodWhen,
-          fidelity: "B",
-          fidelityNote:
-            "Nível B — calculado sobre pedidos pagos e as regras de custo informadas pelo cliente.",
-        })
-      : kpi;
-  });
-}
 
 export function Money({ data }: { data: MoneyScreen }) {
   const { period, setPeriod, comparison } = usePeriod();
@@ -73,14 +47,8 @@ export function Money({ data }: { data: MoneyScreen }) {
 
         {data.aba === "visao" && (
           <div className={layout.groupStack}>
-            {data.section.pillars.map((pillar) => (
-              <PillarCard
-                key={pillar.title}
-                pillar={{
-                  ...pillar,
-                  kpis: withLiveKpis(pillar.kpis, data.indicators, comparisonLabel),
-                }}
-              />
+            {sectionOf(data.section, comparisonLabel).pillars.map((pillar) => (
+              <PillarCard key={pillar.title} pillar={pillar} />
             ))}
           </div>
         )}

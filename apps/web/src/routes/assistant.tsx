@@ -4,13 +4,13 @@ import { Assistant } from "@/modules/assistant/contract";
 export const Route = createFileRoute("/assistente")({
   head: () => ({
     meta: [
-      { title: "Assistente · Loja Aurora | Conversa com IA sobre seus números" },
+      { title: "Assistente · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Converse sobre os números da Loja Aurora, envie arquivos e grave áudios para analisar margem, criativos e taxas.",
+          "Converse sobre os números da loja, envie arquivos e grave áudios para analisar margem, criativos e taxas.",
       },
-      { property: "og:title", content: "Assistente · Loja Aurora" },
+      { property: "og:title", content: "Assistente · E-commerce Insights" },
       {
         property: "og:description",
         content: "Conversa longa com a IA da consultoria: margem, criativos, taxas e reuniões.",

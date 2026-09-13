@@ -3,4 +3,13 @@ export type ShellStatus = {
   connectionsAlert: boolean;
 };
 
-export type ShellAccount = { name: string; onSignOut: () => void };
+export type ShellStore = { id: string; name: string };
+
+export type ShellAccount = {
+  name: string;
+  role: "ADMIN" | "CONSULTANT" | "CLIENT";
+  onSignOut: () => void;
+  store: ShellStore | null;
+  stores: ShellStore[];
+  onSelectStore: (id: string) => void;
+};

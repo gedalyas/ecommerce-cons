@@ -7,17 +7,17 @@ import { layout } from "@/shared/styles/spacing";
 export const Route = createFileRoute("/conexoes")({
   head: () => ({
     meta: [
-      { title: "Conexões · Loja Aurora | Fontes de dados integradas" },
+      { title: "Conexões · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Status das fontes de dados da Loja Aurora: ERP, plataforma, mídia paga, analytics e importação manual de planilhas.",
+          "Status das fontes de dados da loja: ERP, plataforma, mídia paga, analytics e importação manual de planilhas.",
       },
-      { property: "og:title", content: "Conexões · Loja Aurora" },
+      { property: "og:title", content: "Conexões · E-commerce Insights" },
       {
         property: "og:description",
         content:
-          "Fontes ativas, sincronizações, erros de autenticação e importação manual da Loja Aurora.",
+          "Fontes ativas, sincronizações, erros de autenticação e importação manual da loja.",
       },
     ],
   }),

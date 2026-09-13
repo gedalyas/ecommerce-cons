@@ -225,7 +225,7 @@ export function Assistant() {
             <div className="mb-8">
               <h1 className="t-section-title text-foreground">Assistente</h1>
               <p className="t-body mt-2 text-muted-foreground">
-                Converse sobre os números da Loja Aurora, envie arquivos ou grave um áudio.
+                Converse sobre os números da sua loja, envie arquivos ou grave um áudio.
               </p>
             </div>
 

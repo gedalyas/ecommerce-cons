@@ -31,8 +31,8 @@ export function Customers({ data }: { data: CustomersScreen }) {
         title="Clientes"
         subtitle={
           data.aba === "rfm"
-            ? "Segmentação RFM sobre toda a base · Loja Aurora"
-            : `Recompra e economia da aquisição em ${formatPeriodLabel(period.inicio, period.fim)} · Loja Aurora`
+            ? "Segmentação RFM sobre toda a base"
+            : `Recompra e economia da aquisição em ${formatPeriodLabel(period.inicio, period.fim)}`
         }
       />
 
