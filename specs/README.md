@@ -29,6 +29,8 @@ because that is what ships.
 | [data-module-tasks.md](data-module-tasks.md)                                       | Task checklist for the data module plan — tick as work lands                        |
 | [backend-plan.md](backend-plan.md)                                                 | Plan: workspaces, `apps/api` (Express) and `packages/contracts` for web + mobile    |
 | [backend-tasks.md](backend-tasks.md)                                               | Task checklist for the backend plan — tick as work lands                            |
+| [ingestion-plan.md](ingestion-plan.md)                                             | Plan: CSV imports through Conexões — the first real-data door                       |
+| [ingestion-tasks.md](ingestion-tasks.md)                                           | Task checklist for the ingestion plan — tick as work lands                          |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force; see CLAUDE.md)  |
 | [reference/](reference/)                                                           | The Arko backend and frontend `CLAUDE.md` files this repo's rules derive from       |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from  |
