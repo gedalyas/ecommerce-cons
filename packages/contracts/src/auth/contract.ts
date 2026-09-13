@@ -16,5 +16,6 @@ export {
   passwordSchema,
   refreshSchema,
   registerSchema,
+  tokenSchema,
 } from "./authSchema";
 export type { LoginInput, RefreshInput, RegisterInput } from "./authSchema";

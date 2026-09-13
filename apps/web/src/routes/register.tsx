@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
-import { Register, getSessionState } from "@/modules/auth/contract";
+import { Register, getInvitation, getSessionState } from "@/modules/auth/contract";
 
-const searchSchema = z.object({ email: z.string().catch("") });
+const searchSchema = z.object({ convite: z.string().catch("") });
 
 export const Route = createFileRoute("/cadastro")({
   validateSearch: searchSchema,
@@ -12,10 +12,19 @@ export const Route = createFileRoute("/cadastro")({
   beforeLoad: async () => {
     if (await getSessionState()) throw redirect({ to: "/" });
   },
+  loaderDeps: ({ search }) => search,
+  loader: ({ deps }) =>
+    deps.convite
+      ? getInvitation({ data: { token: deps.convite } })
+      : {
+          ok: false as const,
+          message: "Abra o link que você recebeu por e-mail para criar sua conta.",
+        },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { email } = Route.useSearch();
-  return <Register email={email} />;
+  const { convite } = Route.useSearch();
+  const invitation = Route.useLoaderData();
+  return <Register token={convite} invitation={invitation} />;
 }

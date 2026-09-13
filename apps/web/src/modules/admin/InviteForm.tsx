@@ -31,6 +31,7 @@ export function InviteForm({
   const invite = useServerFn(inviteFn);
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const form = useForm<InviteInput, unknown, InvitationInput>({
     resolver: zodResolver(invitationInputSchema),
     defaultValues: { email: "", role: "CLIENT", clientId: null },
@@ -39,12 +40,15 @@ export function InviteForm({
 
   const submit = form.handleSubmit(async (input) => {
     setMessage(null);
+    setSent(false);
     const result = await invite({ data: input });
     if (!result.ok) {
       setMessage(result.message);
       return;
     }
     form.reset({ email: "", role: "CLIENT", clientId: null });
+    setMessage(`Convite enviado para ${result.data.email}.`);
+    setSent(true);
     await router.invalidate();
   });
 
@@ -99,7 +103,14 @@ export function InviteForm({
         Convidar
       </Button>
       {message && (
-        <p role="alert" className={cn(textClass.meta, "text-destructive sm:col-span-4")}>
+        <p
+          role={sent ? "status" : "alert"}
+          className={cn(
+            textClass.meta,
+            sent ? "text-muted-foreground" : "text-destructive",
+            "sm:col-span-4",
+          )}
+        >
           {message}
         </p>
       )}

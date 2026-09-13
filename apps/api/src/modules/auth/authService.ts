@@ -14,8 +14,8 @@ import { type StoreAccess } from "./storeAccess";
 import {
   ACCESS_TOKEN_SECONDS,
   REFRESH_TOKEN_SECONDS,
-  hashRefreshToken,
-  newRefreshToken,
+  hashToken,
+  newOpaqueToken,
   refreshExpiry,
   signAccessToken,
 } from "./tokens";
@@ -95,11 +95,11 @@ async function toAuthUser(u: UserRow): Promise<AuthUser> {
 }
 
 async function issueTokens(user: UserRow, secret: string, now: Date): Promise<AuthTokens> {
-  const refreshToken = newRefreshToken();
+  const refreshToken = newOpaqueToken();
   await prismaClient.refreshToken.create({
     data: {
       userId: user.id,
-      tokenHash: hashRefreshToken(refreshToken),
+      tokenHash: hashToken(refreshToken),
       expiresAt: refreshExpiry(now),
     },
   });
@@ -122,27 +122,48 @@ export async function login(input: LoginInput, secret: string, now: Date) {
   return { user: await toAuthUser(user), tokens: await issueTokens(user, secret, now) };
 }
 
-export async function invitationFor(email: string): Promise<InvitationCheck> {
+const invitationSelect = {
+  id: true,
+  email: true,
+  role: true,
+  clientId: true,
+  acceptedAt: true,
+  expiresAt: true,
+  client: { select: { name: true } },
+} as const;
+
+async function pendingInvitation(token: string, now: Date) {
   const invitation = await prismaClient.invitation.findUnique({
-    where: { email },
-    select: { role: true, acceptedAt: true, client: { select: { name: true } } },
+    where: { tokenHash: hashToken(token) },
+    select: invitationSelect,
   });
-  if (!invitation)
-    throw new HttpError(404, "Este e-mail ainda não foi liberado. Fale com sua consultoria.");
-  if (invitation.acceptedAt)
-    throw new HttpError(409, "Este e-mail já tem cadastro. Entre com sua senha.");
-  return { email, role: invitation.role, storeName: invitation.client?.name ?? null };
+  if (!invitation) {
+    throw new HttpError(404, "Convite não encontrado. Peça um novo link à sua consultoria.");
+  }
+  if (invitation.acceptedAt) {
+    throw new HttpError(409, "Este convite já foi usado. Entre com sua senha.");
+  }
+  if (!invitation.expiresAt || invitation.expiresAt <= now) {
+    throw new HttpError(410, "Este convite expirou. Peça um novo link à sua consultoria.");
+  }
+  return invitation;
+}
+
+export async function invitationFor(token: string, now: Date): Promise<InvitationCheck> {
+  const invitation = await pendingInvitation(token, now);
+  return {
+    email: invitation.email,
+    role: invitation.role,
+    storeName: invitation.client?.name ?? null,
+  };
 }
 
 export async function register(input: RegisterInput, secret: string, now: Date) {
-  await invitationFor(input.email);
-  const invitation = await prismaClient.invitation.findUniqueOrThrow({
-    where: { email: input.email },
-  });
+  const invitation = await pendingInvitation(input.token, now);
   const user = await prismaClient.$transaction(async (tx) => {
     const created = await tx.user.create({
       data: {
-        email: input.email,
+        email: invitation.email,
         name: input.name,
         passwordHash: hashPassword(input.password),
         role: invitation.role,
@@ -155,14 +176,17 @@ export async function register(input: RegisterInput, secret: string, now: Date) 
         data: { consultantId: created.id, clientId: invitation.clientId },
       });
     }
-    await tx.invitation.update({ where: { id: invitation.id }, data: { acceptedAt: now } });
+    await tx.invitation.update({
+      where: { id: invitation.id },
+      data: { acceptedAt: now, tokenHash: null },
+    });
     return created;
   });
   return { user: await toAuthUser(user), tokens: await issueTokens(user, secret, now) };
 }
 
 export async function refresh(refreshToken: string, secret: string, now: Date) {
-  const tokenHash = hashRefreshToken(refreshToken);
+  const tokenHash = hashToken(refreshToken);
   const stored = await prismaClient.refreshToken.findUnique({
     where: { tokenHash },
     select: { id: true, expiresAt: true, revokedAt: true, user: { select: userSelect } },
@@ -174,7 +198,7 @@ export async function refresh(refreshToken: string, secret: string, now: Date) {
 
 export async function logout(refreshToken: string, now: Date) {
   await prismaClient.refreshToken.updateMany({
-    where: { tokenHash: hashRefreshToken(refreshToken), revokedAt: null },
+    where: { tokenHash: hashToken(refreshToken), revokedAt: null },
     data: { revokedAt: now },
   });
 }

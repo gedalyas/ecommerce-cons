@@ -14,6 +14,15 @@ export type AdminStore = {
   pendingRequests: number;
 };
 
+export const invitationStatuses = ["PENDING", "EXPIRED", "ACCEPTED"] as const;
+export type InvitationStatus = (typeof invitationStatuses)[number];
+
+export const invitationStatusLabel: Record<InvitationStatus, string> = {
+  PENDING: "Pendente",
+  EXPIRED: "Expirado",
+  ACCEPTED: "Aceito",
+};
+
 export type Invitation = {
   id: string;
   email: string;
@@ -21,7 +30,9 @@ export type Invitation = {
   storeName: string | null;
   invitedBy: string;
   createdAt: string;
+  expiresAt: string | null;
   acceptedAt: string | null;
+  status: InvitationStatus;
 };
 
 export type AdminConnectionRequest = ConnectionRequest & { storeId: string; storeName: string };

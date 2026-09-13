@@ -24,14 +24,20 @@ export function verifyAccessToken(token: string, secret: string): Principal | nu
   }
 }
 
-export function newRefreshToken(): string {
+export const INVITATION_TOKEN_SECONDS = 7 * 24 * 60 * 60;
+
+export function newOpaqueToken(): string {
   return randomBytes(48).toString("base64url");
 }
 
-export function hashRefreshToken(token: string): string {
+export function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
 export function refreshExpiry(now: Date): Date {
   return new Date(now.getTime() + REFRESH_TOKEN_SECONDS * 1000);
+}
+
+export function invitationExpiry(now: Date): Date {
+  return new Date(now.getTime() + INVITATION_TOKEN_SECONDS * 1000);
 }

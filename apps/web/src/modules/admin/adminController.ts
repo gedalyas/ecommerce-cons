@@ -50,6 +50,18 @@ export const revokeInvitationFn = createServerFn({ method: "POST" })
     ),
   );
 
+export const resendInvitationFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data }) =>
+    attempt(
+      () =>
+        apiFetch<Invitation>(`/admin/invitations/${encodeURIComponent(data.id)}/resend`, {
+          method: "POST",
+        }),
+      "Não foi possível reenviar o convite.",
+    ),
+  );
+
 export const assignConsultantsFn = createServerFn({ method: "POST" })
   .validator((input: unknown) => idSchema.merge(assignConsultantsSchema).parse(input))
   .handler(async ({ data }) =>

@@ -1,7 +1,12 @@
 import { useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import type { AdminScreen, AdminStore } from "@ecommerce/contracts/admin";
+import {
+  invitationStatusLabel,
+  type AdminScreen,
+  type AdminStore,
+  type InvitationStatus,
+} from "@ecommerce/contracts/admin";
 import { userRoleLabel } from "@ecommerce/contracts/auth";
 import {
   connectionRequestStatusLabel,
@@ -19,8 +24,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { assignConsultantsFn, resolveRequestFn, revokeInvitationFn } from "./adminController";
+import {
+  assignConsultantsFn,
+  resendInvitationFn,
+  resolveRequestFn,
+  revokeInvitationFn,
+} from "./adminController";
 import { InviteForm } from "./InviteForm";
+
+const invitationTone: Record<InvitationStatus, "accent" | "muted" | "warning"> = {
+  PENDING: "muted",
+  EXPIRED: "warning",
+  ACCEPTED: "accent",
+};
 
 function useAdminAction() {
   const router = useRouter();
@@ -61,6 +77,7 @@ export function Admin({ data }: { data: AdminScreen }) {
   const isAdmin = data.role === "ADMIN";
   const assign = useServerFn(assignConsultantsFn);
   const revoke = useServerFn(revokeInvitationFn);
+  const resend = useServerFn(resendInvitationFn);
   const resolve = useServerFn(resolveRequestFn);
   const { error, run } = useAdminAction();
 
@@ -121,7 +138,7 @@ export function Admin({ data }: { data: AdminScreen }) {
 
         <SectionBlock
           title="Convites"
-          description="Só e-mails convidados conseguem criar conta."
+          description="O convidado recebe por e-mail um link para criar a conta, válido por 7 dias."
           bodyClassName={layout.cardPadding}
         >
           <InviteForm stores={data.stores} canInviteConsultant={isAdmin} />
@@ -135,26 +152,32 @@ export function Admin({ data }: { data: AdminScreen }) {
                 {
                   key: "status",
                   header: "Status",
-                  render: (r) =>
-                    r.acceptedAt ? (
-                      <Badge tone="accent">Aceito</Badge>
-                    ) : (
-                      <Badge tone="muted">Pendente</Badge>
-                    ),
+                  render: (r) => (
+                    <Badge tone={invitationTone[r.status]}>{invitationStatusLabel[r.status]}</Badge>
+                  ),
                 },
                 {
                   key: "actions",
                   header: "",
                   align: "right",
                   render: (r) =>
-                    r.acceptedAt ? null : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => void run(() => revoke({ data: { id: r.id } }))}
-                      >
-                        Revogar
-                      </Button>
+                    r.status === "ACCEPTED" ? null : (
+                      <span className="inline-flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => void run(() => resend({ data: { id: r.id } }))}
+                        >
+                          Reenviar
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => void run(() => revoke({ data: { id: r.id } }))}
+                        >
+                          Revogar
+                        </Button>
+                      </span>
                     ),
                 },
               ]}

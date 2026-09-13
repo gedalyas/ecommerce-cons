@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **A0–A1 done, A2 next** — last updated 2026-09-13
+Status: **A0–A2 done, A3 next** — last updated 2026-09-13
 
 ---
 
@@ -27,18 +27,22 @@ Status: **A0–A1 done, A2 next** — last updated 2026-09-13
 
 ## A2 — Invitation tokens
 
-- [ ] Schema: `Invitation.tokenHash` (unique), `expiresAt`; migration; dev seed unaffected
-- [ ] API: `createInvitation` issues the token and sends the e-mail; `POST
-  /admin/invitations/:id/resend`; `GET /auth/invitation?token=` (404 unknown, 410 expired,
-      409 accepted); `POST /auth/register` takes `token` (the e-mail comes from the
+- [x] Schema: `Invitation.tokenHash` (unique), `expiresAt`; migration; dev seed unaffected
+- [x] API: `createInvitation` issues the token and sends the e-mail; `POST
+/admin/invitations/:id/resend`; `GET /auth/invitation?token=` (404 unknown — the hash is cleared on
+      acceptance, so a used link is also 404 — 410 expired, 409 accepted-but-hashed); `POST /auth/register` takes `token` (the e-mail comes from the
       invitation); `Invitation` in the admin payload gains `expiresAt`, `status`
       (`PENDING | EXPIRED | ACCEPTED`)
-- [ ] Contracts: `registerSchema` (`token`, `name`, `password`), `invitationLookupSchema`
+- [x] Contracts: `registerSchema` (`token`, `name`, `password`), `invitationLookupSchema`
       (`token`), `invitationStatuses` + label
-- [ ] Web: `/cadastro?convite=` reads the token (no e-mail field; a page without a valid
+- [x] Web: `/cadastro?convite=` reads the token (no e-mail field; a page without a valid
       token explains and links to `/entrar`); `/admin` › Convites shows the status and a
       "Reenviar" action; the created invitation shows "E-mail enviado para …"
-- [ ] Flow: invite → outbox file has the link → open it → register → onboarding
+- [x] Flow: invite → outbox file has the link → resend rotates it (old link 404) → open →
+      register (e-mail read-only) → onboarding; `e2e_invite.mjs` in the scratchpad
+- [x] Migration `20260913184500_invitation_tokens` (nullable columns, `migrate diff` +
+      `deploy`); `tokens.ts` renames `newRefreshToken`/`hashRefreshToken` to
+      `newOpaqueToken`/`hashToken` (shared with invitations and the reset)
 
 ## A3 — Password reset
 
@@ -71,7 +75,7 @@ Status: **A0–A1 done, A2 next** — last updated 2026-09-13
 - [ ] API: the write service records created/replaced rows per entity (order + items,
       customer, product + variant, ad_spend, traffic) inside the same transaction; after a
       job finishes, undo rows of older jobs of the same kind are purged; `POST
-  /imports/:id/undo` (only the latest non-undone job of its kind → 409 otherwise) restores
+/imports/:id/undo` (only the latest non-undone job of its kind → 409 otherwise) restores
       or deletes, re-stamps data sources when nothing remains, refreshes customers; pure
       `undoPlan.ts` (entries → ordered operations) with tests
 - [ ] Contracts: `ImportJob.undoneAt`, `canUndo`; `importStatusLabel.UNDONE = "Desfeita"`

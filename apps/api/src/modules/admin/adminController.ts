@@ -9,6 +9,7 @@ import {
   adminScreen,
   assignConsultants,
   createInvitation,
+  resendInvitation,
   resolveRequest,
   revokeInvitation,
 } from "./adminService";
@@ -17,14 +18,19 @@ const idSchema = z.string().min(1);
 
 export type AdminDependencies = { now: () => Date; mailer: Mailer; appUrl: string };
 
-export function adminController({ now }: AdminDependencies) {
+export function adminController(deps: AdminDependencies) {
+  const { now } = deps;
   return {
     async screen(req: Request, res: Response) {
-      res.json(await adminScreen(principalOf(req)));
+      res.json(await adminScreen(principalOf(req), now()));
     },
     async invite(req: Request, res: Response) {
       const input = parseOrThrow(invitationInputSchema, req.body);
-      res.status(201).json(await createInvitation(principalOf(req), input));
+      res.status(201).json(await createInvitation(principalOf(req), input, deps));
+    },
+    async resend(req: Request, res: Response) {
+      const id = parseOrThrow(idSchema, req.params["id"]);
+      res.json(await resendInvitation(principalOf(req), id, deps));
     },
     async revoke(req: Request, res: Response) {
       await revokeInvitation(principalOf(req), parseOrThrow(idSchema, req.params["id"]));

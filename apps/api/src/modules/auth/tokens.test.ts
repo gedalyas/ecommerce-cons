@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  hashRefreshToken,
-  newRefreshToken,
+  hashToken,
+  newOpaqueToken,
   refreshExpiry,
   signAccessToken,
   verifyAccessToken,
@@ -24,10 +24,10 @@ describe("access tokens", () => {
 
 describe("refresh tokens", () => {
   it("are random, url-safe and hashed with sha256", () => {
-    const token = newRefreshToken();
+    const token = newOpaqueToken();
     expect(token).toMatch(/^[A-Za-z0-9_-]{64}$/);
-    expect(newRefreshToken()).not.toBe(token);
-    expect(hashRefreshToken(token)).toMatch(/^[0-9a-f]{64}$/);
+    expect(newOpaqueToken()).not.toBe(token);
+    expect(hashToken(token)).toMatch(/^[0-9a-f]{64}$/);
   });
 
   it("expire 30 days after issue", () => {

@@ -23,7 +23,7 @@ export const registerFn = createServerFn({ method: "POST" })
 
 export const getInvitation = createServerFn({ method: "GET" })
   .validator((input: unknown) => invitationLookupSchema.parse(input))
-  .handler(async ({ data }) => invitationOf(data.email));
+  .handler(async ({ data }) => invitationOf(data.token));
 
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => signOut());
 

@@ -66,10 +66,10 @@ export async function signUp(input: RegisterInput): Promise<AuthResult> {
 export type InvitationLookup =
   { ok: true; invitation: InvitationCheck } | { ok: false; message: string };
 
-export async function invitationOf(email: string): Promise<InvitationLookup> {
+export async function invitationOf(token: string): Promise<InvitationLookup> {
   try {
     const invitation = await apiFetch<InvitationCheck>("/auth/invitation", {
-      query: { email },
+      query: { token },
       auth: false,
     });
     return { ok: true, invitation };

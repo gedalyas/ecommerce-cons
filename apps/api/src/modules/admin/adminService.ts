@@ -7,9 +7,21 @@ import type {
   InvitationInput,
 } from "@ecommerce/contracts/admin";
 import type { ConnectionRequestResolveInput, ConnectorKey } from "@ecommerce/contracts/connectors";
+import { invitationStatusOf } from "@ecommerce/contracts/admin";
 import { prismaClient } from "@ecommerce/database/client";
+import {
+  INVITATION_TOKEN_SECONDS,
+  hashToken,
+  invitationExpiry,
+  invitationLink,
+  invitationMail,
+  newOpaqueToken,
+} from "@/modules/auth/contract";
 import type { Principal } from "@/shared/http/auth.types";
 import { forbidden, HttpError, notFound } from "@/shared/http/httpError";
+import type { Mailer } from "@/shared/mail/mailer.types";
+
+export type InvitationDelivery = { now: () => Date; mailer: Mailer; appUrl: string };
 
 const consultantSelect = { id: true, name: true, email: true } as const;
 
@@ -58,22 +70,27 @@ async function storesFor(principal: Principal): Promise<AdminStore[]> {
   }));
 }
 
-const toInvitation = (r: {
+type InvitationRow = {
   id: string;
   email: string;
   role: Invitation["role"];
   createdAt: Date;
+  expiresAt: Date | null;
   acceptedAt: Date | null;
   client: { name: string } | null;
   invitedBy: { name: string } | null;
-}): Invitation => ({
+};
+
+const toInvitation = (r: InvitationRow, now: Date): Invitation => ({
   id: r.id,
   email: r.email,
   role: r.role,
   storeName: r.client?.name ?? null,
   invitedBy: r.invitedBy?.name ?? "—",
   createdAt: r.createdAt.toISOString(),
+  expiresAt: r.expiresAt?.toISOString() ?? null,
   acceptedAt: r.acceptedAt?.toISOString() ?? null,
+  status: invitationStatusOf(r, now),
 });
 
 const invitationSelect = {
@@ -81,12 +98,13 @@ const invitationSelect = {
   email: true,
   role: true,
   createdAt: true,
+  expiresAt: true,
   acceptedAt: true,
   client: { select: { name: true } },
   invitedBy: { select: { name: true } },
 } as const;
 
-async function invitationsFor(principal: Principal): Promise<Invitation[]> {
+async function invitationsFor(principal: Principal, now: Date): Promise<Invitation[]> {
   const visible = await visibleClientIds(principal);
   const rows = await prismaClient.invitation.findMany({
     ...(visible
@@ -95,7 +113,7 @@ async function invitationsFor(principal: Principal): Promise<Invitation[]> {
     orderBy: { createdAt: "desc" },
     select: invitationSelect,
   });
-  return rows.map(toInvitation);
+  return rows.map((r) => toInvitation(r, now));
 }
 
 const toRequest = (r: {
@@ -140,11 +158,11 @@ async function requestsFor(principal: Principal): Promise<AdminConnectionRequest
   return rows.map(toRequest);
 }
 
-export async function adminScreen(principal: Principal): Promise<AdminScreen> {
+export async function adminScreen(principal: Principal, now: Date): Promise<AdminScreen> {
   requireStaff(principal);
   const [stores, invitations, requests, consultants] = await Promise.all([
     storesFor(principal),
-    invitationsFor(principal),
+    invitationsFor(principal, now),
     requestsFor(principal),
     principal.role === "ADMIN"
       ? prismaClient.user.findMany({
@@ -157,9 +175,35 @@ export async function adminScreen(principal: Principal): Promise<AdminScreen> {
   return { role: principal.role, stores, consultants, invitations, requests };
 }
 
+async function deliverInvitation(
+  row: InvitationRow,
+  token: string,
+  delivery: InvitationDelivery,
+): Promise<void> {
+  try {
+    await delivery.mailer.send(
+      invitationMail({
+        to: row.email,
+        inviterName: row.invitedBy?.name ?? "Sua consultoria",
+        role: row.role,
+        storeName: row.client?.name ?? null,
+        link: invitationLink(delivery.appUrl, token),
+        expiresInDays: INVITATION_TOKEN_SECONDS / 86_400,
+      }),
+    );
+  } catch (error) {
+    console.error(error);
+    throw new HttpError(
+      502,
+      "O convite foi registrado, mas o e-mail não pôde ser enviado. Tente reenviar.",
+    );
+  }
+}
+
 export async function createInvitation(
   principal: Principal,
   input: InvitationInput,
+  delivery: InvitationDelivery,
 ): Promise<Invitation> {
   requireStaff(principal);
   if (input.role === "CONSULTANT" && principal.role !== "ADMIN") {
@@ -171,6 +215,9 @@ export async function createInvitation(
     select: { id: true },
   });
   if (taken) throw new HttpError(409, "Este e-mail já tem cadastro.");
+  const now = delivery.now();
+  const token = newOpaqueToken();
+  const stamp = { tokenHash: hashToken(token), expiresAt: invitationExpiry(now), acceptedAt: null };
   const row = await prismaClient.invitation.upsert({
     where: { email: input.email },
     create: {
@@ -178,16 +225,37 @@ export async function createInvitation(
       role: input.role,
       clientId: input.clientId,
       invitedById: principal.userId,
+      ...stamp,
     },
-    update: {
-      role: input.role,
-      clientId: input.clientId,
-      invitedById: principal.userId,
-      acceptedAt: null,
-    },
+    update: { role: input.role, clientId: input.clientId, invitedById: principal.userId, ...stamp },
     select: invitationSelect,
   });
-  return toInvitation(row);
+  await deliverInvitation(row, token, delivery);
+  return toInvitation(row, now);
+}
+
+export async function resendInvitation(
+  principal: Principal,
+  id: string,
+  delivery: InvitationDelivery,
+): Promise<Invitation> {
+  requireStaff(principal);
+  const existing = await prismaClient.invitation.findUnique({
+    where: { id },
+    select: { clientId: true, acceptedAt: true },
+  });
+  if (!existing) throw notFound("Convite não encontrado");
+  if (existing.acceptedAt) throw new HttpError(409, "Este convite já foi usado.");
+  if (existing.clientId) await assertVisible(principal, existing.clientId);
+  const now = delivery.now();
+  const token = newOpaqueToken();
+  const row = await prismaClient.invitation.update({
+    where: { id },
+    data: { tokenHash: hashToken(token), expiresAt: invitationExpiry(now) },
+    select: invitationSelect,
+  });
+  await deliverInvitation(row, token, delivery);
+  return toInvitation(row, now);
 }
 
 export async function revokeInvitation(principal: Principal, id: string): Promise<void> {

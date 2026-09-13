@@ -38,8 +38,8 @@ export function authController({ secret, now }: AuthDependencies) {
       res.status(201).json(await register(input, secret, now()));
     },
     async invitation(req: Request, res: Response) {
-      const { email } = parseOrThrow(invitationLookupSchema, req.query);
-      res.json(await invitationFor(email));
+      const { token } = parseOrThrow(invitationLookupSchema, req.query);
+      res.json(await invitationFor(token, now()));
     },
     async me(req: Request, res: Response) {
       res.json({ user: await currentUser(principalOf(req).userId) });

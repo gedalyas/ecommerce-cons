@@ -22,11 +22,13 @@ export const refreshSchema = z.object({
 });
 export type RefreshInput = z.infer<typeof refreshSchema>;
 
+export const tokenSchema = z.string().trim().min(1, "Informe o token").max(200);
+
 export const registerSchema = z.object({
-  email: emailSchema,
+  token: tokenSchema,
   name: z.string().trim().min(2, "Informe seu nome").max(80, "No máximo 80 caracteres"),
   password: passwordSchema,
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
 
-export const invitationLookupSchema = z.object({ email: emailSchema });
+export const invitationLookupSchema = z.object({ token: tokenSchema });
