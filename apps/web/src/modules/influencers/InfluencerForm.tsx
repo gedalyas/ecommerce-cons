@@ -8,7 +8,7 @@ import { Input } from "@/shared/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { Textarea } from "@/shared/ui/Textarea";
 import { CouponFields, RuleFields } from "./InfluencerRuleFields";
-import { FormField as Field } from "./FormField";
+import { FormField as Field } from "@/shared/ui/FormField";
 import {
   influencerStatusLabel,
   influencerStatuses,

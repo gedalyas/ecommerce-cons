@@ -7,7 +7,7 @@ import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
-import { FormField as Field } from "./FormField";
+import { FormField as Field } from "@/shared/ui/FormField";
 import {
   influencerRuleTypeLabel,
   influencerRuleTypes,
