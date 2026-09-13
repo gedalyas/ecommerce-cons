@@ -137,9 +137,11 @@ drift silently. Recorded in `decisions/2026-09-13-workspaces-api-contracts.md`.
 - Root `package.json`: `npm run <script> --workspaces --if-present` for `typecheck`, `lint`,
   `test`, `check:cycles`, `build`; `dev` starts api + web with `concurrently`; `format:check`
   at the root (one Prettier config); `db:*` proxies to `packages/database`.
-- One `eslint.config.js` at the root with per-workspace sections (the boundary rules take the
-  workspace prefix); CI keeps a single `--max-warnings` cap. Each workspace has its own
-  `tsconfig.json`, `vitest.config.ts` and `.dependency-cruiser.cjs`.
+- One `eslint.config.js` per workspace (the boundary rules are relative to the workspace) plus
+  a root one for `prisma/` and `scripts/`; `npm run lint` fans out and CI keeps a single
+  `--max-warnings` cap that every workspace must respect. Each workspace has its own
+  `tsconfig.json`, `vitest.config.ts` (the root config lists them as projects) and
+  `.dependency-cruiser.cjs`.
 - Docker: `apps/api/Dockerfile` (Node runtime, `prisma migrate deploy` on start) and
   `apps/web/Dockerfile` (Nitro output); compose services `postgres`, `api`, `web`.
 - Ports: web `8080`, api `3001`; `API_URL` in the web's env.

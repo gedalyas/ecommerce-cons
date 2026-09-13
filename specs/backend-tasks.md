@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B0 done (2026-09-13)** — last updated 2026-09-13
+Status: **B1 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -15,12 +15,15 @@ Status: **B0 done (2026-09-13)** — last updated 2026-09-13
 
 ## B1 — Workspaces
 
-- [ ] Move the app to `apps/web` (src, public, vite/vitest/tsconfig/eslint/dependency-cruiser,
-      routes, prisma stays for B2); root `package.json` with `workspaces` and fan-out scripts
-- [ ] `concurrently` for `npm run dev`; ports web 8080 / api 3001 reserved
-- [ ] CI runs the root scripts; Makefile targets follow; Prettier config at the root only
-- [ ] Docker: `apps/web/Dockerfile`; compose `web` service
-- [ ] Every check green from the root: typecheck, lint (cap 31), cycles 0, tests, prettier, build
+- [x] Move the app to `apps/web` (src, public, vite/vitest/tsconfig/eslint/dependency-cruiser,
+      routes; prisma stays at the root until B2); root `package.json` with `workspaces` and
+      fan-out scripts; root `vitest.config.ts` with projects; root `eslint.config.js` for
+      `prisma/` and `scripts/`
+- [x] `concurrently` for `npm run dev`; the web loads the root `.env` from its Vite config
+- [x] CI runs the root scripts (lint cap 31 → 24: the seed's long functions left the web
+      config); Makefile targets follow; Prettier config at the root only
+- [x] Docker: `apps/web/Dockerfile` with the repo as build context; compose `web` service
+- [x] Every check green from the root: typecheck, lint, cycles 0, 128 tests, prettier, build
 
 ## B2 — `packages/database`
 

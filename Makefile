@@ -36,21 +36,21 @@ db: ## Start Postgres in Docker and wait until it is healthy
 	@$(HELPERS) wait-postgres
 
 migrate: ## Apply Prisma migrations (creates them in dev if none exist)
-	npx prisma migrate dev
+	npm run db:migrate
 
 seed: ## Seed the database with the prototype dataset
 	npm run db:seed
 
-dev: ## Start the Vite dev server (http://localhost:8080)
+dev: ## Start the dev servers (web http://localhost:8080)
 	npm run dev
 
 # ---------------------------------------------------------------------------
 # Containerized run
 # ---------------------------------------------------------------------------
 
-up: ## Build and run postgres + app fully in Docker
+up: ## Build and run postgres + web fully in Docker
 	$(COMPOSE) --profile app up -d --build
-	@echo app on http://localhost:8080
+	@echo web on http://localhost:8080
 
 down: ## Stop and remove containers (keeps the database volume)
 	$(COMPOSE) --profile app down
@@ -65,11 +65,11 @@ logs: ## Tail container logs
 # Everyday tasks
 # ---------------------------------------------------------------------------
 
-build: ## Production build (Nitro output in .output/)
+build: ## Production build of every workspace
 	npm run build
 
-preview: ## Serve the production build locally
-	npm run preview
+preview: ## Serve the web production build locally
+	npm run preview -w apps/web
 
 lint: ## ESLint over the project
 	npm run lint

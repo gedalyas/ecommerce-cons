@@ -1,5 +1,4 @@
 import { spawnSync } from "node:child_process";
-import path from "node:path";
 import { type ImportGraph, summarizeCycles } from "./cyclicFiles";
 
 // Measures how many files under src/ live inside a cyclic import component
@@ -28,10 +27,8 @@ const readMaxFiles = (argv: readonly string[]): number | null => {
 };
 
 const readImportGraph = (): ImportGraph => {
-  const bin = process.platform === "win32" ? "depcruise.cmd" : "depcruise";
-  const depcruise = path.join("node_modules", ".bin", bin);
   const result = spawnSync(
-    depcruise,
+    "depcruise",
     ["src", "--config", ".dependency-cruiser.cjs", "--output-type", "json"],
     { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, shell: process.platform === "win32" },
   );

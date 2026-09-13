@@ -27,12 +27,12 @@ services:
       retries: 20
       start_period: 5s
 
-  app:
+  web:
     profiles: ["app"]
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: ecommerce-app
+      dockerfile: apps/web/Dockerfile
+    container_name: ecommerce-web
     restart: unless-stopped
     depends_on:
       postgres:

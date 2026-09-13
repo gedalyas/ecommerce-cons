@@ -5,5 +5,5 @@ dist
 pnpm-lock.yaml
 package-lock.json
 bun.lock
-routeTree.gen.ts
-src/generated
+**/routeTree.gen.ts
+**/src/generated

@@ -13,7 +13,7 @@ import {
   type DeltaDirection,
   type Fidelity,
   type PillarStatus,
-} from "../src/generated/prisma/client.ts";
+} from "../apps/web/src/generated/prisma/client.ts";
 
 import {
   dashboardKpis,
@@ -21,17 +21,17 @@ import {
   milestoneCriteria,
   openRecommendations,
   monthlySeries,
-} from "../src/modules/dashboard/contract.ts";
-import { moneySection } from "../src/modules/money/contract.ts";
-import { marketingSection } from "../src/modules/marketing/contract.ts";
-import { logisticsSection } from "../src/modules/logistics/contract.ts";
-import { managementSection } from "../src/modules/management/contract.ts";
-import { connections } from "../src/modules/connections/contract.ts";
-import { goalsPlan2026 } from "../src/modules/goals/contract.ts";
-import { influencersSeed } from "../src/modules/influencers/contract.ts";
-import type { Section } from "../src/shared/ui/sectionPage.types.ts";
-import type { Metric } from "../src/shared/ui/metricTile.types.ts";
-import type { Recommendation } from "../src/shared/ui/recommendationList.types.ts";
+} from "../apps/web/src/modules/dashboard/contract.ts";
+import { moneySection } from "../apps/web/src/modules/money/contract.ts";
+import { marketingSection } from "../apps/web/src/modules/marketing/contract.ts";
+import { logisticsSection } from "../apps/web/src/modules/logistics/contract.ts";
+import { managementSection } from "../apps/web/src/modules/management/contract.ts";
+import { connections } from "../apps/web/src/modules/connections/contract.ts";
+import { goalsPlan2026 } from "../apps/web/src/modules/goals/contract.ts";
+import { influencersSeed } from "../apps/web/src/modules/influencers/contract.ts";
+import type { Section } from "../apps/web/src/shared/ui/sectionPage.types.ts";
+import type { Metric } from "../apps/web/src/shared/ui/metricTile.types.ts";
+import type { Recommendation } from "../apps/web/src/shared/ui/recommendationList.types.ts";
 import { seedAnalytics } from "./seedAnalytics.ts";
 
 const adapter = new PrismaPg({ connectionString: process.env["DATABASE_URL"]! });

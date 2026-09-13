@@ -56,10 +56,16 @@ switch (command) {
   }
 
   case "clean": {
-    for (const path of [".output", ".tanstack", ".nitro", "node_modules"]) {
+    for (const path of [
+      "apps/web/.output",
+      "apps/web/.tanstack",
+      "apps/web/.nitro",
+      "apps/web/node_modules",
+      "node_modules",
+    ]) {
       rmSync(path, { recursive: true, force: true });
     }
-    console.log("removed .output, .tanstack, .nitro, node_modules");
+    console.log("removed build output and node_modules");
     break;
   }
 
