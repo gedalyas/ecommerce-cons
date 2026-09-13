@@ -100,6 +100,9 @@ in parallel with anything we build.
 - **Shopify Dev Dashboard** app (custom distribution first).
 - A domain for the API with HTTPS (OAuth callbacks refuse `localhost` in production).
 
+Next round (2026-09-13): `pilot-plan.md` — deploy, Mercado Livre, Amazon, Instagram/Facebook
+organic, then the first real connections with a partner client (Shopify + Bling).
+
 ## Sources
 
 - Prax: `specs/prax-analytics-documentacao-completa.md` §16 (Conexões), §20.3 (layers).

@@ -139,6 +139,13 @@ Status: **K0–K7 done (2026-09-13)** — the connectors plan is complete; the p
       (worker, env per connector); "Solicitar conexão" is shown only for connectors without a
       registered provider
 
+## Next round
+
+The pilot round in `pilot-plan.md` / `pilot-tasks.md` (2026-09-13): deploy on a provider's
+URLs, then Mercado Livre, Amazon and Instagram/Facebook organic as providers P1–P3, then the
+first real connections with a partner client running Shopify + Bling. Nuvemshop and TikTok
+wait for a client that uses them.
+
 ## Follow-ups (not scheduled)
 
 - Product/customer syncs (costs and stock from Nuvemshop/Shopify/Bling products; today only

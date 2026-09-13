@@ -41,6 +41,8 @@ because that is what ships.
 | [commercial-tasks.md](commercial-tasks.md)                                         | Task checklist for the commercial plan — tick as work lands                                |
 | [connectors-plan.md](connectors-plan.md)                                           | OAuth connectors the Prax way (Nuvemshop, Bling, Google, Meta, Shopify…) — plan and stages |
 | [connectors-tasks.md](connectors-tasks.md)                                         | Task checklist for the connectors plan — tick as work lands                                |
+| [pilot-plan.md](pilot-plan.md)                                                     | Pilot MVP for a partner client: deploy, Mercado Livre, Amazon, Instagram/Facebook organic  |
+| [pilot-tasks.md](pilot-tasks.md)                                                   | Task checklist for the pilot plan — tick as work lands                                     |
 | [operations-plan.md](operations-plan.md)                                           | Activity log and store archiving — plan and endpoints                                      |
 | [operations-tasks.md](operations-tasks.md)                                         | Task checklist for the operations plan — tick as work lands                                |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force; see CLAUDE.md)         |
