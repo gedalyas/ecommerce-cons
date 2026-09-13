@@ -2,8 +2,8 @@
  * Produtos screen orchestrator: assembles Resumo, Lista and Estoque from the
  * catalog queries and the pure core. Server-only.
  */
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { SalesPlatform } from "@ecommerce/database/enums";
+import { prismaClient } from "@ecommerce/database/client";
 import { ordersAggregate } from "@/modules/orders/contract.server";
 import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
 import { metricValue } from "@/shared/utils/metricFormat";

@@ -18,9 +18,9 @@ import type {
   ProcessingMethod,
   PrismaClient,
   SalesPlatform,
-} from "../apps/web/src/generated/prisma/client.ts";
+} from "../src/generated/prisma/client.ts";
 
-import { monthlySeries } from "../apps/web/src/modules/dashboard/contract.ts";
+import { monthlySeries } from "./fixtures/dashboardFixture.ts";
 
 // ---------------------------------------------------------------------------
 // Random helpers (mulberry32 - small, fast, deterministic)

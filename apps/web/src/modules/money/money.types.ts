@@ -1,4 +1,4 @@
-import type { BusinessUnit, CostCategory, CostFrequency } from "@/generated/prisma/enums";
+import type { BusinessUnit, CostCategory, CostFrequency } from "@ecommerce/database/enums";
 import type { ConsultingSection } from "@/modules/consulting/contract";
 import type { MetricUnit, MetricValue } from "@/shared/models/types/metric.types";
 import type { MoneyTab } from "./moneySchema";

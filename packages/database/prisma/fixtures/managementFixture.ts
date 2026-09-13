@@ -1,6 +1,6 @@
-import type { Section } from "@/shared/ui/SectionPage";
+import type { SectionSeed } from "./fixture.types";
 
-export const managementSection: Section = {
+export const managementSection: SectionSeed = {
   title: "Gestão",
   subtitle: "Estrutura, risco e autonomia da operação",
   pillars: [

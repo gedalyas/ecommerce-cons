@@ -3,8 +3,7 @@
  * shares and the aggregate refresh that recomputes scores from paid orders.
  * Server-only.
  */
-import { Prisma } from "@/generated/prisma/client";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { Prisma, prismaClient } from "@ecommerce/database/client";
 import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
 import type { RfmCustomerRow, RfmFilterOptions, RfmPage, RfmSegmentShare } from "./customers.types";
 import type { CustomersSearch, CustomersSortField, InactivityBand } from "./customersSchema";

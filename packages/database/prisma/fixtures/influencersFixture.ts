@@ -1,6 +1,6 @@
-import type { InfluencerParsed } from "./influencersSchema";
+import type { InfluencerSeed } from "./fixture.types";
 
-export const influencersSeed: InfluencerParsed[] = [
+export const influencersSeed: InfluencerSeed[] = [
   {
     name: "Luiza Casa & Cor",
     handle: "@casa.da.lu",

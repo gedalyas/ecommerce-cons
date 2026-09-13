@@ -60,9 +60,9 @@ const crossingUsesAlias = (depth) => ({
  * stay allowed everywhere.
  */
 const dependenciesOnlyInService = {
-  group: ["**/shared/dependencies/*", "@/generated/prisma/*", "!@/generated/prisma/enums"],
+  group: ["**/shared/dependencies/*", "@ecommerce/database/client"],
   message:
-    "I/O only in the orchestrator: the Prisma client is imported by *Service.ts, never by a component, route, controller or pure function. Enums come from @/generated/prisma/enums.",
+    "I/O only in the orchestrator: the Prisma client is imported by *Service.ts, never by a component, route, controller or pure function. Enums come from @ecommerce/database/enums.",
 };
 
 const serverOnlyPackage = {

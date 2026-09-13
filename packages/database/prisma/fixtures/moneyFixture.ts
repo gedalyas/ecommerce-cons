@@ -1,6 +1,6 @@
-import type { Section } from "@/shared/ui/SectionPage";
+import type { SectionSeed } from "./fixture.types";
 
-export const moneySection: Section = {
+export const moneySection: SectionSeed = {
   title: "Dinheiro",
   subtitle: "Margem, custos e previsibilidade de caixa",
   pillars: [

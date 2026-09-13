@@ -2,7 +2,7 @@ import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { InfluencerStatus } from "@/generated/prisma/enums";
+import { InfluencerStatus } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { DataTable } from "@/shared/ui/DataTable";
 import { Dialog } from "@/shared/ui/Dialog";

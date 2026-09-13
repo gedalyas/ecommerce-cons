@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBlocker } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { BusinessUnit, CostCategory, CostFrequency } from "@/generated/prisma/enums";
+import { BusinessUnit, CostCategory, CostFrequency } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Input } from "@/shared/ui/Input";

@@ -2,8 +2,8 @@
  * Money orchestrator: the only file of the module that touches Prisma. The
  * cost registry (reads and writes) and the DRE. Server-only.
  */
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { SalesPlatform } from "@ecommerce/database/enums";
+import { prismaClient } from "@ecommerce/database/client";
 import { sectionFor } from "@/modules/consulting/contract.server";
 import { adSpendAggregate, adSpendByBucket } from "@/modules/marketing/contract.server";
 import type { AdSpendAggregate } from "@/modules/marketing/contract";

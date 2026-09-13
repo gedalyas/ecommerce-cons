@@ -6,33 +6,32 @@
  *
  * Run with `npm run db:seed` (or `make seed`).
  */
-import "dotenv/config";
+import { fileURLToPath } from "node:url";
+import { config as loadEnv } from "dotenv";
 import { PrismaPg } from "@prisma/adapter-pg";
 import {
   PrismaClient,
   type DeltaDirection,
-  type Fidelity,
   type PillarStatus,
-} from "../apps/web/src/generated/prisma/client.ts";
-
+} from "../src/generated/prisma/client.ts";
 import {
   dashboardKpis,
   alerts,
   milestoneCriteria,
   openRecommendations,
   monthlySeries,
-} from "../apps/web/src/modules/dashboard/contract.ts";
-import { moneySection } from "../apps/web/src/modules/money/contract.ts";
-import { marketingSection } from "../apps/web/src/modules/marketing/contract.ts";
-import { logisticsSection } from "../apps/web/src/modules/logistics/contract.ts";
-import { managementSection } from "../apps/web/src/modules/management/contract.ts";
-import { connections } from "../apps/web/src/modules/connections/contract.ts";
-import { goalsPlan2026 } from "../apps/web/src/modules/goals/contract.ts";
-import { influencersSeed } from "../apps/web/src/modules/influencers/contract.ts";
-import type { Section } from "../apps/web/src/shared/ui/sectionPage.types.ts";
-import type { Metric } from "../apps/web/src/shared/ui/metricTile.types.ts";
-import type { Recommendation } from "../apps/web/src/shared/ui/recommendationList.types.ts";
+} from "./fixtures/dashboardFixture.ts";
+import { moneySection } from "./fixtures/moneyFixture.ts";
+import { marketingSection } from "./fixtures/marketingFixture.ts";
+import { logisticsSection } from "./fixtures/logisticsFixture.ts";
+import { managementSection } from "./fixtures/managementFixture.ts";
+import { connections } from "./fixtures/connectionsFixture.ts";
+import { goalsPlan2026 } from "./fixtures/goalsFixture.ts";
+import { influencersSeed } from "./fixtures/influencersFixture.ts";
+import type { MetricSeed, RecommendationSeed, SectionSeed } from "./fixtures/fixture.types.ts";
 import { seedAnalytics } from "./seedAnalytics.ts";
+
+loadEnv({ path: fileURLToPath(new URL("../../../.env", import.meta.url)) });
 
 const adapter = new PrismaPg({ connectionString: process.env["DATABASE_URL"]! });
 const prisma = new PrismaClient({ adapter });
@@ -53,20 +52,20 @@ const deltaDirection: Record<string, DeltaDirection> = {
   neutral: "NEUTRAL",
 };
 
-function metricData(m: Metric, position: number) {
+function metricData(m: MetricSeed, position: number) {
   return {
     label: m.label,
     value: m.value,
     delta: m.delta ?? null,
     deltaDirection: m.deltaDirection ? deltaDirection[m.deltaDirection]! : null,
     subNote: m.subNote ?? null,
-    fidelity: m.fidelity as Fidelity,
+    fidelity: m.fidelity,
     fidelityNote: m.fidelityNote,
     position,
   };
 }
 
-function recommendationData(r: Recommendation, position: number) {
+function recommendationData(r: RecommendationSeed, position: number) {
   return { text: r.text, dueLabel: r.dueDate, owner: r.owner, position };
 }
 
@@ -90,7 +89,7 @@ function monthFromLabel(label: string): Date {
   return new Date(Date.UTC(2000 + Number(yy), months.indexOf(name), 1));
 }
 
-async function seedSection(clientId: string, key: string, section: Section, position: number) {
+async function seedSection(clientId: string, key: string, section: SectionSeed, position: number) {
   const created = await prisma.section.create({
     data: { clientId, key, title: section.title, subtitle: section.subtitle, position },
   });

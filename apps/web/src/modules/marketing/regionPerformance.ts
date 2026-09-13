@@ -1,4 +1,4 @@
-import type { AdPlatform } from "@/generated/prisma/enums";
+import type { AdPlatform } from "@ecommerce/database/enums";
 import type { RegionPerformanceRow } from "./marketing.types";
 import { platformFeeRate } from "./marketingRules";
 

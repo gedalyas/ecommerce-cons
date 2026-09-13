@@ -3,8 +3,8 @@
  * contracts, hands them to the pure core and shapes the screen payload.
  * Server-only.
  */
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { SalesPlatform } from "@ecommerce/database/enums";
+import { prismaClient } from "@ecommerce/database/client";
 import { alertsFor } from "@/modules/alerts/contract.server";
 import { dataSourcesFor } from "@/modules/connections/contract.server";
 import { milestoneCriteriaFor, openRecommendationsFor } from "@/modules/consulting/contract.server";

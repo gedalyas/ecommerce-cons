@@ -2,7 +2,7 @@
  * Clientes screen orchestrator: one payload per tab, plus what Marketing's
  * Retenção pillar reads. Server-only.
  */
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { prismaClient } from "@ecommerce/database/client";
 import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
 import type { PeriodSearch } from "@/shared/utils/period";
 import { toWindow } from "@/shared/utils/periodWindow";

@@ -2,9 +2,8 @@
  * Paid media at every level of the hierarchy (platform > campaign > ad set >
  * ad) from `ad_spend_daily`. Server-only.
  */
-import { Prisma } from "@/generated/prisma/client";
-import type { AdPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { Prisma, prismaClient } from "@ecommerce/database/client";
+import type { AdPlatform } from "@ecommerce/database/enums";
 import { isoDay, type Window } from "@/shared/utils/periodWindow";
 import type { AdSums } from "./marketingMetrics";
 import type { AdLevel, AdPlatformFilter } from "./marketingSchema";

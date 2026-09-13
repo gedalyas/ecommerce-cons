@@ -1,6 +1,6 @@
-import type { Section } from "@/shared/ui/SectionPage";
+import type { SectionSeed } from "./fixture.types";
 
-export const logisticsSection: Section = {
+export const logisticsSection: SectionSeed = {
   title: "Logística",
   subtitle: "Estoque, entrega e experiência pós-venda",
   pillars: [

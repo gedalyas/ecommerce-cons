@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBlocker } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { InfluencerStatus } from "@/generated/prisma/enums";
+import { InfluencerStatus } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Input } from "@/shared/ui/Input";

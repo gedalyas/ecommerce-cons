@@ -1,5 +1,5 @@
-import type { AdPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { AdPlatform } from "@ecommerce/database/enums";
+import { prismaClient } from "@ecommerce/database/client";
 import type { Window } from "@/shared/utils/periodWindow";
 import type { RegionPerformanceRow } from "./marketing.types";
 import { regionRows, type RegionSalesRow, type RegionSpendRow } from "./regionPerformance";

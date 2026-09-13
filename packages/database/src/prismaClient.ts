@@ -1,11 +1,5 @@
-/**
- * Server-only Prisma client. Only *Service.ts files may import it (lint), and the
- * import-protection rule in vite.config.ts fails the build if a client bundle
- * ever pulls it in.
- * Memoized on globalThis so Vite HMR does not open a new pool on every reload.
- */
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaClient } from "./generated/prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 

@@ -4,10 +4,10 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["apps", "packages", "node_modules"] },
+  { ignores: ["src/generated", "node_modules"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ["scripts/**/*.ts"],
+    files: ["**/*.ts"],
     languageOptions: { ecmaVersion: 2022, globals: { ...globals.node } },
     rules: {
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],

@@ -2,9 +2,8 @@
  * Recompra and LTV/CAC orchestrator: paid orders ranked per customer over
  * their whole history, then cut by the period. Server-only.
  */
-import { Prisma } from "@/generated/prisma/client";
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { Prisma, prismaClient } from "@ecommerce/database/client";
+import type { SalesPlatform } from "@ecommerce/database/enums";
 import { adSpendAggregate, adSpendByBucket } from "@/modules/marketing/contract.server";
 import { costRulesFor } from "@/modules/money/contract.server";
 import { expandCosts, type CostRule } from "@/modules/money/contract";

@@ -1,4 +1,4 @@
-import type { GoalMonth } from "./goals.types";
+import type { GoalMonthSeed } from "./fixture.types";
 
 /**
  * Loja Aurora's 2026 plan, seeded so the Resumo tab has goals to compare
@@ -10,7 +10,7 @@ const totalSold = [
   590_000,
 ];
 
-export const goalsPlan2026: GoalMonth[] = totalSold.map((sold, i) => ({
+export const goalsPlan2026: GoalMonthSeed[] = totalSold.map((sold, i) => ({
   month: i + 1,
   totalSold: sold,
   averageTicket: 265,

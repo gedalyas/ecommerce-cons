@@ -1,6 +1,6 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray, type UseFormReturn } from "react-hook-form";
-import { InfluencerRuleType } from "@/generated/prisma/enums";
+import { InfluencerRuleType } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";

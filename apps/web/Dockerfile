@@ -6,6 +6,7 @@ WORKDIR /repo
 
 COPY package.json package-lock.json ./
 COPY apps/web/package.json apps/web/
+COPY packages/database/package.json packages/database/
 RUN npm ci --no-audit --no-fund
 
 COPY . .
@@ -18,7 +19,6 @@ ENV NODE_ENV=production PORT=8080
 
 # The Nitro output is self-contained; no node_modules needed at runtime.
 COPY --from=build /repo/apps/web/.output ./.output
-COPY --from=build /repo/prisma ./prisma
 
 EXPOSE 8080
 CMD ["node", ".output/server/index.mjs"]

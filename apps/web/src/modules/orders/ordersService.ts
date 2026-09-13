@@ -4,9 +4,8 @@
  * optional row filters; the screens' shapes are assembled by the other
  * services of the module. Server-only.
  */
-import { Prisma } from "@/generated/prisma/client";
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { Prisma, prismaClient } from "@ecommerce/database/client";
+import type { SalesPlatform } from "@ecommerce/database/enums";
 import type { BreakdownSlice } from "@/shared/models/types/metric.types";
 import { isoDay, type Window } from "@/shared/utils/periodWindow";
 import type { OrdersAggregate, OrdersBucket, OrdersFilters } from "./orders.types";

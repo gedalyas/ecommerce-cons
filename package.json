@@ -17,38 +17,29 @@
     "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset --force",
+    "db:generate": "npm run generate -w packages/database",
+    "db:migrate": "npm run migrate -w packages/database",
+    "db:deploy": "npm run deploy -w packages/database",
+    "db:seed": "npm run seed -w packages/database",
+    "db:studio": "npm run studio -w packages/database",
+    "db:reset": "npm run reset -w packages/database",
     "favicon": "node scripts/generate-favicon.mjs"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "overrides": {
     "rolldown": "1.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@prisma/adapter-pg": "^7.10.0",
-    "@prisma/client": "^7.10.0",
     "@types/node": "^22.16.5",
     "concurrently": "^9.1.2",
-    "dotenv": "^17.4.2",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
     "globals": "^15.15.0",
-    "pg": "^8.23.0",
     "prettier": "^3.7.3",
-    "prisma": "^7.10.0",
     "tsx": "^4.20.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite-tsconfig-paths": "^6.0.2",
     "vitest": "^5.0.0"
   }
 }

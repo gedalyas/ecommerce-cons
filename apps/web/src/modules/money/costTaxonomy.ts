@@ -1,4 +1,4 @@
-import type { BusinessUnit, CostCategory, CostFrequency } from "@/generated/prisma/enums";
+import type { BusinessUnit, CostCategory, CostFrequency } from "@ecommerce/database/enums";
 
 /** Categories, subcategories and frequencies of the cost registry (Portuguese labels, English keys). */
 export const costCategoryLabel: Record<CostCategory, string> = {

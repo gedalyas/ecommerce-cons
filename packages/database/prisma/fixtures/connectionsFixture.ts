@@ -1,11 +1,4 @@
-import type { DataSourceStatus } from "@/generated/prisma/enums";
-
-export type ConnectionSeed = {
-  name: string;
-  kind: string;
-  status: DataSourceStatus;
-  lastSyncedAt: string | null;
-};
+import type { ConnectionSeed } from "./fixture.types";
 
 export const connections: ConnectionSeed[] = [
   { name: "Bling", kind: "ERP", status: "CONNECTED", lastSyncedAt: "2026-09-10T03:12:00Z" },

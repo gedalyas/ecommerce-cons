@@ -2,9 +2,8 @@
  * Attribution queries over the orders: sales by UTM dimension, the paid
  * funnel tail and the new buyers behind CAC. Server-only.
  */
-import { Prisma } from "@/generated/prisma/client";
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { Prisma, prismaClient } from "@ecommerce/database/client";
+import type { SalesPlatform } from "@ecommerce/database/enums";
 import { isoDay, type Window } from "@/shared/utils/periodWindow";
 import type { UtmSalesRow } from "./marketing.types";
 import { channelOf } from "./marketingRules";

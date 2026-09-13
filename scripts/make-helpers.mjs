@@ -61,6 +61,8 @@ switch (command) {
       "apps/web/.tanstack",
       "apps/web/.nitro",
       "apps/web/node_modules",
+      "packages/database/node_modules",
+      "packages/database/src/generated",
       "node_modules",
     ]) {
       rmSync(path, { recursive: true, force: true });

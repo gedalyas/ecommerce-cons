@@ -1,4 +1,4 @@
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { prismaClient } from "@ecommerce/database/client";
 import { sectionFor } from "@/modules/consulting/contract.server";
 import type { ManagementScreen } from "./management.types";
 

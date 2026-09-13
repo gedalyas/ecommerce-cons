@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { InfluencerRuleType, InfluencerStatus } from "@/generated/prisma/enums";
+import { InfluencerRuleType, InfluencerStatus } from "@ecommerce/database/enums";
 
 export const influencersSearchSchema = z.object({
   status: z.nativeEnum(InfluencerStatus).catch("ACTIVE"),

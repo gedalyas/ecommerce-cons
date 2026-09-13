@@ -1,4 +1,4 @@
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { prismaClient } from "@ecommerce/database/client";
 import { customersAggregate, customersByBucket } from "@/modules/customers/contract.server";
 import {
   adSpendAggregate,

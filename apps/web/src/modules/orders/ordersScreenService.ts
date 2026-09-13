@@ -2,9 +2,8 @@
  * Pedidos screen orchestrator: the queries behind the Resumo, Aprovação and
  * Lista tabs, on top of the aggregate service. Server-only.
  */
-import { Prisma } from "@/generated/prisma/client";
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { Prisma, prismaClient } from "@ecommerce/database/client";
+import type { SalesPlatform } from "@ecommerce/database/enums";
 import type { BreakdownSlice, Series } from "@/shared/models/types/metric.types";
 import { metricValue } from "@/shared/utils/metricFormat";
 import type { Channel, PeriodSearch } from "@/shared/utils/period";

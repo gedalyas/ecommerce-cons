@@ -10,7 +10,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../apps/web/src/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 // Prisma 7 no longer accepts `url` here: the connection string for migrate and

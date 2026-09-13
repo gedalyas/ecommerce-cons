@@ -1,4 +1,4 @@
-import type { DataSourceStatus } from "@/generated/prisma/enums";
+import type { DataSourceStatus } from "@ecommerce/database/enums";
 
 export type DataSourceState = {
   name: string;

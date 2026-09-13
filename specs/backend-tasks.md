@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B1 done (2026-09-13)** — last updated 2026-09-13
+Status: **B2 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -27,11 +27,14 @@ Status: **B1 done (2026-09-13)** — last updated 2026-09-13
 
 ## B2 — `packages/database`
 
-- [ ] `prisma/` (schema, migrations, seed, seedAnalytics, `prisma.config.ts`) and the generated
-      client move to `packages/database`; `prismaClient` factory exported from the package
-- [ ] Fixtures move to `packages/database/prisma/fixtures/` (seed input only)
-- [ ] Web imports `@ecommerce/database` (transient, removed in B7); `db:*` scripts proxy
-- [ ] `npm run db:seed` green from the root
+- [x] `prisma/` (schema, migrations, seed, seedAnalytics, `prisma.config.ts`) and the generated
+      client move to `packages/database`; `@ecommerce/database/client` (prismaClient, Prisma)
+      and `@ecommerce/database/enums` are the package's two doors
+- [x] Fixtures move to `packages/database/prisma/fixtures/` with their own `fixture.types.ts`
+      (the package imports nothing from an app); the web contracts no longer export them
+- [x] Web imports `@ecommerce/database` (transient, removed in B7); lint and the Vite import
+      protection name the package's client files; `db:*` scripts proxy to the package
+- [x] `npm run db:seed` green from the root; every check green; smoke on 5 routes
 
 ## B3 — `packages/contracts`
 

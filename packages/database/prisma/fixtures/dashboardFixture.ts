@@ -1,7 +1,6 @@
-import type { Metric } from "@/shared/ui/MetricTile";
-import type { Recommendation } from "@/shared/ui/RecommendationList";
+import type { MetricSeed, RecommendationSeed } from "./fixture.types";
 
-export const dashboardKpis: Metric[] = [
+export const dashboardKpis: MetricSeed[] = [
   {
     label: "Faturamento",
     value: "R$ 487.300",
@@ -82,7 +81,7 @@ export const milestoneCriteria = [
   },
 ];
 
-export const openRecommendations: Recommendation[] = [
+export const openRecommendations: RecommendationSeed[] = [
   {
     text: "Reajustar preço dos 9 SKUs com margem abaixo de 10%",
     dueDate: "até 05/09",

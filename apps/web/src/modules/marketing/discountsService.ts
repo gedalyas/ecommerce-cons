@@ -2,8 +2,8 @@
  * Coupon usage over the paid orders: totals, per-code rows and the discount
  * series. Server-only.
  */
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { SalesPlatform } from "@ecommerce/database/enums";
+import { prismaClient } from "@ecommerce/database/client";
 import { isoDay, type Window } from "@/shared/utils/periodWindow";
 import { platformFilter } from "./attributionService";
 import type { DiscountCodeRow } from "./marketing.types";

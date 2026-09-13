@@ -1,4 +1,4 @@
-import type { InfluencerRuleType, InfluencerStatus } from "@/generated/prisma/enums";
+import type { InfluencerRuleType, InfluencerStatus } from "@ecommerce/database/enums";
 
 export const influencerStatusLabel: Record<InfluencerStatus, string> = {
   ACTIVE: "Ativo",

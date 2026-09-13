@@ -1,5 +1,5 @@
-import type { SalesPlatform } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { SalesPlatform } from "@ecommerce/database/enums";
+import { prismaClient } from "@ecommerce/database/client";
 import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
 import { dataSourcesFor } from "@/modules/connections/contract.server";
 import { sectionFor } from "@/modules/consulting/contract.server";

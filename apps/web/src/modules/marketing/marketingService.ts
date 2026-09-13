@@ -4,7 +4,7 @@
  * sales-platform filter - callers treat them as zero for marketplaces.
  * Server-only.
  */
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { prismaClient } from "@ecommerce/database/client";
 import { isoDay, type Window } from "@/shared/utils/periodWindow";
 import type {
   AdSpendAggregate,

@@ -17,9 +17,8 @@
     "check:cycles": "tsx ../../scripts/checkCycles.ts"
   },
   "dependencies": {
+    "@ecommerce/database": "*",
     "@hookform/resolvers": "^5.2.2",
-    "@prisma/adapter-pg": "^7.10.0",
-    "@prisma/client": "^7.10.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-aspect-ratio": "^1.1.8",
@@ -56,11 +55,9 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
-    "dotenv": "^17.4.2",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.575.0",
-    "pg": "^8.23.0",
     "react": "^19.2.0",
     "react-day-picker": "^9.14.0",
     "react-dom": "^19.2.0",
@@ -94,7 +91,6 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5",
     "vitest": "^5.0.0",
-    "tsx": "^4.20.0",
-    "@types/pg": "^8.23.1"
+    "tsx": "^4.20.0"
   }
 }

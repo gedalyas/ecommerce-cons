@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BusinessUnit, CostCategory, CostFrequency } from "@/generated/prisma/enums";
+import { BusinessUnit, CostCategory, CostFrequency } from "@ecommerce/database/enums";
 import { isSubcategoryOf, percentFrequencies } from "./costTaxonomy";
 
 export const moneyTabs = ["visao", "dre", "custos"] as const;

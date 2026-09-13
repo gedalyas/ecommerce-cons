@@ -1,4 +1,4 @@
-import type { DeltaDirection, Fidelity, PillarStatus } from "@/generated/prisma/enums";
+import type { DeltaDirection, Fidelity, PillarStatus } from "@ecommerce/database/enums";
 import type { Pillar } from "@/shared/ui/pillarCard.types";
 import type { PillarStatus as PillarStatusKey } from "@/shared/ui/statusBadge.types";
 import type {

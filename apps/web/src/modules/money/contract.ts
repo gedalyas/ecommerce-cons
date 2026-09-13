@@ -1,5 +1,4 @@
 export { Money } from "./Money";
-export { moneySection } from "./moneyFixture";
 export { getMarketingCostLines, getMoneyScreen } from "./moneyController";
 export { defaultMoneySearch, moneySearchSchema } from "./moneySchema";
 export { expandCosts } from "./costEngine";

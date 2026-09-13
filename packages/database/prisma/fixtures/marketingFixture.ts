@@ -1,6 +1,6 @@
-import type { Section } from "@/shared/ui/SectionPage";
+import type { SectionSeed } from "./fixture.types";
 
-export const marketingSection: Section = {
+export const marketingSection: SectionSeed = {
   title: "Marketing",
   subtitle: "Aquisição, conversão e retenção de clientes",
   pillars: [

@@ -1,4 +1,4 @@
-import type { DataSourceStatus } from "@/generated/prisma/enums";
+import type { DataSourceStatus } from "@ecommerce/database/enums";
 import { formatDate } from "@/shared/utils/format";
 
 const DAY_MS = 86_400_000;

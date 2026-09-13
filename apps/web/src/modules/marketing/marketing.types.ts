@@ -1,4 +1,4 @@
-import type { AdPlatform, BusinessUnit } from "@/generated/prisma/enums";
+import type { AdPlatform, BusinessUnit } from "@ecommerce/database/enums";
 import type { ConsultingSection } from "@/modules/consulting/contract";
 import type { BreakdownSlice, MetricValue, SeriesPoint } from "@/shared/models/types/metric.types";
 import type { BenchmarkVerdict, FunnelStep, RoasQuality } from "./marketingRules";

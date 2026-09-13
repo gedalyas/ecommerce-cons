@@ -1,5 +1,5 @@
 import type { DataSourceState } from "@/modules/connections/contract";
-import type { Fidelity } from "@/generated/prisma/enums";
+import type { Fidelity } from "@ecommerce/database/enums";
 import type { DashboardMetricKey } from "./dashboard.types";
 
 /**

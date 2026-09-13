@@ -1,7 +1,7 @@
 import type { AlertItem } from "@/modules/alerts/contract";
 import type { MilestoneCriterion } from "@/modules/consulting/contract";
 import type { Recommendation } from "@/shared/ui/recommendationList.types";
-import type { Fidelity } from "@/generated/prisma/enums";
+import type { Fidelity } from "@ecommerce/database/enums";
 import type {
   BreakdownSlice,
   MetricUnit,

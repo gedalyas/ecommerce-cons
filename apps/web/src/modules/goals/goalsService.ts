@@ -3,7 +3,7 @@
  * through the other modules' contracts, and the Realizado × Meta cards.
  * Server-only.
  */
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { prismaClient } from "@ecommerce/database/client";
 import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
 import { customersAggregate } from "@/modules/customers/contract.server";
 import {

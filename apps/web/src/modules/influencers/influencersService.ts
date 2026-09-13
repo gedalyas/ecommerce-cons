@@ -1,5 +1,5 @@
-import type { InfluencerStatus } from "@/generated/prisma/enums";
-import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { InfluencerStatus } from "@ecommerce/database/enums";
+import { prismaClient } from "@ecommerce/database/client";
 import type { PeriodSearch } from "@/shared/utils/period";
 import { resolvePeriod, type Window } from "@/shared/utils/periodWindow";
 import {
