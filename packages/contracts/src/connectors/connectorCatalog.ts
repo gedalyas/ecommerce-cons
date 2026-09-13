@@ -2,6 +2,7 @@ export const connectorKeys = [
   "bling",
   "shopify",
   "nuvemshop",
+  "mercado_livre",
   "vtex",
   "meta_ads",
   "google_ads",
@@ -11,12 +12,20 @@ export const connectorKeys = [
 ] as const;
 export type ConnectorKey = (typeof connectorKeys)[number];
 
-export const connectorKinds = ["erp", "storefront", "paid_media", "analytics", "manual"] as const;
+export const connectorKinds = [
+  "erp",
+  "storefront",
+  "marketplace",
+  "paid_media",
+  "analytics",
+  "manual",
+] as const;
 export type ConnectorKind = (typeof connectorKinds)[number];
 
 export const connectorKindLabel: Record<ConnectorKind, string> = {
   erp: "ERP",
   storefront: "Plataforma",
+  marketplace: "Marketplace",
   paid_media: "Mídia paga",
   analytics: "Analytics",
   manual: "Importação manual",
@@ -83,6 +92,15 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "domain_oauth",
     description: "Pedidos e clientes da loja.",
+  },
+  {
+    key: "mercado_livre",
+    label: "Mercado Livre",
+    kind: "marketplace",
+    feeds: ["orders"],
+    availability: "request",
+    authPattern: "oauth",
+    description: "Vendas e compradores do marketplace.",
   },
   {
     key: "vtex",

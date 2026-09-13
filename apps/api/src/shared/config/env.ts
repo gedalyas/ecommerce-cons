@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  API_PORT: z.coerce.number().int().positive().default(3001),
+  API_PORT: z.coerce.number().int().positive().optional(),
   PORT: z.coerce.number().int().positive().optional(),
   DATABASE_URL: z.string().min(1),
   JWT_SECRET: z.string().min(32, "JWT_SECRET must have at least 32 characters"),
@@ -29,6 +29,10 @@ const envSchema = z.object({
   BLING_AUTH_URL: z.string().url().default("https://www.bling.com.br"),
   BLING_API_URL: z.string().url().default("https://www.bling.com.br/Api/v3"),
   BLING_MIN_INTERVAL_MS: z.coerce.number().int().min(0).max(5000).default(350),
+  MERCADO_LIVRE_APP_ID: z.string().default(""),
+  MERCADO_LIVRE_CLIENT_SECRET: z.string().default(""),
+  MERCADO_LIVRE_AUTH_URL: z.string().url().default("https://auth.mercadolivre.com.br"),
+  MERCADO_LIVRE_API_URL: z.string().url().default("https://api.mercadolibre.com"),
   GOOGLE_CLIENT_ID: z.string().default(""),
   GOOGLE_CLIENT_SECRET: z.string().default(""),
   GOOGLE_AUTH_URL: z.string().url().default("https://accounts.google.com/o/oauth2/v2/auth"),

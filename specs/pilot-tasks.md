@@ -2,7 +2,7 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0 done, P1 next** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
+Status: **P0–P1 done, P2 next** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
@@ -27,12 +27,18 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
 
 ## P1 — Mercado Livre
 
-- [ ] Catalog: `mercado_livre` (`marketplace` kind + label "Marketplace"), docs sheet
+- [x] Catalog: `mercado_livre` (new `marketplace` kind, label "Marketplace"), docs sheet
       `docs/apis/mercado-livre.md`, env `MERCADO_LIVRE_APP_ID/CLIENT_SECRET/AUTH_URL/API_URL`
-- [ ] `mercadoLivreProvider` (authorize, code exchange, refresh with rotation, seller id,
-      `orders/search` chunked by `date_last_updated`) + pure `mercadoLivreOrders` with test
-- [ ] Stub `mercadolivre_stub.mjs` (:4016) + `e2e_mercadolivre.mjs`: connect → backfill →
-      orders on /pedidos with channel marketplace
+- [x] `mercadoLivreProvider`: authorize → code exchange (`user_id` + `/users/me` nickname as
+      the label), refresh 10 min before expiry with the rotated pair, `orders/search` by
+      `date_last_updated` in 90-day chunks and pages of 50, shipment fetched per order and
+      stored inside the raw payload; pure `mercadoLivreOrders` (status map, refunded from
+      payments, UF from `BR-XX`, synthetic buyer e-mail because the API sends none) + test
+- [x] Stub `mercadolivre_stub.mjs` (:4016) + `e2e_mercadolivre.mjs`: Conectar → callback →
+      READY "LOJA_PARCEIRA" → 3 orders on /pedidos (PAID, PAID, CANCELLED, source Mercado
+      Livre) → manual sync 202 → READY
+- [x] Fix from P0 found here: the dev `.env` has `PORT=8080` for the web, so `API_PORT`
+      wins over `PORT` and `PORT` only applies when `API_PORT` is unset (Railway)
 
 ## P2 — Amazon
 

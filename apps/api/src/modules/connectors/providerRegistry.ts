@@ -4,6 +4,7 @@ import { blingProvider } from "./blingProvider";
 import type { ConnectorProvider, ProviderRegistry } from "./connectorProvider.types";
 import { ga4Provider } from "./ga4Provider";
 import { googleAdsProvider } from "./googleAdsProvider";
+import { mercadoLivreProvider } from "./mercadoLivreProvider";
 import { metaAdsProvider } from "./metaAdsProvider";
 import { nuvemshopProvider } from "./nuvemshopProvider";
 import { shopifyProvider } from "./shopifyProvider";
@@ -92,6 +93,20 @@ function shopifyOf(env: Env): ConnectorProvider[] {
   ];
 }
 
+function mercadoLivreOf(env: Env): ConnectorProvider[] {
+  if (!env.MERCADO_LIVRE_APP_ID || !env.MERCADO_LIVRE_CLIENT_SECRET) return [];
+  return [
+    mercadoLivreProvider({
+      appId: env.MERCADO_LIVRE_APP_ID,
+      clientSecret: env.MERCADO_LIVRE_CLIENT_SECRET,
+      authUrl: env.MERCADO_LIVRE_AUTH_URL,
+      apiUrl: env.MERCADO_LIVRE_API_URL,
+      userAgent: env.CONNECTOR_USER_AGENT,
+      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+    }),
+  ];
+}
+
 function tiktokOf(env: Env): ConnectorProvider[] {
   if (!env.TIKTOK_APP_ID || !env.TIKTOK_APP_SECRET) return [];
   return [
@@ -113,6 +128,7 @@ export function providersOf(env: Env): ProviderRegistry {
     ...googleOf(env),
     ...metaOf(env),
     ...shopifyOf(env),
+    ...mercadoLivreOf(env),
     ...tiktokOf(env),
   ];
   return new Map<ConnectorKey, ConnectorProvider>(providers.map((p) => [p.key, p]));
