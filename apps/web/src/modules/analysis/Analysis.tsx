@@ -13,16 +13,16 @@ import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel, formatVariation } from "@/shared/utils/format";
 import { formatMetric } from "@/shared/utils/metricFormat";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import {
   analysisMetricKeys,
   type AnalysisMetricKey,
   type AnalysisScreen,
   type DriverReading,
   type Verdict,
-} from "./analysis.types";
-import type { AnalysisSearch } from "./analysisSchema";
-import { metricDefinitions } from "./driverTrees";
+  metricDefinitions,
+} from "@ecommerce/contracts/analysis";
+import type { AnalysisSearch } from "@ecommerce/contracts/analysis";
 
 const verdictLabel: Record<Verdict, string> = {
   positivo: "Positivo",

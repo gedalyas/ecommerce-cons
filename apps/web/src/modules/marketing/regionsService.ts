@@ -1,7 +1,7 @@
 import type { AdPlatform } from "@ecommerce/database/enums";
 import { prismaClient } from "@ecommerce/database/client";
-import type { Window } from "@/shared/utils/periodWindow";
-import type { RegionPerformanceRow } from "./marketing.types";
+import type { Window } from "@ecommerce/contracts/shared/periodWindow";
+import type { RegionPerformanceRow } from "@ecommerce/contracts/marketing";
 import { regionRows, type RegionSalesRow, type RegionSpendRow } from "./regionPerformance";
 
 export async function regionSpend(clientId: string, w: Window): Promise<RegionSpendRow[]> {

@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
-import { resolveComparison, type PeriodSearch } from "@/shared/utils/period";
+import { resolveComparison, type PeriodSearch } from "@ecommerce/contracts/shared/period";
 
 /**
  * Reads and updates the global period (`?inicio=&fim=&por=&comparar=`).

@@ -4,9 +4,9 @@
  */
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { prismaClient } from "@ecommerce/database/client";
-import { isoDay, type Window } from "@/shared/utils/periodWindow";
+import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import { platformFilter } from "./attributionService";
-import type { DiscountCodeRow } from "./marketing.types";
+import type { DiscountCodeRow } from "@ecommerce/contracts/marketing";
 import type { DiscountFacts } from "./marketingMetrics";
 
 type FactsRow = {

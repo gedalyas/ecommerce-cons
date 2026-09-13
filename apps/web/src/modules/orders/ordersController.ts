@@ -4,8 +4,8 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
-import { ordersSearchSchema, type OrdersSearch } from "./ordersSchema";
+import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { ordersSearchSchema, type OrdersSearch } from "@ecommerce/contracts/orders";
 import { ordersExport, ordersScreen } from "./ordersScreenService";
 
 const parseInput = (input: Partial<PeriodSearch & OrdersSearch>) => ({

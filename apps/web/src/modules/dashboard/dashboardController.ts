@@ -4,7 +4,7 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
+import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { dashboardOverview } from "./dashboardService";
 
 export const getDashboardOverview = createServerFn({ method: "GET" })

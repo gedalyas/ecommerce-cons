@@ -1,10 +1,6 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
-import {
-  Goals,
-  defaultGoalsSearch,
-  getGoalsScreen,
-  goalsSearchSchema,
-} from "@/modules/goals/contract";
+import { defaultGoalsSearch, goalsSearchSchema } from "@ecommerce/contracts/goals";
+import { Goals, getGoalsScreen } from "@/modules/goals/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 

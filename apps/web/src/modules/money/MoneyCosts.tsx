@@ -14,10 +14,9 @@ import {
   costFrequencyLabel,
   percentFrequencies,
   subcategoryLabel,
-} from "./costTaxonomy";
-import type { CostRuleRow } from "./money.types";
+} from "@ecommerce/contracts/money";
+import type { CostRuleRow, CostInput } from "@ecommerce/contracts/money";
 import { createCostRule, deleteCostRule, updateCostRule } from "./moneyController";
-import type { CostInput } from "./moneySchema";
 
 const valueOf = (r: CostRuleRow) =>
   percentFrequencies.includes(r.frequency) ? formatPercent(r.value, 2) : formatCurrency(r.value, 2);

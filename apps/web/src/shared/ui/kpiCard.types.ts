@@ -1,4 +1,4 @@
-import type { MetricValue } from "@/shared/models/types/metric.types";
+import type { MetricValue } from "@ecommerce/contracts/shared/metric.types";
 import type { Fidelity } from "./fidelityBadge.types";
 
 export type KpiCardProps = {

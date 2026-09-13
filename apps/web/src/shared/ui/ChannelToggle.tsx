@@ -1,5 +1,5 @@
 import { cn } from "@/shared/utils/cn";
-import { channelLabel, channels, type Channel } from "@/shared/utils/period";
+import { channelLabel, channels, type Channel } from "@ecommerce/contracts/shared/period";
 import { radiusClass } from "@/shared/styles/radius";
 
 /** Sales-channel filter shared by every data screen: all · e-commerce · marketplace. */

@@ -1,10 +1,10 @@
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
 import { trafficAggregate } from "@/modules/marketing/contract.server";
 import { ordersAggregate } from "@/modules/orders/contract.server";
 import { inventoryFacts, productSales } from "@/modules/products/contract.server";
-import { toWindow, type Window } from "@/shared/utils/periodWindow";
+import { toWindow, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import { deriveAlerts } from "./alertRules";
-import type { AlertFacts, AlertItem, ProductWeekPair } from "./alerts.types";
+import type { AlertFacts, AlertItem, ProductWeekPair } from "@ecommerce/contracts/alerts";
 
 const DAY = 86_400_000;
 

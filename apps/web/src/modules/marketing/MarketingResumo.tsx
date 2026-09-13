@@ -14,21 +14,23 @@ import {
   formatNumber,
   formatPercent,
 } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   ChannelPerformanceRow,
   FunnelRatioRow,
   MarketingSummary,
   UtmSalesRow,
-} from "./marketing.types";
-import { investmentMetricLabel, sessionMetricLabel, utmDimensionLabel } from "./marketingLabels";
-import type { BenchmarkVerdict } from "./marketingRules";
+  BenchmarkVerdict,
+} from "@ecommerce/contracts/marketing";
 import {
+  investmentMetricLabel,
+  sessionMetricLabel,
+  utmDimensionLabel,
   investmentMetrics,
   sessionMetrics,
   utmDimensions,
   type MarketingSearch,
-} from "./marketingSchema";
+} from "@ecommerce/contracts/marketing";
 
 const money = (v: number | null) => (v == null ? "—" : formatCurrency(v));
 const pct = (v: number | null) => (v == null ? "—" : formatPercent(v));

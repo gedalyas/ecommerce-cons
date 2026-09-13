@@ -1,10 +1,6 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
-import {
-  Analysis,
-  analysisSearchSchema,
-  defaultAnalysisSearch,
-  getAnalysisScreen,
-} from "@/modules/analysis/contract";
+import { analysisSearchSchema, defaultAnalysisSearch } from "@ecommerce/contracts/analysis";
+import { Analysis, getAnalysisScreen } from "@/modules/analysis/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 

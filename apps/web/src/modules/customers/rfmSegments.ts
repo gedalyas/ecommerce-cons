@@ -1,4 +1,4 @@
-import type { RfmScores } from "./customers.types";
+import type { RfmScores } from "@ecommerce/contracts/customers";
 
 /**
  * Segment labels tuned for a store where most buyers have a single order:

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
-import { analysisSearchSchema, type AnalysisSearch } from "./analysisSchema";
+import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { analysisSearchSchema, type AnalysisSearch } from "@ecommerce/contracts/analysis";
 import { analysisScreen } from "./analysisService";
 
 export const getAnalysisScreen = createServerFn({ method: "GET" })

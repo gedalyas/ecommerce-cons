@@ -7,7 +7,12 @@ import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatPercent, formatPeriodLabel } from "@/shared/utils/format";
 import { formatMetric } from "@/shared/utils/metricFormat";
-import { goalGroupLabel, type GoalCard, type GoalGroup, type GoalsSummary } from "./goals.types";
+import {
+  goalGroupLabel,
+  type GoalCard,
+  type GoalGroup,
+  type GoalsSummary,
+} from "@ecommerce/contracts/goals";
 
 const groups: GoalGroup[] = ["vendas", "marketing", "trafego", "recompra"];
 

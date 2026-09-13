@@ -4,8 +4,8 @@
  */
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import { isoDay, type Window } from "@/shared/utils/periodWindow";
-import type { CustomersAggregate, CustomersBucket } from "./customers.types";
+import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
+import type { CustomersAggregate, CustomersBucket } from "@ecommerce/contracts/customers";
 
 const platformFilter = (platform: SalesPlatform | null) =>
   platform ? Prisma.sql`and o.sales_platform = ${platform}::sales_platform` : Prisma.empty;

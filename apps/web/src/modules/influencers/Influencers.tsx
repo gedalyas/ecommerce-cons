@@ -2,7 +2,6 @@ import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { InfluencerStatus } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { DataTable } from "@/shared/ui/DataTable";
 import { Dialog } from "@/shared/ui/Dialog";
@@ -16,21 +15,22 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { InfluencerForm } from "./InfluencerForm";
 import { influencerColumns } from "./influencerColumns";
 import {
   influencerStatusLabel,
+  influencerStatuses,
   type Influencer,
   type InfluencerRow,
   type InfluencersScreen,
-} from "./influencers.types";
+} from "@ecommerce/contracts/influencers";
 import {
   createInfluencerFn,
   deleteInfluencerFn,
   updateInfluencerFn,
 } from "./influencersController";
-import type { InfluencerParsed, InfluencersSearch } from "./influencersSchema";
+import type { InfluencerParsed, InfluencersSearch } from "@ecommerce/contracts/influencers";
 
 type Editing =
   | { kind: "new" }
@@ -108,7 +108,7 @@ export function Influencers({ data }: { data: InfluencersScreen }) {
   const { period, setPeriod } = usePeriod();
   const { search, patch } = useInfluencersSearch();
   const { editing, setEditing, busy, error, submit, confirmDelete } = useInfluencerActions();
-  const tabs = Object.values(InfluencerStatus).map((status) => ({
+  const tabs = influencerStatuses.map((status) => ({
     key: status,
     label: `${influencerStatusLabel[status]} (${data.counts[status]})`,
   }));

@@ -6,24 +6,25 @@ import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { adSpendAggregate, adSpendByBucket } from "@/modules/marketing/contract.server";
 import { costRulesFor } from "@/modules/money/contract.server";
-import { expandCosts, type CostRule } from "@/modules/money/contract";
+import { type CostRule } from "@ecommerce/contracts/money";
+import { expandCosts } from "@/modules/money/contract";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract.server";
-import type { BreakdownSlice } from "@/shared/models/types/metric.types";
-import { metricValue } from "@/shared/utils/metricFormat";
-import type { Channel, PeriodSearch } from "@/shared/utils/period";
+import type { BreakdownSlice } from "@ecommerce/contracts/shared/metric.types";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
 import {
   bucketWindows,
   fillSeries,
   resolvePeriod,
   truncUnit,
   type Window,
-} from "@/shared/utils/periodWindow";
+} from "@ecommerce/contracts/shared/periodWindow";
 import type {
   CustomersLtvCac,
   CustomersRepurchase,
   OrderNumberRow,
   RepurchaseMetric,
-} from "./customers.types";
+} from "@ecommerce/contracts/customers";
 import { customersAggregate, customersByBucket } from "./customersService";
 import {
   computeLtvCac,

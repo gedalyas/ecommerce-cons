@@ -5,10 +5,10 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { prismaClient } from "@ecommerce/database/client";
 import { ordersAggregate } from "@/modules/orders/contract.server";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
-import { metricValue } from "@/shared/utils/metricFormat";
-import type { Channel, PeriodSearch } from "@/shared/utils/period";
-import { resolvePeriod, type Window } from "@/shared/utils/periodWindow";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { resolvePeriod, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import { classifyAbc, summarizeAbc } from "./abcClassification";
 import { deriveInventory, inventoryHealth } from "./inventoryMetrics";
 import type {
@@ -17,8 +17,8 @@ import type {
   ProductRow,
   ProductsScreen,
   ProductsSummaryMetric,
-} from "./products.types";
-import type { ProductsSearch } from "./productsSchema";
+  ProductsSearch,
+} from "@ecommerce/contracts/products";
 import {
   boughtTogether,
   inventoryFacts,

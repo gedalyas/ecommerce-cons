@@ -4,10 +4,15 @@
  */
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import type { BreakdownSlice, Series } from "@/shared/models/types/metric.types";
-import { metricValue } from "@/shared/utils/metricFormat";
-import type { Channel, PeriodSearch } from "@/shared/utils/period";
-import { fillSeries, resolvePeriod, truncUnit, type Window } from "@/shared/utils/periodWindow";
+import type { BreakdownSlice, Series } from "@ecommerce/contracts/shared/metric.types";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
+import {
+  fillSeries,
+  resolvePeriod,
+  truncUnit,
+  type Window,
+} from "@ecommerce/contracts/shared/periodWindow";
 import type {
   ApprovalDimensionKey,
   ApprovalRow,
@@ -20,10 +25,15 @@ import type {
   OrdersSourceRow,
   OrdersSummary,
   OrdersSummaryMetric,
-} from "./orders.types";
-import { ordersSummaryKeys } from "./orders.types";
-import { financialStatusLabel, labelFor, processingMethodLabel } from "./ordersLabels";
-import type { OrdersSearch, OrdersSortField } from "./ordersSchema";
+  OrdersSearch,
+  OrdersSortField,
+} from "@ecommerce/contracts/orders";
+import {
+  ordersSummaryKeys,
+  financialStatusLabel,
+  labelFor,
+  processingMethodLabel,
+} from "@ecommerce/contracts/orders";
 import { ordersAggregate, ordersByBucket, ordersWhere, sourceExpression } from "./ordersService";
 import { salesByCity, salesByProvince } from "./regionsService";
 import { computeOrdersSummary, type OrdersSummaryValues } from "./ordersSummaryMetrics";

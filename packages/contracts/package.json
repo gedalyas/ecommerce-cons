@@ -1,0 +1,26 @@
+{
+  "name": "@ecommerce/contracts",
+  "version": "0.1.0",
+  "description": "Types, zod schemas, closed sets and period helpers shared by web, API and mobile",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./shared/*": "./src/shared/*.ts",
+    "./*": "./src/*/contract.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "check:cycles": "tsx ../../scripts/checkCycles.ts"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3",
+    "vitest": "^5.0.0"
+  }
+}

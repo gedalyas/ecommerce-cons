@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { Input } from "@/shared/ui/Input";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Button } from "@/shared/ui/Button";
-import type { OrdersFilterOptions } from "./orders.types";
-import { ordersFilterKeys, type OrdersFilterKey, type OrdersSearch } from "./ordersSchema";
+import type { OrdersFilterOptions } from "@ecommerce/contracts/orders";
+import {
+  ordersFilterKeys,
+  type OrdersFilterKey,
+  type OrdersSearch,
+} from "@ecommerce/contracts/orders";
 
 const filterLabel: Record<OrdersFilterKey, string> = {
   origem: "Origem",

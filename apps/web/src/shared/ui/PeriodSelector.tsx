@@ -20,8 +20,8 @@ import {
   resolveComparison,
   toIsoDate,
   type PeriodSearch,
-} from "@/shared/utils/period";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
+} from "@ecommerce/contracts/shared/period";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
 import { textClass } from "@/shared/styles/typography";
 import type { PeriodSelectorProps } from "./periodSelector.types";
 

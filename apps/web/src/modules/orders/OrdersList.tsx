@@ -2,11 +2,19 @@ import { useServerFn } from "@tanstack/react-start";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { formatCurrency, formatDate, formatNumber, formatPercent } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
-import type { OrdersFilterOptions, OrdersListPage, OrdersListRow } from "./orders.types";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type {
+  OrdersFilterOptions,
+  OrdersListPage,
+  OrdersListRow,
+} from "@ecommerce/contracts/orders";
 import { getOrdersExport } from "./ordersController";
 import { OrdersFilters } from "./OrdersFilters";
-import { ordersSortFields, type OrdersSearch, type OrdersSortField } from "./ordersSchema";
+import {
+  ordersSortFields,
+  type OrdersSearch,
+  type OrdersSortField,
+} from "@ecommerce/contracts/orders";
 
 const round2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);
 const money = (v: number | null) => (v == null ? "—" : formatCurrency(v, 2));

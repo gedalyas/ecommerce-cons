@@ -1,6 +1,6 @@
 import type { AdPlatform } from "@ecommerce/database/enums";
-import type { RegionPerformanceRow } from "./marketing.types";
-import { platformFeeRate } from "./marketingRules";
+import type { RegionPerformanceRow } from "@ecommerce/contracts/marketing";
+import { platformFeeRate } from "@ecommerce/contracts/marketing";
 
 export type RegionSpendRow = {
   province: string;

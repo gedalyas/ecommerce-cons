@@ -1,5 +1,5 @@
-import type { MetricUnit, Series } from "@/shared/models/types/metric.types";
-import type { Granularity } from "@/shared/utils/period";
+import type { MetricUnit, Series } from "@ecommerce/contracts/shared/metric.types";
+import type { Granularity } from "@ecommerce/contracts/shared/period";
 
 export type TimeSeriesChartProps = {
   series: Series;

@@ -5,13 +5,13 @@
  * Server-only.
  */
 import { prismaClient } from "@ecommerce/database/client";
-import { isoDay, type Window } from "@/shared/utils/periodWindow";
+import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import type {
   AdSpendAggregate,
   AdSpendBucket,
   TrafficAggregate,
   TrafficBucket,
-} from "./marketing.types";
+} from "@ecommerce/contracts/marketing";
 
 type TrafficRow = {
   sessions: number;

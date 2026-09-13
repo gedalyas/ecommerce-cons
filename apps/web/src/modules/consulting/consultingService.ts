@@ -5,7 +5,7 @@ import type {
   MilestoneCriterion,
   MilestoneSummary,
   SectionKey,
-} from "./consulting.types";
+} from "@ecommerce/contracts/consulting";
 import { milestoneSummaryOf, toRecommendation, toSection } from "./consultingRows";
 
 const metricSelect = {

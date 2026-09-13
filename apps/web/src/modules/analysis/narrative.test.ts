@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { metricValue } from "@/shared/utils/metricFormat";
-import { computeValues, metricDefinitions } from "./driverTrees";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import { computeValues, metricDefinitions } from "@ecommerce/contracts/analysis";
 import { narrativeOf, strongestDrivers, titleOf, verdictOf } from "./narrative";
 
 const facts = {

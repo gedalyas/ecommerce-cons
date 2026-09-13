@@ -1,4 +1,4 @@
-import type { BreakdownSlice, MetricUnit } from "@/shared/models/types/metric.types";
+import type { BreakdownSlice, MetricUnit } from "@ecommerce/contracts/shared/metric.types";
 
 export type DonutBreakdownProps = {
   slices: BreakdownSlice[];

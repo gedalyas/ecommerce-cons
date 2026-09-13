@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { activeDays, expandCosts, ruleAmount } from "./costEngine";
-import type { CostActivity, CostRule } from "./money.types";
+import type { CostActivity, CostRule } from "@ecommerce/contracts/money";
 
 const rule = (overrides: Partial<CostRule> = {}): CostRule => ({
   id: "r1",

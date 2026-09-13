@@ -4,8 +4,8 @@ import { metricToTile } from "@/shared/ui/metricToTile";
 import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { layout } from "@/shared/styles/spacing";
-import type { PeriodSearch } from "@/shared/utils/period";
-import type { CustomersLtvCac as CustomersLtvCacData } from "./customers.types";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type { CustomersLtvCac as CustomersLtvCacData } from "@ecommerce/contracts/customers";
 
 /** Unit economics of acquisition; needs the paid-media connection for CAC. */
 export function CustomersLtvCac({

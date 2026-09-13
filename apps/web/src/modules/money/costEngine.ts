@@ -1,4 +1,4 @@
-import type { CostActivity, CostRule, CostTotals } from "./money.types";
+import type { CostActivity, CostRule, CostTotals } from "@ecommerce/contracts/money";
 
 const DAY = 86_400_000;
 const AVERAGE_MONTH_DAYS = 365.25 / 12;

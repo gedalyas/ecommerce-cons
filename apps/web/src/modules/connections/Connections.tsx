@@ -7,9 +7,8 @@ import { layout } from "@/shared/styles/spacing";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import type { DataSourceStatus } from "@ecommerce/database/enums";
-import type { ConnectionsScreen } from "./connections.types";
-import { summaryDetail } from "./connectionsSummary";
+import type { ConnectionsScreen, DataSourceStatus } from "@ecommerce/contracts/connections";
+import { summaryDetail } from "@ecommerce/contracts/connections";
 
 const statusMeta: Record<
   DataSourceStatus,

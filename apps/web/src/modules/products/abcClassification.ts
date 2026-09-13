@@ -1,4 +1,4 @@
-import type { AbcClass, AbcSummary, ProductRow, ProductSales } from "./products.types";
+import type { AbcClass, AbcSummary, ProductRow, ProductSales } from "@ecommerce/contracts/products";
 
 /** Pareto cut-offs on cumulative revenue share. */
 const A_LIMIT = 80;

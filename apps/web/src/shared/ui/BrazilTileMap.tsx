@@ -1,6 +1,6 @@
 import { cn } from "@/shared/utils/cn";
 import { formatMetric } from "@/shared/utils/metricFormat";
-import type { MetricUnit } from "@/shared/models/types/metric.types";
+import type { MetricUnit } from "@ecommerce/contracts/shared/metric.types";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";

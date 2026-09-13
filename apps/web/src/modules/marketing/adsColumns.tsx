@@ -6,9 +6,8 @@ import {
   formatNumber,
   formatPercent,
 } from "@/shared/utils/format";
-import type { AdPerformanceRow } from "./marketing.types";
-import { roasQualityLabel, type RoasQuality } from "./marketingRules";
-import type { AdLevel } from "./marketingSchema";
+import type { AdPerformanceRow, AdLevel } from "@ecommerce/contracts/marketing";
+import { roasQualityLabel, type RoasQuality } from "@ecommerce/contracts/marketing";
 
 const money = (v: number | null) => (v == null ? "—" : formatCurrency(v));
 const money2 = (v: number | null) => (v == null ? "—" : formatCurrency(v, 2));

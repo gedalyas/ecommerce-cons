@@ -7,7 +7,7 @@ import type {
   ConsultingSection,
   MilestoneCriterion,
   MilestoneSummary,
-} from "./consulting.types";
+} from "@ecommerce/contracts/consulting";
 
 export type MetricRow = {
   label: string;

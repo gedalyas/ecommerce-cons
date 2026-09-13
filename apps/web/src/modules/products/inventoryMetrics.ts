@@ -1,4 +1,4 @@
-import type { InventoryHealth, InventoryRow } from "./products.types";
+import type { InventoryHealth, InventoryRow } from "@ecommerce/contracts/products";
 
 export type InventoryFacts = Omit<
   InventoryRow,

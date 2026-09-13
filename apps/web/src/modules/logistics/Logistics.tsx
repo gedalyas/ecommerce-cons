@@ -1,8 +1,8 @@
-import type { InventoryHealth } from "@/modules/products/contract";
+import type { InventoryHealth } from "@ecommerce/contracts/products";
 import { SectionPage } from "@/shared/ui/SectionPage";
 import type { Metric } from "@/shared/ui/metricTile.types";
 import { formatNumber, formatPercent } from "@/shared/utils/format";
-import type { LogisticsScreen } from "./logistics.types";
+import type { LogisticsScreen } from "@ecommerce/contracts/logistics";
 
 function withLiveKpis(kpis: Metric[], inventory: InventoryHealth): Metric[] {
   return kpis.map((kpi) => {

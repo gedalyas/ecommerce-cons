@@ -4,8 +4,13 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
-import { goalPlanSchema, goalsSearchSchema, suggestSchema, type GoalsSearch } from "./goalsSchema";
+import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
+import {
+  goalPlanSchema,
+  goalsSearchSchema,
+  suggestSchema,
+  type GoalsSearch,
+} from "@ecommerce/contracts/goals";
 import { goalsScreen, savePlan, suggestPlan } from "./goalsService";
 
 export const getGoalsScreen = createServerFn({ method: "GET" })

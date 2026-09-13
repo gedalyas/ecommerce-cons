@@ -4,9 +4,9 @@
  */
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { AdPlatform } from "@ecommerce/database/enums";
-import { isoDay, type Window } from "@/shared/utils/periodWindow";
+import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import type { AdSums } from "./marketingMetrics";
-import type { AdLevel, AdPlatformFilter } from "./marketingSchema";
+import type { AdLevel, AdPlatformFilter } from "@ecommerce/contracts/marketing";
 
 export const adPlatformLabel: Record<AdPlatform, string> = {
   META: "Meta Ads",

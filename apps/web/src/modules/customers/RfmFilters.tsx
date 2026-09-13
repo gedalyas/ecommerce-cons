@@ -5,13 +5,13 @@ import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { cn } from "@/shared/utils/cn";
 import { formatCurrency } from "@/shared/utils/format";
 import { textClass } from "@/shared/styles/typography";
-import type { RfmFilterOptions } from "./customers.types";
+import type { RfmFilterOptions } from "@ecommerce/contracts/customers";
 import {
   defaultCustomersSearch,
   inactivityBands,
   type CustomersSearch,
   type InactivityBand,
-} from "./customersSchema";
+} from "@ecommerce/contracts/customers";
 
 const bandLabel: Record<InactivityBand, string> = {
   "0-30": "até 30 dias",

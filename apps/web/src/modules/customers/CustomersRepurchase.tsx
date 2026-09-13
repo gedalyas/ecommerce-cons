@@ -8,11 +8,11 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatNumber } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   CustomersRepurchase as CustomersRepurchaseData,
   RepurchaseMetric,
-} from "./customers.types";
+} from "@ecommerce/contracts/customers";
 
 const tiles = (metrics: RepurchaseMetric[], comparisonLabel: string) =>
   metrics.map((m) =>

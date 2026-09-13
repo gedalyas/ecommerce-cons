@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { activeDays, influencerCost, roiOf, ruleCost, sumActivity } from "./influencerCost";
-import type { InfluencerRule } from "./influencers.types";
+import type { InfluencerRule } from "@ecommerce/contracts/influencers";
 
 const window = { inicio: "2026-08-01", fim: "2026-08-31" };
 const activity = {

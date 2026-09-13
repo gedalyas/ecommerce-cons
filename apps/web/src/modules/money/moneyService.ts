@@ -6,16 +6,15 @@ import type { SalesPlatform } from "@ecommerce/database/enums";
 import { prismaClient } from "@ecommerce/database/client";
 import { sectionFor } from "@/modules/consulting/contract.server";
 import { adSpendAggregate, adSpendByBucket } from "@/modules/marketing/contract.server";
-import type { AdSpendAggregate } from "@/modules/marketing/contract";
+import type { AdSpendAggregate } from "@ecommerce/contracts/marketing";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract.server";
-import type { OrdersAggregate } from "@/modules/orders/contract";
-import { metricValue } from "@/shared/utils/metricFormat";
-import type { Channel, PeriodSearch } from "@/shared/utils/period";
-import { bucketWindows, resolvePeriod, truncUnit } from "@/shared/utils/periodWindow";
+import type { OrdersAggregate } from "@ecommerce/contracts/orders";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { bucketWindows, resolvePeriod, truncUnit } from "@ecommerce/contracts/shared/periodWindow";
 import { expandCosts, ruleAmount, type CostWindow } from "./costEngine";
-import { subcategoryLabel } from "./costTaxonomy";
-import { computeDre, computeDreIndicators, type DreFacts } from "./dre";
 import {
+  subcategoryLabel,
   dreLineKeys,
   type CostRule,
   type CostRuleRow,
@@ -26,8 +25,9 @@ import {
   type MoneyDre,
   type MoneyScreen,
   type MoneyTabData,
-} from "./money.types";
-import type { CostInput, MoneySearch } from "./moneySchema";
+} from "@ecommerce/contracts/money";
+import { computeDre, computeDreIndicators, type DreFacts } from "./dre";
+import type { CostInput, MoneySearch } from "@ecommerce/contracts/money";
 
 const isoDay = (date: Date) => date.toISOString().slice(0, 10);
 const dateOf = (iso: string) => new Date(`${iso}T00:00:00.000Z`);

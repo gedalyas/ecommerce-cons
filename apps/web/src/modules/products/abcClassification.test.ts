@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { classifyAbc, summarizeAbc } from "./abcClassification";
-import type { ProductSales } from "./products.types";
+import type { ProductSales } from "@ecommerce/contracts/products";
 
 const product = (id: string, revenue: number, extra: Partial<ProductSales> = {}): ProductSales => ({
   productId: id,

@@ -30,9 +30,9 @@ const extinct = {
 };
 
 const sharedKnowsNoDomain = {
-  regex: "(^|/)modules/",
+  regex: "(^|/)modules/|^@ecommerce/contracts/(?!shared/)",
   message:
-    "shared/ does not know any domain. Invert the dependency or move the file to the module.",
+    "shared/ does not know any domain: only @ecommerce/contracts/shared/* is allowed here. Invert the dependency or move the file to the module.",
 };
 
 const moduleExposesOnlyContract = {

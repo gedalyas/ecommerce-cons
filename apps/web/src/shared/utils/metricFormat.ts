@@ -1,19 +1,5 @@
-/** Formatting and arithmetic over MetricValue; the shapes live in models/types/metric.types.ts. */
+import type { MetricUnit } from "@ecommerce/contracts/shared/metric.types";
 import { formatCurrency, formatMultiplier, formatNumber, formatPercent } from "./format";
-import type { MetricUnit, MetricValue } from "@/shared/models/types/metric.types";
-
-export function variationOf(current: number | null, previous: number | null) {
-  if (current == null || previous == null || previous === 0) return null;
-  return ((current - previous) / Math.abs(previous)) * 100;
-}
-
-export function metricValue(
-  unit: MetricUnit,
-  current: number | null,
-  previous: number | null,
-): MetricValue {
-  return { value: current, unit, previous, variation: variationOf(current, previous) };
-}
 
 export function formatMetric(value: number | null, unit: MetricUnit) {
   if (value == null) return "—";

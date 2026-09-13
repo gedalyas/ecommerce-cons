@@ -1,7 +1,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { cn } from "@/shared/utils/cn";
 import { formatMetric, formatMetricCompact } from "@/shared/utils/metricFormat";
-import type { MetricUnit } from "@/shared/models/types/metric.types";
+import type { MetricUnit } from "@ecommerce/contracts/shared/metric.types";
 import { textClass } from "@/shared/styles/typography";
 
 export type BarItem = { key: string; label: string; value: number | null };

@@ -6,24 +6,29 @@ import {
   trafficAggregate,
   trafficByBucket,
 } from "@/modules/marketing/contract.server";
-import { expandCosts, type CostRule } from "@/modules/money/contract";
+import { type CostRule } from "@ecommerce/contracts/money";
+import { expandCosts } from "@/modules/money/contract";
 import { costRulesFor } from "@/modules/money/contract.server";
-import type { OrdersAggregate } from "@/modules/orders/contract";
+import type { OrdersAggregate } from "@ecommerce/contracts/orders";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract.server";
-import type { SeriesPoint } from "@/shared/models/types/metric.types";
-import { metricValue } from "@/shared/utils/metricFormat";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { SeriesPoint } from "@ecommerce/contracts/shared/metric.types";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import {
   bucketWindows,
   resolvePeriod,
   truncUnit,
   type BucketWindow,
   type Window,
-} from "@/shared/utils/periodWindow";
-import type { AnalysisFacts, AnalysisScreen, AnalysisValues } from "./analysis.types";
-import type { AnalysisSearch } from "./analysisSchema";
+} from "@ecommerce/contracts/shared/periodWindow";
+import type {
+  AnalysisFacts,
+  AnalysisScreen,
+  AnalysisValues,
+  AnalysisSearch,
+} from "@ecommerce/contracts/analysis";
 import { benchmarkFor } from "./benchmarks";
-import { computeValues, driverDefinitions, metricDefinitions } from "./driverTrees";
+import { computeValues, driverDefinitions, metricDefinitions } from "@ecommerce/contracts/analysis";
 import { narrativeOf } from "./narrative";
 
 type Calendar = { inicio: string; fim: string };

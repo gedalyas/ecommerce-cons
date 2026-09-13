@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBlocker } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { InfluencerStatus } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Input } from "@/shared/ui/Input";
@@ -10,12 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/shared/ui/Textarea";
 import { CouponFields, RuleFields } from "./InfluencerRuleFields";
 import { FormField as Field } from "./FormField";
-import { influencerStatusLabel, type Influencer } from "./influencers.types";
 import {
+  influencerStatusLabel,
+  influencerStatuses,
+  type Influencer,
+  type InfluencerStatus,
   influencerInputSchema,
   type InfluencerInput,
   type InfluencerParsed,
-} from "./influencersSchema";
+} from "@ecommerce/contracts/influencers";
 
 const emptyInput: InfluencerInput = {
   name: "",
@@ -99,7 +101,7 @@ export function InfluencerForm({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.values(InfluencerStatus).map((s) => (
+              {influencerStatuses.map((s) => (
                 <SelectItem key={s} value={s}>
                   {influencerStatusLabel[s]}
                 </SelectItem>

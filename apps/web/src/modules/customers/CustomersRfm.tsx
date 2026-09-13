@@ -10,14 +10,17 @@ import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatCurrency, formatDate, formatNumber } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
-import type { CustomersRfm as CustomersRfmData, RfmCustomerRow } from "./customers.types";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type {
+  CustomersRfm as CustomersRfmData,
+  RfmCustomerRow,
+} from "@ecommerce/contracts/customers";
 import { getCustomersExport, refreshCustomerSegments } from "./customersController";
 import {
   customersSortFields,
   type CustomersSearch,
   type CustomersSortField,
-} from "./customersSchema";
+} from "@ecommerce/contracts/customers";
 import { RfmFilters } from "./RfmFilters";
 
 const columns: DataTableColumn<RfmCustomerRow>[] = [

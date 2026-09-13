@@ -2,8 +2,8 @@
  * Pure marketing arithmetic: media ratios, channel performance, the funnel
  * table and the discount KPIs. No I/O, so every rule here is unit-tested.
  */
-import type { BreakdownSlice, MetricValue } from "@/shared/models/types/metric.types";
-import { metricValue } from "@/shared/utils/metricFormat";
+import type { BreakdownSlice, MetricValue } from "@ecommerce/contracts/shared/metric.types";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
 import type {
   AdPerformanceRow,
   ChannelPerformanceRow,
@@ -11,7 +11,7 @@ import type {
   FunnelRatioRow,
   FunnelStepValue,
   MarketingCostLine,
-} from "./marketing.types";
+} from "@ecommerce/contracts/marketing";
 import {
   benchmarkVerdict,
   funnelRatio,
@@ -20,7 +20,7 @@ import {
   funnelSteps,
   roasQuality,
   type FunnelCounts,
-} from "./marketingRules";
+} from "@ecommerce/contracts/marketing";
 
 export const ratio = (numerator: number, denominator: number) =>
   denominator > 0 ? numerator / denominator : null;

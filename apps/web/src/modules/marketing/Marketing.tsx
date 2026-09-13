@@ -12,7 +12,7 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatCurrency, formatPeriodLabel, formatPercent } from "@/shared/utils/format";
-import type { MetricValue } from "@/shared/models/types/metric.types";
+import type { MetricValue } from "@ecommerce/contracts/shared/metric.types";
 import { CreativePresence } from "./CreativePresence";
 import type {
   MarketingOverview,
@@ -20,7 +20,7 @@ import type {
   MarketingScreen,
   MarketingVisao,
   StaleSource,
-} from "./marketing.types";
+} from "@ecommerce/contracts/marketing";
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingDescontos } from "./MarketingDescontos";
 import { MarketingRegioes } from "./MarketingRegioes";

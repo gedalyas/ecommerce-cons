@@ -1,6 +1,6 @@
 import { prismaClient } from "@ecommerce/database/client";
 import { sectionFor } from "@/modules/consulting/contract.server";
-import type { ManagementScreen } from "./management.types";
+import type { ManagementScreen } from "@ecommerce/contracts/management";
 
 async function clientIdFor(slug: string) {
   const client = await prismaClient.client.findUnique({ where: { slug }, select: { id: true } });

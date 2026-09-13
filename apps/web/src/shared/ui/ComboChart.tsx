@@ -11,8 +11,8 @@ import {
 import { cn } from "@/shared/utils/cn";
 import { formatDate } from "@/shared/utils/format";
 import { formatMetric, formatMetricCompact } from "@/shared/utils/metricFormat";
-import type { MetricUnit, SeriesPoint } from "@/shared/models/types/metric.types";
-import type { Granularity } from "@/shared/utils/period";
+import type { MetricUnit, SeriesPoint } from "@ecommerce/contracts/shared/metric.types";
+import type { Granularity } from "@ecommerce/contracts/shared/period";
 import { textClass } from "@/shared/styles/typography";
 
 const bucketOptions: Record<Granularity, Intl.DateTimeFormatOptions> = {

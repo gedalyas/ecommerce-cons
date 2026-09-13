@@ -10,8 +10,8 @@ import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatDate } from "@/shared/utils/format";
 import { formatMetric } from "@/shared/utils/metricFormat";
-import { deriveGoal } from "./goalDerivations";
 import {
+  deriveGoal,
   goalDefinitions,
   goalDerivedKeys,
   goalInputKeys,
@@ -19,9 +19,9 @@ import {
   type GoalInputKey,
   type GoalMonth,
   type GoalsPlanning,
-} from "./goals.types";
+} from "@ecommerce/contracts/goals";
 import { saveGoalPlan, suggestGoalPlan } from "./goalsController";
-import type { GoalsSearch } from "./goalsSchema";
+import type { GoalsSearch } from "@ecommerce/contracts/goals";
 
 const emptyMonth = (month: number): GoalMonth => ({
   month,

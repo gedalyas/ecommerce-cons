@@ -1,5 +1,5 @@
-import { benchmarkVerdict, funnelRatios, roasBands } from "@/modules/marketing/contract";
-import type { AnalysisMetricKey, Benchmark } from "./analysis.types";
+import { benchmarkVerdict, funnelRatios, roasBands } from "@ecommerce/contracts/marketing";
+import type { AnalysisMetricKey, Benchmark } from "@ecommerce/contracts/analysis";
 
 const sessionsToPaid = funnelRatios.find((r) => r.key === "sessionsToPaid");
 

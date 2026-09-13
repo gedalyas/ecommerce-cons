@@ -1,11 +1,7 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
 import { getRetentionSummary } from "@/modules/customers/contract";
-import {
-  Marketing,
-  defaultMarketingSearch,
-  getMarketingScreen,
-  marketingSearchSchema,
-} from "@/modules/marketing/contract";
+import { defaultMarketingSearch, marketingSearchSchema } from "@ecommerce/contracts/marketing";
+import { Marketing, getMarketingScreen } from "@/modules/marketing/contract";
 import { getMarketingCostLines } from "@/modules/money/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";

@@ -1,4 +1,4 @@
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 
 export type PeriodSelectorProps = {
   value: PeriodSearch;

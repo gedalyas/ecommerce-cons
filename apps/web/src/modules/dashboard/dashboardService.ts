@@ -15,26 +15,27 @@ import {
   trafficAggregate,
   trafficByBucket,
 } from "@/modules/marketing/contract.server";
-import { expandCosts, type CostActivity, type CostRule } from "@/modules/money/contract";
+import { type CostActivity, type CostRule } from "@ecommerce/contracts/money";
+import { expandCosts } from "@/modules/money/contract";
 import { costRulesFor } from "@/modules/money/contract.server";
-import type { OrdersAggregate } from "@/modules/orders/contract";
+import type { OrdersAggregate } from "@ecommerce/contracts/orders";
 import { ordersAggregate, ordersByBucket, revenueBySource } from "@/modules/orders/contract.server";
-import type { Series } from "@/shared/models/types/metric.types";
-import { metricValue } from "@/shared/utils/metricFormat";
-import type { Channel, PeriodSearch } from "@/shared/utils/period";
+import type { Series } from "@ecommerce/contracts/shared/metric.types";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
 import {
   bucketWindows,
   resolvePeriod,
   truncUnit,
   type BucketWindow,
   type Window,
-} from "@/shared/utils/periodWindow";
+} from "@ecommerce/contracts/shared/periodWindow";
 import {
   dashboardMetricDefinitions,
   dashboardMetricKeys,
   type DashboardMetricKey,
   type DashboardOverview,
-} from "./dashboard.types";
+} from "@ecommerce/contracts/dashboard";
 import { fidelityFor } from "./dashboardFidelity";
 import {
   computeDashboardMetrics,

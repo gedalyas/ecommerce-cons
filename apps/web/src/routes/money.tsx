@@ -1,10 +1,6 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
-import {
-  Money,
-  defaultMoneySearch,
-  getMoneyScreen,
-  moneySearchSchema,
-} from "@/modules/money/contract";
+import { defaultMoneySearch, moneySearchSchema } from "@ecommerce/contracts/money";
+import { Money, getMoneyScreen } from "@/modules/money/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 

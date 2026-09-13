@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBlocker } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { BusinessUnit, CostCategory, CostFrequency } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Input } from "@/shared/ui/Input";
@@ -10,16 +9,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/shared/ui/Textarea";
 import { cn } from "@/shared/utils/cn";
 import { textClass } from "@/shared/styles/typography";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
 import {
+  businessUnits,
+  costCategories,
+  costFrequencies,
   businessUnitLabel,
   costCategoryLabel,
   costFrequencyLabel,
   costSubcategories,
   percentFrequencies,
-} from "./costTaxonomy";
-import type { CostRuleRow } from "./money.types";
-import { costInputSchema, type CostInput } from "./moneySchema";
+  costInputSchema,
+  type CostInput,
+} from "@ecommerce/contracts/money";
+import type { CostRuleRow } from "@ecommerce/contracts/money";
 
 const emptyInput: CostInput = {
   name: "",
@@ -141,7 +144,7 @@ export function CostForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(BusinessUnit).map((u) => (
+                  {businessUnits.map((u) => (
                     <SelectItem key={u} value={u}>
                       {businessUnitLabel[u]}
                     </SelectItem>
@@ -161,7 +164,7 @@ export function CostForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(CostFrequency).map((f) => (
+                  {costFrequencies.map((f) => (
                     <SelectItem key={f} value={f}>
                       {costFrequencyLabel[f]}
                     </SelectItem>
@@ -181,7 +184,7 @@ export function CostForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(CostCategory).map((c) => (
+                  {costCategories.map((c) => (
                     <SelectItem key={c} value={c}>
                       {costCategoryLabel[c]}
                     </SelectItem>

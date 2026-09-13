@@ -1,7 +1,7 @@
 import type { InfluencerStatus } from "@ecommerce/database/enums";
 import { prismaClient } from "@ecommerce/database/client";
-import type { PeriodSearch } from "@/shared/utils/period";
-import { resolvePeriod, type Window } from "@/shared/utils/periodWindow";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { resolvePeriod, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import {
   emptyActivity,
   influencerCost,
@@ -15,8 +15,9 @@ import type {
   InfluencerCoupon,
   InfluencerRow,
   InfluencersScreen,
-} from "./influencers.types";
-import type { InfluencerParsed, InfluencersSearch } from "./influencersSchema";
+  InfluencerParsed,
+  InfluencersSearch,
+} from "@ecommerce/contracts/influencers";
 
 async function clientIdFor(slug: string) {
   const client = await prismaClient.client.findUnique({ where: { slug }, select: { id: true } });

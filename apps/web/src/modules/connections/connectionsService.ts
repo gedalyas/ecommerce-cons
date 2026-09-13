@@ -1,7 +1,11 @@
 import { prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
-import type { ConnectionsHealth, ConnectionsScreen, DataSourceState } from "./connections.types";
-import { connectionsSummaryOf, hasErrorSource } from "./connectionsSummary";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import type {
+  ConnectionsHealth,
+  ConnectionsScreen,
+  DataSourceState,
+} from "@ecommerce/contracts/connections";
+import { connectionsSummaryOf, hasErrorSource } from "@ecommerce/contracts/connections";
 import { syncLabelOf } from "./syncLabel";
 
 async function clientIdFor(slug: string) {

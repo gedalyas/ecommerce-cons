@@ -8,11 +8,10 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
-import type { GoalsScreen } from "./goals.types";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type { GoalsScreen, GoalsSearch } from "@ecommerce/contracts/goals";
 import { GoalsPlan } from "./GoalsPlan";
 import { GoalsSummary } from "./GoalsSummary";
-import type { GoalsSearch } from "./goalsSchema";
 
 const tabs = [
   { key: "resumo", label: "Resumo" },

@@ -6,7 +6,7 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@/shared/utils/format";
-import type { CustomersScreen } from "./customers.types";
+import type { CustomersScreen } from "@ecommerce/contracts/customers";
 import { CustomersLtvCac } from "./CustomersLtvCac";
 import { CustomersRepurchase } from "./CustomersRepurchase";
 import { CustomersRfm } from "./CustomersRfm";

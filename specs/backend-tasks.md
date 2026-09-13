@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B2 done (2026-09-13)** — last updated 2026-09-13
+Status: **B3 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -38,10 +38,18 @@ Status: **B2 done (2026-09-13)** — last updated 2026-09-13
 
 ## B3 — `packages/contracts`
 
-- [ ] `shared/`: `period.ts`, `periodWindow.ts`, `metric.types.ts`, `metricValue`, `PROTOTYPE_TODAY`
-- [ ] Per module: `*.types.ts`, `*Schema.ts`, labels/taxonomies, UI-facing rules with their tests
-- [ ] Closed sets as `as const` tuples + Portuguese labels; enum-parity tests on the API side (B6)
-- [ ] Web imports `@ecommerce/contracts/<domain>`; no DOM/React/Prisma inside the package (lint)
+- [x] `shared/`: `period.ts`, `periodWindow.ts`, `metric.types.ts`, `metricValue.ts`,
+      `clock.ts` (`PROTOTYPE_TODAY`), `fidelity.ts` — with their tests
+- [x] Per module: `*.types.ts`, `*Schema.ts`, labels/taxonomies, UI-facing rules with tests
+      (`marketingRules`, `goalDerivations`, `driverTrees`, `connectionsSummary`); one
+      hand-written `contract.ts` door per domain, `exports` map `./<domain>` and `./shared/*`
+- [x] Closed sets as `as const` tuples + labels (`costSets.ts`, `adPlatforms`,
+      `influencerStatuses`, `influencerRuleTypes`, `dataSourceStatuses`, `pillarStatuses`,
+      `fidelities`); components use them instead of the Prisma enum objects; the parity
+      tests land with the API (B6). `consulting.types.ts` owns the wire shapes of a section
+      (the `shared/ui` prop types stay as the UI's own, structurally identical)
+- [x] Web imports `@ecommerce/contracts/<domain>`; the package's lint forbids React, Prisma,
+      TanStack and the `@/` alias; the web's `shared/` may only import `contracts/shared/*`
 
 ## B4 — `apps/api` foundation
 

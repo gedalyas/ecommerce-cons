@@ -14,12 +14,12 @@ import {
   formatPeriodLabel,
 } from "@/shared/utils/format";
 import { formatMetric } from "@/shared/utils/metricFormat";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   OrdersSourceRow,
   OrdersSummary as OrdersSummaryData,
   OrdersSummaryKey,
-} from "./orders.types";
+} from "@ecommerce/contracts/orders";
 
 const money = (v: number | null) => (v == null ? "—" : formatCurrency(v));
 const round2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);

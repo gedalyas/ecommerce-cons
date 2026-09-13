@@ -1,4 +1,4 @@
-import type { CostTotals, DreIndicatorKey, DreLineKey } from "./money.types";
+import type { CostTotals, DreIndicatorKey, DreLineKey } from "@ecommerce/contracts/money";
 
 /** What one window (or bucket) contributes to the DRE, already summed. */
 export type DreFacts = {

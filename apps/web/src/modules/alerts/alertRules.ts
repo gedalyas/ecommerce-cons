@@ -5,7 +5,7 @@ import type {
   ProductWeekPair,
   VariantStock,
   WeekPair,
-} from "./alerts.types";
+} from "@ecommerce/contracts/alerts";
 
 export const alertThresholds = {
   dropPercent: 15,

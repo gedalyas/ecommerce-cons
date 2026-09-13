@@ -4,10 +4,9 @@
  */
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import { isoDay, type Window } from "@/shared/utils/periodWindow";
-import type { UtmSalesRow } from "./marketing.types";
-import { channelOf } from "./marketingRules";
-import type { UtmDimension } from "./marketingSchema";
+import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
+import type { UtmSalesRow, UtmDimension } from "@ecommerce/contracts/marketing";
+import { channelOf } from "@ecommerce/contracts/marketing";
 
 export const platformFilter = (platform: SalesPlatform | null) =>
   platform ? Prisma.sql`and o.sales_platform = ${platform}::sales_platform` : Prisma.empty;

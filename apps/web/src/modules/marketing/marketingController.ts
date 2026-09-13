@@ -6,8 +6,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
-import { marketingSearchSchema, type MarketingSearch } from "./marketingSchema";
+import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { marketingSearchSchema, type MarketingSearch } from "@ecommerce/contracts/marketing";
 import { marketingScreen } from "./marketingScreenService";
 
 const costLineSchema = z.object({

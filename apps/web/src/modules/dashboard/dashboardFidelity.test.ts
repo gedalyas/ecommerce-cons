@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { DataSourceState } from "@/modules/connections/contract";
+import type { DataSourceState } from "@ecommerce/contracts/connections";
 import { fidelityFor } from "./dashboardFidelity";
 
 const sources: DataSourceState[] = [

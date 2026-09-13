@@ -4,9 +4,16 @@
  * Server-only.
  */
 import { Prisma, prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
-import type { RfmCustomerRow, RfmFilterOptions, RfmPage, RfmSegmentShare } from "./customers.types";
-import type { CustomersSearch, CustomersSortField, InactivityBand } from "./customersSchema";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import type {
+  RfmCustomerRow,
+  RfmFilterOptions,
+  RfmPage,
+  RfmSegmentShare,
+  CustomersSearch,
+  CustomersSortField,
+  InactivityBand,
+} from "@ecommerce/contracts/customers";
 import { frequencyScore, quintileScorer, rfmSegmentLabels, segmentFor } from "./rfmSegments";
 
 const inList = (column: Prisma.Sql, values: string[]) =>

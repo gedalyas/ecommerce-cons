@@ -1,7 +1,7 @@
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import type { Window } from "@/shared/utils/periodWindow";
-import type { OrdersFilters, RegionRow } from "./orders.types";
+import type { Window } from "@ecommerce/contracts/shared/periodWindow";
+import type { OrdersFilters, RegionRow } from "@ecommerce/contracts/orders";
 import { ordersWhere } from "./ordersService";
 import { toRegionRows, type RegionSqlRow } from "./regionRows";
 

@@ -9,9 +9,9 @@ import {
   formatPeriodLabel,
   formatVariation,
 } from "@/shared/utils/format";
-import { variationOf } from "@/shared/utils/metricFormat";
-import type { Granularity, PeriodSearch } from "@/shared/utils/period";
-import type { DreMatrixRow, MoneyDre as MoneyDreData } from "./money.types";
+import { variationOf } from "@ecommerce/contracts/shared/metricValue";
+import type { Granularity, PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type { DreMatrixRow, MoneyDre as MoneyDreData } from "@ecommerce/contracts/money";
 
 const bucketHeader = (bucket: string, por: Granularity) => {
   const date = `${bucket}T00:00:00`;

@@ -6,9 +6,9 @@
  */
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import type { BreakdownSlice } from "@/shared/models/types/metric.types";
-import { isoDay, type Window } from "@/shared/utils/periodWindow";
-import type { OrdersAggregate, OrdersBucket, OrdersFilters } from "./orders.types";
+import type { BreakdownSlice } from "@ecommerce/contracts/shared/metric.types";
+import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
+import type { OrdersAggregate, OrdersBucket, OrdersFilters } from "@ecommerce/contracts/orders";
 
 /** SQL condition for the store/marketplace split, or nothing for all. */
 export const platformFilter = (platform: SalesPlatform | null) =>

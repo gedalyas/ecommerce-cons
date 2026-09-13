@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OrdersAggregate } from "./orders.types";
+import type { OrdersAggregate } from "@ecommerce/contracts/orders";
 import { computeOrdersSummary } from "./ordersSummaryMetrics";
 
 const aggregate: OrdersAggregate = {

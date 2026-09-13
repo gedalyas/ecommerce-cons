@@ -4,14 +4,14 @@ import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { TimeSeriesChart } from "@/shared/ui/TimeSeriesChart";
 import { layout } from "@/shared/styles/spacing";
 import { formatCurrency, formatNumber, formatPercent } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type {
   ApprovalRow,
   OrdersApproval as OrdersApprovalData,
   OrdersFilterOptions,
-} from "./orders.types";
+  OrdersSearch,
+} from "@ecommerce/contracts/orders";
 import { OrdersFilters } from "./OrdersFilters";
-import type { OrdersSearch } from "./ordersSchema";
 
 const round2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);
 

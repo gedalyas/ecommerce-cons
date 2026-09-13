@@ -1,7 +1,11 @@
 import { Button } from "@/shared/ui/Button";
 import { MultiSelect } from "@/shared/ui/MultiSelect";
-import type { ProductsFilterOptions } from "./products.types";
-import { productsFilterKeys, type ProductsFilterKey, type ProductsSearch } from "./productsSchema";
+import type { ProductsFilterOptions } from "@ecommerce/contracts/products";
+import {
+  productsFilterKeys,
+  type ProductsFilterKey,
+  type ProductsSearch,
+} from "@ecommerce/contracts/products";
 
 const filterLabel: Record<ProductsFilterKey, string> = {
   categoria: "Categoria",

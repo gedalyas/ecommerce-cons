@@ -1,10 +1,6 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
-import {
-  Orders,
-  defaultOrdersSearch,
-  getOrdersScreen,
-  ordersSearchSchema,
-} from "@/modules/orders/contract";
+import { defaultOrdersSearch, ordersSearchSchema } from "@ecommerce/contracts/orders";
+import { Orders, getOrdersScreen } from "@/modules/orders/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 

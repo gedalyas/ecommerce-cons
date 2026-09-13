@@ -1,6 +1,6 @@
-import type { DataSourceState } from "@/modules/connections/contract";
+import type { DataSourceState } from "@ecommerce/contracts/connections";
 import type { Fidelity } from "@ecommerce/database/enums";
-import type { DashboardMetricKey } from "./dashboard.types";
+import type { DashboardMetricKey } from "@ecommerce/contracts/dashboard";
 
 /**
  * Which connected sources each metric depends on, by data-source name. A

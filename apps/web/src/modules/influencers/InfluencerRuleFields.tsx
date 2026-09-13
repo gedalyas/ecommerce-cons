@@ -1,16 +1,20 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray, type UseFormReturn } from "react-hook-form";
-import { InfluencerRuleType } from "@ecommerce/database/enums";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
 import { FormField as Field } from "./FormField";
-import { influencerRuleTypeLabel, percentRuleTypes } from "./influencers.types";
-import type { InfluencerInput, InfluencerParsed } from "./influencersSchema";
+import {
+  influencerRuleTypeLabel,
+  influencerRuleTypes,
+  percentRuleTypes,
+  type InfluencerRuleType,
+} from "@ecommerce/contracts/influencers";
+import type { InfluencerInput, InfluencerParsed } from "@ecommerce/contracts/influencers";
 
 type Form = UseFormReturn<InfluencerInput, unknown, InfluencerParsed>;
 
@@ -72,7 +76,7 @@ export function RuleFields({ form }: { form: Form }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(InfluencerRuleType).map((t) => (
+                  {influencerRuleTypes.map((t) => (
                     <SelectItem key={t} value={t}>
                       {influencerRuleTypeLabel[t]}
                     </SelectItem>

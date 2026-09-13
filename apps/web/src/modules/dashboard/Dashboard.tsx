@@ -17,8 +17,12 @@ import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatDate, formatPeriodLabel } from "@/shared/utils/format";
 import { formatMetric } from "@/shared/utils/metricFormat";
-import type { Granularity } from "@/shared/utils/period";
-import type { DashboardMatrixRow, DashboardMetricKey, DashboardOverview } from "./dashboard.types";
+import type { Granularity } from "@ecommerce/contracts/shared/period";
+import type {
+  DashboardMatrixRow,
+  DashboardMetricKey,
+  DashboardOverview,
+} from "@ecommerce/contracts/dashboard";
 
 const headlineKeys: DashboardMetricKey[] = [
   "totalSold",

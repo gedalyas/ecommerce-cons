@@ -1,4 +1,4 @@
-import type { OrdersAggregate, OrdersSummaryKey } from "./orders.types";
+import type { OrdersAggregate, OrdersSummaryKey } from "@ecommerce/contracts/orders";
 
 export type OrdersSummaryValues = Record<OrdersSummaryKey, number | null>;
 

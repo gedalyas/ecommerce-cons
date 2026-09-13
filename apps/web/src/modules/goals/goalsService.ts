@@ -4,7 +4,7 @@
  * Server-only.
  */
 import { prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
 import { customersAggregate } from "@/modules/customers/contract.server";
 import {
   adSpendAggregate,
@@ -12,11 +12,12 @@ import {
   trafficAggregate,
   trafficByBucket,
 } from "@/modules/marketing/contract.server";
-import { expandCosts, type CostRule } from "@/modules/money/contract";
+import { type CostRule } from "@ecommerce/contracts/money";
+import { expandCosts } from "@/modules/money/contract";
 import { costRulesFor } from "@/modules/money/contract.server";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract.server";
-import type { PeriodSearch } from "@/shared/utils/period";
-import { toWindow, type Window } from "@/shared/utils/periodWindow";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { toWindow, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import {
   elapsedPercent,
   pacingOf,
@@ -24,8 +25,6 @@ import {
   prorateGoals,
   valuesOf,
   type GoalQuantities,
-} from "./goalDerivations";
-import {
   goalDefinitions,
   type GoalCard,
   type GoalMonth,
@@ -33,8 +32,10 @@ import {
   type GoalsScreen,
   type GoalsSummary,
   type GoalValues,
-} from "./goals.types";
-import { planYears, type GoalPlanInput, type GoalsSearch } from "./goalsSchema";
+  planYears,
+  type GoalPlanInput,
+  type GoalsSearch,
+} from "@ecommerce/contracts/goals";
 
 async function clientIdFor(slug: string) {
   const client = await prismaClient.client.findUnique({ where: { slug }, select: { id: true } });

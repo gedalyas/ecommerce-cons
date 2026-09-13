@@ -13,7 +13,11 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "@/shared/styles/global.css?url";
 import { reportError } from "@/shared/utils/errorReporting";
-import { defaultPeriodSearch, parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
+import {
+  defaultPeriodSearch,
+  parsePeriodSearch,
+  type PeriodSearch,
+} from "@ecommerce/contracts/shared/period";
 import { AppShell } from "@/shared/layout/AppShell";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
 import { getConnectionsHealth } from "@/modules/connections/contract";

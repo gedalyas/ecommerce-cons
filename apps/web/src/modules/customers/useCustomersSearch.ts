@@ -1,7 +1,7 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
-import type { PeriodSearch } from "@/shared/utils/period";
-import type { CustomersSearch } from "./customersSchema";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type { CustomersSearch } from "@ecommerce/contracts/customers";
 
 /** Reads and patches the `/clientes` search params; filter changes reset the page. */
 export function useCustomersSearch() {

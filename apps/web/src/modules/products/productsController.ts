@@ -4,8 +4,8 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
-import { productsSearchSchema, type ProductsSearch } from "./productsSchema";
+import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { productsSearchSchema, type ProductsSearch } from "@ecommerce/contracts/products";
 import { productsScreen } from "./productsScreenService";
 
 export const getProductsScreen = createServerFn({ method: "GET" })

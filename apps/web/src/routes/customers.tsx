@@ -1,10 +1,6 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
-import {
-  Customers,
-  customersSearchSchema,
-  defaultCustomersSearch,
-  getCustomersScreen,
-} from "@/modules/customers/contract";
+import { customersSearchSchema, defaultCustomersSearch } from "@ecommerce/contracts/customers";
+import { Customers, getCustomersScreen } from "@/modules/customers/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 

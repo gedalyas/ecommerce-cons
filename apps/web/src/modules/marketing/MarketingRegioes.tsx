@@ -12,10 +12,13 @@ import {
   formatNumber,
   formatPercent,
 } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
-import type { MarketingRegions, RegionPerformanceRow } from "./marketing.types";
-import { roasQuality, roasQualityLabel } from "./marketingRules";
-import type { MarketingSearch } from "./marketingSchema";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type {
+  MarketingRegions,
+  RegionPerformanceRow,
+  MarketingSearch,
+} from "@ecommerce/contracts/marketing";
+import { roasQuality, roasQualityLabel } from "@ecommerce/contracts/marketing";
 
 const money = (v: number | null) => (v == null ? "—" : formatCurrency(v));
 const money2 = (v: number | null) => (v == null ? "—" : formatCurrency(v, 2));

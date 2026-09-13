@@ -1,10 +1,6 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
-import {
-  Products,
-  defaultProductsSearch,
-  getProductsScreen,
-  productsSearchSchema,
-} from "@/modules/products/contract";
+import { defaultProductsSearch, productsSearchSchema } from "@ecommerce/contracts/products";
+import { Products, getProductsScreen } from "@/modules/products/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 

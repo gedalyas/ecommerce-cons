@@ -1,10 +1,9 @@
 import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
 import {
-  Influencers,
   defaultInfluencersSearch,
-  getInfluencersScreen,
   influencersSearchSchema,
-} from "@/modules/influencers/contract";
+} from "@ecommerce/contracts/influencers";
+import { Influencers, getInfluencersScreen } from "@/modules/influencers/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 

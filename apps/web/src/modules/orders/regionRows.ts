@@ -1,4 +1,4 @@
-import type { RegionRow } from "./orders.types";
+import type { RegionRow } from "@ecommerce/contracts/orders";
 
 export type RegionSqlRow = {
   key: string;

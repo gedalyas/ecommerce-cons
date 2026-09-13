@@ -3,11 +3,15 @@
  * Retenção pillar reads. Server-only.
  */
 import { prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
-import type { PeriodSearch } from "@/shared/utils/period";
-import { toWindow } from "@/shared/utils/periodWindow";
-import type { CustomersScreen, RetentionSummary, RfmCustomerRow } from "./customers.types";
-import type { CustomersSearch } from "./customersSchema";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { toWindow } from "@ecommerce/contracts/shared/periodWindow";
+import type {
+  CustomersScreen,
+  RetentionSummary,
+  RfmCustomerRow,
+  CustomersSearch,
+} from "@ecommerce/contracts/customers";
 import { customersLtvCac, customersRepurchase } from "./repurchaseService";
 import { refreshCustomerAggregates, rfmFilterOptions, rfmPage, rfmSegments } from "./rfmService";
 

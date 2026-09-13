@@ -1,4 +1,4 @@
-import type { InfluencerActivity, InfluencerRule } from "./influencers.types";
+import type { InfluencerActivity, InfluencerRule } from "@ecommerce/contracts/influencers";
 
 const DAY = 86_400_000;
 const AVERAGE_MONTH_DAYS = 365.25 / 12;

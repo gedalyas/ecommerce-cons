@@ -4,10 +4,14 @@
  */
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import type { Window } from "@/shared/utils/periodWindow";
+import type { Window } from "@ecommerce/contracts/shared/periodWindow";
 import type { InventoryFacts } from "./inventoryMetrics";
-import type { BoughtTogetherRow, ProductSales, ProductsFilterOptions } from "./products.types";
-import type { ProductsSearch } from "./productsSchema";
+import type {
+  BoughtTogetherRow,
+  ProductSales,
+  ProductsFilterOptions,
+  ProductsSearch,
+} from "@ecommerce/contracts/products";
 
 export type CatalogFilters = Pick<
   ProductsSearch,

@@ -6,17 +6,23 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatCurrency, formatMultiplier } from "@/shared/utils/format";
-import type { PeriodSearch } from "@/shared/utils/period";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { levelColumns, platformColumns } from "./adsColumns";
 import type {
   AdPerformanceRow,
   MarketingCampaigns as MarketingCampaignsData,
-} from "./marketing.types";
-import { adLevelLabel, adMetricLabel } from "./marketingLabels";
-import { roasBands } from "./marketingRules";
-import { adLevels, adMetrics, adPlatforms, type MarketingSearch } from "./marketingSchema";
+} from "@ecommerce/contracts/marketing";
+import {
+  adLevelLabel,
+  adMetricLabel,
+  roasBands,
+  adLevels,
+  adMetrics,
+  adPlatformFilters,
+  type MarketingSearch,
+} from "@ecommerce/contracts/marketing";
 
-const platformOptions = adPlatforms.map((key) => ({
+const platformOptions = adPlatformFilters.map((key) => ({
   key,
   label:
     key === "todas" ? "Todas" : key === "META" ? "Meta" : key === "GOOGLE" ? "Google" : "TikTok",

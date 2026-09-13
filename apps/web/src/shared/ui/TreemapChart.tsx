@@ -1,7 +1,7 @@
 import { ResponsiveContainer, Treemap } from "recharts";
 import { cn } from "@/shared/utils/cn";
 import { formatMetric } from "@/shared/utils/metricFormat";
-import type { MetricUnit } from "@/shared/models/types/metric.types";
+import type { MetricUnit } from "@ecommerce/contracts/shared/metric.types";
 import { textClass } from "@/shared/styles/typography";
 
 export type TreemapItem = { key: string; label: string; value: number; share: number };

@@ -19,7 +19,11 @@ import {
   formatPercent,
   formatPeriodLabel,
 } from "@/shared/utils/format";
-import type { BoughtTogetherRow, InventoryRow, ProductsScreen } from "./products.types";
+import type {
+  BoughtTogetherRow,
+  InventoryRow,
+  ProductsScreen,
+} from "@ecommerce/contracts/products";
 import {
   inventoryColumns,
   outOfStockColumns,
@@ -34,7 +38,7 @@ import {
   type ProductsSearch,
   type SalesWindow,
   type StockChip,
-} from "./productsSchema";
+} from "@ecommerce/contracts/products";
 
 const tabs = [
   { key: "resumo", label: "Resumo" },

@@ -10,10 +10,9 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@/shared/utils/format";
-import type { DreIndicator, MoneyScreen } from "./money.types";
+import type { DreIndicator, MoneyScreen, MoneyTab } from "@ecommerce/contracts/money";
 import { MoneyCosts } from "./MoneyCosts";
 import { MoneyDre } from "./MoneyDre";
-import type { MoneyTab } from "./moneySchema";
 
 const tabs = [
   { key: "visao", label: "Visão" },

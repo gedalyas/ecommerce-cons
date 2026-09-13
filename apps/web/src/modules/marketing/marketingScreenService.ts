@@ -1,13 +1,18 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { prismaClient } from "@ecommerce/database/client";
-import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
+import { PROTOTYPE_TODAY } from "@ecommerce/contracts/shared/clock";
 import { dataSourcesFor } from "@/modules/connections/contract.server";
 import { sectionFor } from "@/modules/consulting/contract.server";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract.server";
-import type { SeriesPoint } from "@/shared/models/types/metric.types";
-import { metricValue } from "@/shared/utils/metricFormat";
-import type { Channel, PeriodSearch } from "@/shared/utils/period";
-import { bucketWindows, resolvePeriod, truncUnit, type Window } from "@/shared/utils/periodWindow";
+import type { SeriesPoint } from "@ecommerce/contracts/shared/metric.types";
+import { metricValue } from "@ecommerce/contracts/shared/metricValue";
+import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
+import {
+  bucketWindows,
+  resolvePeriod,
+  truncUnit,
+  type Window,
+} from "@ecommerce/contracts/shared/periodWindow";
 import { adPlatformLabel, adsByLevel, adsByPlatform, adsByPlatformBucket } from "./adsService";
 import {
   newBuyers,
@@ -29,7 +34,9 @@ import type {
   MarketingScreen,
   MarketingSummary,
   MarketingVisao,
-} from "./marketing.types";
+  AdMetric,
+  MarketingSearch,
+} from "@ecommerce/contracts/marketing";
 import {
   channelPerformance,
   deriveAdRow,
@@ -41,7 +48,6 @@ import {
   sumAdRows,
   type AdSums,
 } from "./marketingMetrics";
-import type { AdMetric, MarketingSearch } from "./marketingSchema";
 import {
   adSpendAggregate,
   adSpendByBucket,

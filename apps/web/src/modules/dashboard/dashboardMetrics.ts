@@ -1,6 +1,6 @@
-import type { CostTotals } from "@/modules/money/contract";
-import type { Channel } from "@/shared/utils/period";
-import type { DashboardMetricKey } from "./dashboard.types";
+import type { CostTotals } from "@ecommerce/contracts/money";
+import type { Channel } from "@ecommerce/contracts/shared/period";
+import type { DashboardMetricKey } from "@ecommerce/contracts/dashboard";
 
 /** Everything the metrics need for one window or one bucket, already summed. */
 export type DashboardFacts = {

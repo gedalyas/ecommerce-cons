@@ -6,7 +6,7 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@/shared/utils/format";
-import type { OrdersScreen } from "./orders.types";
+import type { OrdersScreen } from "@ecommerce/contracts/orders";
 import { OrdersApproval } from "./OrdersApproval";
 import { OrdersList } from "./OrdersList";
 import { OrdersRegions } from "./OrdersRegions";
