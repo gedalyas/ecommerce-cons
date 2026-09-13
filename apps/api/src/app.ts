@@ -20,6 +20,7 @@ import { createProductsRouter } from "@/modules/products/contract";
 import { createStoreOnboardingRouter, createStoreRouter } from "@/modules/store/contract";
 import type { Env } from "@/shared/config/env";
 import { errorHandler } from "@/shared/http/errorHandler";
+import { createMailer } from "@/shared/mail/createMailer";
 import { notFound } from "@/shared/http/httpError";
 
 export const API_PREFIX = "/api/v1";
@@ -28,6 +29,8 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
   const app = express();
   const requireAuth = createRequireAuth(env.JWT_SECRET);
   const rateLimited = env.NODE_ENV !== "development";
+  const mailer = createMailer(env, now);
+  const appUrl = env.APP_URL;
 
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
@@ -35,12 +38,15 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
   app.use(express.json({ limit: "1mb" }));
 
   app.use(API_PREFIX, createHealthRouter());
-  app.use(API_PREFIX, createAuthRouter({ secret: env.JWT_SECRET, now, rateLimited }, requireAuth));
+  app.use(
+    API_PREFIX,
+    createAuthRouter({ secret: env.JWT_SECRET, now, rateLimited, mailer, appUrl }, requireAuth),
+  );
 
   app.use(
     API_PREFIX,
     requireAuth,
-    createAdminRouter({ now }),
+    createAdminRouter({ now, mailer, appUrl }),
     createStoreOnboardingRouter({ now }),
   );
 

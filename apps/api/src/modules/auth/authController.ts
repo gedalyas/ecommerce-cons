@@ -6,10 +6,17 @@ import {
   registerSchema,
 } from "@ecommerce/contracts/auth";
 import { principalOf } from "@/shared/http/authOf";
+import type { Mailer } from "@/shared/mail/mailer.types";
 import { parseOrThrow } from "@/shared/http/validate";
 import { currentUser, invitationFor, login, logout, refresh, register } from "./authService";
 
-export type AuthDependencies = { secret: string; now: () => Date; rateLimited: boolean };
+export type AuthDependencies = {
+  secret: string;
+  now: () => Date;
+  rateLimited: boolean;
+  mailer: Mailer;
+  appUrl: string;
+};
 
 export function authController({ secret, now }: AuthDependencies) {
   return {

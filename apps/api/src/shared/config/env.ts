@@ -14,12 +14,25 @@ const envSchema = z.object({
         .map((origin) => origin.trim())
         .filter(Boolean),
     ),
+  APP_URL: z.string().url().default("http://localhost:8080"),
+  MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
+  SMTP_URL: z
+    .string()
+    .default("")
+    .transform((value) => value.trim() || null)
+    .pipe(z.string().url().nullable()),
+  MAIL_OUTBOX_DIR: z.string().min(1).default("outbox"),
 });
+
+const productionMailSchema = envSchema.refine(
+  (env) => env.NODE_ENV !== "production" || Boolean(env.SMTP_URL),
+  { path: ["SMTP_URL"], message: "SMTP_URL is required in production" },
+);
 
 export type Env = z.infer<typeof envSchema>;
 
 export function readEnv(source: NodeJS.ProcessEnv = process.env): Env {
-  const parsed = envSchema.safeParse(source);
+  const parsed = productionMailSchema.safeParse(source);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
     throw new Error(`Invalid environment: ${issues}`);

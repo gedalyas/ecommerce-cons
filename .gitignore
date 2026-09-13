@@ -36,3 +36,6 @@ dist-ssr
 
 # Generated code
 **/src/generated/
+
+# Development mail outbox (apps/api)
+outbox/

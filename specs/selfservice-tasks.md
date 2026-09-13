@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **A0 done, A1 next** — last updated 2026-09-13
+Status: **A0–A1 done, A2 next** — last updated 2026-09-13
 
 ---
 
@@ -16,20 +16,20 @@ Status: **A0 done, A1 next** — last updated 2026-09-13
 
 ## A1 — Mail infrastructure (api)
 
-- [ ] `shared/mail/mailer.types.ts` (`Mailer`, `MailMessage`), `smtpMailer.ts` (nodemailer
-      over `SMTP_URL`), `outboxMailer.ts` (one `.txt` per message in `MAIL_OUTBOX_DIR`),
-      `createMailer(env)`
-- [ ] Env: `APP_URL` (links in e-mails), `MAIL_FROM`, `SMTP_URL` (required when
+- [x] `shared/mail/mailer.types.ts` (`Mailer`, `MailMessage`), `smtpMailer.ts` (nodemailer
+      over `SMTP_URL`), `outboxMailer.ts` (one `.txt` per message in `MAIL_OUTBOX_DIR`;
+      pure `outboxFile.ts` + test), `createMailer(env, now)`
+- [x] Env: `APP_URL` (links in e-mails), `MAIL_FROM`, `SMTP_URL` (required when
       `NODE_ENV=production`), `MAIL_OUTBOX_DIR` (default `apps/api/outbox`, gitignored);
       `.env.example` updated
-- [ ] `modules/auth/authMail.ts`: pure `invitationMail(...)`, `passwordResetMail(...)` (subject,
-      text, html, Portuguese) with tests; `mailer` injected into the auth and admin routers
+- [x] `mailer` and `appUrl` injected into the auth and admin routers (`app.ts`); the pure
+      templates land with their first use (A2 `invitationMail`, A3 `passwordResetMail`)
 
 ## A2 — Invitation tokens
 
 - [ ] Schema: `Invitation.tokenHash` (unique), `expiresAt`; migration; dev seed unaffected
 - [ ] API: `createInvitation` issues the token and sends the e-mail; `POST
-    /admin/invitations/:id/resend`; `GET /auth/invitation?token=` (404 unknown, 410 expired,
+  /admin/invitations/:id/resend`; `GET /auth/invitation?token=` (404 unknown, 410 expired,
       409 accepted); `POST /auth/register` takes `token` (the e-mail comes from the
       invitation); `Invitation` in the admin payload gains `expiresAt`, `status`
       (`PENDING | EXPIRED | ACCEPTED`)
@@ -71,7 +71,7 @@ Status: **A0 done, A1 next** — last updated 2026-09-13
 - [ ] API: the write service records created/replaced rows per entity (order + items,
       customer, product + variant, ad_spend, traffic) inside the same transaction; after a
       job finishes, undo rows of older jobs of the same kind are purged; `POST
-    /imports/:id/undo` (only the latest non-undone job of its kind → 409 otherwise) restores
+  /imports/:id/undo` (only the latest non-undone job of its kind → 409 otherwise) restores
       or deletes, re-stamps data sources when nothing remains, refreshes customers; pure
       `undoPlan.ts` (entries → ordered operations) with tests
 - [ ] Contracts: `ImportJob.undoneAt`, `canUndo`; `importStatusLabel.UNDONE = "Desfeita"`

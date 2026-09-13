@@ -3,6 +3,7 @@ import { assignConsultantsSchema, invitationInputSchema } from "@ecommerce/contr
 import { connectionRequestResolveSchema } from "@ecommerce/contracts/connectors";
 import { z } from "zod";
 import { principalOf } from "@/shared/http/authOf";
+import type { Mailer } from "@/shared/mail/mailer.types";
 import { parseOrThrow } from "@/shared/http/validate";
 import {
   adminScreen,
@@ -14,7 +15,7 @@ import {
 
 const idSchema = z.string().min(1);
 
-export type AdminDependencies = { now: () => Date };
+export type AdminDependencies = { now: () => Date; mailer: Mailer; appUrl: string };
 
 export function adminController({ now }: AdminDependencies) {
   return {
