@@ -101,3 +101,23 @@ export function fillSeries(
   const byBucket = new Map(rows.map((r) => [r.bucket, r.value]));
   return bucketsFor(window, por).map((bucket) => ({ bucket, value: byBucket.get(bucket) ?? 0 }));
 }
+
+/** A bucket as a calendar window (ISO dates, `fim` inclusive), clipped to the period. */
+export type BucketWindow = { bucket: string; inicio: string; fim: string };
+
+/**
+ * The buckets of a window with their own calendar bounds, so per-bucket
+ * computations (costs prorated by day, for instance) see the days the bucket
+ * actually covers inside the period.
+ */
+export function bucketWindows(window: Window, por: Granularity): BucketWindow[] {
+  const lastDay = new Date(window.end.getTime() - DAY);
+  const out: BucketWindow[] = [];
+  for (let b = truncate(window.start, por); b < window.end; b = step(b, por)) {
+    const start = b < window.start ? window.start : b;
+    const next = new Date(step(b, por).getTime() - DAY);
+    const end = next > lastDay ? lastDay : next;
+    out.push({ bucket: isoDay(b), inicio: isoDay(start), fim: isoDay(end) });
+  }
+  return out;
+}

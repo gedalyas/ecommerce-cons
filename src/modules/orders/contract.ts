@@ -1,3 +1,2 @@
-export { OrdersDev } from "./OrdersDev";
-export { getOrdersOverview } from "./ordersController";
-export type { OrdersOverview } from "./orders.types";
+export { ordersAggregate, ordersByBucket, revenueBySource } from "./ordersService";
+export type { OrdersAggregate, OrdersBucket } from "./orders.types";
