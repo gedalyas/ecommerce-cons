@@ -205,6 +205,7 @@ export type MarketingVisao = {
   overview: MarketingOverview;
   section: ConsultingSection;
   staleSources: StaleSource[];
+  retention: MarketingRetention;
 };
 
 export type MarketingScreen =

@@ -1,45 +1,39 @@
-/**
- * Dinheiro server functions: validate the input, call the service, return
- * the typed payload. Writes go through POST and the CSRF middleware.
- */
 import { createServerFn } from "@tanstack/react-start";
-import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
 import {
   costIdSchema,
   costInputSchema,
   costUpdateSchema,
   moneySearchSchema,
-  type MoneySearch,
+  type CostRuleRow,
+  type MoneyScreen,
 } from "@ecommerce/contracts/money";
-import {
-  createCost,
-  deleteCost,
-  marketingCostLines,
-  moneyScreen,
-  updateCost,
-} from "./moneyService";
+import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
+import { apiFetch } from "@/shared/dependencies/apiClient";
 
 export const getMoneyScreen = createServerFn({ method: "GET" })
-  .validator((input: Partial<PeriodSearch & MoneySearch>) => ({
+  .validator((input: Partial<PeriodSearch> & Record<string, unknown>) => ({
     ...parsePeriodSearch(input),
     ...moneySearchSchema.parse(input),
   }))
-  .handler(async ({ data }) => moneyScreen(PROTOTYPE_CLIENT_SLUG, data));
+  .handler(async ({ data }) => apiFetch<MoneyScreen>("/money", { query: data }));
 
 export const createCostRule = createServerFn({ method: "POST" })
   .validator((input: unknown) => costInputSchema.parse(input))
-  .handler(async ({ data }) => createCost(PROTOTYPE_CLIENT_SLUG, data));
+  .handler(async ({ data }) =>
+    apiFetch<CostRuleRow>("/money/costs", { method: "POST", body: data }),
+  );
 
 export const updateCostRule = createServerFn({ method: "POST" })
   .validator((input: unknown) => costUpdateSchema.parse(input))
-  .handler(async ({ data }) => updateCost(PROTOTYPE_CLIENT_SLUG, data.id, data.input));
+  .handler(async ({ data }) =>
+    apiFetch<CostRuleRow>(`/money/costs/${encodeURIComponent(data.id)}`, {
+      method: "PUT",
+      body: data.input,
+    }),
+  );
 
 export const deleteCostRule = createServerFn({ method: "POST" })
   .validator((input: unknown) => costIdSchema.parse(input))
-  .handler(async ({ data }) => deleteCost(PROTOTYPE_CLIENT_SLUG, data.id));
-
-/** Marketing cost lines of the period, fed to the Marketing screen by its route. */
-export const getMarketingCostLines = createServerFn({ method: "GET" })
-  .validator((input: Partial<PeriodSearch>) => parsePeriodSearch(input))
-  .handler(async ({ data }) => marketingCostLines(PROTOTYPE_CLIENT_SLUG, data));
+  .handler(async ({ data }) =>
+    apiFetch<void>(`/money/costs/${encodeURIComponent(data.id)}`, { method: "DELETE" }),
+  );

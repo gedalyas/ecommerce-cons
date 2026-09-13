@@ -34,7 +34,7 @@ jobs:
         run: npm run typecheck
 
       - name: Lint
-        run: npm run lint -- --max-warnings 24
+        run: npm run lint -- --max-warnings 15
 
       - name: Cycles
         run: npm run check:cycles -- --max-files 0

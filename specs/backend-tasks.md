@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B6 done (2026-09-13)** — the web still runs on its own services until B7 — last updated 2026-09-13
+Status: **B7 done (2026-09-13)** — the web runs entirely on the API — last updated 2026-09-13
 
 ---
 
@@ -111,9 +111,16 @@ Status: **B6 done (2026-09-13)** — the web still runs on its own services unti
 
 ## B7 — Web BFF
 
-- [ ] Every web `*Controller.ts` handler calls `apiClient`; services, `contract.server.ts`,
-      server rules and Prisma deps deleted from the web; import protection narrowed
-- [ ] Smoke: every tab and write path through the web against the API
+- [x] Every web `*Controller.ts` handler calls `apiFetch` (same server-function names and
+      signatures, so routes and components did not change); services, `contract.server.ts`,
+      server rules, the `alerts` module and `PROTOTYPE_CLIENT_SLUG` deleted from the web;
+      `@ecommerce/database` left `apps/web/package.json` and the lint forbids it there;
+      import protection narrowed to `shared/dependencies/**`; lint cap 24 → 15
+- [x] `/marketing` is one call: `MarketingVisao.retention` travels inside the visão payload
+      (the API controller assembles it), the route's composition-root loader is gone
+- [x] Headless-browser sweep signed in through `/entrar`: 26 screens render with no 5xx and
+      no page error; a cost created from Dinheiro › Custos reaches the API (rows 14 → 15);
+      client-side navigation (server functions from the browser → API) works
 
 ## B8 — Rulebook
 

@@ -47,14 +47,7 @@ export default defineConfig(({ command, mode }) => {
         importProtection: {
           behavior: "error",
           client: {
-            files: [
-              "**/shared/dependencies/**",
-              "**/modules/*/*Service.ts",
-              "**/modules/*/contract.server.ts",
-              "**/packages/database/src/client.ts",
-              "**/packages/database/src/prismaClient.ts",
-              "**/generated/prisma/client.ts",
-            ],
+            files: ["**/shared/dependencies/**", "**/modules/*/*Service.ts"],
             specifiers: ["server-only"],
           },
         },

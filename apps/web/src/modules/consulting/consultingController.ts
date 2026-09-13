@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { milestoneSummary } from "./consultingService";
+import type { MilestoneSummary } from "@ecommerce/contracts/consulting";
+import { apiFetch } from "@/shared/dependencies/apiClient";
 
 export const getMilestoneSummary = createServerFn({ method: "GET" }).handler(async () =>
-  milestoneSummary(PROTOTYPE_CLIENT_SLUG),
+  apiFetch<MilestoneSummary>("/consulting/milestone"),
 );

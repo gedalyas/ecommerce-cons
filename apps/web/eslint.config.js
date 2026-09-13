@@ -60,9 +60,15 @@ const crossingUsesAlias = (depth) => ({
  * stay allowed everywhere.
  */
 const dependenciesOnlyInService = {
-  group: ["**/shared/dependencies/*", "@ecommerce/database/client"],
+  group: ["**/shared/dependencies/*"],
   message:
-    "I/O only in the orchestrator: the Prisma client is imported by *Service.ts, never by a component, route, controller or pure function. Enums come from @ecommerce/database/enums.",
+    "I/O only in the orchestrator: the API client and the session are imported by *Controller.ts (the BFF) and *Service.ts, never by a component, route or pure function.",
+};
+
+const noDatabaseInTheWeb = {
+  group: ["@ecommerce/database", "@ecommerce/database/*", "@prisma/*"],
+  message:
+    "The web never touches the database: it calls the API through shared/dependencies/apiClient. Closed sets come from @ecommerce/contracts.",
 };
 
 const serverOnlyPackage = {
@@ -143,7 +149,12 @@ export default tseslint.config(
         "error",
         { prefer: "type-imports", fixStyle: "inline-type-imports" },
       ],
-      ...restrictedImports([extinct, moduleExposesOnlyContract, dependenciesOnlyInService]),
+      ...restrictedImports([
+        extinct,
+        moduleExposesOnlyContract,
+        dependenciesOnlyInService,
+        noDatabaseInTheWeb,
+      ]),
     },
   },
   {
@@ -159,7 +170,12 @@ export default tseslint.config(
   },
   {
     files: ["src/shared/**/*.{ts,tsx}"],
-    rules: restrictedImports([extinct, sharedKnowsNoDomain, dependenciesOnlyInService]),
+    rules: restrictedImports([
+      extinct,
+      sharedKnowsNoDomain,
+      dependenciesOnlyInService,
+      noDatabaseInTheWeb,
+    ]),
   },
   {
     files: ["src/shared/dependencies/*.ts"],
@@ -172,6 +188,7 @@ export default tseslint.config(
         extinct,
         moduleExposesOnlyContract,
         dependenciesOnlyInService,
+        noDatabaseInTheWeb,
         insideModuleIsRelative,
         crossingUsesAlias(depth),
       ]),
@@ -184,6 +201,7 @@ export default tseslint.config(
       rules: restrictedImports([
         extinct,
         moduleExposesOnlyContract,
+        noDatabaseInTheWeb,
         insideModuleIsRelative,
         crossingUsesAlias(depth),
       ]),

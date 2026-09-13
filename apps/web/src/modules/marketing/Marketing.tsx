@@ -156,14 +156,13 @@ function StaleSourceBanner({ source }: { source: StaleSource }) {
 
 function MarketingVisaoTab({
   data,
-  retention,
   comparisonLabel,
 }: {
   data: MarketingVisao;
-  retention: MarketingRetention;
   comparisonLabel: string;
 }) {
   const live = liveKpis(data.overview);
+  const { retention } = data;
   const [staleSource] = data.staleSources;
   const section = {
     ...data.section,
@@ -183,13 +182,7 @@ function MarketingVisaoTab({
   );
 }
 
-export function Marketing({
-  data,
-  retention,
-}: {
-  data: MarketingScreen;
-  retention: MarketingRetention;
-}) {
+export function Marketing({ data }: { data: MarketingScreen }) {
   const { period, setPeriod, comparison } = usePeriod();
   const { search, patch } = useMarketingSearch();
   const comparisonLabel = comparison
@@ -214,7 +207,7 @@ export function Marketing({
         <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
 
         {data.aba === "visao" && (
-          <MarketingVisaoTab data={data} retention={retention} comparisonLabel={comparisonLabel} />
+          <MarketingVisaoTab data={data} comparisonLabel={comparisonLabel} />
         )}
         {data.aba === "resumo" && (
           <MarketingResumo data={data.summary} search={search} period={period} onPatch={patch} />

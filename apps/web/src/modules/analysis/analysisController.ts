@@ -1,12 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
+import { analysisSearchSchema, type AnalysisScreen } from "@ecommerce/contracts/analysis";
 import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
-import { analysisSearchSchema, type AnalysisSearch } from "@ecommerce/contracts/analysis";
-import { analysisScreen } from "./analysisService";
+import { apiFetch } from "@/shared/dependencies/apiClient";
 
 export const getAnalysisScreen = createServerFn({ method: "GET" })
-  .validator((input: Partial<PeriodSearch & AnalysisSearch>) => ({
+  .validator((input: Partial<PeriodSearch> & Record<string, unknown>) => ({
     ...parsePeriodSearch(input),
     ...analysisSearchSchema.parse(input),
   }))
-  .handler(async ({ data }) => analysisScreen(PROTOTYPE_CLIENT_SLUG, data));
+  .handler(async ({ data }) => apiFetch<AnalysisScreen>("/analysis", { query: data }));

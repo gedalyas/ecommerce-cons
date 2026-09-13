@@ -379,7 +379,7 @@ export async function marketingScreen(
 ): Promise<MarketingScreen> {
   switch (input.aba) {
     case "visao":
-      return { aba: "visao", ...(await marketingVisao(clientId, input)) };
+      throw new Error("The visão tab is assembled by the controller (it needs the retention)");
     case "resumo":
       return { aba: "resumo", summary: await marketingSummary(clientId, input) };
     case "campanhas":
@@ -391,7 +391,10 @@ export async function marketingScreen(
   }
 }
 
-async function marketingVisao(clientId: string, input: MarketingInput): Promise<MarketingVisao> {
+export async function marketingVisao(
+  clientId: string,
+  input: MarketingInput,
+): Promise<Omit<MarketingVisao, "retention">> {
   const [overview, section, sources] = await Promise.all([
     marketingOverview(clientId, input),
     sectionFor(clientId, "marketing"),

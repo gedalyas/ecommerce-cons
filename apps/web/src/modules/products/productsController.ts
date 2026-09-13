@@ -1,16 +1,11 @@
-/**
- * Produtos server functions: validate the input, call the service, return the
- * typed payload. Isomorphic - the client gets RPC stubs.
- */
 import { createServerFn } from "@tanstack/react-start";
-import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
+import { productsSearchSchema, type ProductsScreen } from "@ecommerce/contracts/products";
 import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
-import { productsSearchSchema, type ProductsSearch } from "@ecommerce/contracts/products";
-import { productsScreen } from "./productsScreenService";
+import { apiFetch } from "@/shared/dependencies/apiClient";
 
 export const getProductsScreen = createServerFn({ method: "GET" })
-  .validator((input: Partial<PeriodSearch & ProductsSearch>) => ({
+  .validator((input: Partial<PeriodSearch> & Record<string, unknown>) => ({
     ...parsePeriodSearch(input),
     ...productsSearchSchema.parse(input),
   }))
-  .handler(async ({ data }) => productsScreen(PROTOTYPE_CLIENT_SLUG, data));
+  .handler(async ({ data }) => apiFetch<ProductsScreen>("/products", { query: data }));

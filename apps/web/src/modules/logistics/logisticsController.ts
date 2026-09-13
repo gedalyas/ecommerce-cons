@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { logisticsScreen } from "./logisticsService";
+import type { LogisticsScreen } from "@ecommerce/contracts/logistics";
+import { apiFetch } from "@/shared/dependencies/apiClient";
 
 export const getLogisticsScreen = createServerFn({ method: "GET" }).handler(async () =>
-  logisticsScreen(PROTOTYPE_CLIENT_SLUG),
+  apiFetch<LogisticsScreen>("/logistics"),
 );

@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
-import { connectionsHealth, connectionsScreen } from "./connectionsService";
+import type { ConnectionsHealth, ConnectionsScreen } from "@ecommerce/contracts/connections";
+import { apiFetch } from "@/shared/dependencies/apiClient";
 
 export const getConnectionsScreen = createServerFn({ method: "GET" }).handler(async () =>
-  connectionsScreen(PROTOTYPE_CLIENT_SLUG),
+  apiFetch<ConnectionsScreen>("/connections"),
 );
 
 export const getConnectionsHealth = createServerFn({ method: "GET" }).handler(async () =>
-  connectionsHealth(PROTOTYPE_CLIENT_SLUG),
+  apiFetch<ConnectionsHealth>("/connections/health"),
 );

@@ -1,1 +1,0 @@
-export { alertsFor } from "./alertsService";

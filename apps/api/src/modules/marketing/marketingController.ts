@@ -1,10 +1,14 @@
 import type { Request, Response } from "express";
-import type { MarketingCostLine, MarketingRetention } from "@ecommerce/contracts/marketing";
-import { marketingSearchSchema } from "@ecommerce/contracts/marketing";
+import {
+  marketingSearchSchema,
+  type MarketingCostLine,
+  type MarketingRetention,
+  type MarketingScreen,
+} from "@ecommerce/contracts/marketing";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { authOf } from "@/shared/http/authOf";
 import { screenQuery } from "@/shared/http/parseQuery";
-import { marketingScreen } from "./marketingScreenService";
+import { marketingScreen, marketingVisao } from "./marketingScreenService";
 
 export type MarketingDependencies = {
   costLinesFor: (clientId: string, search: PeriodSearch) => Promise<MarketingCostLine[]>;
@@ -17,10 +21,15 @@ export function marketingController({ costLinesFor, retentionFor }: MarketingDep
       const { clientId } = authOf(req);
       const search = screenQuery(req, marketingSearchSchema);
       const custos = await costLinesFor(clientId, search);
-      const screen = await marketingScreen(clientId, { ...search, custos });
-      res.json(
-        screen.aba === "visao" ? { ...screen, retention: await retentionFor(clientId) } : screen,
-      );
+      const screen: MarketingScreen =
+        search.aba === "visao"
+          ? {
+              aba: "visao",
+              ...(await marketingVisao(clientId, { ...search, custos })),
+              retention: await retentionFor(clientId),
+            }
+          : await marketingScreen(clientId, { ...search, custos });
+      res.json(screen);
     },
   };
 }

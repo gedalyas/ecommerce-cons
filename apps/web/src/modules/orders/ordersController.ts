@@ -1,22 +1,21 @@
-/**
- * Pedidos server functions: validate the input, call the service, return the
- * typed payload. Isomorphic - the client gets RPC stubs.
- */
 import { createServerFn } from "@tanstack/react-start";
-import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
+import {
+  ordersSearchSchema,
+  type OrdersListRow,
+  type OrdersScreen,
+} from "@ecommerce/contracts/orders";
 import { parsePeriodSearch, type PeriodSearch } from "@ecommerce/contracts/shared/period";
-import { ordersSearchSchema, type OrdersSearch } from "@ecommerce/contracts/orders";
-import { ordersExport, ordersScreen } from "./ordersScreenService";
+import { apiFetch } from "@/shared/dependencies/apiClient";
 
-const parseInput = (input: Partial<PeriodSearch & OrdersSearch>) => ({
+const parseInput = (input: Partial<PeriodSearch> & Record<string, unknown>) => ({
   ...parsePeriodSearch(input),
   ...ordersSearchSchema.parse(input),
 });
 
 export const getOrdersScreen = createServerFn({ method: "GET" })
   .validator(parseInput)
-  .handler(async ({ data }) => ordersScreen(PROTOTYPE_CLIENT_SLUG, data));
+  .handler(async ({ data }) => apiFetch<OrdersScreen>("/orders", { query: data }));
 
 export const getOrdersExport = createServerFn({ method: "GET" })
   .validator(parseInput)
-  .handler(async ({ data }) => ordersExport(PROTOTYPE_CLIENT_SLUG, data));
+  .handler(async ({ data }) => apiFetch<OrdersListRow[]>("/orders/export", { query: data }));
