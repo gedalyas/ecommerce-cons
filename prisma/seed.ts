@@ -1,6 +1,6 @@
 /**
  * Seeds the database with the prototype dataset - the same fixture data the UI
- * currently renders from src/features/star/data. Idempotent: wipes and recreates
+ * currently renders from the module fixtures (src/modules/<x>/<x>Fixture.ts). Idempotent: wipes and recreates
  * the single "loja-aurora" client on every run.
  *
  * Run with `npm run db:seed` (or `make seed`).
@@ -20,16 +20,16 @@ import {
   milestoneCriteria,
   openRecommendations,
   monthlySeries,
-} from "../src/features/dashboard/data/dashboard.ts";
-import { moneySection } from "../src/features/money/data/money.ts";
-import { marketingSection } from "../src/features/marketing/data/marketing.ts";
-import { logisticsSection } from "../src/features/logistics/data/logistics.ts";
-import { managementSection } from "../src/features/management/data/management.ts";
-import { connections } from "../src/features/connections/data/connections.ts";
-import type { Section } from "../src/design-system/patterns/SectionPage/types.ts";
-import type { Metric } from "../src/design-system/patterns/MetricTile/types.ts";
-import type { Recommendation } from "../src/design-system/patterns/RecommendationList/types.ts";
-import { seedAnalytics } from "./seed-analytics.ts";
+} from "../src/modules/dashboard/contract.ts";
+import { moneySection } from "../src/modules/money/contract.ts";
+import { marketingSection } from "../src/modules/marketing/contract.ts";
+import { logisticsSection } from "../src/modules/logistics/contract.ts";
+import { managementSection } from "../src/modules/management/contract.ts";
+import { connections } from "../src/modules/connections/contract.ts";
+import type { Section } from "../src/shared/ui/sectionPage.types.ts";
+import type { Metric } from "../src/shared/ui/metricTile.types.ts";
+import type { Recommendation } from "../src/shared/ui/recommendationList.types.ts";
+import { seedAnalytics } from "./seedAnalytics.ts";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });

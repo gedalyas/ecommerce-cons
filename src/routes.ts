@@ -13,5 +13,5 @@ export const routes = rootRoute("__root.tsx", [
   route("/conexoes", "connections.tsx"),
   route("/assistente", "assistant.tsx"),
   // Stage 0 proving ground for the data module; removed once Pedidos ships.
-  route("/dev/pedidos", "dev-orders.tsx"),
+  route("/dev/pedidos", "devOrders.tsx"),
 ]);

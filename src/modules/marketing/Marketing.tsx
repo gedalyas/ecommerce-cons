@@ -1,0 +1,31 @@
+import { Link } from "@tanstack/react-router";
+import { AlertBanner } from "@/shared/ui/AlertBanner";
+import { SectionPage } from "@/shared/ui/SectionPage";
+import type { Pillar } from "@/shared/ui/PillarCard";
+import { CreativePresence } from "./CreativePresence";
+import { marketingSection } from "./marketingFixture";
+
+export function Marketing() {
+  return (
+    <SectionPage
+      section={marketingSection}
+      banner={
+        <AlertBanner
+          action={
+            <Link
+              to="/conexoes"
+              className="text-[13px] font-semibold text-primary underline underline-offset-2"
+            >
+              Ir para Conexões
+            </Link>
+          }
+        >
+          Meta Ads não sincroniza há 6 dias — os dados de aquisição podem estar desatualizados.
+        </AlertBanner>
+      }
+      renderExtra={(pillar: Pillar) =>
+        pillar.extra === "creative-presence" ? <CreativePresence /> : null
+      }
+    />
+  );
+}

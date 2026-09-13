@@ -14,7 +14,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "@/shared/styles/global.css?url";
 import { reportError } from "@/shared/utils/errorReporting";
 import { defaultPeriodSearch, parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
-import { AppShell } from "@/layout/AppShell";
+import { AppShell } from "@/shared/layout/AppShell";
+import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
 
 function NotFoundComponent() {
   return (
@@ -144,7 +145,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell />
+      <AppShell assistant={<AssistantPanel />} assistantFab={<AssistantFab />} />
     </QueryClientProvider>
   );
 }

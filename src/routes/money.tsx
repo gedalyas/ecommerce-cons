@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MoneyPage } from "@/features/money";
+import { Money } from "@/modules/money/contract";
 
 export const Route = createFileRoute("/dinheiro")({
   head: () => ({
@@ -17,5 +17,5 @@ export const Route = createFileRoute("/dinheiro")({
       },
     ],
   }),
-  component: MoneyPage,
+  component: Money,
 });

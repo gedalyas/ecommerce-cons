@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ManagementPage } from "@/features/management";
+import { Management } from "@/modules/management/contract";
 
 export const Route = createFileRoute("/gestao")({
   head: () => ({
@@ -17,5 +17,5 @@ export const Route = createFileRoute("/gestao")({
       },
     ],
   }),
-  component: ManagementPage,
+  component: Management,
 });

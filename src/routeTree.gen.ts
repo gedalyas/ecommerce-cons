@@ -16,7 +16,7 @@ import { Route as moneyRouteImport } from './routes/money'
 import { Route as managementRouteImport } from './routes/management'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as marketingRouteImport } from './routes/marketing'
-import { Route as devOrdersRouteImport } from './routes/dev-orders'
+import { Route as devOrdersRouteImport } from './routes/devOrders'
 
 const dashboardRoute = dashboardRouteImport.update({
   id: '/',

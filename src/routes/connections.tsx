@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ConnectionsPage } from "@/features/connections";
+import { Connections } from "@/modules/connections/contract";
 
 export const Route = createFileRoute("/conexoes")({
   head: () => ({
@@ -18,5 +18,5 @@ export const Route = createFileRoute("/conexoes")({
       },
     ],
   }),
-  component: ConnectionsPage,
+  component: Connections,
 });
