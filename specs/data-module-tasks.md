@@ -303,7 +303,9 @@ contracts.
 ## Backlog (post-Stage 6, being worked in this order: Metas → Alerts → Métricas → Regiões → Influenciadores)
 
 - [ ] Narrative AI analysis per metric with driver trees (doc §11)
-- [ ] Alerts derived from data (queda de vendas, risco de estoque…)
+- [x] Alerts derived from data (2026-09-13): `src/modules/alerts`, five of the
+      six Prax alerts on the Dashboard (product conversion needs per-product
+      sessions); read/resolved state is a follow-up
 - [x] Metas with 6 inputs / 8 derived — `/metas` (2026-09-13): Resumo with
       Realizado × Meta and pacing, Planejamento grid per year, suggestion from
       the previous year's actuals; `specs/goals.md`

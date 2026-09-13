@@ -19,7 +19,7 @@ import { formatDate, formatPeriodLabel } from "@/shared/utils/format";
 import { formatMetric } from "@/shared/utils/metricFormat";
 import type { Granularity } from "@/shared/utils/period";
 import type { DashboardMatrixRow, DashboardMetricKey, DashboardOverview } from "./dashboard.types";
-import { alerts, milestoneCriteria, openRecommendations } from "./dashboardFixture";
+import { milestoneCriteria, openRecommendations } from "./dashboardFixture";
 
 const headlineKeys: DashboardMetricKey[] = [
   "totalSold",
@@ -165,25 +165,36 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
         <SectionBlock
           title="Precisa da sua atenção"
           tone="warning"
+          description="Alertas derivados dos dados: últimos 7 dias contra os 7 anteriores, e o estoque no ritmo dos últimos 30."
           bodyClassName={layout.cardPaddingX}
         >
-          <ul className="divide-y divide-border">
-            {alerts.map((alert) => (
-              <li key={alert.title} className="group">
-                <Link to={alert.to} className="flex flex-wrap items-start gap-3 py-4 no-underline">
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[15px] font-semibold text-foreground">{alert.title}</div>
-                    <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
-                      {alert.detail}
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-right text-[13px] text-muted-foreground transition-colors duration-150 group-hover:text-primary">
-                    {alert.origin}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {data.alerts.length === 0 ? (
+            <p className={cn(textClass.body, "py-4 text-muted-foreground")}>
+              Nenhum alerta no momento.
+            </p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {data.alerts.map((alert) => (
+                <li key={alert.title} className="group">
+                  <Link
+                    to={alert.to}
+                    search={(prev: Record<string, unknown>) => ({ ...prev, ...alert.search })}
+                    className="flex flex-wrap items-start gap-3 py-4 no-underline"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[15px] font-semibold text-foreground">{alert.title}</div>
+                      <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
+                        {alert.detail}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-right text-[13px] text-muted-foreground transition-colors duration-150 group-hover:text-primary">
+                      {alert.origin}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </SectionBlock>
 
         <SectionBlock

@@ -5,6 +5,7 @@
  */
 import type { SalesPlatform } from "@/generated/prisma/enums";
 import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { alertsFor } from "@/modules/alerts/contract.server";
 import { dataSourcesFor } from "@/modules/connections/contract.server";
 import { customersAggregate, customersByBucket } from "@/modules/customers/contract.server";
 import {
@@ -172,7 +173,11 @@ export async function dashboardOverview(
   const period = resolvePeriod(search);
   const unit = truncUnit[period.por];
   const channel = search.canal;
-  const [rules, sources] = await Promise.all([costRulesFor(clientId), dataSourcesFor(clientId)]);
+  const [rules, sources, alerts] = await Promise.all([
+    costRulesFor(clientId),
+    dataSourcesFor(clientId),
+    alertsFor(clientId),
+  ]);
 
   const currentBuckets = bucketWindows(period.current, period.por);
   const previousBuckets = period.previous ? bucketWindows(period.previous, period.por) : null;
@@ -209,6 +214,7 @@ export async function dashboardOverview(
     : null;
 
   return {
+    alerts,
     metrics: dashboardMetricDefinitions.map((definition) => {
       const { fidelity, note } = fidelityFor(definition.key, sources);
       return {

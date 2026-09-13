@@ -1,3 +1,4 @@
+import type { AlertItem } from "@/modules/alerts/contract";
 import type { Fidelity } from "@/generated/prisma/enums";
 import type {
   BreakdownSlice,
@@ -81,6 +82,7 @@ export type DashboardMatrixRow = {
 };
 
 export type DashboardOverview = {
+  alerts: AlertItem[];
   metrics: DashboardMetric[];
   series: Record<DashboardMetricKey, Series>;
   bySource: BreakdownSlice[];

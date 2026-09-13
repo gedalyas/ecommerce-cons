@@ -2,8 +2,9 @@
 
 Module: `src/modules/dashboard`. Route loader calls `getDashboardOverview`
 with the global params (`?inicio&fim&por&comparar&canal`); the payload is
-`DashboardOverview` (`dashboard.types.ts`). Alerts, milestone and
-recommendations still come from `dashboardFixture.ts`.
+`DashboardOverview` (`dashboard.types.ts`). Alerts are derived from the data
+(`src/modules/alerts`); milestone and recommendations still come from
+`dashboardFixture.ts`.
 
 Header: title "Dashboard", subtitle "Visão consolidada de {período} · Loja
 Aurora". Below it the controls row: `PeriodSelector` + `ChannelToggle`.
@@ -58,12 +59,34 @@ contribuição and Recompra), one column per bucket of the period, values
 formatted by unit, "Exportar CSV" with raw numbers. Scrolls horizontally when
 the period has many buckets.
 
-## 5. "Precisa da sua atenção", "Marco de maturidade", "Recomendações em aberto"
+## 5. "Precisa da sua atenção" — alerts derived from the data
 
-Unchanged from the prototype (fixtures): three alert rows linking to their
-sections; the four maturity criteria with progress bars ("2 de 4 critérios"
-still hardcoded — see `data-layer-migration.md` step 3); the open
-recommendations list.
+Module `src/modules/alerts`: `alertsService.ts` gathers the facts through the
+orders, marketing and products contracts and `alertRules.ts` (tested) decides.
+The windows are fixed relative to `PROTOTYPE_TODAY`: the last 7 days against
+the 7 before, and the stock at the pace of the last 30 days. Every alert links
+to the screen and tab that explains it.
+
+| Alert (Prax name)                   | Rule                                                                                                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Queda de vendas                     | paid revenue of the last 7 days fell ≥ 15% against the 7 before                                       |
+| Queda de tráfego                    | sessions fell ≥ 15% on the same windows                                                               |
+| Queda de vendas do produto          | up to 2 products with ≥ 10 units the week before that fell ≥ 40%, biggest first                       |
+| Risco de baixo estoque              | variants selling ≥ 10 units / 30 days whose stock covers < 14 days; the one that runs out first named |
+| Variantes importantes indisponíveis | among the top 10% variants by 90-day units, the ones with zero stock                                  |
+
+"Queda de conversão do produto" needs per-product sessions, which the seed
+does not have; it joins when that table exists. Thresholds live in
+`alertThresholds`. The block reads "Nenhum alerta no momento." when nothing
+fires. Alerts are recomputed on every load — there is no read/resolved state
+yet (the Prax bell drawer with ABERTOS · RESOLVIDOS · PREFERÊNCIAS is a
+follow-up).
+
+## 5b. "Marco de maturidade", "Recomendações em aberto"
+
+Unchanged from the prototype (fixtures): the four maturity criteria with
+progress bars ("2 de 4 critérios" still hardcoded — see
+`data-layer-migration.md` step 3); the open recommendations list.
 
 ## 6. Fidelity per metric
 
