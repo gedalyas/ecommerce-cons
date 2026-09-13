@@ -9,6 +9,7 @@ because that is what ships.
 | [product-overview.md](product-overview.md)                                         | What the product is, personas, scope of the prototype                              |
 | [layout-and-navigation.md](layout-and-navigation.md)                               | App shell, sidebar, responsive behavior, routes                                    |
 | [finance.md](finance.md)                                                           | Dinheiro: Visão com KPIs vivos, DRE gerencial, cadastro de custos                  |
+| [marketing.md](marketing.md)                                                       | Marketing: visão com KPIs vivos, resumo por canal e funil, campanhas, descontos    |
 | [customers.md](customers.md)                                                       | Clientes: segmentação RFM com filtros, recompra, LTV e CAC                         |
 | [products.md](products.md)                                                         | Produtos: resumo, curva ABC, estoque por variante                                  |
 | [orders.md](orders.md)                                                             | Pedidos: resumo, aprovação por status/método/gateway, lista transacional           |

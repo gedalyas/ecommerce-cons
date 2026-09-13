@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 5 done (2026-09-12) — Clientes live; Stage 6 (Marketing data) is next** — last updated 2026-09-12
+Status: **Stage 6 done (2026-09-13) — Marketing data live; the plan is complete (backlog unscheduled)** — last updated 2026-09-13
 
 ---
 
@@ -274,22 +274,29 @@ contracts.
 
 ## Stage 6 — Marketing data (extend `/marketing`)
 
-- [ ] Tabs on Marketing: `?aba=visao|resumo|campanhas|descontos`
-- [ ] Centralized business rules module: ROAS quality bands (>5 / 2–5 / <2),
-      funnel benchmark ranges, LTV/CAC reference
-- [ ] **Resumo**: channel performance table with "incluir taxa da
-      plataforma" toggle (requires platform fee stored separately)
-- [ ] **Resumo**: investment breakdown by category (from `CostExpense`)
-- [ ] **Resumo**: investment vs metric and sessions vs metric combo charts
-- [ ] **Resumo**: 6-step funnel + conversion table (period × store
-      historical average × benchmark range)
-- [ ] **Resumo**: sales by UTM (canal / origem / origem-meio / campanha)
-- [ ] **Campanhas**: platform table → chart selection; level tabs
-      (campanha / conjunto / anúncio); best/worst campaigns; full
-      paginated table with CSV
-- [ ] **Descontos**: KPIs + coupon table (novos clientes vs recorrentes) + CSV
-- [ ] Marketing pillars (Conversão, Aquisição) read derived values
-- [ ] Update `specs/sections.md` (marketing) + write `specs/marketing.md`
+- [x] Tabs on Marketing: `?aba=visao|resumo|campanhas|descontos`
+      (`marketingSchema.ts`; period and channel controls on every tab)
+- [x] Centralized business rules module: ROAS quality bands (>5 / 2–5 / <2),
+      funnel benchmark ranges, LTV/CAC reference, UTM medium → channel —
+      `marketingRules.ts` (tested)
+- [x] **Resumo**: channel performance table with "incluir taxa da
+      plataforma" toggle (platform fee stored separately; shared costs split
+      by revenue)
+- [x] **Resumo**: investment breakdown by category — media by platform,
+      fee, and the `CostExpense` sales & marketing lines the route brings
+      from money (`getMarketingCostLines`)
+- [x] **Resumo**: investment vs metric and sessions vs metric combo charts
+      (`ComboChart`)
+- [x] **Resumo**: 6-step funnel + conversion table (period × store
+      historical average × benchmark range, with the verdict badge)
+- [x] **Resumo**: sales by UTM (canal / origem / origem-meio / campanha)
+- [x] **Campanhas**: platform table, platform lines of the chosen metric
+      (`MultiSeriesChart`), level tabs (campanha / conjunto / anúncio) with
+      platform filter, best/worst campaigns by ROAS, paged table with CSV
+- [x] **Descontos**: KPIs + coupon table (primeiras compras = new
+      customers the coupon brought) + CSV
+- [x] Marketing pillars (Conversão, Aquisição) read derived values
+- [x] Update `specs/sections.md` (marketing) + write `specs/marketing.md`
 
 ---
 

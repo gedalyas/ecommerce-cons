@@ -47,6 +47,13 @@ milestone block lives).
 | Gestão    | Delegação             | not-started | pending: process mapping incomplete                          |
 | Gestão    | Tecnologia            | blocked     |                                                              |
 
+## Marketing data tabs
+
+Since Stage 6 the Marketing route has `?aba=visao|resumo|campanhas|descontos`.
+Visão is the pillar page described here, with the Conversão and Aquisição
+KPIs replaced by live values; the other tabs are specified in
+[marketing.md](marketing.md).
+
 ## Marketing banner
 
 The Marketing screen shows an orange `AlertBanner` above the pillars:
