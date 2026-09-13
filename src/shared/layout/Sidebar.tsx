@@ -8,6 +8,7 @@ import {
   Plug,
   Users,
   ShoppingBag,
+  Target,
   Truck,
   Building2,
 } from "lucide-react";
@@ -27,6 +28,7 @@ const dataItems = [
   { label: "Pedidos", to: "/pedidos", icon: ShoppingBag },
   { label: "Produtos", to: "/produtos", icon: Package },
   { label: "Clientes", to: "/clientes", icon: Users },
+  { label: "Metas", to: "/metas", icon: Target },
 ];
 
 export function Sidebar() {

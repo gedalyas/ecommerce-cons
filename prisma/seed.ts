@@ -26,6 +26,7 @@ import { marketingSection } from "../src/modules/marketing/contract.ts";
 import { logisticsSection } from "../src/modules/logistics/contract.ts";
 import { managementSection } from "../src/modules/management/contract.ts";
 import { connections } from "../src/modules/connections/contract.ts";
+import { goalsPlan2026 } from "../src/modules/goals/contract.ts";
 import type { Section } from "../src/shared/ui/sectionPage.types.ts";
 import type { Metric } from "../src/shared/ui/metricTile.types.ts";
 import type { Recommendation } from "../src/shared/ui/recommendationList.types.ts";
@@ -181,6 +182,10 @@ async function main() {
       syncLabel: c.sync,
       position: i,
     })),
+  });
+
+  await prisma.goal.createMany({
+    data: goalsPlan2026.map((m) => ({ clientId: client.id, year: 2026, ...m })),
   });
 
   await seedSection(client.id, "money", moneySection, 0);

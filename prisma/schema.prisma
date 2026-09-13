@@ -329,6 +329,29 @@ model AdSpendDaily {
   @@map("ad_spend_daily")
 }
 
+/// Monthly goal inputs (six drivers); the goals engine derives the other KPIs.
+model Goal {
+  id             String   @id @default(cuid())
+  clientId       String   @map("client_id")
+  year           Int
+  /// 1 to 12.
+  month          Int
+  totalSold      Decimal  @map("total_sold") @db.Decimal(12, 2)
+  averageTicket  Decimal  @map("average_ticket") @db.Decimal(12, 2)
+  /// Percent, e.g. 1.85.
+  conversionRate Decimal  @map("conversion_rate") @db.Decimal(6, 3)
+  paidTraffic    Decimal  @map("paid_traffic") @db.Decimal(12, 2)
+  otherMarketing Decimal  @map("other_marketing") @db.Decimal(12, 2)
+  /// Percent, e.g. 15.
+  repurchaseRate Decimal  @map("repurchase_rate") @db.Decimal(6, 3)
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, year, month])
+  @@map("goal")
+}
+
 /// A cost or expense rule feeding the DRE, margins and profit.
 model CostExpense {
   id           String        @id @default(cuid())
@@ -376,6 +399,7 @@ model Client {
   trafficDaily      TrafficDaily[]
   adSpendDaily      AdSpendDaily[]
   costExpenses      CostExpense[]
+  goals             Goal[]
 
   @@map("client")
 }
