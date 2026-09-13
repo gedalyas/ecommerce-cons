@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **O0–O1 done, O2 next** — last updated 2026-09-13
+Status: **O0–O2 done, O3 next** — last updated 2026-09-13
 
 ---
 
@@ -31,12 +31,15 @@ Status: **O0–O1 done, O2 next** — last updated 2026-09-13
 
 ## O2 — Activity screens
 
-- [ ] API: `GET /activity` (store-scoped, 50 per page), `GET /admin/activity?storeId=`
+- [x] API: `GET /activity` (store-scoped, 50 per page), `GET /admin/activity?storeId=`
       (staff: visible stores + global events)
-- [ ] Web: `/loja` › "Atividade" (everyone with a store), `/admin` › "Atividade" with a
+- [x] Web: `/loja` › "Atividade" (everyone with a store), `/admin` › "Atividade" with a
       store filter; rows: when · who · what
-- [ ] Flow: invite, import, undo, edit a pillar → the entries appear on both screens with
-      the right actor
+- [x] Flow (`e2e_activity.mjs`): consultant edits a pillar → `/admin` › Atividade lists it
+      with the store; the store filter (search `loja`) drops the store column; the client sees
+      the same entry on `/loja` › Atividade with the consultant as actor
+- [x] Web module `activity` (`ActivityTable`, server fns); `AdminActivity` extracted so
+      `Admin` does not grow; paging through the search param `pagina`
 
 ## O3 — Store archiving
 

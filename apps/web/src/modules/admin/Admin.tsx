@@ -7,6 +7,7 @@ import {
   type AdminStore,
   type InvitationStatus,
 } from "@ecommerce/contracts/admin";
+import type { ActivityPage } from "@ecommerce/contracts/audit";
 import { userRoleLabel } from "@ecommerce/contracts/auth";
 import {
   connectionRequestStatusLabel,
@@ -30,6 +31,7 @@ import {
   resolveRequestFn,
   revokeInvitationFn,
 } from "./adminController";
+import { AdminActivity } from "./AdminActivity";
 import { InviteForm } from "./InviteForm";
 
 const invitationTone: Record<InvitationStatus, "accent" | "muted" | "warning"> = {
@@ -73,7 +75,17 @@ function StoreConsultants({
   );
 }
 
-export function Admin({ data }: { data: AdminScreen }) {
+export function Admin({
+  data,
+  activity,
+  activityStoreId,
+  onActivityChange,
+}: {
+  data: AdminScreen;
+  activity: ActivityPage;
+  activityStoreId: string;
+  onActivityChange: (next: { loja?: string; pagina?: number }) => void;
+}) {
   const isAdmin = data.role === "ADMIN";
   const assign = useServerFn(assignConsultantsFn);
   const revoke = useServerFn(revokeInvitationFn);
@@ -244,6 +256,13 @@ export function Admin({ data }: { data: AdminScreen }) {
             emptyMessage="Nenhuma solicitação."
           />
         </SectionBlock>
+
+        <AdminActivity
+          stores={data.stores}
+          activity={activity}
+          storeId={activityStoreId}
+          onChange={onActivityChange}
+        />
       </div>
     </div>
   );
