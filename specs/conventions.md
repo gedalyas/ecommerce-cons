@@ -71,6 +71,7 @@ columns via `@@map`/`@map`. Enums in SCREAMING_CASE. Display copy columns
 
 ## Git
 
-- Meaningful, imperative commit messages in English.
+- Commit messages in English, imperative, `<type>: <description>` (`feat`, `fix`, `chore`,
+  `docs`, `style`, `refactor`, `test`) — see `CLAUDE.md`.
 - `main` is the default branch. The Lovable sync constraint no longer applies;
   normal history rules (no force-push to shared branches) still do.

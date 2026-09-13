@@ -25,6 +25,7 @@ because that is what ships.
 | [data-module-plan.md](data-module-plan.md)                                         | Plan: data module (orders, products, customers, DRE, marketing) in 6 stages        |
 | [data-module-tasks.md](data-module-tasks.md)                                       | Task checklist for the data module plan — tick as work lands                       |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force)                |
+| [reference/](reference/)                                                           | The Arko backend and frontend `CLAUDE.md` files this repo's rules derive from      |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from |
 | [decisions/](decisions/)                                                           | Architecture decision records (one dated note per decision)                        |
 
