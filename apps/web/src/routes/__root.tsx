@@ -41,7 +41,7 @@ const stripPeriodDefaults: SearchMiddleware<PeriodSearch> = ({ search, next }) =
   return stripped as PeriodSearch;
 };
 const LOGIN_PATH = "/entrar";
-const PUBLIC_PATHS = ["/entrar", "/cadastro"];
+const PUBLIC_PATHS = ["/entrar", "/cadastro", "/esqueci-senha", "/redefinir-senha"];
 const ONBOARDING_PATH = "/configurar-loja";
 const ADMIN_PATH = "/admin";
 const NO_STORE_PATHS = ["/configurar-loja", "/admin"];

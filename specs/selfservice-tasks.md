@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **A0–A2 done, A3 next** — last updated 2026-09-13
+Status: **A0–A3 done, A4 next** — last updated 2026-09-13
 
 ---
 
@@ -46,17 +46,18 @@ Status: **A0–A2 done, A3 next** — last updated 2026-09-13
 
 ## A3 — Password reset
 
-- [ ] Schema: `PasswordReset` (`userId`, `tokenHash` unique, `expiresAt`, `usedAt`);
+- [x] Schema: `PasswordReset` (`userId`, `tokenHash` unique, `expiresAt`, `usedAt`);
       migration
-- [ ] API: `POST /auth/password/forgot` (rate-limited, 202 always, sends the e-mail when
+- [x] API: `POST /auth/password/forgot` (rate-limited, 202 always, sends the e-mail when
       the user exists), `POST /auth/password/reset` (token valid and unused → new hash,
       revoke refresh tokens, mark used; 400 otherwise); pure `passwordResetMail`
-- [ ] Contracts: `forgotPasswordSchema`, `resetPasswordSchema`
-- [ ] Web: `/esqueci-senha` (e-mail → "Se o e-mail existir, enviamos o link"),
+- [x] Contracts: `forgotPasswordSchema`, `resetPasswordSchema`
+- [x] Web: `/esqueci-senha` (e-mail → "Se o e-mail existir, enviamos o link"),
       `/redefinir-senha?token=` (new password → sign-in page with a success note); "Esqueci
       minha senha" link on `/entrar`; both public in the root guard
-- [ ] Flow: forgot → outbox link → reset → login with the new password; old refresh token
-      rejected
+- [x] Flow: forgot (unknown e-mail → 202, no mail) → outbox link → short password refused →
+      reset → link reused → 400 → old password 401, new 200, old refresh token 401 →
+      web login; `e2e_reset.mjs`; migration `20260913190000_password_reset`
 
 ## A4 — Import preview
 

@@ -6,8 +6,39 @@ const PRODUCT = "E-commerce Insights";
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
+const pageLink = (appUrl: string, path: string, param: string, token: string) =>
+  `${appUrl.replace(/\/$/, "")}${path}?${param}=${encodeURIComponent(token)}`;
+
 export function invitationLink(appUrl: string, token: string): string {
-  return `${appUrl.replace(/\/$/, "")}/cadastro?convite=${encodeURIComponent(token)}`;
+  return pageLink(appUrl, "/cadastro", "convite", token);
+}
+
+export function passwordResetLink(appUrl: string, token: string): string {
+  return pageLink(appUrl, "/redefinir-senha", "token", token);
+}
+
+export type PasswordResetMailInput = {
+  to: string;
+  name: string;
+  link: string;
+  expiresInMinutes: number;
+};
+
+export function passwordResetMail(input: PasswordResetMailInput): MailMessage {
+  const intro = `Olá, ${input.name}. Recebemos um pedido para redefinir sua senha no ${PRODUCT}.`;
+  const action = "Escolha uma nova senha pelo link abaixo:";
+  const expiry = `O link vale por ${input.expiresInMinutes} minutos e só pode ser usado uma vez. Se você não pediu isso, ignore este e-mail — sua senha continua a mesma.`;
+  return {
+    to: input.to,
+    subject: `Redefinição de senha · ${PRODUCT}`,
+    text: [intro, "", action, input.link, "", expiry].join("\n"),
+    html: [
+      `<p>${escapeHtml(intro)}</p>`,
+      `<p>${action}</p>`,
+      `<p><a href="${escapeHtml(input.link)}">Redefinir minha senha</a></p>`,
+      `<p>${escapeHtml(expiry)}</p>`,
+    ].join("\n"),
+  };
 }
 
 export type InvitationMailInput = {

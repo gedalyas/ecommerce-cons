@@ -18,6 +18,7 @@ import { Route as connectionsRouteImport } from './routes/connections'
 import { Route as storeOnboardingRouteImport } from './routes/storeOnboarding'
 import { Route as moneyRouteImport } from './routes/money'
 import { Route as loginRouteImport } from './routes/login'
+import { Route as forgotPasswordRouteImport } from './routes/forgotPassword'
 import { Route as managementRouteImport } from './routes/management'
 import { Route as influencersRouteImport } from './routes/influencers'
 import { Route as logisticsRouteImport } from './routes/logistics'
@@ -27,6 +28,7 @@ import { Route as goalsRouteImport } from './routes/goals'
 import { Route as analysisRouteImport } from './routes/analysis'
 import { Route as ordersRouteImport } from './routes/orders'
 import { Route as productsRouteImport } from './routes/products'
+import { Route as resetPasswordRouteImport } from './routes/resetPassword'
 
 const dashboardRoute = dashboardRouteImport.update({
   id: '/',
@@ -71,6 +73,11 @@ const moneyRoute = moneyRouteImport.update({
 const loginRoute = loginRouteImport.update({
   id: '/entrar',
   path: '/entrar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const forgotPasswordRoute = forgotPasswordRouteImport.update({
+  id: '/esqueci-senha',
+  path: '/esqueci-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const managementRoute = managementRouteImport.update({
@@ -118,6 +125,11 @@ const productsRoute = productsRouteImport.update({
   path: '/produtos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const resetPasswordRoute = resetPasswordRouteImport.update({
+  id: '/redefinir-senha',
+  path: '/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
@@ -129,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/entrar': typeof loginRoute
+  '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
@@ -138,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/metricas': typeof analysisRoute
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
+  '/redefinir-senha': typeof resetPasswordRoute
 }
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
@@ -149,6 +163,7 @@ export interface FileRoutesByTo {
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/entrar': typeof loginRoute
+  '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
@@ -158,6 +173,7 @@ export interface FileRoutesByTo {
   '/metricas': typeof analysisRoute
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
+  '/redefinir-senha': typeof resetPasswordRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +186,7 @@ export interface FileRoutesById {
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/entrar': typeof loginRoute
+  '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
@@ -179,6 +196,7 @@ export interface FileRoutesById {
   '/metricas': typeof analysisRoute
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
+  '/redefinir-senha': typeof resetPasswordRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,6 +210,7 @@ export interface FileRouteTypes {
     | '/configurar-loja'
     | '/dinheiro'
     | '/entrar'
+    | '/esqueci-senha'
     | '/gestao'
     | '/influenciadores'
     | '/logistica'
@@ -201,6 +220,7 @@ export interface FileRouteTypes {
     | '/metricas'
     | '/pedidos'
     | '/produtos'
+    | '/redefinir-senha'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -212,6 +232,7 @@ export interface FileRouteTypes {
     | '/configurar-loja'
     | '/dinheiro'
     | '/entrar'
+    | '/esqueci-senha'
     | '/gestao'
     | '/influenciadores'
     | '/logistica'
@@ -221,6 +242,7 @@ export interface FileRouteTypes {
     | '/metricas'
     | '/pedidos'
     | '/produtos'
+    | '/redefinir-senha'
   id:
     | '__root__'
     | '/'
@@ -232,6 +254,7 @@ export interface FileRouteTypes {
     | '/configurar-loja'
     | '/dinheiro'
     | '/entrar'
+    | '/esqueci-senha'
     | '/gestao'
     | '/influenciadores'
     | '/logistica'
@@ -241,6 +264,7 @@ export interface FileRouteTypes {
     | '/metricas'
     | '/pedidos'
     | '/produtos'
+    | '/redefinir-senha'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -253,6 +277,7 @@ export interface RootRouteChildren {
   storeOnboardingRoute: typeof storeOnboardingRoute
   moneyRoute: typeof moneyRoute
   loginRoute: typeof loginRoute
+  forgotPasswordRoute: typeof forgotPasswordRoute
   managementRoute: typeof managementRoute
   influencersRoute: typeof influencersRoute
   logisticsRoute: typeof logisticsRoute
@@ -262,6 +287,7 @@ export interface RootRouteChildren {
   analysisRoute: typeof analysisRoute
   ordersRoute: typeof ordersRoute
   productsRoute: typeof productsRoute
+  resetPasswordRoute: typeof resetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -329,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof loginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/esqueci-senha': {
+      id: '/esqueci-senha'
+      path: '/esqueci-senha'
+      fullPath: '/esqueci-senha'
+      preLoaderRoute: typeof forgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gestao': {
       id: '/gestao'
       path: '/gestao'
@@ -392,6 +425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof productsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof resetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -405,6 +445,7 @@ const rootRouteChildren: RootRouteChildren = {
   storeOnboardingRoute: storeOnboardingRoute,
   moneyRoute: moneyRoute,
   loginRoute: loginRoute,
+  forgotPasswordRoute: forgotPasswordRoute,
   managementRoute: managementRoute,
   influencersRoute: influencersRoute,
   logisticsRoute: logisticsRoute,
@@ -414,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   analysisRoute: analysisRoute,
   ordersRoute: ordersRoute,
   productsRoute: productsRoute,
+  resetPasswordRoute: resetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

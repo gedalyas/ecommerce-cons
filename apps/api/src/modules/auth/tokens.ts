@@ -25,6 +25,7 @@ export function verifyAccessToken(token: string, secret: string): Principal | nu
 }
 
 export const INVITATION_TOKEN_SECONDS = 7 * 24 * 60 * 60;
+export const PASSWORD_RESET_SECONDS = 60 * 60;
 
 export function newOpaqueToken(): string {
   return randomBytes(48).toString("base64url");
@@ -40,4 +41,8 @@ export function refreshExpiry(now: Date): Date {
 
 export function invitationExpiry(now: Date): Date {
   return new Date(now.getTime() + INVITATION_TOKEN_SECONDS * 1000);
+}
+
+export function passwordResetExpiry(now: Date): Date {
+  return new Date(now.getTime() + PASSWORD_RESET_SECONDS * 1000);
 }

@@ -32,3 +32,9 @@ export const registerSchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 
 export const invitationLookupSchema = z.object({ token: tokenSchema });
+
+export const forgotPasswordSchema = z.object({ email: emailSchema });
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z.object({ token: tokenSchema, password: passwordSchema });
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

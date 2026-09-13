@@ -1,9 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
-import { invitationLookupSchema, loginSchema, registerSchema } from "@ecommerce/contracts/auth";
+import {
+  forgotPasswordSchema,
+  invitationLookupSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+} from "@ecommerce/contracts/auth";
 import { z } from "zod";
 import {
+  forgotPassword,
   invitationOf,
   refreshSessionUser,
+  resetPassword,
   selectStore,
   sessionState,
   signIn,
@@ -24,6 +32,14 @@ export const registerFn = createServerFn({ method: "POST" })
 export const getInvitation = createServerFn({ method: "GET" })
   .validator((input: unknown) => invitationLookupSchema.parse(input))
   .handler(async ({ data }) => invitationOf(data.token));
+
+export const forgotPasswordFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => forgotPasswordSchema.parse(input))
+  .handler(async ({ data }) => forgotPassword(data.email));
+
+export const resetPasswordFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => resetPasswordSchema.parse(input))
+  .handler(async ({ data }) => resetPassword(data));
 
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => signOut());
 

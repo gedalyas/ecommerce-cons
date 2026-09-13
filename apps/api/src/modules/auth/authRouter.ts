@@ -5,6 +5,7 @@ import { authController, type AuthDependencies } from "./authController";
 
 const LOGIN_ATTEMPTS_PER_15_MIN = 30;
 const LOOKUPS_PER_15_MIN = 120;
+const RESET_REQUESTS_PER_15_MIN = 10;
 
 export function createAuthRouter(deps: AuthDependencies, requireAuth: RequestHandler): Router {
   const router = Router();
@@ -20,10 +21,13 @@ export function createAuthRouter(deps: AuthDependencies, requireAuth: RequestHan
     });
   const loginLimiter = limiter(LOGIN_ATTEMPTS_PER_15_MIN);
   const lookupLimiter = limiter(LOOKUPS_PER_15_MIN);
+  const resetLimiter = limiter(RESET_REQUESTS_PER_15_MIN);
 
   router.post("/auth/login", loginLimiter, asyncHandler(controller.login));
   router.post("/auth/register", loginLimiter, asyncHandler(controller.register));
   router.get("/auth/invitation", lookupLimiter, asyncHandler(controller.invitation));
+  router.post("/auth/password/forgot", resetLimiter, asyncHandler(controller.forgotPassword));
+  router.post("/auth/password/reset", loginLimiter, asyncHandler(controller.resetPassword));
   router.post("/auth/refresh", asyncHandler(controller.refresh));
   router.post("/auth/logout", asyncHandler(controller.logout));
   router.get("/me", requireAuth, asyncHandler(controller.me));

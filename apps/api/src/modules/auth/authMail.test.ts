@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { invitationLink, invitationMail } from "./authMail";
+import { invitationLink, invitationMail, passwordResetLink, passwordResetMail } from "./authMail";
 
 describe("invitationLink", () => {
   it("points to the register page with the token, tolerating a trailing slash", () => {
@@ -40,5 +40,27 @@ describe("invitationMail", () => {
       expiresInDays: 7,
     }).text;
     expect(text).toContain("como consultor.");
+  });
+});
+
+describe("passwordResetLink", () => {
+  it("points to the reset page with the token", () => {
+    expect(passwordResetLink("http://app", "x y")).toBe("http://app/redefinir-senha?token=x%20y");
+  });
+});
+
+describe("passwordResetMail", () => {
+  const mail = passwordResetMail({
+    to: "ana@loja.com.br",
+    name: "Ana & Cia",
+    link: "http://app/redefinir-senha?token=t",
+    expiresInMinutes: 60,
+  });
+  it("greets by name, carries the link and the expiry", () => {
+    expect(mail.subject).toBe("Redefinição de senha · E-commerce Insights");
+    expect(mail.text).toContain("Olá, Ana & Cia.");
+    expect(mail.text).toContain("http://app/redefinir-senha?token=t");
+    expect(mail.text).toContain("vale por 60 minutos");
+    expect(mail.html).toContain("Ana &#38; Cia");
   });
 });

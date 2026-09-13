@@ -53,6 +53,12 @@ export function Login() {
         <FormField label="Senha" error={formState.errors.password?.message}>
           <Input {...register("password")} type="password" autoComplete="current-password" />
         </FormField>
+        <Link
+          to="/esqueci-senha"
+          className={cn(textClass.meta, "-mt-2 justify-self-end text-primary underline")}
+        >
+          Esqueci minha senha
+        </Link>
         {message && (
           <p role="alert" className={cn(textClass.meta, "text-destructive")}>
             {message}

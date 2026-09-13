@@ -11,11 +11,19 @@ export type {
 } from "./auth.types";
 export {
   emailSchema,
+  forgotPasswordSchema,
   invitationLookupSchema,
   loginSchema,
   passwordSchema,
   refreshSchema,
   registerSchema,
+  resetPasswordSchema,
   tokenSchema,
 } from "./authSchema";
-export type { LoginInput, RefreshInput, RegisterInput } from "./authSchema";
+export type {
+  ForgotPasswordInput,
+  LoginInput,
+  RefreshInput,
+  RegisterInput,
+  ResetPasswordInput,
+} from "./authSchema";

@@ -4,21 +4,28 @@ import type {
   InvitationCheck,
   LoginInput,
   RegisterInput,
+  ResetPasswordInput,
   StoreSummary,
 } from "@ecommerce/contracts/auth";
 import { prismaClient } from "@ecommerce/database/client";
 import { hashPassword, verifyPassword } from "@ecommerce/database/passwordHash";
 import type { Principal } from "@/shared/http/auth.types";
 import { HttpError, unauthorized } from "@/shared/http/httpError";
+import type { Mailer } from "@/shared/mail/mailer.types";
+import { passwordResetLink, passwordResetMail } from "./authMail";
 import { type StoreAccess } from "./storeAccess";
 import {
   ACCESS_TOKEN_SECONDS,
+  PASSWORD_RESET_SECONDS,
   REFRESH_TOKEN_SECONDS,
   hashToken,
   newOpaqueToken,
+  passwordResetExpiry,
   refreshExpiry,
   signAccessToken,
 } from "./tokens";
+
+export type ResetDelivery = { now: () => Date; mailer: Mailer; appUrl: string };
 
 const storeSelect = { id: true, slug: true, name: true, onboardedAt: true } as const;
 
@@ -207,4 +214,46 @@ export async function currentUser(userId: string): Promise<AuthUser> {
   const user = await prismaClient.user.findUnique({ where: { id: userId }, select: userSelect });
   if (!user) throw unauthorized();
   return toAuthUser(user);
+}
+
+export async function requestPasswordReset(email: string, delivery: ResetDelivery): Promise<void> {
+  const user = await prismaClient.user.findUnique({
+    where: { email },
+    select: { id: true, name: true, email: true },
+  });
+  if (!user) return;
+  const now = delivery.now();
+  const token = newOpaqueToken();
+  await prismaClient.passwordReset.create({
+    data: { userId: user.id, tokenHash: hashToken(token), expiresAt: passwordResetExpiry(now) },
+  });
+  await delivery.mailer.send(
+    passwordResetMail({
+      to: user.email,
+      name: user.name,
+      link: passwordResetLink(delivery.appUrl, token),
+      expiresInMinutes: PASSWORD_RESET_SECONDS / 60,
+    }),
+  );
+}
+
+export async function resetPassword(input: ResetPasswordInput, now: Date): Promise<void> {
+  const reset = await prismaClient.passwordReset.findUnique({
+    where: { tokenHash: hashToken(input.token) },
+    select: { id: true, userId: true, expiresAt: true, usedAt: true },
+  });
+  if (!reset || reset.usedAt || reset.expiresAt <= now) {
+    throw new HttpError(400, "Este link é inválido ou expirou. Peça um novo.");
+  }
+  await prismaClient.$transaction([
+    prismaClient.user.update({
+      where: { id: reset.userId },
+      data: { passwordHash: hashPassword(input.password) },
+    }),
+    prismaClient.passwordReset.update({ where: { id: reset.id }, data: { usedAt: now } }),
+    prismaClient.refreshToken.updateMany({
+      where: { userId: reset.userId, revokedAt: null },
+      data: { revokedAt: now },
+    }),
+  ]);
 }

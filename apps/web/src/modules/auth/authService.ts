@@ -5,6 +5,7 @@ import type {
   LoginResponse,
   MeResponse,
   RegisterInput,
+  ResetPasswordInput,
   StoreSummary,
 } from "@ecommerce/contracts/auth";
 import { ApiRequestError, apiFetch } from "@/shared/dependencies/apiClient";
@@ -129,4 +130,24 @@ export async function selectStore(clientId: string): Promise<StoreSummary | null
   if (!store) return null;
   await session.update({ activeClientId: store.id });
   return store;
+}
+
+export type PlainResult = { ok: true } | { ok: false; message: string };
+
+export async function forgotPassword(email: string): Promise<PlainResult> {
+  try {
+    await apiFetch<void>("/auth/password/forgot", { method: "POST", body: { email }, auth: false });
+    return { ok: true };
+  } catch (error) {
+    return failure(error, "Não foi possível enviar o e-mail agora. Tente novamente.");
+  }
+}
+
+export async function resetPassword(input: ResetPasswordInput): Promise<PlainResult> {
+  try {
+    await apiFetch<void>("/auth/password/reset", { method: "POST", body: input, auth: false });
+    return { ok: true };
+  } catch (error) {
+    return failure(error, "Não foi possível redefinir a senha agora. Tente novamente.");
+  }
 }
