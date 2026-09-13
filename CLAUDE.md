@@ -54,9 +54,8 @@ optional.
 ## Architecture
 
 **The folder is the business domain. The layer is the file.** The same module names exist on
-both sides — `apps/web/src/modules/orders` (UI + BFF) and `apps/api/src/modules/orders` (HTTP
-
-- service) — and the shapes they exchange live once, in `packages/contracts/src/orders`.
+both sides — `apps/web/src/modules/orders` (UI and BFF) and `apps/api/src/modules/orders`
+(HTTP and service) — and the shapes they exchange live once, in `packages/contracts/src/orders`.
 
 ```
 apps/web/src/
