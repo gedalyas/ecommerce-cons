@@ -2,20 +2,28 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0 next** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
+Status: **P0 done, P1 next** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
 
-- [ ] `Dockerfile` at the root with targets `api`, `worker`, `web` (node 22, workspaces
-      install, `npm run build`, prisma generate; the API image runs
-      `prisma migrate deploy` then `node apps/api/dist/index.mjs`)
-- [ ] `.dockerignore`; provider config (`railway.json` per service) that any provider can
-      ignore; `/api/v1/health` as the health check
-- [ ] `docs/deploy.md`: Railway step by step (project, Postgres, three services, variables
-      from `.env.example`, first admin via `db:seed`, invite the partner), what changes when a
-      domain arrives, how to read logs
-- [ ] Local check: the three images build and boot against the dev Postgres
+Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
+
+- [x] `apps/api/Dockerfile` runs `prisma migrate deploy` → `dist/seed.mjs` (the admin
+      upsert, bundled by `build.mjs` from `packages/database/prisma/seed.ts`) → the API;
+      `prisma` became a runtime dependency of `packages/database` so the CLI exists in the
+      `--omit=dev` image; the API listens on the provider's `PORT` when set (`API_PORT`
+      otherwise)
+- [x] `apps/api/railway.json` (Dockerfile, health check `/api/v1/health`, watch paths) and
+      `apps/api/railway.worker.json` (same image, start `node apps/api/dist/worker.mjs`)
+- [x] Web: nitro preset `vercel` when `VERCEL=1` (node-server otherwise);
+      `apps/web/vercel.json` installs and builds from the repo root with Root Directory
+      `apps/web`, output `.vercel/output`; `.vercel` gitignored
+- [x] `docs/deploy.md`: Railway (Postgres, `api`, `worker`, variables), Vercel (root
+      directory, env), first use, common errors, what changes when a domain arrives
+- [x] Local check: API image boots in production mode against the dev Postgres (migrations,
+      admin, health 200); worker boots from the same image; `VERCEL=1` build emits
+      `.vercel/output` with the server function
 
 ## P1 — Mercado Livre
 

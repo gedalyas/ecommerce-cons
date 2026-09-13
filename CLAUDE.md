@@ -437,4 +437,5 @@ re-open it in six months.
 | Auth, session, API client               | `apps/api/src/modules/auth`, `apps/web/src/shared/dependencies/`, `apps/web/src/modules/auth`                            |
 | CSV import pipeline and templates       | `specs/imports.md`, `apps/api/src/modules/imports`, `packages/contracts/src/imports`                                     |
 | The platforms' APIs (auth, endpoints)   | `docs/apis/<platform>.md` — one sheet per connector, Guru and ZapSign; `specs/connectors-plan.md`                        |
+| Deploy (Vercel web, Railway api/worker) | `docs/deploy.md`, `apps/api/Dockerfile`, `apps/api/railway*.json`, `apps/web/vercel.json`                                |
 | Design-system day-to-day rules          | `apps/web/src/shared/ui/README.md`, `specs/design-system.md`                                                             |

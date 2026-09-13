@@ -7,6 +7,7 @@ const jobs = createJobs(env.DATABASE_URL);
 await jobs.start();
 const app = createApp(env, jobs);
 
-app.listen(env.API_PORT, () => {
-  console.log(`api listening on http://localhost:${env.API_PORT}/api/v1 (${env.NODE_ENV})`);
+const port = env.PORT ?? env.API_PORT;
+app.listen(port, () => {
+  console.log(`api listening on http://localhost:${port}/api/v1 (${env.NODE_ENV})`);
 });

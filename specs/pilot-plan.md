@@ -28,13 +28,13 @@ commercial round (`commercial-plan.md`, paused at B2 pending the CRM decision).
 
 ### P0 — Deploy on a provider's URLs
 
-Containers for the three processes (`api`, `worker`, `web`) from one Dockerfile with a
-target per process, `prisma migrate deploy` + `db:seed` as the release step of the API,
-`/api/v1/health` as the health check, the env contract of `.env.example` mapped to the
-provider's variables. Railway is the recommended provider (api + worker + web + Postgres in
-one project, `*.up.railway.app` URLs); the Dockerfile is provider-neutral so Render or Fly
-work with the same image. Guide in `docs/deploy.md`: create the project, add Postgres, three
-services from the repo, variables, first admin, invite the partner.
+Decided: the web on **Vercel** (Nitro `vercel` preset, Root Directory `apps/web`,
+`apps/web/vercel.json`), the API and the worker on **Railway** from `apps/api/Dockerfile`
+(one image, two services — `railway.json` / `railway.worker.json`) with Railway's Postgres.
+The API image runs `prisma migrate deploy` and the admin seed before listening, so there is
+no manual release step; `/api/v1/health` is the health check; the API listens on the
+provider's `PORT`. Guide in `docs/deploy.md`: Railway (Postgres, `api`, `worker`,
+variables), Vercel (root directory, env), first use, what changes when a domain arrives.
 
 Production differences already in the code: `SMTP_URL` is required (no file outbox),
 `APP_URL` / `API_PUBLIC_URL` are the provider URLs, `CREDENTIALS_KEY` must be set once and

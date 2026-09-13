@@ -52,9 +52,11 @@ export default defineConfig(({ command, mode }) => {
           },
         },
       }),
-      // Nitro owns the server build; the default preset targets Node, which is
-      // what the Docker image runs.
-      ...(command === "build" ? [nitro()] : []),
+      // Nitro owns the server build: the Vercel preset when Vercel is building
+      // (VERCEL=1), otherwise the Node server the Docker image runs.
+      ...(command === "build"
+        ? [nitro({ preset: process.env["VERCEL"] ? "vercel" : "node-server" })]
+        : []),
       viteReact(),
     ],
   };

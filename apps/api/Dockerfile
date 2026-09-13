@@ -27,4 +27,6 @@ COPY --from=build /repo/apps/api/dist apps/api/dist
 COPY --from=build /repo/packages/database packages/database
 
 EXPOSE 3001
-CMD ["sh", "-c", "npx prisma migrate deploy --config packages/database/prisma.config.ts && node apps/api/dist/index.mjs"]
+# The API image runs the migrations and ensures the first admin (ADMIN_EMAIL / ADMIN_PASSWORD)
+# before listening; the worker service reuses the image with `node apps/api/dist/worker.mjs`.
+CMD ["sh", "-c", "npx prisma migrate deploy --config packages/database/prisma.config.ts && node apps/api/dist/seed.mjs && node apps/api/dist/index.mjs"]

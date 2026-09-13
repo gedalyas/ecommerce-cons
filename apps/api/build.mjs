@@ -7,7 +7,11 @@ const { dependencies } = JSON.parse(readFileSync(new URL("./package.json", impor
 const external = Object.keys(dependencies).filter((name) => !name.startsWith("@ecommerce/"));
 
 await build({
-  entryPoints: ["src/index.ts", "src/worker.ts"],
+  entryPoints: [
+    "src/index.ts",
+    "src/worker.ts",
+    { in: "../../packages/database/prisma/seed.ts", out: "seed" },
+  ],
   bundle: true,
   platform: "node",
   format: "esm",
