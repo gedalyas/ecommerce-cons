@@ -21,10 +21,9 @@ switch (command) {
     process.stdout.write("waiting for postgres");
     for (let i = 0; i < 60; i++) {
       try {
-        const status = execSync(
-          "docker inspect -f {{.State.Health.Status}} ecommerce-postgres",
-          { stdio: ["ignore", "pipe", "ignore"] },
-        )
+        const status = execSync("docker inspect -f {{.State.Health.Status}} ecommerce-postgres", {
+          stdio: ["ignore", "pipe", "ignore"],
+        })
           .toString()
           .trim();
         if (status === "healthy") {
@@ -37,7 +36,9 @@ switch (command) {
       process.stdout.write(".");
       sleep(1000);
     }
-    console.error("\npostgres did not become healthy within 60s - check `docker compose logs postgres`");
+    console.error(
+      "\npostgres did not become healthy within 60s - check `docker compose logs postgres`",
+    );
     process.exit(1);
   }
 

@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Three numbers below only ever go down (specs/architecture.md §8):
+# --max-warnings (lint), --max-files (files inside import cycles) and, once
+# coverage is measured, the vitest thresholds. Whoever lowers the count lowers
+# the cap in the same PR.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint -- --max-warnings 0
+
+      - name: Cycles
+        run: npm run check:cycles -- --max-files 0
+
+      - name: Tests
+        run: npm test
+
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: Build
+        run: npm run build

@@ -31,7 +31,7 @@ import type { Metric } from "../src/shared/ui/metricTile.types.ts";
 import type { Recommendation } from "../src/shared/ui/recommendationList.types.ts";
 import { seedAnalytics } from "./seedAnalytics.ts";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const adapter = new PrismaPg({ connectionString: process.env["DATABASE_URL"]! });
 const prisma = new PrismaClient({ adapter });
 
 const CLIENT_SLUG = "loja-aurora";

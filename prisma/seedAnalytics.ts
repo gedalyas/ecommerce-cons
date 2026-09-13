@@ -16,9 +16,9 @@ import type {
   CostFrequency,
   FinancialStatus,
   ProcessingMethod,
+  PrismaClient,
   SalesPlatform,
 } from "../src/generated/prisma/client.ts";
-import type { PrismaClient } from "../src/generated/prisma/client.ts";
 
 import { monthlySeries } from "../src/modules/dashboard/contract.ts";
 

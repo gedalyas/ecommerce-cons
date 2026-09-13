@@ -1,5 +1,4 @@
-import "@/shared/utils/errorCapture";
-
+// Must stay the first import: it installs the process-level capture hooks.
 import { consumeLastCapturedError } from "@/shared/utils/errorCapture";
 import { renderErrorPage } from "@/shared/utils/errorPage";
 

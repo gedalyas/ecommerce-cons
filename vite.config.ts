@@ -32,7 +32,10 @@ export default defineConfig(({ command }) => ({
       // Fail the build instead of leaking a server-only module into the client bundle.
       importProtection: {
         behavior: "error",
-        client: { files: ["**/shared/dependencies/**", "**/server/**"], specifiers: ["server-only"] },
+        client: {
+          files: ["**/shared/dependencies/**", "**/modules/*/*Service.ts"],
+          specifiers: ["server-only"],
+        },
       },
     }),
     // Nitro owns the server build; the default preset targets Node, which is

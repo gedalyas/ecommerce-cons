@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "@/shared/utils/cn";
 
 /** Detects whether there is content above/below the cut in a scrollable area. */
 export function useScrollShadow<T extends HTMLElement>() {
