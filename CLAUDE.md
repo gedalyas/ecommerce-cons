@@ -424,4 +424,5 @@ re-open it in six months.
 | Tenancy, roles, invitations, connectors | `specs/saas.md`, `apps/api/src/modules/{auth,store,admin,connections}`, `packages/contracts/src/{connectors,consulting}` |
 | Auth, session, API client               | `apps/api/src/modules/auth`, `apps/web/src/shared/dependencies/`, `apps/web/src/modules/auth`                            |
 | CSV import pipeline and templates       | `specs/imports.md`, `apps/api/src/modules/imports`, `packages/contracts/src/imports`                                     |
+| The platforms' APIs (auth, endpoints)   | `docs/apis/<platform>.md` — one sheet per connector, Guru and ZapSign; `specs/connectors-plan.md`                        |
 | Design-system day-to-day rules          | `apps/web/src/shared/ui/README.md`, `specs/design-system.md`                                                             |
