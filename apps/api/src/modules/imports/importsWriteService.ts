@@ -1,9 +1,14 @@
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
+import type { AdSpendSnapshot, OrderSnapshot, TrafficSnapshot } from "./importUndo.types";
+import { orderRowOf } from "./orderRow";
+import { adSpendDayKey, trafficKey } from "./undoPlan";
+import type { UndoRecorder } from "./undoRecorder";
 
 const CHUNK = 200;
 
 const dayOf = (day: string) => new Date(`${day}T00:00:00.000Z`);
+const num = (value: Prisma.Decimal | number) => Number(value);
 
 function chunks<T>(items: T[]): T[][] {
   const out: T[][] = [];
@@ -13,7 +18,72 @@ function chunks<T>(items: T[]): T[][] {
 
 type Tx = Prisma.TransactionClient;
 
-async function customerIdFor(tx: Tx, clientId: string, order: OrderInput): Promise<string> {
+const orderSnapshotSelect = {
+  customerId: true,
+  placedAt: true,
+  paidAt: true,
+  salesPlatform: true,
+  channel: true,
+  utmSource: true,
+  utmMedium: true,
+  utmCampaign: true,
+  financialStatus: true,
+  paymentGateway: true,
+  processingMethod: true,
+  productRevenue: true,
+  shippingRevenue: true,
+  totalDiscounts: true,
+  totalPrice: true,
+  discountCodes: true,
+  country: true,
+  province: true,
+  city: true,
+  orderNumberForCustomer: true,
+  itemsCount: true,
+  items: {
+    select: {
+      productId: true,
+      variantId: true,
+      sku: true,
+      quantity: true,
+      unitPrice: true,
+      unitCost: true,
+    },
+  },
+} as const;
+
+type OrderRow = Prisma.OrderGetPayload<{ select: typeof orderSnapshotSelect }>;
+
+export function orderSnapshotOf(row: OrderRow): OrderSnapshot {
+  return {
+    ...row,
+    placedAt: row.placedAt.toISOString(),
+    paidAt: row.paidAt?.toISOString() ?? null,
+    productRevenue: num(row.productRevenue),
+    shippingRevenue: num(row.shippingRevenue),
+    totalDiscounts: num(row.totalDiscounts),
+    totalPrice: num(row.totalPrice),
+    items: row.items.map((i) => ({
+      ...i,
+      unitPrice: num(i.unitPrice),
+      unitCost: i.unitCost === null ? null : num(i.unitCost),
+    })),
+  };
+}
+
+async function customerIdFor(
+  tx: Tx,
+  clientId: string,
+  order: OrderInput,
+  undo: UndoRecorder,
+): Promise<string> {
+  if (!undo.has("CUSTOMER", order.email)) {
+    const existing = await tx.customer.findUnique({
+      where: { clientId_email: { clientId, email: order.email } },
+      select: { name: true },
+    });
+    undo.add({ entity: "CUSTOMER", key: order.email, previous: existing });
+  }
   const customer = await tx.customer.upsert({
     where: { clientId_email: { clientId, email: order.email } },
     create: {
@@ -34,6 +104,7 @@ async function variantFor(
   tx: Tx,
   clientId: string,
   item: OrderInput["items"][number],
+  undo: UndoRecorder,
 ): Promise<{ productId: string; variantId: string }> {
   const existing = await tx.productVariant.findFirst({
     where: { sku: item.sku, product: { clientId } },
@@ -51,17 +122,28 @@ async function variantFor(
     },
     select: { id: true, variants: { select: { id: true }, take: 1 } },
   });
+  undo.add({ entity: "PRODUCT", key: product.id, previous: null });
   return { productId: product.id, variantId: product.variants[0]!.id };
 }
 
-async function writeOrder(tx: Tx, clientId: string, order: OrderInput): Promise<void> {
-  const customerId = await customerIdFor(tx, clientId, order);
+async function writeOrder(
+  tx: Tx,
+  clientId: string,
+  order: OrderInput,
+  undo: UndoRecorder,
+): Promise<void> {
+  const before = await tx.order.findUnique({
+    where: { clientId_number: { clientId, number: order.number } },
+    select: orderSnapshotSelect,
+  });
+  undo.add({ entity: "ORDER", key: order.number, previous: before && orderSnapshotOf(before) });
+  const customerId = await customerIdFor(tx, clientId, order, undo);
   const previousPaid = await tx.order.count({
     where: { customerId, financialStatus: "PAID", number: { not: order.number } },
   });
   const items = [];
   for (const item of order.items) {
-    const ids = await variantFor(tx, clientId, item);
+    const ids = await variantFor(tx, clientId, item, undo);
     items.push({
       ...ids,
       sku: item.sku,
@@ -70,29 +152,7 @@ async function writeOrder(tx: Tx, clientId: string, order: OrderInput): Promise<
       unitCost: item.unitCost,
     });
   }
-  const placedAt = dayOf(order.placedAt);
-  const data = {
-    customerId,
-    placedAt,
-    paidAt: order.status === "PAID" ? placedAt : null,
-    salesPlatform: order.salesPlatform,
-    channel: order.channel,
-    utmSource: order.utmSource,
-    utmMedium: order.utmMedium,
-    utmCampaign: order.utmCampaign,
-    financialStatus: order.status,
-    paymentGateway: order.gateway,
-    processingMethod: order.processingMethod,
-    productRevenue: order.productRevenue,
-    shippingRevenue: order.shipping,
-    totalDiscounts: order.discount,
-    totalPrice: order.totalPrice,
-    discountCodes: order.coupons,
-    province: order.province,
-    city: order.city,
-    orderNumberForCustomer: previousPaid + 1,
-    itemsCount: order.items.reduce((s, i) => s + i.quantity, 0),
-  };
+  const data = orderRowOf(order, customerId, previousPaid + 1);
   const saved = await tx.order.upsert({
     where: { clientId_number: { clientId, number: order.number } },
     create: { clientId, number: order.number, ...data },
@@ -103,32 +163,72 @@ async function writeOrder(tx: Tx, clientId: string, order: OrderInput): Promise<
   await tx.orderItem.createMany({ data: items.map((i) => ({ ...i, orderId: saved.id })) });
 }
 
-export async function persistOrders(clientId: string, orders: OrderInput[]): Promise<number> {
+export async function persistOrders(
+  clientId: string,
+  orders: OrderInput[],
+  undo: UndoRecorder,
+): Promise<number> {
   let written = 0;
   for (const group of chunks(orders)) {
     await prismaClient.$transaction(async (tx) => {
-      for (const order of group) await writeOrder(tx, clientId, order);
+      for (const order of group) await writeOrder(tx, clientId, order, undo);
     });
     written += group.length;
   }
   return written;
 }
 
-export async function persistAdSpend(clientId: string, rows: AdSpendRow[]): Promise<number> {
-  const days = new Map<string, Set<string>>();
+const adSpendSnapshotSelect = {
+  campaignId: true,
+  campaignName: true,
+  adsetId: true,
+  adsetName: true,
+  adId: true,
+  adName: true,
+  spend: true,
+  platformFee: true,
+  impressions: true,
+  clicks: true,
+  conversions: true,
+  attributedRevenue: true,
+} as const;
+
+type AdSpendSnapshotRow = Prisma.AdSpendDailyGetPayload<{ select: typeof adSpendSnapshotSelect }>;
+
+export const adSpendSnapshotOf = (row: AdSpendSnapshotRow): AdSpendSnapshot => ({
+  ...row,
+  spend: num(row.spend),
+  platformFee: num(row.platformFee),
+  attributedRevenue: num(row.attributedRevenue),
+});
+
+function adSpendDays(rows: AdSpendRow[]): { platform: AdSpendRow["platform"]; date: string }[] {
+  const seen = new Set<string>();
+  const days = [];
   for (const row of rows) {
-    if (!days.has(row.platform)) days.set(row.platform, new Set());
-    days.get(row.platform)!.add(row.date);
+    const key = adSpendDayKey(row);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    days.push({ platform: row.platform, date: row.date });
   }
+  return days;
+}
+
+export async function persistAdSpend(
+  clientId: string,
+  rows: AdSpendRow[],
+  undo: UndoRecorder,
+): Promise<number> {
   await prismaClient.$transaction(async (tx) => {
-    for (const [platform, dates] of days) {
-      await tx.adSpendDaily.deleteMany({
-        where: {
-          clientId,
-          platform: platform as AdSpendRow["platform"],
-          date: { in: [...dates].map(dayOf) },
-        },
+    for (const day of adSpendDays(rows)) {
+      const where = { clientId, platform: day.platform, date: dayOf(day.date) };
+      const previous = await tx.adSpendDaily.findMany({ where, select: adSpendSnapshotSelect });
+      undo.add({
+        entity: "AD_SPEND_DAY",
+        key: adSpendDayKey(day),
+        previous: previous.length > 0 ? previous.map(adSpendSnapshotOf) : null,
       });
+      await tx.adSpendDaily.deleteMany({ where });
     }
   });
   for (const group of chunks(rows)) {
@@ -139,17 +239,38 @@ export async function persistAdSpend(clientId: string, rows: AdSpendRow[]): Prom
   return rows.length;
 }
 
-export async function persistTraffic(clientId: string, rows: TrafficRow[]): Promise<number> {
+const trafficSnapshotSelect = {
+  sessions: true,
+  users: true,
+  newUsers: true,
+  viewItem: true,
+  addToCart: true,
+  beginCheckout: true,
+} as const;
+
+export async function persistTraffic(
+  clientId: string,
+  rows: TrafficRow[],
+  undo: UndoRecorder,
+): Promise<number> {
   for (const group of chunks(rows)) {
-    await prismaClient.$transaction(
-      group.map(({ row: _row, date, source, medium, ...counts }) =>
-        prismaClient.trafficDaily.upsert({
-          where: { clientId_date_source_medium: { clientId, date: dayOf(date), source, medium } },
+    await prismaClient.$transaction(async (tx) => {
+      for (const { row: _row, date, source, medium, ...counts } of group) {
+        const where = {
+          clientId_date_source_medium: { clientId, date: dayOf(date), source, medium },
+        };
+        const previous: TrafficSnapshot | null = await tx.trafficDaily.findUnique({
+          where,
+          select: trafficSnapshotSelect,
+        });
+        undo.add({ entity: "TRAFFIC", key: trafficKey({ date, source, medium }), previous });
+        await tx.trafficDaily.upsert({
+          where,
           create: { clientId, date: dayOf(date), source, medium, ...counts },
           update: counts,
-        }),
-      ),
-    );
+        });
+      }
+    });
   }
   return rows.length;
 }

@@ -7,13 +7,14 @@ export const importKindLabel: Record<ImportKind, string> = {
   TRAFFIC: "Tráfego do site",
 };
 
-export const importStatuses = ["DONE", "PARTIAL", "FAILED"] as const;
+export const importStatuses = ["DONE", "PARTIAL", "FAILED", "UNDONE"] as const;
 export type ImportStatus = (typeof importStatuses)[number];
 
 export const importStatusLabel: Record<ImportStatus, string> = {
   DONE: "Concluída",
   PARTIAL: "Parcial",
   FAILED: "Falhou",
+  UNDONE: "Desfeita",
 };
 
 export const IMPORT_MAX_BYTES = 10 * 1024 * 1024;
@@ -34,6 +35,8 @@ export type ImportJob = {
   errors: ImportRowError[];
   createdAt: string;
   finishedAt: string | null;
+  undoneAt: string | null;
+  canUndo: boolean;
 };
 
 export type ImportsScreen = { jobs: ImportJob[] };

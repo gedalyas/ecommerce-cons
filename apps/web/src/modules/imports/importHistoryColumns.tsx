@@ -13,6 +13,7 @@ export const importStatusTone: Record<ImportStatus, BadgeTone> = {
   DONE: "accent",
   PARTIAL: "warning",
   FAILED: "outline",
+  UNDONE: "muted",
 };
 
 export const importHistoryColumns: DataTableColumn<ImportJob>[] = [

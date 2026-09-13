@@ -18,8 +18,9 @@ of its choices deserve a record.
    to boot without `SMTP_URL`. The mailer is a dependency injected into the routers.
 3. **An import can be undone only while it is the most recent job of its kind, using
    snapshots taken while writing.** `import_undo` keeps, per touched row, `previous = null`
-   (created) or the JSON of the row it replaced; undo deletes or restores. When a newer job
-   of the same kind finishes, the undo rows of the older ones are purged.
+   (created) or the JSON of the row it replaced; undo deletes or restores. The snapshots of
+   the three most recent jobs per kind are kept (so a second undo works after the first);
+   older ones are purged when a new job finishes.
 
 ## Por quê
 
@@ -32,7 +33,7 @@ of its choices deserve a record.
 - A full undo of any past import needs either an event log or per-import snapshots plus
   conflict detection between overlapping imports. LIFO makes "restore what this import
   replaced" exactly right, because nothing newer touched those keys; the purge keeps storage
-  bounded to one job's snapshots per kind (≤ 50 000 rows, the parse cap).
+  bounded to three jobs' snapshots per kind (≤ 3 × 50 000 rows, the parse cap).
 
 ## Alternativas descartadas
 

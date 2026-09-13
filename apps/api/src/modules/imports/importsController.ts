@@ -13,6 +13,7 @@ import {
   importsScreen,
   previewImport,
   runImport,
+  undoImportJob,
   type UploadedFile,
 } from "./importsService";
 import { fileTypeProblem } from "./uploadRules";
@@ -45,6 +46,10 @@ export function importsController({ now }: ImportsDependencies) {
     async one(req: Request, res: Response) {
       const { id } = parseOrThrow(importIdSchema, req.params);
       res.json(await importJobOf(authOf(req).clientId, id));
+    },
+    async undo(req: Request, res: Response) {
+      const { id } = parseOrThrow(importIdSchema, req.params);
+      res.json(await undoImportJob(authOf(req).clientId, id, now()));
     },
     templates(_req: Request, res: Response) {
       res.json(importTemplates);

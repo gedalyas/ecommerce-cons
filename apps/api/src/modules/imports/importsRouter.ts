@@ -62,5 +62,6 @@ export function createImportsRouter(deps: ImportsDependencies): Router {
   router.get("/imports", asyncHandler(controller.list));
   router.get("/imports/templates", controller.templates);
   router.get("/imports/:id", asyncHandler(controller.one));
+  router.post("/imports/:id/undo", asyncHandler(controller.undo));
   return router;
 }

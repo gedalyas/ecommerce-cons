@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **A0–A4 done, A5 next** — last updated 2026-09-13
+Status: **A0–A5 done, A6 next** — last updated 2026-09-13
 
 ---
 
@@ -75,19 +75,25 @@ Status: **A0–A4 done, A5 next** — last updated 2026-09-13
 
 ## A5 — Import undo
 
-- [ ] Schema: `ImportStatus` gains `UNDONE`; `ImportJob.undoneAt`; `ImportUndo` (`jobId`,
+- [x] Schema: `ImportStatus` gains `UNDONE`; `ImportJob.undoneAt`; `ImportUndo` (`jobId`,
       `entity`, `key`, `previous Json?`) with index on `jobId`; migration
-- [ ] API: the write service records created/replaced rows per entity (order + items,
+- [x] API: the write service records created/replaced rows per entity (order + items,
       customer, product + variant, ad_spend, traffic) inside the same transaction; after a
       job finishes, undo rows of older jobs of the same kind are purged; `POST
 /imports/:id/undo` (only the latest non-undone job of its kind → 409 otherwise) restores
       or deletes, re-stamps data sources when nothing remains, refreshes customers; pure
       `undoPlan.ts` (entries → ordered operations) with tests
-- [ ] Contracts: `ImportJob.undoneAt`, `canUndo`; `importStatusLabel.UNDONE = "Desfeita"`
-- [ ] Web: "Desfazer" on the job that can be undone (confirm `Dialog`), history shows the
+- [x] Contracts: `ImportJob.undoneAt`, `canUndo`; `importStatusLabel.UNDONE = "Desfeita"`
+- [x] Web: "Desfazer" on the job that can be undone (confirm `Dialog`), history shows the
       status
-- [ ] Flow: import orders → undo → orders gone, customers without other orders gone, data
-      source back to previous status; ad spend replace → undo → previous values back
+- [x] Flow (`e2e_undo.mjs`): import → replacing import → the older one is not undoable (409) →
+      undo the latest → replaced order and customer name restored, created order gone → the
+      older one is undoable again → undone → orders gone; ad spend: replace a day twice, undo
+      twice, each undo restores the previous rows; web: Desfazer → dialog → row shows Desfeita
+- [x] Change along the way: undo data is kept for the **three** most recent non-undone jobs
+      per kind (not only the latest), so undoing twice in a row works; the rule stays LIFO
+- [x] `entity` is a string column with the closed set in `importUndo.types.ts` (API-internal,
+      never on the wire); `orderRow.ts` extracted from the write service (tested)
 
 ## A6 — Docs and close
 

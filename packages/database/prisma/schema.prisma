@@ -78,6 +78,7 @@ enum ImportStatus {
   DONE
   PARTIAL
   FAILED
+  UNDONE
 
   @@map("import_status")
 }
@@ -98,12 +99,30 @@ model ImportJob {
   errors       Json
   createdAt    DateTime     @default(now()) @map("created_at")
   finishedAt   DateTime?    @map("finished_at")
+  undoneAt     DateTime?    @map("undone_at")
 
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  client      Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  undoEntries ImportUndo[]
 
   @@index([clientId, createdAt])
   @@map("import_job")
+}
+
+/// What an import touched, so it can be undone while it is the latest of its kind:
+/// `previous` is null for a row the import created, or the JSON of the row it replaced.
+model ImportUndo {
+  id       String @id @default(cuid())
+  jobId    String @map("job_id")
+  /// ORDER · CUSTOMER · PRODUCT · AD_SPEND_DAY · TRAFFIC (closed set in the API).
+  entity   String
+  key      String
+  previous Json?
+
+  job ImportJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@map("import_undo")
 }
 
 /// Someone who signs in. CLIENT users belong to one store; consultants and admins have none

@@ -23,6 +23,7 @@ import { cn } from "@/shared/utils/cn";
 import { downloadCsv } from "@/shared/utils/csv";
 import { formatFileSize, importFileProblem } from "./importFile";
 import { importHistoryColumns } from "./importHistoryColumns";
+import { UndoImportButton } from "./UndoImportButton";
 import { ImportPreviewCard } from "./ImportPreviewCard";
 import { ImportResult } from "./ImportResult";
 import { previewImportFn, uploadImportFn } from "./importsController";
@@ -224,7 +225,15 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
       {job && <ImportResult job={job} />}
 
       <DataTable
-        columns={importHistoryColumns}
+        columns={[
+          ...importHistoryColumns,
+          {
+            key: "undo",
+            header: "",
+            align: "right",
+            render: (r) => (r.canUndo ? <UndoImportButton job={r} /> : null),
+          },
+        ]}
         rows={data.jobs}
         rowKey={(r) => r.id}
         emptyMessage="Nenhuma importação ainda."

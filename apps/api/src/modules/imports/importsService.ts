@@ -14,10 +14,13 @@ import { HttpError, notFound } from "@/shared/http/httpError";
 import { CsvLimitError, decodeCsvBuffer, hasBinaryContent, parseCsv } from "./csvParse";
 import { importOutcome, type ImportCounts } from "./importOutcome";
 import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
+import { sourcesStampedBy } from "./importSources";
+import { saveUndoEntries, undoImport, undoableJobIds } from "./importsUndoService";
 import { persistAdSpend, persistOrders, persistTraffic } from "./importsWriteService";
 import { mapAdSpend, mapOrders, mapTraffic } from "./mapRows";
 import { adSpendPreview, ordersPreview, trafficPreview, type PreviewBody } from "./previewRows";
 import { missingRequiredHeaders } from "./rowReader";
+import { undoRecorder, type UndoRecorder } from "./undoRecorder";
 
 export type UploadedFile = { name: string; size: number; buffer: Buffer };
 
@@ -25,27 +28,13 @@ const PARSE_BUDGET_MS = 20_000;
 const ERRORS_KEPT = 50;
 const HISTORY_SIZE = 20;
 
-const manualConnector: ConnectorKey = "manual_csv";
-
-const dataSourceOf: Record<ImportKind, (rows: { platform?: string }[]) => ConnectorKey[]> = {
-  ORDERS: () => [manualConnector],
-  AD_SPEND: (rows) => [
-    manualConnector,
-    ...new Set(
-      rows.map((r): ConnectorKey =>
-        r.platform === "META" ? "meta_ads" : r.platform === "GOOGLE" ? "google_ads" : "tiktok_ads",
-      ),
-    ),
-  ],
-  TRAFFIC: () => [manualConnector, "ga4"],
-};
-
 type Mapped =
   | { kind: "ORDERS"; orders: OrderInput[]; errors: ImportRowError[] }
   | { kind: "AD_SPEND"; rows: AdSpendRow[]; errors: ImportRowError[] }
   | { kind: "TRAFFIC"; rows: TrafficRow[]; errors: ImportRowError[] };
 
 type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: ConnectorKey[] };
+type ProcessInput = { clientId: string; kind: ImportKind; file: UploadedFile; undo: UndoRecorder };
 
 function tableOf(kind: ImportKind, file: UploadedFile) {
   if (hasBinaryContent(file.buffer)) {
@@ -82,35 +71,38 @@ function mapTable(kind: ImportKind, file: UploadedFile): { total: number; mapped
   }
 }
 
-async function process(clientId: string, kind: ImportKind, file: UploadedFile): Promise<Processed> {
+async function process({ clientId, kind, file, undo }: ProcessInput): Promise<Processed> {
   const { total, mapped } = mapTable(kind, file);
   const rejected = mapped.errors.length;
   switch (mapped.kind) {
     case "ORDERS": {
-      const written = await persistOrders(clientId, mapped.orders);
+      const written = await persistOrders(clientId, mapped.orders, undo);
       const imported = mapped.orders
         .filter((_, i) => i < written)
         .reduce((s, o) => s + o.rows.length, 0);
       return {
         counts: { total, imported, rejected },
         errors: mapped.errors,
-        sources: dataSourceOf.ORDERS([]),
+        sources: sourcesStampedBy(kind, []),
       };
     }
     case "AD_SPEND": {
-      const imported = await persistAdSpend(clientId, mapped.rows);
+      const imported = await persistAdSpend(clientId, mapped.rows, undo);
       return {
         counts: { total, imported, rejected },
         errors: mapped.errors,
-        sources: dataSourceOf.AD_SPEND(mapped.rows),
+        sources: sourcesStampedBy(
+          kind,
+          mapped.rows.map((r) => r.platform),
+        ),
       };
     }
     case "TRAFFIC": {
-      const imported = await persistTraffic(clientId, mapped.rows);
+      const imported = await persistTraffic(clientId, mapped.rows, undo);
       return {
         counts: { total, imported, rejected },
         errors: mapped.errors,
-        sources: dataSourceOf.TRAFFIC([]),
+        sources: sourcesStampedBy(kind, []),
       };
     }
   }
@@ -150,7 +142,7 @@ async function stampDataSources(clientId: string, keys: ConnectorKey[], now: Dat
   });
 }
 
-const toJob = (row: {
+type JobRow = {
   id: string;
   kind: ImportKind;
   status: ImportStatus;
@@ -162,7 +154,10 @@ const toJob = (row: {
   errors: unknown;
   createdAt: Date;
   finishedAt: Date | null;
-}): ImportJob => ({
+  undoneAt: Date | null;
+};
+
+const toJob = (row: JobRow, canUndo: boolean): ImportJob => ({
   id: row.id,
   kind: row.kind,
   status: row.status,
@@ -174,6 +169,8 @@ const toJob = (row: {
   errors: Array.isArray(row.errors) ? (row.errors as ImportRowError[]) : [],
   createdAt: row.createdAt.toISOString(),
   finishedAt: row.finishedAt?.toISOString() ?? null,
+  undoneAt: row.undoneAt?.toISOString() ?? null,
+  canUndo,
 });
 
 export async function runImport(
@@ -183,7 +180,8 @@ export async function runImport(
   file: UploadedFile,
   now: Date,
 ): Promise<ImportJob> {
-  const { counts, errors, sources } = await process(clientId, kind, file);
+  const undo = undoRecorder();
+  const { counts, errors, sources } = await process({ clientId, kind, file, undo });
   const status = importOutcome(counts);
   if (counts.imported > 0) {
     await stampDataSources(clientId, sources, now);
@@ -204,7 +202,9 @@ export async function runImport(
       finishedAt: now,
     },
   });
-  return toJob(job);
+  const entries = counts.imported > 0 ? undo.entries() : [];
+  await saveUndoEntries(clientId, kind, job.id, entries);
+  return toJob(job, entries.length > 0);
 }
 
 export async function importsScreen(clientId: string): Promise<ImportsScreen> {
@@ -213,11 +213,17 @@ export async function importsScreen(clientId: string): Promise<ImportsScreen> {
     orderBy: { createdAt: "desc" },
     take: HISTORY_SIZE,
   });
-  return { jobs: rows.map(toJob) };
+  const undoable = await undoableJobIds(clientId);
+  return { jobs: rows.map((row) => toJob(row, undoable.has(row.id))) };
 }
 
 export async function importJobOf(clientId: string, id: string): Promise<ImportJob> {
   const row = await prismaClient.importJob.findFirst({ where: { clientId, id } });
   if (!row) throw notFound("Importação não encontrada");
-  return toJob(row);
+  return toJob(row, (await undoableJobIds(clientId)).has(row.id));
+}
+
+export async function undoImportJob(clientId: string, id: string, now: Date): Promise<ImportJob> {
+  await undoImport(clientId, id, now);
+  return importJobOf(clientId, id);
 }

@@ -5,6 +5,7 @@ import {
   type ImportPreview,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
+import { z } from "zod";
 import { ApiRequestError, apiFetch } from "@/shared/dependencies/apiClient";
 
 export type CsvResult<T> = { ok: true; data: T } | { ok: false; message: string };
@@ -49,6 +50,25 @@ export const previewImportFn = createServerFn({ method: "POST" })
       "Não foi possível ler o arquivo agora. Tente novamente.",
     ),
   );
+
+const idSchema = z.object({ id: z.string().min(1) });
+
+export const undoImportFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data }): Promise<CsvResult<ImportJob>> => {
+    try {
+      const job = await apiFetch<ImportJob>(`/imports/${encodeURIComponent(data.id)}/undo`, {
+        method: "POST",
+      });
+      return { ok: true, data: job };
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status < 500) {
+        return { ok: false, message: error.body.message };
+      }
+      console.error(error);
+      return { ok: false, message: "Não foi possível desfazer agora. Tente novamente." };
+    }
+  });
 
 export const uploadImportFn = createServerFn({ method: "POST" })
   .validator(csvInput)

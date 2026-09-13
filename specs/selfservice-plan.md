@@ -33,8 +33,8 @@ gaps, in the order a real client meets them.
 5. **Undo = LIFO, with snapshots.** While writing, an import records in `import_undo` what it
    touched: created rows (`previous = null`) and the JSON of rows it replaced. Only the most
    recent non-undone job of each kind can be undone (a later import may have overwritten the
-   same keys); when a new job of the same kind finishes, the undo rows of older jobs are
-   purged. Undo deletes the created rows and restores the replaced ones; customers and
+   same keys); the snapshots of the three most recent jobs per kind are kept, so undoing
+   twice in a row works; older ones are purged when a new job finishes. Undo deletes the created rows and restores the replaced ones; customers and
    products created by an orders import are deleted only when nothing else references them.
 
 ## Stages
