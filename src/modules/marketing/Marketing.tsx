@@ -1,23 +1,110 @@
 import { Link } from "@tanstack/react-router";
 import { AlertBanner } from "@/shared/ui/AlertBanner";
+import { ChannelToggle } from "@/shared/ui/ChannelToggle";
+import { PageHeader } from "@/shared/ui/PageHeader";
+import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { SectionPage } from "@/shared/ui/SectionPage";
+import { TabBar } from "@/shared/ui/TabBar";
 import type { Pillar } from "@/shared/ui/PillarCard";
 import type { Metric } from "@/shared/ui/metricTile.types";
-import { formatCurrency, formatPercent } from "@/shared/utils/format";
+import { metricToTile } from "@/shared/ui/metricToTile";
+import { usePeriod } from "@/shared/hooks/usePeriod";
+import { layout } from "@/shared/styles/spacing";
+import { cn } from "@/shared/utils/cn";
+import { formatCurrency, formatPeriodLabel, formatPercent } from "@/shared/utils/format";
+import type { MetricValue } from "@/shared/models/types/metric.types";
 import { CreativePresence } from "./CreativePresence";
+import type { MarketingOverview, MarketingRetention, MarketingScreen } from "./marketing.types";
+import { MarketingCampanhas } from "./MarketingCampanhas";
+import { MarketingDescontos } from "./MarketingDescontos";
 import { marketingSection } from "./marketingFixture";
+import { MarketingResumo } from "./MarketingResumo";
+import { useMarketingSearch } from "./useMarketingSearch";
 
-/**
- * What the Retenção pillar needs from the customer base. Declared here (the
- * consumer) and filled by the route from the customers contract, so marketing
- * never imports customers - customers already depends on marketing for the
- * ad spend behind CAC, and the cycle ratchet is at zero.
- */
-export type MarketingRetention = { repurchaseRate90: number | null; ltv12Months: number | null };
+const tabs = [
+  { key: "visao", label: "Visão" },
+  { key: "resumo", label: "Resumo" },
+  { key: "campanhas", label: "Campanhas" },
+  { key: "descontos", label: "Descontos" },
+] as const;
 
-/** Fixture KPIs of the Retenção pillar replaced by the live base. */
-function withLiveKpis(kpis: Metric[], retention: MarketingRetention): Metric[] {
+type LiveKpi = {
+  metric: MetricValue;
+  goodWhen: "up" | "down";
+  fidelity: Metric["fidelity"];
+  fidelityNote: string;
+  subNote?: string;
+};
+
+/** Which fixture KPI each computed value replaces, by label. */
+function liveKpis(overview: MarketingOverview): Record<string, LiveKpi> {
+  return {
+    "Taxa de conversão": {
+      metric: overview.conversionRate,
+      goodWhen: "up",
+      fidelity: "A",
+      fidelityNote: "Nível A — pedidos pagos da loja sobre as sessões do site.",
+    },
+    "Ticket médio": {
+      metric: overview.aov,
+      goodWhen: "up",
+      fidelity: "A",
+      fidelityNote: "Nível A — receita dividida por pedidos pagos.",
+    },
+    "Abandono de carrinho": {
+      metric: overview.cartAbandonment,
+      goodWhen: "down",
+      fidelity: "B",
+      fidelityNote: "Nível B — carrinhos sem pedido pago; eventos com perda parcial no mobile.",
+    },
+    CAC: {
+      metric: overview.cac,
+      goodWhen: "down",
+      fidelity: "B",
+      fidelityNote: "Nível B — investimento em marketing dividido por novos clientes.",
+    },
+    "ROAS geral": {
+      metric: overview.roas,
+      goodWhen: "up",
+      fidelity: "B",
+      fidelityNote: "Nível B — receita total sobre o investimento em marketing.",
+    },
+    "Investimento em mídia": {
+      metric: overview.adSpend,
+      goodWhen: "down",
+      fidelity: "A",
+      fidelityNote: "Nível A — mídia paga das plataformas mais as regras de custo de marketing.",
+    },
+    "Participação do maior canal": {
+      metric: overview.topChannelShare,
+      goodWhen: "down",
+      fidelity: "A",
+      fidelityNote: "Nível A — receita paga por origem / meio.",
+      ...(overview.topChannel ? { subNote: overview.topChannel } : {}),
+    },
+  };
+}
+
+/** Fixture KPIs replaced by the live base where the data module already covers them. */
+function withLiveKpis(
+  kpis: Metric[],
+  live: Record<string, LiveKpi>,
+  retention: MarketingRetention,
+  comparisonLabel: string,
+): Metric[] {
   return kpis.map((kpi) => {
+    const l = live[kpi.label];
+    if (l && l.metric.value != null) {
+      const tile = metricToTile({
+        label: kpi.label,
+        metric: l.metric,
+        comparisonLabel,
+        goodWhen: l.goodWhen,
+        fidelity: l.fidelity,
+        fidelityNote: l.fidelityNote,
+      });
+      return l.subNote ? { ...tile, subNote: l.subNote } : tile;
+    }
     if (kpi.label === "Recompra 90 dias" && retention.repurchaseRate90 != null) {
       return {
         ...kpi,
@@ -40,12 +127,21 @@ function withLiveKpis(kpis: Metric[], retention: MarketingRetention): Metric[] {
   });
 }
 
-export function Marketing({ retention }: { retention: MarketingRetention }) {
+function MarketingVisao({
+  overview,
+  retention,
+  comparisonLabel,
+}: {
+  overview: MarketingOverview;
+  retention: MarketingRetention;
+  comparisonLabel: string;
+}) {
+  const live = liveKpis(overview);
   const section = {
     ...marketingSection,
     pillars: marketingSection.pillars.map((pillar) => ({
       ...pillar,
-      kpis: withLiveKpis(pillar.kpis, retention),
+      kpis: withLiveKpis(pillar.kpis, live, retention, comparisonLabel),
     })),
   };
   return (
@@ -69,5 +165,65 @@ export function Marketing({ retention }: { retention: MarketingRetention }) {
         pillar.extra === "creative-presence" ? <CreativePresence /> : null
       }
     />
+  );
+}
+
+export function Marketing({
+  data,
+  retention,
+}: {
+  data: MarketingScreen;
+  retention: MarketingRetention;
+}) {
+  const { period, setPeriod, comparison } = usePeriod();
+  const { search, patch } = useMarketingSearch();
+  const comparisonLabel = comparison
+    ? `vs ${formatPeriodLabel(comparison.inicio, comparison.fim)}`
+    : "sem comparação";
+
+  return (
+    <div className={layout.page}>
+      {data.aba !== "visao" && (
+        <PageHeader
+          title="Marketing"
+          subtitle={`Mídia, funil e cupons em ${formatPeriodLabel(period.inicio, period.fim)} · Loja Aurora`}
+        />
+      )}
+
+      <div className={cn(data.aba !== "visao" && layout.headerGap, layout.blockStack)}>
+        <div className="flex flex-wrap items-center gap-2">
+          <PeriodSelector value={period} onChange={setPeriod} />
+          <ChannelToggle value={period.canal} onChange={(canal) => setPeriod({ canal })} />
+        </div>
+
+        <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
+
+        {data.aba === "visao" && (
+          <MarketingVisao
+            overview={data.overview}
+            retention={retention}
+            comparisonLabel={comparisonLabel}
+          />
+        )}
+        {data.aba === "resumo" && (
+          <MarketingResumo data={data.summary} search={search} period={period} onPatch={patch} />
+        )}
+        {data.aba === "campanhas" && (
+          <MarketingCampanhas
+            data={data.campaigns}
+            search={search}
+            period={period}
+            onPatch={patch}
+          />
+        )}
+        {data.aba === "descontos" && (
+          <MarketingDescontos
+            data={data.discounts}
+            period={period}
+            comparisonLabel={comparisonLabel}
+          />
+        )}
+      </div>
+    </div>
   );
 }

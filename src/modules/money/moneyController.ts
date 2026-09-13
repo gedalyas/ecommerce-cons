@@ -12,7 +12,13 @@ import {
   moneySearchSchema,
   type MoneySearch,
 } from "./moneySchema";
-import { createCost, deleteCost, moneyScreen, updateCost } from "./moneyService";
+import {
+  createCost,
+  deleteCost,
+  marketingCostLines,
+  moneyScreen,
+  updateCost,
+} from "./moneyService";
 
 export const getMoneyScreen = createServerFn({ method: "GET" })
   .validator((input: Partial<PeriodSearch & MoneySearch>) => ({
@@ -32,3 +38,8 @@ export const updateCostRule = createServerFn({ method: "POST" })
 export const deleteCostRule = createServerFn({ method: "POST" })
   .validator((input: unknown) => costIdSchema.parse(input))
   .handler(async ({ data }) => deleteCost(PROTOTYPE_CLIENT_SLUG, data.id));
+
+/** Marketing cost lines of the period, fed to the Marketing screen by its route. */
+export const getMarketingCostLines = createServerFn({ method: "GET" })
+  .validator((input: Partial<PeriodSearch>) => parsePeriodSearch(input))
+  .handler(async ({ data }) => marketingCostLines(PROTOTYPE_CLIENT_SLUG, data));

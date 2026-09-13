@@ -87,3 +87,11 @@ export type MoneyScreen =
   | { aba: Extract<MoneyTab, "visao">; indicators: DreIndicator[] }
   | { aba: Extract<MoneyTab, "dre">; dre: MoneyDre }
   | { aba: Extract<MoneyTab, "custos">; rules: CostRuleRow[] };
+
+/** A "Vendas e marketing" line accrued over a period, as the Marketing screen consumes it. */
+export type MarketingCostLine = {
+  key: string;
+  label: string;
+  businessUnit: BusinessUnit;
+  amount: number;
+};

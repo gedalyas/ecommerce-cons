@@ -12,11 +12,13 @@ import { metricValue } from "@/shared/utils/metricFormat";
 import type { Channel, PeriodSearch } from "@/shared/utils/period";
 import { bucketWindows, resolvePeriod, truncUnit } from "@/shared/utils/periodWindow";
 import { expandCosts, ruleAmount, type CostWindow } from "./costEngine";
+import { subcategoryLabel } from "./costTaxonomy";
 import { computeDre, computeDreIndicators, type DreFacts } from "./dre";
 import {
   dreLineKeys,
   type CostRule,
   type CostRuleRow,
+  type MarketingCostLine,
   type DreIndicator,
   type DreIndicatorKey,
   type DreLineKey,
@@ -287,6 +289,46 @@ export async function moneyDre(clientId: string, search: PeriodSearch): Promise<
       })),
     },
   };
+}
+
+/**
+ * What the "Vendas e marketing" rules accrue over the period, one line per
+ * subcategory and business unit. Marketing reads it through the route: money
+ * already depends on marketing for the ad spend, so the arrow cannot go back.
+ */
+export async function marketingCostLines(
+  clientSlug: string,
+  search: PeriodSearch,
+): Promise<MarketingCostLine[]> {
+  const clientId = await clientIdFor(clientSlug);
+  const period = resolvePeriod(search);
+  const [rules, orders, ads] = await Promise.all([
+    costRulesFor(clientId),
+    ordersAggregate(clientId, period.current, null),
+    adSpendAggregate(clientId, period.current),
+  ]);
+  const calendar = { inicio: search.inicio, fim: search.fim };
+  const activity = {
+    ecommerce: orders.ecommerce,
+    marketplace: orders.marketplace,
+    adSpend: ads.spend,
+  };
+  const lines = new Map<string, MarketingCostLine>();
+  for (const rule of rules) {
+    if (rule.category !== "SALES_MARKETING") continue;
+    const amount = ruleAmount(rule, calendar, activity);
+    if (amount <= 0) continue;
+    const key = `${rule.subcategory}:${rule.businessUnit}`;
+    const line = lines.get(key) ?? {
+      key,
+      label: subcategoryLabel("SALES_MARKETING", rule.subcategory),
+      businessUnit: rule.businessUnit,
+      amount: 0,
+    };
+    line.amount += amount;
+    lines.set(key, line);
+  }
+  return [...lines.values()].sort((a, b) => b.amount - a.amount);
 }
 
 export async function moneyScreen(

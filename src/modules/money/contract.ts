@@ -1,6 +1,12 @@
 export { Money } from "./Money";
 export { moneySection } from "./moneyFixture";
-export { getMoneyScreen } from "./moneyController";
+export { getMarketingCostLines, getMoneyScreen } from "./moneyController";
 export { defaultMoneySearch, moneySearchSchema } from "./moneySchema";
 export { expandCosts } from "./costEngine";
-export type { CostActivity, CostRule, CostTotals, MoneyScreen } from "./money.types";
+export type {
+  CostActivity,
+  CostRule,
+  CostTotals,
+  MarketingCostLine,
+  MoneyScreen,
+} from "./money.types";
