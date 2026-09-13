@@ -4,6 +4,7 @@ import { blingProvider } from "./blingProvider";
 import type { ConnectorProvider, ProviderRegistry } from "./connectorProvider.types";
 import { ga4Provider } from "./ga4Provider";
 import { googleAdsProvider } from "./googleAdsProvider";
+import { metaAdsProvider } from "./metaAdsProvider";
 import { nuvemshopProvider } from "./nuvemshopProvider";
 
 function nuvemshopOf(env: Env): ConnectorProvider[] {
@@ -60,7 +61,21 @@ function googleOf(env: Env): ConnectorProvider[] {
   ];
 }
 
+function metaOf(env: Env): ConnectorProvider[] {
+  if (!env.META_APP_ID || !env.META_APP_SECRET) return [];
+  return [
+    metaAdsProvider({
+      appId: env.META_APP_ID,
+      appSecret: env.META_APP_SECRET,
+      authUrl: env.META_AUTH_URL,
+      graphUrl: env.META_GRAPH_URL,
+      userAgent: env.CONNECTOR_USER_AGENT,
+      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+    }),
+  ];
+}
+
 export function providersOf(env: Env): ProviderRegistry {
-  const providers = [...nuvemshopOf(env), ...blingOf(env), ...googleOf(env)];
+  const providers = [...nuvemshopOf(env), ...blingOf(env), ...googleOf(env), ...metaOf(env)];
   return new Map<ConnectorKey, ConnectorProvider>(providers.map((p) => [p.key, p]));
 }

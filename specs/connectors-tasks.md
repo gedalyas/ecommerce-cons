@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **K0–K4 done, K5 (Meta) next** — last updated 2026-09-13
+Status: **K0–K5 done, K6 next** — last updated 2026-09-13
 
 ---
 
@@ -108,8 +108,14 @@ Status: **K0–K4 done, K5 (Meta) next** — last updated 2026-09-13
 
 ## K5 — Meta Ads
 
-- [ ] Facebook Login, long-lived token + refresh, ad account picker, daily insights →
-      `AdSpendRow`, region breakdown
+- [x] `metaAdsProvider`: Facebook Login dialog (`ads_read,read_insights`), code → short
+      token → **long-lived** token (60 days, renewed by a new exchange when under 7 days
+      left), ad accounts from `/me/adaccounts` as the account picker (auto-chosen when only
+      one), daily insights at ad level in 31-day chunks following `paging.next`; pure
+      `metaAdsRows` (purchase actions → conversions, purchase values → attributed revenue)
+- [x] Flow (`e2e_meta.mjs` + `meta_stub.mjs` on :4013): Conectar → dialog → callback →
+      long-lived exchange → single account chosen → backfill with paging → campaign row on
+      /marketing (spend 300, 12 conversions)
 
 ## K6 — Shopify, TikTok
 

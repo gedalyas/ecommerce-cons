@@ -37,6 +37,10 @@ const envSchema = z.object({
   GOOGLE_ADS_LOGIN_CUSTOMER_ID: z.string().default(""),
   GA4_DATA_API_URL: z.string().url().default("https://analyticsdata.googleapis.com/v1beta"),
   GA4_ADMIN_API_URL: z.string().url().default("https://analyticsadmin.googleapis.com/v1beta"),
+  META_APP_ID: z.string().default(""),
+  META_APP_SECRET: z.string().default(""),
+  META_AUTH_URL: z.string().url().default("https://www.facebook.com/v21.0/dialog/oauth"),
+  META_GRAPH_URL: z.string().url().default("https://graph.facebook.com/v21.0"),
   MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
   SMTP_URL: z
     .string()
