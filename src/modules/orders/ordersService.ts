@@ -1,18 +1,53 @@
 /**
- * Orders orchestrator: the only file of the module that touches Prisma.
- * Every function takes a client id and a half-open window and returns plain
- * numbers; the screens' shapes are assembled by their own services. Server-only.
+ * Orders orchestrator: the only file of the module that touches Prisma for
+ * aggregates. Every function takes a client id, a half-open window and the
+ * optional row filters; the screens' shapes are assembled by the other
+ * services of the module. Server-only.
  */
 import { Prisma } from "@/generated/prisma/client";
 import type { SalesPlatform } from "@/generated/prisma/enums";
 import { prismaClient } from "@/shared/dependencies/prismaClient";
 import type { BreakdownSlice } from "@/shared/models/types/metric.types";
 import { isoDay, type Window } from "@/shared/utils/periodWindow";
-import type { OrdersAggregate, OrdersBucket } from "./orders.types";
+import type { OrdersAggregate, OrdersBucket, OrdersFilters } from "./orders.types";
 
-/** SQL fragment restricting to one sales platform, or nothing for all. */
-const platformFilter = (platform: SalesPlatform | null) =>
-  platform ? Prisma.sql`and sales_platform = ${platform}::sales_platform` : Prisma.empty;
+/** SQL condition for the store/marketplace split, or nothing for all. */
+export const platformFilter = (platform: SalesPlatform | null) =>
+  platform ? Prisma.sql`and o.sales_platform = ${platform}::sales_platform` : Prisma.empty;
+
+/** The traffic source of an order as the screens label it. */
+export const sourceExpression = Prisma.sql`
+  case when o.sales_platform = 'MARKETPLACE' then o.channel
+       else coalesce(o.utm_source, '(direct)') || ' / ' || coalesce(o.utm_medium, '(none)') end`;
+
+const inList = (column: Prisma.Sql, values: string[]) =>
+  values.length ? Prisma.sql`and ${column} = any(${values}::text[])` : Prisma.empty;
+
+/** Row filters of the Pedidos screens; `busca` needs the customer join, so it is separate. */
+export const rowFilters = (filters: OrdersFilters | null) => {
+  if (!filters) return Prisma.empty;
+  return Prisma.sql`
+    ${inList(Prisma.sql`(${sourceExpression})`, filters.origem)}
+    ${inList(Prisma.sql`o.financial_status::text`, filters.status)}
+    ${inList(Prisma.sql`o.payment_gateway`, filters.gateway)}
+    ${inList(Prisma.sql`o.processing_method::text`, filters.metodo)}
+    ${filters.cupom.length ? Prisma.sql`and o.discount_codes && ${filters.cupom}::text[]` : Prisma.empty}
+    ${inList(Prisma.sql`o.province`, filters.uf)}
+    ${inList(Prisma.sql`o.city`, filters.cidade)}
+  `;
+};
+
+/** Everything an aggregate query filters on: client, window, platform, row filters. */
+export const ordersWhere = (
+  clientId: string,
+  w: Window,
+  platform: SalesPlatform | null,
+  filters: OrdersFilters | null,
+) => Prisma.sql`
+  o.client_id = ${clientId} and o.placed_at >= ${w.start} and o.placed_at < ${w.end}
+  ${platformFilter(platform)}
+  ${rowFilters(filters)}
+`;
 
 type AggregateRow = {
   revenue: number;
@@ -20,6 +55,9 @@ type AggregateRow = {
   captured: number;
   captured_orders: number;
   repeat_orders: number;
+  items: number;
+  discounts: number;
+  shipping: number;
   ecommerce_orders: number;
   ecommerce_revenue: number;
   marketplace_orders: number;
@@ -33,41 +71,44 @@ const toAggregate = (r: AggregateRow | undefined, cogs: number): OrdersAggregate
   capturedOrders: r?.captured_orders ?? 0,
   cogs,
   repeatOrders: r?.repeat_orders ?? 0,
+  items: r?.items ?? 0,
+  discounts: r?.discounts ?? 0,
+  shipping: r?.shipping ?? 0,
   ecommerce: { orders: r?.ecommerce_orders ?? 0, revenue: r?.ecommerce_revenue ?? 0 },
   marketplace: { orders: r?.marketplace_orders ?? 0, revenue: r?.marketplace_revenue ?? 0 },
 });
 
 const aggregateColumns = Prisma.sql`
-  coalesce(sum(total_price) filter (where financial_status = 'PAID'), 0)::float8 as revenue,
-  count(*) filter (where financial_status = 'PAID')::int as orders,
-  coalesce(sum(total_price), 0)::float8 as captured,
+  coalesce(sum(o.total_price) filter (where o.financial_status = 'PAID'), 0)::float8 as revenue,
+  count(*) filter (where o.financial_status = 'PAID')::int as orders,
+  coalesce(sum(o.total_price), 0)::float8 as captured,
   count(*)::int as captured_orders,
-  count(*) filter (where financial_status = 'PAID' and order_number_for_customer >= 2)::int as repeat_orders,
-  count(*) filter (where financial_status = 'PAID' and sales_platform = 'ECOMMERCE')::int as ecommerce_orders,
-  coalesce(sum(total_price) filter (where financial_status = 'PAID' and sales_platform = 'ECOMMERCE'), 0)::float8 as ecommerce_revenue,
-  count(*) filter (where financial_status = 'PAID' and sales_platform = 'MARKETPLACE')::int as marketplace_orders,
-  coalesce(sum(total_price) filter (where financial_status = 'PAID' and sales_platform = 'MARKETPLACE'), 0)::float8 as marketplace_revenue
+  count(*) filter (where o.financial_status = 'PAID' and o.order_number_for_customer >= 2)::int as repeat_orders,
+  coalesce(sum(o.items_count) filter (where o.financial_status = 'PAID'), 0)::int as items,
+  coalesce(sum(o.total_discounts) filter (where o.financial_status = 'PAID'), 0)::float8 as discounts,
+  coalesce(sum(o.shipping_revenue) filter (where o.financial_status = 'PAID'), 0)::float8 as shipping,
+  count(*) filter (where o.financial_status = 'PAID' and o.sales_platform = 'ECOMMERCE')::int as ecommerce_orders,
+  coalesce(sum(o.total_price) filter (where o.financial_status = 'PAID' and o.sales_platform = 'ECOMMERCE'), 0)::float8 as ecommerce_revenue,
+  count(*) filter (where o.financial_status = 'PAID' and o.sales_platform = 'MARKETPLACE')::int as marketplace_orders,
+  coalesce(sum(o.total_price) filter (where o.financial_status = 'PAID' and o.sales_platform = 'MARKETPLACE'), 0)::float8 as marketplace_revenue
 `;
 
 export async function ordersAggregate(
   clientId: string,
   w: Window,
   platform: SalesPlatform | null,
+  filters: OrdersFilters | null = null,
 ): Promise<OrdersAggregate> {
+  const where = ordersWhere(clientId, w, platform, filters);
   const [rows, cogs] = await Promise.all([
     prismaClient.$queryRaw<AggregateRow[]>`
-      select ${aggregateColumns}
-      from sales_order
-      where client_id = ${clientId} and placed_at >= ${w.start} and placed_at < ${w.end}
-        ${platformFilter(platform)}
+      select ${aggregateColumns} from sales_order o where ${where}
     `,
     prismaClient.$queryRaw<{ cogs: number }[]>`
       select coalesce(sum(i.quantity * i.unit_cost), 0)::float8 as cogs
       from order_item i
       join sales_order o on o.id = i.order_id
-      where o.client_id = ${clientId} and o.financial_status = 'PAID'
-        and o.placed_at >= ${w.start} and o.placed_at < ${w.end}
-        ${platformFilter(platform)}
+      where ${where} and o.financial_status = 'PAID'
     `,
   ]);
   return toAggregate(rows[0], cogs[0]?.cogs ?? 0);
@@ -78,13 +119,14 @@ export async function ordersByBucket(
   w: Window,
   unit: string,
   platform: SalesPlatform | null,
+  filters: OrdersFilters | null = null,
 ): Promise<OrdersBucket[]> {
+  const where = ordersWhere(clientId, w, platform, filters);
   const [rows, cogsRows] = await Promise.all([
     prismaClient.$queryRaw<(AggregateRow & { bucket: Date })[]>`
-      select date_trunc(${unit}, placed_at) as bucket, ${aggregateColumns}
-      from sales_order
-      where client_id = ${clientId} and placed_at >= ${w.start} and placed_at < ${w.end}
-        ${platformFilter(platform)}
+      select date_trunc(${unit}, o.placed_at) as bucket, ${aggregateColumns}
+      from sales_order o
+      where ${where}
       group by 1
       order by 1
     `,
@@ -93,9 +135,7 @@ export async function ordersByBucket(
         coalesce(sum(i.quantity * i.unit_cost), 0)::float8 as cogs
       from order_item i
       join sales_order o on o.id = i.order_id
-      where o.client_id = ${clientId} and o.financial_status = 'PAID'
-        and o.placed_at >= ${w.start} and o.placed_at < ${w.end}
-        ${platformFilter(platform)}
+      where ${where} and o.financial_status = 'PAID'
       group by 1
     `,
   ]);
@@ -113,14 +153,9 @@ export async function revenueBySource(
   platform: SalesPlatform | null,
 ): Promise<BreakdownSlice[]> {
   const rows = await prismaClient.$queryRaw<{ source: string; value: number }[]>`
-    select
-      case when sales_platform = 'MARKETPLACE' then channel
-           else coalesce(utm_source, '(direct)') || ' / ' || coalesce(utm_medium, '(none)') end as source,
-      coalesce(sum(total_price), 0)::float8 as value
-    from sales_order
-    where client_id = ${clientId} and financial_status = 'PAID'
-      and placed_at >= ${w.start} and placed_at < ${w.end}
-      ${platformFilter(platform)}
+    select ${sourceExpression} as source, coalesce(sum(o.total_price), 0)::float8 as value
+    from sales_order o
+    where ${ordersWhere(clientId, w, platform, null)} and o.financial_status = 'PAID'
     group by 1
     order by 2 desc
   `;

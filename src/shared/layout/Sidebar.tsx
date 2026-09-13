@@ -5,6 +5,7 @@ import {
   Megaphone,
   MessageSquare,
   Plug,
+  ShoppingBag,
   Truck,
   Building2,
 } from "lucide-react";
@@ -19,6 +20,8 @@ const mainItems = [
   { label: "Logística", to: "/logistica", icon: Truck },
   { label: "Gestão", to: "/gestao", icon: Building2 },
 ];
+
+const dataItems = [{ label: "Pedidos", to: "/pedidos", icon: ShoppingBag }];
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -49,6 +52,27 @@ export function Sidebar() {
         <div className="t-label hidden px-3 pb-2 pt-2 text-muted-foreground xl:block">Áreas</div>
         <ul>
           {mainItems.map((item) => (
+            <li key={item.to}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to={item.to} className={linkClass(pathname === item.to)}>
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    <span className="hidden truncate xl:inline">{item.label}</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="xl:hidden">
+                  {item.label}
+                </TooltipContent>
+              </Tooltip>
+            </li>
+          ))}
+        </ul>
+
+        <div className="my-3 border-t border-sidebar-border" />
+
+        <div className="t-label hidden px-3 pb-2 text-muted-foreground xl:block">Dados</div>
+        <ul>
+          {dataItems.map((item) => (
             <li key={item.to}>
               <Tooltip>
                 <TooltipTrigger asChild>

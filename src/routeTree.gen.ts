@@ -16,6 +16,7 @@ import { Route as moneyRouteImport } from './routes/money'
 import { Route as managementRouteImport } from './routes/management'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as marketingRouteImport } from './routes/marketing'
+import { Route as ordersRouteImport } from './routes/orders'
 
 const dashboardRoute = dashboardRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const marketingRoute = marketingRouteImport.update({
   path: '/marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ordersRoute = ordersRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/gestao': typeof managementRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
+  '/pedidos': typeof ordersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/gestao': typeof managementRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
+  '/pedidos': typeof ordersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/gestao': typeof managementRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
+  '/pedidos': typeof ordersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/gestao'
     | '/logistica'
     | '/marketing'
+    | '/pedidos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/gestao'
     | '/logistica'
     | '/marketing'
+    | '/pedidos'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/gestao'
     | '/logistica'
     | '/marketing'
+    | '/pedidos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   managementRoute: typeof managementRoute
   logisticsRoute: typeof logisticsRoute
   marketingRoute: typeof marketingRoute
+  ordersRoute: typeof ordersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof marketingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pedidos': {
+      id: '/pedidos'
+      path: '/pedidos'
+      fullPath: '/pedidos'
+      preLoaderRoute: typeof ordersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   managementRoute: managementRoute,
   logisticsRoute: logisticsRoute,
   marketingRoute: marketingRoute,
+  ordersRoute: ordersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
