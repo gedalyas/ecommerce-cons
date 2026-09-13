@@ -1,6 +1,6 @@
 # Commercial flow — subscription (Guru) and contract (ZapSign)
 
-Status: **approved 2026-09-13, in execution** — board in `commercial-tasks.md`. Vendor
+Status: **paused after B2 (2026-09-13)** — the Guru webhooks and the subscription model are in; the gate, the screens and the ZapSign contract wait for the decision on a separate CRM project. Board in `commercial-tasks.md`. Vendor
 behaviour taken from the Arko CRM integration, documented in
 `reference/arko-integracoes-guru-zapsign.md` (webhook shapes, validation, retries).
 

@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B0–B2 done, B3 next** — last updated 2026-09-13
+Status: **paused at B2 (2026-09-13)** — B0–B2 done; B3–B5 unscheduled while the consultancy decides whether administration moves to a separate CRM project — last updated 2026-09-13
 
 ---
 
