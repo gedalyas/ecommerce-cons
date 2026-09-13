@@ -16,7 +16,6 @@ import { Route as moneyRouteImport } from './routes/money'
 import { Route as managementRouteImport } from './routes/management'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as marketingRouteImport } from './routes/marketing'
-import { Route as devOrdersRouteImport } from './routes/devOrders'
 
 const dashboardRoute = dashboardRouteImport.update({
   id: '/',
@@ -53,11 +52,6 @@ const marketingRoute = marketingRouteImport.update({
   path: '/marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const devOrdersRoute = devOrdersRouteImport.update({
-  id: '/dev/pedidos',
-  path: '/dev/pedidos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
@@ -67,7 +61,6 @@ export interface FileRoutesByFullPath {
   '/gestao': typeof managementRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
-  '/dev/pedidos': typeof devOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
@@ -77,7 +70,6 @@ export interface FileRoutesByTo {
   '/gestao': typeof managementRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
-  '/dev/pedidos': typeof devOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,7 +80,6 @@ export interface FileRoutesById {
   '/gestao': typeof managementRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
-  '/dev/pedidos': typeof devOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -100,7 +91,6 @@ export interface FileRouteTypes {
     | '/gestao'
     | '/logistica'
     | '/marketing'
-    | '/dev/pedidos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -110,7 +100,6 @@ export interface FileRouteTypes {
     | '/gestao'
     | '/logistica'
     | '/marketing'
-    | '/dev/pedidos'
   id:
     | '__root__'
     | '/'
@@ -120,7 +109,6 @@ export interface FileRouteTypes {
     | '/gestao'
     | '/logistica'
     | '/marketing'
-    | '/dev/pedidos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,7 +119,6 @@ export interface RootRouteChildren {
   managementRoute: typeof managementRoute
   logisticsRoute: typeof logisticsRoute
   marketingRoute: typeof marketingRoute
-  devOrdersRoute: typeof devOrdersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -185,13 +172,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof marketingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dev/pedidos': {
-      id: '/dev/pedidos'
-      path: '/dev/pedidos'
-      fullPath: '/dev/pedidos'
-      preLoaderRoute: typeof devOrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -203,7 +183,6 @@ const rootRouteChildren: RootRouteChildren = {
   managementRoute: managementRoute,
   logisticsRoute: logisticsRoute,
   marketingRoute: marketingRoute,
-  devOrdersRoute: devOrdersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

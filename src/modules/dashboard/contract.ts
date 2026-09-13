@@ -1,4 +1,5 @@
 export { Dashboard } from "./Dashboard";
+export { getDashboardOverview } from "./dashboardController";
 export {
   alerts,
   dashboardKpis,
@@ -6,3 +7,4 @@ export {
   monthlySeries,
   openRecommendations,
 } from "./dashboardFixture";
+export type { DashboardOverview } from "./dashboard.types";

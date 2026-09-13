@@ -33,7 +33,11 @@ export default defineConfig(({ command }) => ({
       importProtection: {
         behavior: "error",
         client: {
-          files: ["**/shared/dependencies/**", "**/modules/*/*Service.ts"],
+          files: [
+            "**/shared/dependencies/**",
+            "**/modules/*/*Service.ts",
+            "**/modules/*/contract.server.ts",
+          ],
           specifiers: ["server-only"],
         },
       },

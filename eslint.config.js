@@ -36,15 +36,15 @@ const sharedKnowsNoDomain = {
 };
 
 const moduleExposesOnlyContract = {
-  regex: "(^|/)modules/(?!\\w+/contract(\\.ts)?$)",
+  regex: "(^|/)modules/(?!\\w+/contract(\\.server)?(\\.ts)?$)",
   message:
-    "A module only exposes contract.ts. Import from @/modules/<domain>/contract or add the line there.",
+    "A module only exposes contract.ts (isomorphic) and contract.server.ts (server-only). Import from @/modules/<domain>/contract[.server] or add the line there.",
 };
 
 const insideModuleIsRelative = {
-  regex: "^@/modules/(?!\\w+/contract(\\.ts)?$)",
+  regex: "^@/modules/(?!\\w+/contract(\\.server)?(\\.ts)?$)",
   message:
-    "Inside a module the import is relative (./file). From another module, only @/modules/<domain>/contract.",
+    "Inside a module the import is relative (./file). From another module, only @/modules/<domain>/contract or contract.server.",
 };
 
 const crossingUsesAlias = (depth) => ({

@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Dashboard } from "@/modules/dashboard/contract";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { Dashboard, getDashboardOverview } from "@/modules/dashboard/contract";
+import { RequestError } from "@/shared/ui/RequestError";
+import { layout } from "@/shared/styles/spacing";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,5 +20,22 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: Dashboard,
+  loaderDeps: ({ search }) => search,
+  loader: ({ deps }) => getDashboardOverview({ data: deps }),
+  component: RouteComponent,
+  errorComponent: RouteError,
 });
+
+function RouteComponent() {
+  const data = Route.useLoaderData();
+  return <Dashboard data={data} />;
+}
+
+function RouteError() {
+  const router = useRouter();
+  return (
+    <div className={layout.page}>
+      <RequestError className="mt-6" onRetry={() => void router.invalidate()} />
+    </div>
+  );
+}
