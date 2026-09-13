@@ -1,11 +1,11 @@
 # Marketing (`/marketing`)
 
 Module: `src/modules/marketing`. The route validates
-`?aba=visao|resumo|campanhas|descontos` plus the tab controls
+`?aba=visao|resumo|campanhas|descontos|regioes` plus the tab controls
 (`marketingSchema.ts`: `incluirTaxa`, `metricaInvest`, `metricaSessoes`,
 `base`, `utm`, `nivel`, `plataforma`, `metricaAds`); defaults are stripped
 from the URL. `MarketingScreen` is a union on `aba`. The `TabBar` reads
-**Visão · Resumo · Campanhas · Descontos**; the period and channel controls
+**Visão · Resumo · Campanhas · Descontos · Regiões**; the period and channel controls
 sit above it on every tab.
 
 ## Composition root
@@ -118,6 +118,22 @@ Paid orders with at least one code in `discount_codes` (`discountsService.ts`).
 3. **Cupons** — one row per code: Pedidos · Primeiras compras (orders that
    were the customer's first, i.e. the new customers the coupon brought) ·
    Receita · Desconto concedido · Desconto médio · Ticket médio. CSV.
+
+## Regiões (`?aba=regioes`)
+
+Where the media converts best, by UF. Media comes from `ad_spend_region_daily`, the geographic
+breakdown of the paid media per day and platform (seeded by splitting each day's platform
+totals across the 27 UFs with the store's regional weights and a ROAS factor per state); sales
+are the paid store orders by delivery UF, with buyers, new buyers and repeat orders.
+`regionPerformance.ts` (tested) joins the two and derives the ratios.
+
+1. **Big numbers** — Gasto total · ROAS geral (with the quality band) · Melhor ROAS · Pior
+   ROAS (among states with spend).
+2. **Mapa** — `BrazilTileMap` coloured by `mapa` (ROAS · Total vendido · Gasto total · CAC);
+   the "Incluir taxa da plataforma" checkbox is shared with the other tabs.
+3. **Desempenho regional** — Estado · Investimento Meta · Google · TikTok · Gasto total ·
+   Total vendido · ROAS · CPM · CPC · CPA · CAC · Clientes · Ticket médio · Taxa de recompra,
+   with a total row. CSV.
 
 ## Fidelity
 

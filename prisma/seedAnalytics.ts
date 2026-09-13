@@ -1810,6 +1810,95 @@ function buildAdSpend(rng: Rng, clientId: string, orders: OrderRow[]) {
   return rows;
 }
 
+type AdSpendRegionRow = {
+  clientId: string;
+  date: Date;
+  platform: AdPlatform;
+  province: string;
+  spend: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  attributedRevenue: number;
+};
+
+const REGION_ROAS_FACTOR: Record<string, number> = {
+  SP: 1.15,
+  RJ: 1.05,
+  MG: 1.0,
+  PR: 1.08,
+  RS: 1.02,
+  SC: 1.1,
+  DF: 0.95,
+  GO: 0.9,
+  ES: 0.97,
+  BA: 0.85,
+  PE: 0.82,
+  CE: 0.8,
+};
+
+const sumAdSpend = (rows: AdSpendRow[]) =>
+  rows.reduce(
+    (acc, r) => ({
+      spend: acc.spend + r.spend,
+      impressions: acc.impressions + r.impressions,
+      clicks: acc.clicks + r.clicks,
+      conversions: acc.conversions + r.conversions,
+      attributedRevenue: acc.attributedRevenue + r.attributedRevenue,
+    }),
+    { spend: 0, impressions: 0, clicks: 0, conversions: 0, attributedRevenue: 0 },
+  );
+
+function splitDayAcrossRegions(
+  rng: Rng,
+  clientId: string,
+  rowsOfDay: AdSpendRow[],
+): AdSpendRegionRow[] {
+  const first = rowsOfDay[0]!;
+  const total = sumAdSpend(rowsOfDay);
+  const weightSum = UF_WEIGHTS.reduce((s, [, w]) => s + w, 0);
+  const shares = UF_WEIGHTS.map(([uf, w]) => [uf, (w / weightSum) * rng.noise(0.12)] as const);
+  const shareSum = shares.reduce((s, [, v]) => s + v, 0);
+  const revenueWeights = shares.map(
+    ([uf, v]) => [uf, v * (REGION_ROAS_FACTOR[uf] ?? 0.75)] as const,
+  );
+  const revenueSum = revenueWeights.reduce((s, [, v]) => s + v, 0);
+  const rows: AdSpendRegionRow[] = [];
+  shares.forEach(([uf, v], i) => {
+    const share = v / shareSum;
+    const revenueShare = revenueWeights[i]![1] / revenueSum;
+    const spend = round2(total.spend * share);
+    if (spend <= 0) return;
+    rows.push({
+      clientId,
+      date: first.date,
+      platform: first.platform,
+      province: uf,
+      spend,
+      impressions: Math.round(total.impressions * share),
+      clicks: Math.round(total.clicks * share),
+      conversions: Math.round(total.conversions * revenueShare),
+      attributedRevenue: round2(total.attributedRevenue * revenueShare),
+    });
+  });
+  return rows;
+}
+
+function buildAdSpendRegions(
+  rng: Rng,
+  clientId: string,
+  adSpend: AdSpendRow[],
+): AdSpendRegionRow[] {
+  const byDayPlatform = new Map<string, AdSpendRow[]>();
+  for (const r of adSpend) {
+    const key = `${r.date.toISOString().slice(0, 10)}|${r.platform}`;
+    const list = byDayPlatform.get(key) ?? [];
+    list.push(r);
+    byDayPlatform.set(key, list);
+  }
+  return [...byDayPlatform.values()].flatMap((rows) => splitDayAcrossRegions(rng, clientId, rows));
+}
+
 function buildCosts(clientId: string): CostRow[] {
   const start = FIRST_DAY;
   const row = (
@@ -1901,8 +1990,9 @@ export function generateAnalytics(clientId: string, seed = 20260910) {
   sizeStock(rng, variants);
   const traffic = buildTraffic(rng, clientId, orders);
   const adSpend = buildAdSpend(rng, clientId, orders);
+  const adSpendRegions = buildAdSpendRegions(rng, clientId, adSpend);
   const costs = buildCosts(clientId);
-  return { products, variants, customers, orders, items, traffic, adSpend, costs };
+  return { products, variants, customers, orders, items, traffic, adSpend, adSpendRegions, costs };
 }
 
 async function insertInChunks<T>(
@@ -1914,6 +2004,10 @@ async function insertInChunks<T>(
 }
 
 /** Writes the generated dataset for `clientId`. Assumes the client was just created (no facts yet). */
+export function generateAdSpendRegions(clientId: string) {
+  return generateAnalytics(clientId).adSpendRegions;
+}
+
 export async function seedAnalytics(prisma: PrismaClient, clientId: string) {
   const data = generateAnalytics(clientId);
 
@@ -1932,6 +2026,9 @@ export async function seedAnalytics(prisma: PrismaClient, clientId: string) {
   await insertInChunks(data.adSpend, 2000, (chunk) =>
     prisma.adSpendDaily.createMany({ data: chunk }),
   );
+  await insertInChunks(data.adSpendRegions, 2000, (chunk) =>
+    prisma.adSpendRegionDaily.createMany({ data: chunk }),
+  );
   await prisma.costExpense.createMany({ data: data.costs });
 
   return {
@@ -1942,6 +2039,7 @@ export async function seedAnalytics(prisma: PrismaClient, clientId: string) {
     items: data.items.length,
     traffic: data.traffic.length,
     adSpend: data.adSpend.length,
+    adSpendRegions: data.adSpendRegions.length,
     costs: data.costs.length,
   };
 }

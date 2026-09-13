@@ -18,6 +18,7 @@ import type { MarketingOverview, MarketingRetention, MarketingScreen } from "./m
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingDescontos } from "./MarketingDescontos";
 import { marketingSection } from "./marketingFixture";
+import { MarketingRegioes } from "./MarketingRegioes";
 import { MarketingResumo } from "./MarketingResumo";
 import { useMarketingSearch } from "./useMarketingSearch";
 
@@ -26,6 +27,7 @@ const tabs = [
   { key: "resumo", label: "Resumo" },
   { key: "campanhas", label: "Campanhas" },
   { key: "descontos", label: "Descontos" },
+  { key: "regioes", label: "Regiões" },
 ] as const;
 
 type LiveKpi = {
@@ -222,6 +224,9 @@ export function Marketing({
             period={period}
             comparisonLabel={comparisonLabel}
           />
+        )}
+        {data.aba === "regioes" && (
+          <MarketingRegioes data={data.regions} search={search} period={period} onPatch={patch} />
         )}
       </div>
     </div>

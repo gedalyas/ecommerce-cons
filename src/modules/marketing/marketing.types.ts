@@ -168,8 +168,36 @@ export type MarketingDiscounts = {
   couponRevenueSeries: SeriesPoint[];
 };
 
+export type RegionPerformanceRow = {
+  province: string;
+  metaSpend: number;
+  googleSpend: number;
+  tiktokSpend: number;
+  totalSpend: number;
+  revenue: number;
+  roas: number | null;
+  cpm: number | null;
+  cpc: number | null;
+  cpa: number | null;
+  cac: number | null;
+  customers: number;
+  averageTicket: number | null;
+  repurchaseRate: number | null;
+  impressions: number;
+  clicks: number;
+  orders: number;
+  newCustomers: number;
+  repeatOrders: number;
+};
+
+export type MarketingRegions = {
+  rows: RegionPerformanceRow[];
+  total: RegionPerformanceRow;
+};
+
 export type MarketingScreen =
   | { aba: Extract<MarketingTab, "visao">; overview: MarketingOverview }
   | { aba: Extract<MarketingTab, "resumo">; summary: MarketingSummary }
   | { aba: Extract<MarketingTab, "campanhas">; campaigns: MarketingCampaigns }
-  | { aba: Extract<MarketingTab, "descontos">; discounts: MarketingDiscounts };
+  | { aba: Extract<MarketingTab, "descontos">; discounts: MarketingDiscounts }
+  | { aba: Extract<MarketingTab, "regioes">; regions: MarketingRegions };

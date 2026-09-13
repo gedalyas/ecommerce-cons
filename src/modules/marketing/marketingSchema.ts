@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const marketingTabs = ["visao", "resumo", "campanhas", "descontos"] as const;
+export const marketingTabs = ["visao", "resumo", "campanhas", "descontos", "regioes"] as const;
 export type MarketingTab = (typeof marketingTabs)[number];
 
 export const investmentMetrics = ["totalSold", "adSpend", "roas", "roi", "cpa", "cac"] as const;
@@ -48,6 +48,7 @@ export const marketingSearchSchema = z.object({
   nivel: z.enum(adLevels).catch("campanha"),
   plataforma: z.enum(adPlatforms).catch("todas"),
   metricaAds: z.enum(adMetrics).catch("revenue"),
+  mapa: z.enum(["roas", "revenue", "totalSpend", "cac"]).catch("roas"),
 });
 
 export type MarketingSearch = z.infer<typeof marketingSearchSchema>;

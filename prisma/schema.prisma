@@ -329,6 +329,27 @@ model AdSpendDaily {
   @@map("ad_spend_daily")
 }
 
+/// Geographic breakdown of the paid media per day and platform (UF of the audience).
+model AdSpendRegionDaily {
+  id                String     @id @default(cuid())
+  clientId          String     @map("client_id")
+  date              DateTime   @db.Date
+  platform          AdPlatform
+  /// Brazilian state code (UF).
+  province          String
+  spend             Decimal    @db.Decimal(12, 2)
+  impressions       Int
+  clicks            Int
+  conversions       Int
+  attributedRevenue Decimal    @map("attributed_revenue") @db.Decimal(12, 2)
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, date, platform, province])
+  @@index([clientId, date])
+  @@map("ad_spend_region_daily")
+}
+
 /// Monthly goal inputs (six drivers); the goals engine derives the other KPIs.
 model Goal {
   id             String   @id @default(cuid())
@@ -385,21 +406,22 @@ model Client {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  sections          Section[]
-  metrics           Metric[]
-  recommendations   Recommendation[]
-  alerts            Alert[]
-  milestoneCriteria MilestoneCriterion[]
-  dataSources       DataSource[]
-  monthlySnapshots  MonthlySnapshot[]
-  assistantMessages AssistantMessage[]
-  products          Product[]
-  customers         Customer[]
-  orders            Order[]
-  trafficDaily      TrafficDaily[]
-  adSpendDaily      AdSpendDaily[]
-  costExpenses      CostExpense[]
-  goals             Goal[]
+  sections           Section[]
+  metrics            Metric[]
+  recommendations    Recommendation[]
+  alerts             Alert[]
+  milestoneCriteria  MilestoneCriterion[]
+  dataSources        DataSource[]
+  monthlySnapshots   MonthlySnapshot[]
+  assistantMessages  AssistantMessage[]
+  products           Product[]
+  customers          Customer[]
+  orders             Order[]
+  trafficDaily       TrafficDaily[]
+  adSpendDaily       AdSpendDaily[]
+  costExpenses       CostExpense[]
+  goals              Goal[]
+  adSpendRegionDaily AdSpendRegionDaily[]
 
   @@map("client")
 }

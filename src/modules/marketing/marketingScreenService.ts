@@ -20,12 +20,15 @@ import {
   utmSales,
 } from "./attributionService";
 import { discountAggregate, discountCodes, discountsByBucket } from "./discountsService";
+import { regionPerformance } from "./regionsService";
+import { totalOf } from "./regionPerformance";
 import type {
   AdPerformanceRow,
   MarketingCampaigns,
   MarketingCostLine,
   MarketingDiscounts,
   MarketingOverview,
+  MarketingRegions,
   MarketingScreen,
   MarketingSummary,
 } from "./marketing.types";
@@ -389,5 +392,16 @@ export async function marketingScreen(
       return { aba: "campanhas", campaigns: await marketingCampaigns(clientId, input) };
     case "descontos":
       return { aba: "descontos", discounts: await marketingDiscounts(clientId, input) };
+    case "regioes":
+      return { aba: "regioes", regions: await marketingRegions(clientId, input) };
   }
+}
+
+async function marketingRegions(
+  clientId: string,
+  input: MarketingInput,
+): Promise<MarketingRegions> {
+  const period = resolvePeriod(input);
+  const rows = await regionPerformance(clientId, period.current, input.incluirTaxa);
+  return { rows, total: totalOf(rows) };
 }

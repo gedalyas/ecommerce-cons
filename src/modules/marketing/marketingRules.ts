@@ -6,6 +6,8 @@ export type RoasQuality = "alto" | "medio" | "baixo";
 
 export const roasBands = { high: 5, low: 2 } as const;
 
+export const platformFeeRate = 0.015;
+
 export const roasQualityLabel: Record<RoasQuality, string> = {
   alto: "Alto (ROAS > 5)",
   medio: "Médio (ROAS 2 a 5)",
