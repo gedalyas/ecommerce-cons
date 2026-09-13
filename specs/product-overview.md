@@ -48,3 +48,9 @@ questions grounded in the client's own numbers.
 
 The sidebar shows "E-commerce Insights" and the active store's name. The
 repository/package name is `ecommerce-insights`.
+
+## Commercial stack (decided, not built)
+
+Payment and subscription through **Digital Manager Guru**, the consulting contract signed
+through **ZapSign**; the intended flow (sale → invitation → onboarding → contract → access
+gate) is in [commercial-plan.md](commercial-plan.md) and waits for the accounts.
