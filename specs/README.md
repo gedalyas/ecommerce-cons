@@ -8,6 +8,7 @@ because that is what ships.
 | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | [product-overview.md](product-overview.md)                                         | What the product is, personas, scope of the prototype                              |
 | [layout-and-navigation.md](layout-and-navigation.md)                               | App shell, sidebar, responsive behavior, routes                                    |
+| [orders.md](orders.md)                                                             | Pedidos: resumo, aprovação por status/método/gateway, lista transacional           |
 | [dashboard.md](dashboard.md)                                                       | The main screen: KPIs, alerts, maturity milestone, chart                           |
 | [sections.md](sections.md)                                                         | Money / Marketing / Logistics / Management anatomy and pillar data                 |
 | [kpi-fidelity.md](kpi-fidelity.md)                                                 | The KPI component and the A/B/C data-fidelity seal                                 |

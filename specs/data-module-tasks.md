@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 1 done (2026-09-12) — Painel de Controle on live queries; Stage 2 (Pedidos) is next** — last updated 2026-09-12
+Status: **Stage 2 done (2026-09-12) — Pedidos live; Stage 3 (Custos + DRE) is next** — last updated 2026-09-12
 
 ---
 
@@ -174,21 +174,22 @@ contracts.
 
 ## Stage 2 — Pedidos (`/pedidos`)
 
-- [ ] Route `orders.tsx` ↔ `/pedidos` in `src/routes.ts`, sidebar entry,
-      bottom nav decision
-- [ ] Tabs via `?aba=resumo|aprovacao|lista`
-- [ ] **Resumo**: KPI carousel (Receita capturada, Receita paga, Taxa de
-      aprovação, Pedidos, Ticket médio, Itens por pedido, Descontos,
-      Desconto por pedido, Frete)
-- [ ] **Resumo**: "De onde vêm as vendas" donut + table by channel/source
-- [ ] **Aprovação**: three donut+series blocks (status de pagamento, método,
-      gateway)
-- [ ] **Aprovação**: dynamic filter endpoints (only values present in period)
-- [ ] **Lista**: transactional DataTable — search (pedido/cliente/email),
-      filters (canal, origem, status, gateway, método, cupom, UF, cidade)
-- [ ] **Lista**: custo / lucro bruto / margem per order from `OrderItem.unitCost`
-- [ ] CSV on Lista and on the source table
-- [ ] Write `specs/orders.md`
+- [x] Route `orders.tsx` ↔ `/pedidos`, sidebar "Dados" group; bottom nav
+      unchanged (six consulting items) — revisit when Produtos/Clientes land
+- [x] Tabs via `?aba=resumo|aprovacao|lista` (zod route schema, defaults
+      stripped from the URL, one loader payload per tab)
+- [x] **Resumo**: KPI carousel with the nine indicators + comparison series
+      (`ordersSummaryMetrics.ts`, tested)
+- [x] **Resumo**: "De onde vêm as minhas vendas?" donut + table by channel/source
+- [x] **Aprovação**: approval-rate series + three donut+table blocks (status,
+      método, gateway)
+- [x] **Aprovação**: dynamic filter options (only values present in the period)
+- [x] **Lista**: transactional DataTable in remote mode — search, every
+      filter, server-side paging and sorting
+- [x] **Lista**: custo / lucro bruto / margem per order from `OrderItem.unitCost`
+- [x] CSV on Lista (whole result via `getOrdersExport`), on the source table
+      and on the three approval tables
+- [x] Write `specs/orders.md`
 
 ---
 
