@@ -41,43 +41,73 @@ export function DataTable<T>({
   pageSizeOptions = DEFAULT_PAGE_SIZES,
   initialPageSize = pageSizeOptions[0] ?? 10,
   csvFileName,
+  remote,
   emptyMessage = "Não há dados disponíveis para os filtros selecionados.",
   className,
 }: DataTableProps<T>) {
-  const [sort, setSort] = useState<DataTableSort | null>(initialSort ?? null);
-  const [pageSize, setPageSize] = useState(initialPageSize);
-  const [page, setPage] = useState(1);
+  const [localSort, setLocalSort] = useState<DataTableSort | null>(initialSort ?? null);
+  const [localPageSize, setLocalPageSize] = useState(initialPageSize);
+  const [localPage, setLocalPage] = useState(1);
+  const [exporting, setExporting] = useState(false);
+  const sort = remote ? remote.sort : localSort;
+  const pageSize = remote ? remote.pageSize : localPageSize;
+  const page = remote ? remote.page : localPage;
 
   const sorted = useMemo(() => {
-    if (!sort) return rows;
+    if (remote || !sort) return rows;
     const column = columns.find((c) => c.key === sort.key);
     if (!column?.sortValue) return rows;
     const getter = column.sortValue;
     const factor = sort.direction === "asc" ? 1 : -1;
     return [...rows].sort((a, b) => compare(getter(a), getter(b)) * factor);
-  }, [rows, columns, sort]);
+  }, [rows, columns, sort, remote]);
 
-  const pageCount = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const total = remote ? remote.total : sorted.length;
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
   const safePage = Math.min(page, pageCount);
-  const pageRows = sorted.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const pageRows = remote ? rows : sorted.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+  const nextSort = (column: DataTableColumn<T>, prev: DataTableSort | null): DataTableSort =>
+    prev?.key === column.key
+      ? { key: column.key, direction: prev.direction === "asc" ? "desc" : "asc" }
+      : { key: column.key, direction: "desc" };
 
   const toggleSort = (column: DataTableColumn<T>) => {
     if (!column.sortValue) return;
-    setPage(1);
-    setSort((prev) =>
-      prev?.key === column.key
-        ? { key: column.key, direction: prev.direction === "asc" ? "desc" : "asc" }
-        : { key: column.key, direction: "desc" },
-    );
+    if (remote) {
+      remote.onChange({ page: 1, pageSize, sort: nextSort(column, remote.sort) });
+      return;
+    }
+    setLocalPage(1);
+    setLocalSort((prev) => nextSort(column, prev));
   };
 
-  const exportCsv = () => {
+  const goToPage = (next: number) => {
+    if (remote) remote.onChange({ page: next, pageSize, sort: remote.sort });
+    else setLocalPage(next);
+  };
+
+  const changePageSize = (next: number) => {
+    if (remote) remote.onChange({ page: 1, pageSize: next, sort: remote.sort });
+    else {
+      setLocalPageSize(next);
+      setLocalPage(1);
+    }
+  };
+
+  const exportCsv = async () => {
     if (!csvFileName) return;
     const cell = (column: DataTableColumn<T>, row: T): CsvCell =>
       column.csv ? column.csv(row) : textOf(column.render(row));
-    const body = sorted.map((row) => columns.map((c) => cell(c, row)));
-    if (totalRow) body.push(columns.map((c) => cell(c, totalRow)));
-    downloadCsv(csvFileName, [columns.map((c) => c.header), ...body]);
+    setExporting(true);
+    try {
+      const source = remote?.exportRows ? await remote.exportRows() : sorted;
+      const body = source.map((row) => columns.map((c) => cell(c, row)));
+      if (totalRow) body.push(columns.map((c) => cell(c, totalRow)));
+      downloadCsv(csvFileName, [columns.map((c) => c.header), ...body]);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const cellClass = (column: DataTableColumn<T>) =>
@@ -173,13 +203,7 @@ export function DataTable<T>({
       >
         <div className="flex items-center gap-2">
           <span>Por página</span>
-          <Select
-            value={String(pageSize)}
-            onValueChange={(v) => {
-              setPageSize(Number(v));
-              setPage(1);
-            }}
-          >
+          <Select value={String(pageSize)} onValueChange={(v) => changePageSize(Number(v))}>
             <SelectTrigger className="h-8 w-[72px] shadow-none" aria-label="Linhas por página">
               <SelectValue />
             </SelectTrigger>
@@ -192,21 +216,26 @@ export function DataTable<T>({
             </SelectContent>
           </Select>
           <span className={textClass.numeric}>
-            {formatNumber(sorted.length)} {sorted.length === 1 ? "linha" : "linhas"}
+            {formatNumber(total)} {total === 1 ? "linha" : "linhas"}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           {csvFileName && (
-            <Button variant="outline" size="sm" onClick={exportCsv} disabled={sorted.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void exportCsv()}
+              disabled={total === 0 || exporting}
+            >
               <Download className="h-4 w-4" aria-hidden />
-              Exportar CSV
+              {exporting ? "Exportando…" : "Exportar CSV"}
             </Button>
           )}
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage(safePage - 1)}
+            onClick={() => goToPage(safePage - 1)}
             disabled={safePage <= 1}
           >
             Anterior
@@ -217,7 +246,7 @@ export function DataTable<T>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage(safePage + 1)}
+            onClick={() => goToPage(safePage + 1)}
             disabled={safePage >= pageCount}
           >
             Próximo

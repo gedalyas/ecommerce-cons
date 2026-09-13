@@ -17,6 +17,19 @@ export type DataTableColumn<T> = {
 
 export type DataTableSort = { key: string; direction: "asc" | "desc" };
 
+/**
+ * Server-driven paging and sorting: `rows` is the current page, the table
+ * reports every change and lets the caller fetch the full set for the CSV.
+ */
+export type DataTableRemote<T> = {
+  page: number;
+  pageSize: number;
+  total: number;
+  sort: DataTableSort | null;
+  onChange: (next: { page: number; pageSize: number; sort: DataTableSort | null }) => void;
+  exportRows?: () => Promise<T[]>;
+};
+
 export type DataTableProps<T> = {
   columns: DataTableColumn<T>[];
   rows: T[];
@@ -28,6 +41,8 @@ export type DataTableProps<T> = {
   initialPageSize?: number;
   /** When set, shows the "Exportar CSV" action (exports every row, not just the page). */
   csvFileName?: string;
+  /** Hands paging and sorting to the server; without it the table pages `rows` itself. */
+  remote?: DataTableRemote<T>;
   emptyMessage?: string;
   className?: string;
 };
