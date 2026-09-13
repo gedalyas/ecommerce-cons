@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Plan and backlog complete (2026-09-13) — every Prax section with data behind it is live** — last updated 2026-09-13
+Status: **Plan, backlog and consulting-layer migration complete (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -311,7 +311,31 @@ contracts.
 - [x] Metas with 6 inputs / 8 derived — `/metas` (2026-09-13): Resumo with
       Realizado × Meta and pacing, Planejamento grid per year, suggestion from
       the previous year's actuals; `specs/goals.md`
-- [~] Regional views: Pedidos › Regiões done (2026-09-13, tile cartogram instead
-  of a choropleth); ROAS por região pending (needs ad spend by UF)
+- [x] Regional views (2026-09-13): Pedidos › Regiões with a tile cartogram
+      instead of a choropleth; Marketing › Regiões on `ad_spend_region_daily`
 - [x] Influencer hub (2026-09-13): `/influenciadores`, rules × coupons → ROI;
       `specs/influencers.md`
+
+---
+
+## Consulting layer on the database (2026-09-13)
+
+The remaining "backend" of the prototype: `specs/data-layer-migration.md`
+steps 1–3, deferred since Stage 0.
+
+- [x] `src/modules/consulting` — `sectionFor`, `milestoneCriteriaFor`,
+      `openRecommendationsFor` (Prisma → `Section`/`Pillar`/`Metric` shapes via
+      `consultingRows.ts`, tested); `getMilestoneSummary`
+- [x] Gestão, Logística, Dinheiro (all tabs), Marketing › Visão read their
+      section from the loader; no screen imports a `*Fixture.ts`
+- [x] Dashboard milestone + open recommendations from the DB; "N de M
+      critérios" derived
+- [x] Conexões from the DB: summary counts, sync labels from `lastSyncedAt`
+      (`syncLabel.ts`, tested); `sync_label` column dropped
+      (`20260913144031_data_source_sync_from_timestamp`)
+- [x] Sidebar maturity and Conexões dot from the root loader
+      (`getMilestoneSummary` + `getConnectionsHealth`, 5-minute `staleTime`);
+      Marketing banner from the sources in `ERROR`
+- [-] Assistente — stays on canned replies by product decision
+- [ ] Drop `alert`, `monthly_snapshot` and the headline `metric` rows nothing
+      reads anymore (follow-up; needs a destructive migration)

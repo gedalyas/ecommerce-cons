@@ -8,13 +8,13 @@ of `sections.md`; the controls row (`PeriodSelector` + `ChannelToggle`) and the
 
 ## Visão (`?aba=visao`)
 
-The two pillars of the section (Organização, Custos e taxas) from
-`moneyFixture.ts`, with four KPIs replaced by live DRE indicators of the
+The two pillars of the section (Organização, Custos e taxas) read from the
+`section`/`pillar` tables (seeded from `moneyFixture.ts`), with four KPIs replaced by live DRE indicators of the
 period: Margem de contribuição, CMV, Taxa média do adquirente (the
 "taxas e custos de venda" rate) and Custo de frete / pedido. They carry
 fidelity B ("calculado sobre pedidos pagos e as regras de custo informadas
 pelo cliente"). The other KPIs (caixa livre, ciclo de caixa, despesa fixa /
-receita) stay on fixtures until their sources exist.
+receita) stay on the seeded values until their sources exist.
 
 ## DRE (`?aba=dre`)
 

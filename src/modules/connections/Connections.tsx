@@ -7,20 +7,26 @@ import { layout } from "@/shared/styles/spacing";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { connections } from "./connectionsFixture";
+import type { DataSourceStatus } from "@/generated/prisma/enums";
+import type { ConnectionsScreen } from "./connections.types";
+import { summaryDetail } from "./connectionsSummary";
 
-const statusMeta = {
-  connected: { label: "Conectado", icon: CheckCircle2, className: "text-primary" },
-  error: { label: "Erro de autenticação", icon: AlertTriangle, className: "text-warning" },
-  "not-connected": {
+const statusMeta: Record<
+  DataSourceStatus,
+  { label: string; icon: typeof CheckCircle2; className: string }
+> = {
+  CONNECTED: { label: "Conectado", icon: CheckCircle2, className: "text-primary" },
+  ERROR: { label: "Erro de autenticação", icon: AlertTriangle, className: "text-warning" },
+  NOT_CONNECTED: {
     label: "Não conectado",
     icon: CircleDashed,
     className: "text-muted-foreground",
   },
-  manual: { label: "Importação manual", icon: FileSpreadsheet, className: "text-muted-foreground" },
-} as const;
+  MANUAL: { label: "Importação manual", icon: FileSpreadsheet, className: "text-muted-foreground" },
+};
 
-export function Connections() {
+export function Connections({ data }: { data: ConnectionsScreen }) {
+  const detail = summaryDetail(data.summary);
   return (
     <div className={layout.page}>
       <PageHeader title="Conexões" subtitle="Fontes que alimentam os indicadores do painel" />
@@ -28,9 +34,9 @@ export function Connections() {
       <div className={cn(layout.headerGap, layout.blockStack)}>
         <AlertBanner icon={false}>
           <span className={cn(textClass.numeric, "font-semibold text-foreground")}>
-            5 de 7 fontes ativas
-          </span>{" "}
-          <span className="text-muted-foreground">· 1 com erro, 1 não conectada</span>
+            {data.summary.active} de {data.summary.total} fontes ativas
+          </span>
+          {detail && <span className="text-muted-foreground"> · {detail}</span>}
         </AlertBanner>
 
         <SectionBlock>
@@ -43,7 +49,7 @@ export function Connections() {
             <span className={cn(textClass.label, "w-28 text-muted-foreground")}>Ação</span>
           </div>
           <ul className="divide-y divide-border">
-            {connections.map((c) => {
+            {data.sources.map((c) => {
               const meta = statusMeta[c.status];
               const Icon = meta.icon;
               return (
@@ -53,7 +59,7 @@ export function Connections() {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="text-[15px] font-semibold text-foreground">{c.name}</div>
-                    <div className={cn(textClass.meta, "text-muted-foreground")}>{c.type}</div>
+                    <div className={cn(textClass.meta, "text-muted-foreground")}>{c.kind}</div>
                   </div>
                   <div
                     className={cn(
@@ -72,14 +78,14 @@ export function Connections() {
                       "w-full text-muted-foreground md:w-40",
                     )}
                   >
-                    {c.sync}
+                    {c.syncLabel}
                   </div>
                   <Button
-                    variant={c.status === "error" ? "default" : "outline"}
+                    variant={c.status === "ERROR" ? "default" : "outline"}
                     size="sm"
                     className="h-11 w-full md:h-8 md:w-28"
                   >
-                    {c.status === "not-connected" ? "Conectar" : "Reconectar"}
+                    {c.status === "NOT_CONNECTED" ? "Conectar" : "Reconectar"}
                   </Button>
                 </li>
               );

@@ -19,7 +19,6 @@ import { formatDate, formatPeriodLabel } from "@/shared/utils/format";
 import { formatMetric } from "@/shared/utils/metricFormat";
 import type { Granularity } from "@/shared/utils/period";
 import type { DashboardMatrixRow, DashboardMetricKey, DashboardOverview } from "./dashboard.types";
-import { milestoneCriteria, openRecommendations } from "./dashboardFixture";
 
 const headlineKeys: DashboardMetricKey[] = [
   "totalSold",
@@ -202,13 +201,13 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
           tone="highlight"
           meta={
             <span className={cn(textClass.numeric, textClass.meta, "text-muted-foreground")}>
-              2 de 4 critérios
+              {data.milestone.achieved} de {data.milestone.total} critérios
             </span>
           }
           description="Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia."
           bodyClassName="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4"
         >
-          {milestoneCriteria.map((c) => (
+          {data.milestone.criteria.map((c) => (
             <div key={c.name} className="min-w-0 rounded-lg border border-border bg-card p-5">
               <div className="text-[15px] font-semibold leading-6 text-foreground">{c.name}</div>
               <div className="mt-3 h-1 w-full overflow-hidden rounded-sm bg-muted">
@@ -229,7 +228,7 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
         </SectionBlock>
 
         <SectionBlock title="Recomendações em aberto" bodyClassName={layout.cardPaddingX}>
-          <RecommendationList items={openRecommendations} />
+          <RecommendationList items={data.recommendations} />
         </SectionBlock>
       </div>
     </div>

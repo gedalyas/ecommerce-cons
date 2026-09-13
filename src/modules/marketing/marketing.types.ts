@@ -1,4 +1,5 @@
 import type { AdPlatform, BusinessUnit } from "@/generated/prisma/enums";
+import type { ConsultingSection } from "@/modules/consulting/contract";
 import type { BreakdownSlice, MetricValue, SeriesPoint } from "@/shared/models/types/metric.types";
 import type { BenchmarkVerdict, FunnelStep, RoasQuality } from "./marketingRules";
 import type { MarketingTab } from "./marketingSchema";
@@ -195,8 +196,16 @@ export type MarketingRegions = {
   total: RegionPerformanceRow;
 };
 
+export type StaleSource = { name: string; syncLabel: string };
+
+export type MarketingVisao = {
+  overview: MarketingOverview;
+  section: ConsultingSection;
+  staleSources: StaleSource[];
+};
+
 export type MarketingScreen =
-  | { aba: Extract<MarketingTab, "visao">; overview: MarketingOverview }
+  | ({ aba: Extract<MarketingTab, "visao"> } & MarketingVisao)
   | { aba: Extract<MarketingTab, "resumo">; summary: MarketingSummary }
   | { aba: Extract<MarketingTab, "campanhas">; campaigns: MarketingCampaigns }
   | { aba: Extract<MarketingTab, "descontos">; discounts: MarketingDiscounts }

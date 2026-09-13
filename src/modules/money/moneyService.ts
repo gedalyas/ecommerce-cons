@@ -4,6 +4,7 @@
  */
 import type { SalesPlatform } from "@/generated/prisma/enums";
 import { prismaClient } from "@/shared/dependencies/prismaClient";
+import { sectionFor } from "@/modules/consulting/contract.server";
 import { adSpendAggregate, adSpendByBucket } from "@/modules/marketing/contract.server";
 import type { AdSpendAggregate } from "@/modules/marketing/contract";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract.server";
@@ -24,6 +25,7 @@ import {
   type DreLineKey,
   type MoneyDre,
   type MoneyScreen,
+  type MoneyTabData,
 } from "./money.types";
 import type { CostInput, MoneySearch } from "./moneySchema";
 
@@ -331,11 +333,10 @@ export async function marketingCostLines(
   return [...lines.values()].sort((a, b) => b.amount - a.amount);
 }
 
-export async function moneyScreen(
-  clientSlug: string,
+async function moneyTab(
+  clientId: string,
   search: PeriodSearch & MoneySearch,
-): Promise<MoneyScreen> {
-  const clientId = await clientIdFor(clientSlug);
+): Promise<MoneyTabData> {
   switch (search.aba) {
     case "visao": {
       const rules = await costRulesFor(clientId);
@@ -346,4 +347,16 @@ export async function moneyScreen(
     case "custos":
       return { aba: "custos", rules: await costRulesFor(clientId) };
   }
+}
+
+export async function moneyScreen(
+  clientSlug: string,
+  search: PeriodSearch & MoneySearch,
+): Promise<MoneyScreen> {
+  const clientId = await clientIdFor(clientSlug);
+  const [section, tab] = await Promise.all([
+    sectionFor(clientId, "money"),
+    moneyTab(clientId, search),
+  ]);
+  return { section, ...tab };
 }

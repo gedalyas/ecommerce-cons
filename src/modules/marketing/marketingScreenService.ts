@@ -1,11 +1,8 @@
-/**
- * Marketing screen orchestrator: one payload per tab. Investment here means
- * paid media (plus the platform fee when asked) plus the marketing cost lines
- * the route brings from the money module. Server-only.
- */
 import type { SalesPlatform } from "@/generated/prisma/enums";
 import { prismaClient } from "@/shared/dependencies/prismaClient";
 import { PROTOTYPE_TODAY } from "@/shared/config/prototype";
+import { dataSourcesFor } from "@/modules/connections/contract.server";
+import { sectionFor } from "@/modules/consulting/contract.server";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract.server";
 import type { SeriesPoint } from "@/shared/models/types/metric.types";
 import { metricValue } from "@/shared/utils/metricFormat";
@@ -31,6 +28,7 @@ import type {
   MarketingRegions,
   MarketingScreen,
   MarketingSummary,
+  MarketingVisao,
 } from "./marketing.types";
 import {
   channelPerformance,
@@ -64,7 +62,6 @@ async function clientIdFor(slug: string) {
   return client.id;
 }
 
-/** Every day up to the prototype's today - the store's own history. */
 const lifetimeWindow = (): Window => ({
   start: new Date("2000-01-01T00:00:00.000Z"),
   end: new Date(new Date(`${PROTOTYPE_TODAY}T00:00:00.000Z`).getTime() + 86_400_000),
@@ -126,7 +123,6 @@ async function marketingOverview(
   const costs = costsTotal(input.custos);
   const [cur, prev] = await Promise.all([
     overviewFacts(clientId, period.current, platform, input.incluirTaxa, costs),
-    // The cost lines are accrued for the current window only; the previous one gets media alone.
     period.previous
       ? overviewFacts(clientId, period.previous, platform, input.incluirTaxa, 0)
       : null,
@@ -385,7 +381,7 @@ export async function marketingScreen(
   const clientId = await clientIdFor(clientSlug);
   switch (input.aba) {
     case "visao":
-      return { aba: "visao", overview: await marketingOverview(clientId, input) };
+      return { aba: "visao", ...(await marketingVisao(clientId, input)) };
     case "resumo":
       return { aba: "resumo", summary: await marketingSummary(clientId, input) };
     case "campanhas":
@@ -395,6 +391,18 @@ export async function marketingScreen(
     case "regioes":
       return { aba: "regioes", regions: await marketingRegions(clientId, input) };
   }
+}
+
+async function marketingVisao(clientId: string, input: MarketingInput): Promise<MarketingVisao> {
+  const [overview, section, sources] = await Promise.all([
+    marketingOverview(clientId, input),
+    sectionFor(clientId, "marketing"),
+    dataSourcesFor(clientId),
+  ]);
+  const staleSources = sources
+    .filter((s) => s.status === "ERROR")
+    .map((s) => ({ name: s.name, syncLabel: s.syncLabel }));
+  return { overview, section, staleSources };
 }
 
 async function marketingRegions(

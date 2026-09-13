@@ -45,7 +45,7 @@ One file holds the rules that move with the market, not with a screen:
 
 ## Visão (`?aba=visao`)
 
-The five pillars of the fixture (`marketingFixture.ts`) with the KPIs the
+The five pillars of the section (seeded from `marketingFixture.ts`) with the KPIs the
 data module already covers replaced by live values
 (`marketingScreenService.ts` › `marketingOverview`, current vs comparison):
 
@@ -60,8 +60,9 @@ data module already covers replaced by live values
 | Aquisição | Participação do maior canal | revenue share of the largest origem / meio (the label is the note) |
 | Retenção  | Recompra 90 dias, LTV 12 m  | injected from customers                                            |
 
-Presença e criativos and Canais paralelos stay on fixtures. The orange
-banner about Meta Ads is unchanged.
+Presença e criativos and Canais paralelos stay on the seeded values. The
+orange banner names the first data source in `ERROR` with its sync label
+("Meta Ads não sincroniza há 6 dias"); no banner when every source is fine.
 
 ## Resumo (`?aba=resumo`)
 

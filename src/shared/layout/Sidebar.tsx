@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
 import { cn } from "@/shared/utils/cn";
+import type { ShellStatus } from "./shellStatus.types";
 
 const mainItems = [
   { label: "Assistente", to: "/assistente", icon: MessageSquare },
@@ -35,8 +36,10 @@ const dataItems = [
   { label: "Influenciadores", to: "/influenciadores", icon: Sparkles },
 ];
 
-export function Sidebar() {
+export function Sidebar({ status }: { status: ShellStatus }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { maturity } = status;
+  const maturityPercent = maturity.total > 0 ? (maturity.achieved / maturity.total) * 100 : 0;
 
   const linkClass = (active: boolean) =>
     cn(
@@ -111,10 +114,12 @@ export function Sidebar() {
             <Link to="/conexoes" className={cn(linkClass(pathname === "/conexoes"), "relative")}>
               <Plug className="h-4 w-4 shrink-0" />
               <span className="hidden flex-1 truncate xl:inline">Conexões</span>
-              <span
-                className="absolute right-2 top-2 h-2 w-2 rounded-sm bg-warning xl:static xl:right-auto xl:top-auto"
-                aria-label="Há problema nas conexões"
-              />
+              {status.connectionsAlert && (
+                <span
+                  className="absolute right-2 top-2 h-2 w-2 rounded-sm bg-warning xl:static xl:right-auto xl:top-auto"
+                  aria-label="Há problema nas conexões"
+                />
+              )}
             </Link>
           </TooltipTrigger>
           <TooltipContent side="right" className="xl:hidden">
@@ -126,10 +131,12 @@ export function Sidebar() {
       <div className="border-t border-sidebar-border px-3 py-4 xl:px-4">
         <div className="hidden items-baseline justify-between xl:flex">
           <span className="t-meta font-semibold text-foreground">Maturidade</span>
-          <span className="num t-meta text-muted-foreground">2 de 4 critérios</span>
+          <span className="num t-meta text-muted-foreground">
+            {maturity.achieved} de {maturity.total} critérios
+          </span>
         </div>
         <div className="mt-2 h-1 w-full overflow-hidden rounded-sm bg-muted">
-          <div className="h-full w-1/2 rounded-sm bg-primary" />
+          <div className="h-full rounded-sm bg-primary" style={{ width: `${maturityPercent}%` }} />
         </div>
       </div>
     </aside>

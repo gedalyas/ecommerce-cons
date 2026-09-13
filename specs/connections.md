@@ -1,11 +1,15 @@
 # Conexões (`/conexoes`)
 
-Module: `src/modules/connections`. Fixtures: `connectionsFixture.ts`.
+Module: `src/modules/connections`. Route loader calls `getConnectionsScreen`;
+the payload is `ConnectionsScreen` (sources + summary). Seed input:
+`connectionsFixture.ts` (name, kind, status, `lastSyncedAt`).
 Lists the data sources feeding the dashboard, one per row.
 
 ## Summary banner
 
-Above the list: "**5 de 7 fontes ativas** · 1 com erro, 1 não conectada".
+Above the list: "**5 de 7 fontes ativas** · 1 com erro, 1 não conectada" —
+counts derived in `connectionsSummary.ts` (connected and manual count as
+active; the detail agrees in number and disappears when nothing is wrong).
 
 ## Source list
 
@@ -23,8 +27,15 @@ status is `error`) or "Conectar".
 | Instagram             | Social            | not-connected                | —                |
 | Extrato do adquirente | Importação manual | manual                       | enviado em 02/08 |
 
-Status values (`connected` / `error` / `not-connected` / `manual`) map to icon +
-color in `statusMeta`; labels are Portuguese.
+Status is the Prisma enum `DataSourceStatus` (`CONNECTED` / `ERROR` /
+`NOT_CONNECTED` / `MANUAL`), mapped to icon + color in `statusMeta`; labels
+are Portuguese. The sync column is derived from `lastSyncedAt` and the demo
+clock by `syncLabel.ts`: "hoje às 03:12" on the same day, "ontem", "há N dias",
+"enviado em 02/08" for a manual import, "—" when never synced.
+
+`getConnectionsHealth` (any source in `ERROR`) feeds the sidebar's orange dot
+through the root route loader; the Marketing banner reads the same sources
+from the marketing service (`staleSources`).
 
 The Meta Ads error is the thread that ties screens together: the orange dot on
 the sidebar's Conexões item, the Marketing banner, the "Aquisição" pillar's

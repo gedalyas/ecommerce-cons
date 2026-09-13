@@ -1,4 +1,5 @@
 import type { BusinessUnit, CostCategory, CostFrequency } from "@/generated/prisma/enums";
+import type { ConsultingSection } from "@/modules/consulting/contract";
 import type { MetricUnit, MetricValue } from "@/shared/models/types/metric.types";
 import type { MoneyTab } from "./moneySchema";
 
@@ -83,10 +84,12 @@ export type MoneyDre = {
   matrix: { buckets: string[]; rows: DreMatrixRow[] };
 };
 
-export type MoneyScreen =
+export type MoneyTabData =
   | { aba: Extract<MoneyTab, "visao">; indicators: DreIndicator[] }
   | { aba: Extract<MoneyTab, "dre">; dre: MoneyDre }
   | { aba: Extract<MoneyTab, "custos">; rules: CostRuleRow[] };
+
+export type MoneyScreen = { section: ConsultingSection } & MoneyTabData;
 
 /** A "Vendas e marketing" line accrued over a period, as the Marketing screen consumes it. */
 export type MarketingCostLine = {

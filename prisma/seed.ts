@@ -1,7 +1,8 @@
 /**
- * Seeds the database with the prototype dataset - the same fixture data the UI
- * currently renders from the module fixtures (src/modules/<x>/<x>Fixture.ts). Idempotent: wipes and recreates
- * the single "loja-aurora" client on every run.
+ * Seeds the database with the prototype dataset: the consulting layer comes from
+ * the module fixtures (src/modules/<x>/<x>Fixture.ts, imported through the
+ * contracts), the analytics facts from seedAnalytics.ts. Idempotent: wipes and
+ * recreates the single "loja-aurora" client on every run.
  *
  * Run with `npm run db:seed` (or `make seed`).
  */
@@ -45,13 +46,6 @@ const pillarStatus: Record<string, PillarStatus> = {
   "not-started": "NOT_STARTED",
   blocked: "BLOCKED",
 };
-
-const sourceStatus = {
-  connected: "CONNECTED",
-  error: "ERROR",
-  "not-connected": "NOT_CONNECTED",
-  manual: "MANUAL",
-} as const;
 
 const deltaDirection: Record<string, DeltaDirection> = {
   up: "UP",
@@ -178,9 +172,9 @@ async function main() {
     data: connections.map((c, i) => ({
       clientId: client.id,
       name: c.name,
-      kind: c.type,
-      status: sourceStatus[c.status],
-      syncLabel: c.sync,
+      kind: c.kind,
+      status: c.status,
+      lastSyncedAt: c.lastSyncedAt ? new Date(c.lastSyncedAt) : null,
       position: i,
     })),
   });

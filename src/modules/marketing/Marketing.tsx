@@ -14,10 +14,15 @@ import { cn } from "@/shared/utils/cn";
 import { formatCurrency, formatPeriodLabel, formatPercent } from "@/shared/utils/format";
 import type { MetricValue } from "@/shared/models/types/metric.types";
 import { CreativePresence } from "./CreativePresence";
-import type { MarketingOverview, MarketingRetention, MarketingScreen } from "./marketing.types";
+import type {
+  MarketingOverview,
+  MarketingRetention,
+  MarketingScreen,
+  MarketingVisao,
+  StaleSource,
+} from "./marketing.types";
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingDescontos } from "./MarketingDescontos";
-import { marketingSection } from "./marketingFixture";
 import { MarketingRegioes } from "./MarketingRegioes";
 import { MarketingResumo } from "./MarketingResumo";
 import { useMarketingSearch } from "./useMarketingSearch";
@@ -38,7 +43,6 @@ type LiveKpi = {
   subNote?: string;
 };
 
-/** Which fixture KPI each computed value replaces, by label. */
 function liveKpis(overview: MarketingOverview): Record<string, LiveKpi> {
   return {
     "Taxa de conversão": {
@@ -87,7 +91,6 @@ function liveKpis(overview: MarketingOverview): Record<string, LiveKpi> {
   };
 }
 
-/** Fixture KPIs replaced by the live base where the data module already covers them. */
 function withLiveKpis(
   kpis: Metric[],
   live: Record<string, LiveKpi>,
@@ -129,19 +132,38 @@ function withLiveKpis(
   });
 }
 
-function MarketingVisao({
-  overview,
+function StaleSourceBanner({ source }: { source: StaleSource }) {
+  return (
+    <AlertBanner
+      action={
+        <Link
+          to="/conexoes"
+          className="text-[13px] font-semibold text-primary underline underline-offset-2"
+        >
+          Ir para Conexões
+        </Link>
+      }
+    >
+      {source.name} não sincroniza {source.syncLabel} — os dados de aquisição podem estar
+      desatualizados.
+    </AlertBanner>
+  );
+}
+
+function MarketingVisaoTab({
+  data,
   retention,
   comparisonLabel,
 }: {
-  overview: MarketingOverview;
+  data: MarketingVisao;
   retention: MarketingRetention;
   comparisonLabel: string;
 }) {
-  const live = liveKpis(overview);
+  const live = liveKpis(data.overview);
+  const [staleSource] = data.staleSources;
   const section = {
-    ...marketingSection,
-    pillars: marketingSection.pillars.map((pillar) => ({
+    ...data.section,
+    pillars: data.section.pillars.map((pillar) => ({
       ...pillar,
       kpis: withLiveKpis(pillar.kpis, live, retention, comparisonLabel),
     })),
@@ -149,20 +171,7 @@ function MarketingVisao({
   return (
     <SectionPage
       section={section}
-      banner={
-        <AlertBanner
-          action={
-            <Link
-              to="/conexoes"
-              className="text-[13px] font-semibold text-primary underline underline-offset-2"
-            >
-              Ir para Conexões
-            </Link>
-          }
-        >
-          Meta Ads não sincroniza há 6 dias — os dados de aquisição podem estar desatualizados.
-        </AlertBanner>
-      }
+      banner={staleSource ? <StaleSourceBanner source={staleSource} /> : undefined}
       renderExtra={(pillar: Pillar) =>
         pillar.extra === "creative-presence" ? <CreativePresence /> : null
       }
@@ -201,11 +210,7 @@ export function Marketing({
         <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
 
         {data.aba === "visao" && (
-          <MarketingVisao
-            overview={data.overview}
-            retention={retention}
-            comparisonLabel={comparisonLabel}
-          />
+          <MarketingVisaoTab data={data} retention={retention} comparisonLabel={comparisonLabel} />
         )}
         {data.aba === "resumo" && (
           <MarketingResumo data={data.summary} search={search} period={period} onPatch={patch} />

@@ -2,9 +2,8 @@ import type { InventoryHealth } from "@/modules/products/contract";
 import { SectionPage } from "@/shared/ui/SectionPage";
 import type { Metric } from "@/shared/ui/metricTile.types";
 import { formatNumber, formatPercent } from "@/shared/utils/format";
-import { logisticsSection } from "./logisticsFixture";
+import type { LogisticsScreen } from "./logistics.types";
 
-/** Fixture KPIs replaced by the live stock position (`products` module). */
 function withLiveKpis(kpis: Metric[], inventory: InventoryHealth): Metric[] {
   return kpis.map((kpi) => {
     if (kpi.label === "Ruptura de estoque" && inventory.stockOutRate != null) {
@@ -29,10 +28,10 @@ function withLiveKpis(kpis: Metric[], inventory: InventoryHealth): Metric[] {
   });
 }
 
-export function Logistics({ data }: { data: { inventory: InventoryHealth } }) {
+export function Logistics({ data }: { data: LogisticsScreen }) {
   const section = {
-    ...logisticsSection,
-    pillars: logisticsSection.pillars.map((pillar) => ({
+    ...data.section,
+    pillars: data.section.pillars.map((pillar) => ({
       ...pillar,
       kpis: withLiveKpis(pillar.kpis, data.inventory),
     })),

@@ -57,7 +57,8 @@ specs/                          # product specs, architecture.md (the full ruleb
 
 **A module is a business capability, not an entity.** `orders`, `customers`, `money`,
 `marketing`, `products`, `logistics`, `goals`, `dashboard`, `connections`, `assistant`,
-`management`. If describing the module in one sentence needs an "and", it is two modules — and
+`management`, `consulting` (the engagement's sections, pillars, recommendations and
+milestone, read from the DB), `alerts`, `analysis`, `influencers`. If describing the module in one sentence needs an "and", it is two modules — and
 the split is a sibling top-level folder, never a subfolder (modules are flat,
 `MAX_MODULE_DEPTH = 0`). Which files go along is decided by the direction of the dependency, not
 by the name: **if moving a file forces the new module to import back from the origin, the file

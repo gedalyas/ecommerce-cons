@@ -29,7 +29,7 @@ Blocked cards render no KPIs — only the message "Disponível após o marco de
 maturidade." with a "ver o que falta" link to `/` (the dashboard, where the
 milestone block lives).
 
-## Pillars per section (fixtures)
+## Pillars per section (seeded copy, read from `section` / `pillar`)
 
 | Section   | Pillar                | Status      | Notes                                                        |
 | --------- | --------------------- | ----------- | ------------------------------------------------------------ |

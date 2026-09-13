@@ -3,8 +3,8 @@
 Module: `src/modules/dashboard`. Route loader calls `getDashboardOverview`
 with the global params (`?inicio&fim&por&comparar&canal`); the payload is
 `DashboardOverview` (`dashboard.types.ts`). Alerts are derived from the data
-(`src/modules/alerts`); milestone and recommendations still come from
-`dashboardFixture.ts`.
+(`src/modules/alerts`); milestone criteria and open recommendations come from
+the database through `consulting/contract.server.ts`.
 
 Header: title "Dashboard", subtitle "Visão consolidada de {período} · Loja
 Aurora". Below it the controls row: `PeriodSelector` + `ChannelToggle`.
@@ -84,9 +84,10 @@ follow-up).
 
 ## 5b. "Marco de maturidade", "Recomendações em aberto"
 
-Unchanged from the prototype (fixtures): the four maturity criteria with
-progress bars ("2 de 4 critérios" still hardcoded — see
-`data-layer-migration.md` step 3); the open recommendations list.
+The maturity criteria (`milestone_criterion`) with progress bars and the
+"N de M critérios" count (achieved ÷ total, the same number the sidebar
+shows); the open recommendations not tied to a pillar (`recommendation`
+with `pillar_id` null and `done_at` null).
 
 ## 6. Fidelity per metric
 

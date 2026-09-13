@@ -1,14 +1,33 @@
-export const connections = [
-  { name: "Bling", type: "ERP", status: "connected", sync: "hoje às 03:12" },
-  { name: "Loja", type: "Plataforma", status: "connected", sync: "hoje às 03:14" },
-  { name: "Meta Ads", type: "Mídia paga", status: "error", sync: "há 6 dias" },
-  { name: "Google Ads", type: "Mídia paga", status: "connected", sync: "hoje às 03:20" },
-  { name: "Google Analytics", type: "Analytics", status: "connected", sync: "hoje às 03:20" },
-  { name: "Instagram", type: "Social", status: "not-connected", sync: "—" },
+import type { DataSourceStatus } from "@/generated/prisma/enums";
+
+export type ConnectionSeed = {
+  name: string;
+  kind: string;
+  status: DataSourceStatus;
+  lastSyncedAt: string | null;
+};
+
+export const connections: ConnectionSeed[] = [
+  { name: "Bling", kind: "ERP", status: "CONNECTED", lastSyncedAt: "2026-09-10T03:12:00Z" },
+  { name: "Loja", kind: "Plataforma", status: "CONNECTED", lastSyncedAt: "2026-09-10T03:14:00Z" },
+  { name: "Meta Ads", kind: "Mídia paga", status: "ERROR", lastSyncedAt: "2026-09-04T03:15:00Z" },
+  {
+    name: "Google Ads",
+    kind: "Mídia paga",
+    status: "CONNECTED",
+    lastSyncedAt: "2026-09-10T03:20:00Z",
+  },
+  {
+    name: "Google Analytics",
+    kind: "Analytics",
+    status: "CONNECTED",
+    lastSyncedAt: "2026-09-10T03:20:00Z",
+  },
+  { name: "Instagram", kind: "Social", status: "NOT_CONNECTED", lastSyncedAt: null },
   {
     name: "Extrato do adquirente",
-    type: "Importação manual",
-    status: "manual",
-    sync: "enviado em 02/08",
+    kind: "Importação manual",
+    status: "MANUAL",
+    lastSyncedAt: "2026-08-02T12:00:00Z",
   },
-] as const;
+];

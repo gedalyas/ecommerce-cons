@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Connections } from "@/modules/connections/contract";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { Connections, getConnectionsScreen } from "@/modules/connections/contract";
+import { RequestError } from "@/shared/ui/RequestError";
+import { layout } from "@/shared/styles/spacing";
 
 export const Route = createFileRoute("/conexoes")({
   head: () => ({
@@ -14,9 +16,25 @@ export const Route = createFileRoute("/conexoes")({
       {
         property: "og:description",
         content:
-          "5 de 7 fontes ativas: veja sincronizações, erros de autenticação e importação manual.",
+          "Fontes ativas, sincronizações, erros de autenticação e importação manual da Loja Aurora.",
       },
     ],
   }),
-  component: Connections,
+  loader: () => getConnectionsScreen(),
+  component: RouteComponent,
+  errorComponent: RouteError,
 });
+
+function RouteComponent() {
+  const data = Route.useLoaderData();
+  return <Connections data={data} />;
+}
+
+function RouteError() {
+  const router = useRouter();
+  return (
+    <div className={layout.page}>
+      <RequestError className="mt-6" onRetry={() => void router.invalidate()} />
+    </div>
+  );
+}

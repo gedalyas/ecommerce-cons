@@ -7,6 +7,7 @@ import type { SalesPlatform } from "@/generated/prisma/enums";
 import { prismaClient } from "@/shared/dependencies/prismaClient";
 import { alertsFor } from "@/modules/alerts/contract.server";
 import { dataSourcesFor } from "@/modules/connections/contract.server";
+import { milestoneCriteriaFor, openRecommendationsFor } from "@/modules/consulting/contract.server";
 import { customersAggregate, customersByBucket } from "@/modules/customers/contract.server";
 import {
   adSpendAggregate,
@@ -173,10 +174,12 @@ export async function dashboardOverview(
   const period = resolvePeriod(search);
   const unit = truncUnit[period.por];
   const channel = search.canal;
-  const [rules, sources, alerts] = await Promise.all([
+  const [rules, sources, alerts, criteria, recommendations] = await Promise.all([
     costRulesFor(clientId),
     dataSourcesFor(clientId),
     alertsFor(clientId),
+    milestoneCriteriaFor(clientId),
+    openRecommendationsFor(clientId),
   ]);
 
   const currentBuckets = bucketWindows(period.current, period.por);
@@ -215,6 +218,12 @@ export async function dashboardOverview(
 
   return {
     alerts,
+    milestone: {
+      criteria,
+      achieved: criteria.filter((c) => c.achieved).length,
+      total: criteria.length,
+    },
+    recommendations,
     metrics: dashboardMetricDefinitions.map((definition) => {
       const { fidelity, note } = fidelityFor(definition.key, sources);
       return {

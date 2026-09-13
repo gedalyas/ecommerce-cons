@@ -1,7 +1,8 @@
 // Data model for the e-commerce consulting dashboard.
 //
-// The app still renders the mocks under src/features/*/data - this schema is the
-// target shape those mocks are migrating to. See specs/data-layer-migration.md.
+// Every screen reads from these tables through the module services; the seed
+// (prisma/seed.ts) is the single writer of the demo dataset. See
+// specs/data-layer-migration.md.
 //
 // Naming: models and fields in English, @@map/@map to snake_case tables and
 // columns. Values that reach the screen (labels, notes, recommendations) are
@@ -643,9 +644,6 @@ model DataSource {
   kind         String
   status       DataSourceStatus
   lastSyncedAt DateTime?        @map("last_synced_at")
-  /// Display sync label, e.g. "hoje às 03:12". Derived from lastSyncedAt once
-  /// the UI reads from the database.
-  syncLabel    String           @map("sync_label")
   position     Int
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)

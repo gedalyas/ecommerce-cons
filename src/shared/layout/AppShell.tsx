@@ -5,18 +5,16 @@ import { useScrollShadow } from "@/shared/hooks/useScrollShadow";
 import { TooltipProvider } from "@/shared/ui/Tooltip";
 import { Sidebar } from "./Sidebar";
 import { BottomNav } from "./BottomNav";
+import type { ShellStatus } from "./shellStatus.types";
 
-/**
- * App shell: sidebar, scrollable content area, assistant and bottom nav.
- * The assistant is a domain widget, so the composition root passes it in -
- * shared/ never imports a module.
- */
 export function AppShell({
   assistant,
   assistantFab,
+  status,
 }: {
   assistant: ReactNode;
   assistantFab: ReactNode;
+  status: ShellStatus;
 }) {
   const { ref, top, bottom } = useScrollShadow<HTMLElement>();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -25,7 +23,7 @@ export function AppShell({
   return (
     <TooltipProvider delayDuration={150}>
       <div className="flex min-h-dvh w-full bg-background">
-        <Sidebar />
+        <Sidebar status={status} />
         <div className="relative min-w-0 flex-1">
           <ScrollShadows top={top} bottom={bottom} />
           <main

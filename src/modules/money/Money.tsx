@@ -13,7 +13,6 @@ import { formatPeriodLabel } from "@/shared/utils/format";
 import type { DreIndicator, MoneyScreen } from "./money.types";
 import { MoneyCosts } from "./MoneyCosts";
 import { MoneyDre } from "./MoneyDre";
-import { moneySection } from "./moneyFixture";
 import type { MoneyTab } from "./moneySchema";
 
 const tabs = [
@@ -22,7 +21,6 @@ const tabs = [
   { key: "custos", label: "Custos" },
 ] as const;
 
-/** Which fixture KPI each live indicator replaces on the Visão pillars. */
 const liveKpi: Record<string, DreIndicator["key"]> = {
   "Margem de contribuição": "contributionMarginRate",
   CMV: "cogsRate",
@@ -64,7 +62,7 @@ export function Money({ data }: { data: MoneyScreen }) {
 
   return (
     <div className={layout.page}>
-      <PageHeader title={moneySection.title} subtitle={moneySection.subtitle} />
+      <PageHeader title={data.section.title} subtitle={data.section.subtitle} />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
         <div className="flex flex-wrap items-center gap-2">
@@ -76,7 +74,7 @@ export function Money({ data }: { data: MoneyScreen }) {
 
         {data.aba === "visao" && (
           <div className={layout.groupStack}>
-            {moneySection.pillars.map((pillar) => (
+            {data.section.pillars.map((pillar) => (
               <PillarCard
                 key={pillar.title}
                 pillar={{

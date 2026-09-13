@@ -46,7 +46,7 @@ src/
 │   ├── <domain>Service.ts        #   ORCHESTRATOR: the only file that imports Prisma. Server-only.
 │   ├── <domain>Schema.ts         #   zod schema for server-fn input
 │   ├── <domain>.types.ts         #   exported types (never inside a component/service)
-│   ├── <domain>Fixture.ts        #   prototype dataset (until Stage 4 retires fixtures)
+│   ├── <domain>Fixture.ts        #   seed input, exported through the contract; never imported by a screen
 │   ├── <rule>.ts + <rule>.test.ts#   PURE CORE: calculates/decides, no I/O
 │   └── use<X>.ts                 #   client-side orchestration when a loader is not enough
 └── shared/                       # KERNEL: nothing here knows what an order or a pillar is
@@ -179,7 +179,7 @@ only go down; whoever lowers a count lowers the cap in the same PR.
 | `src/index.ts` / `App.tsx` as the single composition root   | `src/routes/*.tsx` (one file per URL) + `__root.tsx`                                  | TanStack Start file routes are the framework's route table; each route file plays the `App.tsx` role for its URL. `routes.ts` keeps the English-file ↔ Portuguese-URL map. |
 | FE `xService.ts` = axios wrapper; BE `xService.ts` = Prisma | `xController.ts` = server functions (transport), `xService.ts` = Prisma (server-only) | One repo hosts both halves; the BE vocabulary keeps `dependenciesOnlyInService` literally reusable and marks the server-only file by name.                                 |
 | `shared/ui` flat, tokens in `global.css` `@theme` only      | `shared/ui` flat; token `.ts` files in `shared/styles/` next to `global.css`          | Our design system exposes tokens to TS (`textClass`, `layout`, `radiusClass`); they mirror the CSS variables, so they live beside them.                                    |
-| No tests folder, fixtures inline                            | `*Fixture.ts` files stay in modules until Stage 4                                     | The seed and the screens share the prototype dataset; retiring it is already planned.                                                                                      |
+| No tests folder, fixtures inline                            | `*Fixture.ts` files stay in modules as seed input                                     | The seed imports them through the contracts; screens read loader payloads.                                                                                                 |
 | `staticImportsOnly` (no `import()`)                         | not adopted                                                                           | SPA-deploy problem the reference itself says to reevaluate under SSR; Start's route splitting is the framework's job.                                                      |
 | Prettier single quotes / width 80                           | keep double quotes / width 100                                                        | Formatting is not architecture; changing it would touch every file.                                                                                                        |
 | `check:module-load-order`                                   | not adopted                                                                           | ESM fails loudly on real cycles.                                                                                                                                           |

@@ -23,7 +23,7 @@ because that is what ships.
 | [assistant.md](assistant.md)                                                       | AI assistant panel behavior                                                         |
 | [design-system.md](design-system.md)                                               | Tokens, constraints, visual language                                                |
 | [conventions.md](conventions.md)                                                   | Language rule, naming, project structure                                            |
-| [data-layer-migration.md](data-layer-migration.md)                                 | Plan: fixtures → Prisma/PostgreSQL                                                  |
+| [data-layer-migration.md](data-layer-migration.md)                                 | Fixtures → Prisma/PostgreSQL: done; what a real backend still needs                 |
 | [prax-analytics-documentacao-completa.md](prax-analytics-documentacao-completa.md) | Competitor study (Prax Analytics), pt-BR research notes                             |
 | [data-module-plan.md](data-module-plan.md)                                         | Plan: data module (orders, products, customers, DRE, marketing) in 6 stages         |
 | [data-module-tasks.md](data-module-tasks.md)                                       | Task checklist for the data module plan — tick as work lands                        |
@@ -32,6 +32,6 @@ because that is what ships.
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from  |
 | [decisions/](decisions/)                                                           | Architecture decision records (one dated note per decision)                         |
 
-The single fictional client is **Loja Aurora**; all numbers are fixtures. When a
+The single fictional client is **Loja Aurora**; all numbers come from the seed. When a
 spec and the code disagree, fix one of them in the same change — they must not
 drift.

@@ -16,6 +16,10 @@ import { reportError } from "@/shared/utils/errorReporting";
 import { defaultPeriodSearch, parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
 import { AppShell } from "@/shared/layout/AppShell";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
+import { getConnectionsHealth } from "@/modules/connections/contract";
+import { getMilestoneSummary } from "@/modules/consulting/contract";
+
+const SHELL_STALE_MS = 5 * 60_000;
 
 function NotFoundComponent() {
   return (
@@ -76,8 +80,6 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  // The global period lives on the root so every screen shares it. Links keep
-  // it across navigations and the URL stays clean while it equals the default.
   validateSearch: (search: Partial<PeriodSearch> & SearchSchemaInput): PeriodSearch =>
     parsePeriodSearch(search),
   search: {
@@ -120,6 +122,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
+  loader: async () => {
+    const [maturity, connections] = await Promise.all([
+      getMilestoneSummary(),
+      getConnectionsHealth(),
+    ]);
+    return { status: { maturity, connectionsAlert: connections.hasError } };
+  },
+  staleTime: SHELL_STALE_MS,
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -142,10 +152,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { status } = Route.useLoaderData();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell assistant={<AssistantPanel />} assistantFab={<AssistantFab />} />
+      <AppShell assistant={<AssistantPanel />} assistantFab={<AssistantFab />} status={status} />
     </QueryClientProvider>
   );
 }

@@ -1,7 +1,6 @@
 import { prismaClient } from "@/shared/dependencies/prismaClient";
 import { sectionFor } from "@/modules/consulting/contract.server";
-import { inventoryHealthFor } from "@/modules/products/contract.server";
-import type { LogisticsScreen } from "./logistics.types";
+import type { ManagementScreen } from "./management.types";
 
 async function clientIdFor(slug: string) {
   const client = await prismaClient.client.findUnique({ where: { slug }, select: { id: true } });
@@ -9,11 +8,7 @@ async function clientIdFor(slug: string) {
   return client.id;
 }
 
-export async function logisticsScreen(clientSlug: string): Promise<LogisticsScreen> {
+export async function managementScreen(clientSlug: string): Promise<ManagementScreen> {
   const clientId = await clientIdFor(clientSlug);
-  const [section, inventory] = await Promise.all([
-    sectionFor(clientId, "logistics"),
-    inventoryHealthFor(clientId),
-  ]);
-  return { section, inventory };
+  return { section: await sectionFor(clientId, "management") };
 }

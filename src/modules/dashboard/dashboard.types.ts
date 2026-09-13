@@ -1,4 +1,6 @@
 import type { AlertItem } from "@/modules/alerts/contract";
+import type { MilestoneCriterion } from "@/modules/consulting/contract";
+import type { Recommendation } from "@/shared/ui/recommendationList.types";
 import type { Fidelity } from "@/generated/prisma/enums";
 import type {
   BreakdownSlice,
@@ -81,8 +83,16 @@ export type DashboardMatrixRow = {
   values: (number | null)[];
 };
 
+export type DashboardMilestone = {
+  criteria: MilestoneCriterion[];
+  achieved: number;
+  total: number;
+};
+
 export type DashboardOverview = {
   alerts: AlertItem[];
+  milestone: DashboardMilestone;
+  recommendations: Recommendation[];
   metrics: DashboardMetric[];
   series: Record<DashboardMetricKey, Series>;
   bySource: BreakdownSlice[];

@@ -9,16 +9,22 @@ the numbers, and drives the engagement through four areas — **Dinheiro**,
 and open recommendations. An AI assistant sits beside every screen and answers
 questions grounded in the client's own numbers.
 
-## Current stage: presentation prototype
+## Current stage: single-client prototype on a real database
 
-- No backend calls, no login, no real integrations.
-- The consulting screens render fixtures (`src/modules/<x>/<x>Fixture.ts`)
-  describing one client
-  ("Loja Aurora") in August 2026.
+- One repository holds both halves: the server side is the `*Controller.ts`
+  (TanStack Start server functions) and `*Service.ts` (Prisma/PostgreSQL)
+  files of each module. Every screen reads its loader payload from the
+  database; nothing renders a fixture.
+- No login, no real integrations: the data is a deterministic seed
+  (`prisma/seed.ts` + `seedAnalytics.ts`) describing one client ("Loja
+  Aurora") with 18 months of orders ending on 2026-09-10. Connecting real
+  sources (ERP, storefront, ad platforms, GA4) is the next backend stage —
+  see [data-layer-migration.md](data-layer-migration.md).
+- The consulting layer (pillars, KPIs, recommendations, milestone) is seeded
+  copy; the data screens (Pedidos, Produtos, Clientes, Dinheiro › DRE,
+  Marketing, Metas, Métricas, Influenciadores) are computed from the facts.
 - The assistant replies with canned text.
 - The upload area in Conexões is visual only.
-- A Prisma/PostgreSQL data layer exists (schema + seed) but the UI does not
-  read from it yet — see [data-layer-migration.md](data-layer-migration.md).
 
 ## Core concepts
 
