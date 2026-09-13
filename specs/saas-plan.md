@@ -1,6 +1,6 @@
 # SaaS plan — tenants, roles, onboarding, connector catalog
 
-Status: **approved 2026-09-13, in execution** — board in `saas-tasks.md`.
+Status: **delivered 2026-09-13** — board in `saas-tasks.md`; behaviour documented in `saas.md`.
 
 ## Why
 

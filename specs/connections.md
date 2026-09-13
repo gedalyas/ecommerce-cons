@@ -1,9 +1,9 @@
 # Conexões (`/conexoes`)
 
-Module: `src/modules/connections`. Route loader calls `getConnectionsScreen`;
-the payload is `ConnectionsScreen` (sources + summary). Seed input:
-`connectionsFixture.ts` (name, kind, status, `lastSyncedAt`).
-Lists the data sources feeding the dashboard, one per row.
+Module: `connections` (web + API). Route loader calls `getConnectionsScreen`; the payload is
+`ConnectionsScreen` (`connectors` — the catalog with the store's status — and `summary`).
+Every store gets one `data_source` row per connector when it is created (`provisionStore`).
+Lists the connectors, one per row.
 
 ## Summary banner
 

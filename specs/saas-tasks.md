@@ -5,7 +5,7 @@ something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **S1–S5 done (2026-09-13)** — last updated 2026-09-13
+Status: **S0–S6 done (2026-09-13)** — the SaaS plan is complete — last updated 2026-09-13
 
 ---
 
@@ -97,5 +97,14 @@ today)`; `PROTOTYPE_TODAY` is gone
 
 ## S6 — Docs
 
-- [ ] `specs/saas.md`, `connections.md`, `sections.md`, `dashboard.md`, `product-overview.md`,
-      `README.md`, CLAUDE.md updated; board closed
+- [x] `specs/saas.md` written; `connections.md`, `dashboard.md`, `product-overview.md`,
+      `specs/README.md`, `README.md` and CLAUDE.md (tenancy, session guard in `beforeLoad`,
+      consulting layer, empty stores, clock) updated; board closed
+
+## Follow-ups (not scheduled)
+
+- Password reset and e-mail delivery of invitations (today the invitee is told by hand)
+- OAuth connectors when the apps exist; the request flow already records the demand
+- Per-store settings beyond the profile (timezone use, currency), store archiving
+- Sync labels per source use `lastSyncedAt` only; a connector sync log is the next step
+- The assistant still answers with canned text

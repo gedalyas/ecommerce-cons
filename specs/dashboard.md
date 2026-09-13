@@ -6,8 +6,8 @@ with the global params (`?inicio&fim&por&comparar&canal`); the payload is
 (`src/modules/alerts`); milestone criteria and open recommendations come from
 the database through `consulting/contract.server.ts`.
 
-Header: title "Dashboard", subtitle "Visão consolidada de {período} · Loja
-Aurora". Below it the controls row: `PeriodSelector` + `ChannelToggle`.
+Header: title "Dashboard", subtitle "Visão consolidada de {período}". Below it
+the controls row: `PeriodSelector` + `ChannelToggle`.
 
 Blocks, in order:
 

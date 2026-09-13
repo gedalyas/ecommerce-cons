@@ -31,6 +31,7 @@ because that is what ships.
 | [backend-plan.md](backend-plan.md)                                                 | Plan: workspaces, `apps/api` (Express) and `packages/contracts` for web + mobile    |
 | [backend-tasks.md](backend-tasks.md)                                               | Task checklist for the backend plan — tick as work lands                            |
 | [ingestion-plan.md](ingestion-plan.md)                                             | Plan: CSV imports through Conexões — the first real-data door                       |
+| [saas.md](saas.md)                                                                 | Roles, invitations, the active store, connectors, the engagement per store          |
 | [ingestion-tasks.md](ingestion-tasks.md)                                           | Task checklist for the ingestion plan — tick as work lands                          |
 | [saas-plan.md](saas-plan.md)                                                       | Plan: tenants, roles, invitations, connector catalog, no demo data                  |
 | [saas-tasks.md](saas-tasks.md)                                                     | Task checklist for the SaaS plan — tick as work lands                               |
@@ -39,6 +40,7 @@ because that is what ships.
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from  |
 | [decisions/](decisions/)                                                           | Architecture decision records (one dated note per decision)                         |
 
-The single fictional client is **Loja Aurora**; all numbers come from the seed. When a
+There is no demo tenant: every number belongs to a real store, or to the development
+seed's "Loja Exemplo". When a
 spec and the code disagree, fix one of them in the same change — they must not
 drift.

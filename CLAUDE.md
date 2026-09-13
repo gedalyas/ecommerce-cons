@@ -1,6 +1,7 @@
 # CLAUDE.md — E-commerce Insights
 
-E-commerce consulting dashboard ("E-commerce Insights") for one fictional client, Loja Aurora.
+E-commerce consulting SaaS ("E-commerce Insights"): many stores (tenants), three roles
+(`ADMIN`, `CONSULTANT`, `CLIENT`), access by invitation — `specs/saas.md`.
 **One repository, npm workspaces, four of them:**
 
 | Workspace            | Package                | What it is                                                                                   |
@@ -42,7 +43,8 @@ npm run check:cycles  # web, api and contracts; CI adds --max-files 0
 npm test              # vitest projects: web, api, contracts, database, scripts
 npm run format:check  # prettier, one config at the root
 npm run build         # web (Nitro output) + api (esbuild bundle in apps/api/dist)
-npm run db:migrate | db:seed | db:generate | db:studio | db:reset   # proxies to packages/database
+npm run db:migrate | db:seed | db:seed:dev | db:generate | db:studio | db:reset   # proxies to packages/database
+# db:seed creates the admin only (ADMIN_EMAIL / ADMIN_PASSWORD); db:seed:dev adds "Loja Exemplo" for local work
 ```
 
 **Definition of done for any change:** `typecheck`, `lint` (at or under the warning cap, per
@@ -86,7 +88,8 @@ packages/*  → node_modules only; contracts has no React, no Prisma, no TanStac
 **A module is a business capability, not an entity.** `orders`, `customers`, `money`,
 `marketing`, `products`, `logistics`, `goals`, `dashboard`, `connections`, `assistant`,
 `management`, `consulting`, `alerts` (API only), `analysis`, `influencers`, `auth`, `health`
-(API only), `imports` (CSV ingestion). If describing the module needs an "and", it is two modules — a sibling top-level
+(API only), `imports` (CSV ingestion), `store` (onboarding and settings), `admin` (staff
+panel). If describing the module needs an "and", it is two modules — a sibling top-level
 folder, never a subfolder (`MAX_MODULE_DEPTH = 0`). Which files go along is decided by the
 direction of the dependency, not by the name.
 
@@ -101,7 +104,8 @@ direction of the dependency, not by the name.
 2. **I/O only in the orchestrator.** Prisma is touched in `apps/api/**/*Service.ts` only. In
    the web, the API and the session are touched in `*Controller.ts` (the BFF) and in
    `shared/dependencies/`; never in a component, never in a pure core file. The clock is a
-   parameter (`PROTOTYPE_TODAY` from `contracts/shared/clock`, `now()` injected in the API).
+   parameter (`todayIso()` from `contracts/shared/clock`; the API reads `currentDay()` from
+   `shared/config/clock`, which honours `DEMO_TODAY`; `now()` is injected into routers).
 3. **Pure core in its own file, with a colocated test.** Every calculation, classification,
    parser or rule is a file that imports no infrastructure and is born with `foo.test.ts`
    beside it. Server-only rules live in the API module (`costEngine`, `rfmSegments`,
@@ -190,6 +194,11 @@ module load order cannot form a runtime cycle either.
   `asyncHandler(controller.method)`. Paths are English, one endpoint per screen payload
   (`GET /orders?aba=…`), writes are `POST` / `PUT /:id` / `DELETE /:id`
   (`specs/backend-plan.md` has the table). Reads answer 200, creates 201, deletes 204.
+- **Every data endpoint works on the active store.** `requireAuth` puts the principal
+  (`{ userId, role }`) on the request; `resolveClient` reads `x-client-id`, checks the role's
+  access (`storeAccess.ts`) and sets `req.auth.clientId`. Services take `clientId` and never
+  see roles; controllers that write the consulting layer check `role !== "CLIENT"`. Routes
+  without a store (auth, `/me`, `/admin`, `POST /stores`) are mounted before `resolveClient`.
 - **Controller = transport.** `authOf(req)` for the client, `screenQuery(req, schema)` for
   the global period + the screen's zod schema (`coerceQuery` turns query strings into the
   numbers, booleans, arrays and nulls the schema expects), `parseOrThrow(schema, req.body)`
@@ -216,11 +225,18 @@ module load order cannot form a runtime cycle either.
 ## Web side (`apps/web`)
 
 - **Route file = head() + loader + component.** `validateSearch` with the schema from
-  `@ecommerce/contracts/<domain>`, `stripSearchParams(defaults)`, `loaderDeps: ({ search })
-=> search`, `loader: ({ deps }) => getXScreen({ data: deps })`, `errorComponent` rendering
-  `RequestError` with `router.invalidate()`. The root route owns the global period params,
-  retains them across navigation, and its loader loads the session user: no session → redirect
-  to `/entrar`, and the login page renders without the shell.
+  `@ecommerce/contracts/<domain>`, `loaderDeps: ({ search }) => search`,
+  `loader: ({ deps }) => getXScreen({ data: deps })`, `errorComponent` rendering
+  `RequestError` with `router.invalidate()`. The root route owns the global period params
+  (retained across navigation, defaults stripped by `stripPeriodDefaults`) and guards every
+  navigation in `beforeLoad` — never in a loader, which would race the children: no session →
+  `/entrar`; no active store → `/configurar-loja` (client) or `/admin` (staff); clients never
+  reach `/admin`. The session state (user, stores, active store) travels in the route
+  context; the loader only fetches the shell status.
+- **Session and active store.** `shared/dependencies/session.ts` keeps tokens, the user, the
+  active store and a refresh stamp; `apiFetch` sends `x-client-id`; the user's store list is
+  refreshed from `/me` when stale. After sign-up or onboarding, navigate with
+  `window.location.assign` so every cache starts from the new session.
 - **Controller = BFF.** `createServerFn({ method }).validator(schema).handler(({ data }) =>
 apiFetch<Shape>("/path", { query | body }))`. Same names and signatures the components
   already call through `useServerFn`. `apiFetch` adds the bearer token from the session,
@@ -235,9 +251,18 @@ apiFetch<Shape>("/path", { query | body }))`. Same names and signatures the comp
 - **Components render; hooks and loaders orchestrate; pure files compute.** A rule found inline
   in a `.tsx` moves to `contracts` (if the API needs it too) or to a `.ts` beside it, with a
   test.
+- **Consulting layer.** Area screens render `ConsultingSection` through
+  `consulting/consultingUi.ts` (live KPIs via `metricToTile`, manual KPIs as the consultant's
+  text, "—" with a C seal when empty) and pass `pillarActionOf(section)` so staff get the
+  `PillarEditor`; the dashboard shows the `MilestoneEditor` for staff. No copy about a store
+  lives in code: titles come from `contracts/consulting/engagementTemplate.ts`, values from
+  the API.
+- **Empty stores are normal.** A new tenant has no orders: every screen must render with
+  zeros, "—" and the DataTable empty message, never a blank chart or a 500.
 - Never edit `src/routeTree.gen.ts`; keep `<Outlet />` in `AppShell`; do not simplify
   `src/server.ts` / `src/start.ts`. Adding a route means adding it to `src/routes.ts` and
-  restarting the dev server so the tree regenerates.
+  restarting the dev server so the tree regenerates (a running server keeps a stale copy of
+  `routes.ts` and overwrites the tree).
 
 ## Testability
 
@@ -371,14 +396,15 @@ re-open it in six months.
 
 ## Where to look
 
-| Need                                    | File                                                                                                     |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| The backend plan, the endpoint table    | `specs/backend-plan.md`, board in `specs/backend-tasks.md`                                               |
-| The full architecture rulebook          | `specs/architecture.md`; the Arko dossier in `specs/reference/`                                          |
-| A screen's behaviour and formulas       | `specs/<screen>.md` (`dashboard`, `orders`, `finance`, `products`, `customers`, `marketing`, `sections`) |
-| Global period params and windows        | `packages/contracts/src/shared/period.ts`, `periodWindow.ts`                                             |
-| Metric shapes (`MetricValue`, `Series`) | `packages/contracts/src/shared/metric.types.ts`, `metricValue.ts`, `metricFormat.ts`                     |
-| The demo clock                          | `packages/contracts/src/shared/clock.ts` (`PROTOTYPE_TODAY = 2026-09-10`)                                |
-| Auth, session, API client               | `apps/api/src/modules/auth`, `apps/web/src/shared/dependencies/`, `apps/web/src/modules/auth`            |
-| CSV import pipeline and templates       | `specs/imports.md`, `apps/api/src/modules/imports`, `packages/contracts/src/imports`                     |
-| Design-system day-to-day rules          | `apps/web/src/shared/ui/README.md`, `specs/design-system.md`                                             |
+| Need                                    | File                                                                                                                     |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| The backend plan, the endpoint table    | `specs/backend-plan.md`, board in `specs/backend-tasks.md`                                                               |
+| The full architecture rulebook          | `specs/architecture.md`; the Arko dossier in `specs/reference/`                                                          |
+| A screen's behaviour and formulas       | `specs/<screen>.md` (`dashboard`, `orders`, `finance`, `products`, `customers`, `marketing`, `sections`)                 |
+| Global period params and windows        | `packages/contracts/src/shared/period.ts`, `periodWindow.ts`                                                             |
+| Metric shapes (`MetricValue`, `Series`) | `packages/contracts/src/shared/metric.types.ts`, `metricValue.ts`, `metricFormat.ts`                                     |
+| The clock                               | `packages/contracts/src/shared/clock.ts` (`todayIso`), `apps/api/src/shared/config/clock.ts` (`DEMO_TODAY`)              |
+| Tenancy, roles, invitations, connectors | `specs/saas.md`, `apps/api/src/modules/{auth,store,admin,connections}`, `packages/contracts/src/{connectors,consulting}` |
+| Auth, session, API client               | `apps/api/src/modules/auth`, `apps/web/src/shared/dependencies/`, `apps/web/src/modules/auth`                            |
+| CSV import pipeline and templates       | `specs/imports.md`, `apps/api/src/modules/imports`, `packages/contracts/src/imports`                                     |
+| Design-system day-to-day rules          | `apps/web/src/shared/ui/README.md`, `specs/design-system.md`                                                             |

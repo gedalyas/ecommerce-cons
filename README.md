@@ -3,8 +3,9 @@
 Dashboard de consultoria de e-commerce: indicadores de **Dinheiro**, **Marketing**,
 **Logística** e **Gestão** em um painel só, mais o módulo de dados (Pedidos, Produtos,
 Clientes, DRE, Metas, Métricas, Influenciadores), um assistente de IA acoplado e um "marco de
-maturidade" que destrava áreas conforme o cliente evolui. Um único cliente de exemplo, **Loja
-Aurora**, com 18 meses de pedidos gerados por seed determinística. Interface em português.
+maturidade" que destrava áreas conforme o cliente evolui. É um SaaS: cada loja é um cliente
+com seus dados, seus usuários e suas conexões; a consultoria libera e-mails, acompanha as lojas
+que atende e edita o acompanhamento. Interface em português.
 
 ## Stack
 
@@ -30,8 +31,11 @@ make ecom
 
 Esse alvo faz tudo: cria o `.env`, instala dependências, sobe o Postgres em Docker, aplica as
 migrações, roda o seed e inicia os dois dev servers — API em <http://localhost:3001/api/v1> e
-web em <http://localhost:8080>. Login do seed: `consultor@lojaaurora.com.br` / `aurora2026`
-(`SEED_USER_PASSWORD` no `.env`).
+web em <http://localhost:8080>. O seed cria só o administrador (`ADMIN_EMAIL` /
+`ADMIN_PASSWORD` no `.env`, padrão `admin@ecommerce-insights.dev` / `admin2026`). Para uma
+loja de desenvolvimento com 18 meses de dados sintéticos, rode `npm run db:seed:dev` (loja
+"Loja Exemplo", usuários `cliente@lojaexemplo.dev` e `consultor@ecommerce-insights.dev`,
+senha `SEED_USER_PASSWORD`) e mantenha `DEMO_TODAY=2026-09-10` no `.env`.
 
 Outros alvos úteis (`make help` lista todos):
 
