@@ -41,7 +41,7 @@ because that is what ships.
 | [operations-plan.md](operations-plan.md)                                           | Activity log and store archiving — plan and endpoints                                |
 | [operations-tasks.md](operations-tasks.md)                                         | Task checklist for the operations plan — tick as work lands                          |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force; see CLAUDE.md)   |
-| [reference/](reference/)                                                           | The Arko backend and frontend `CLAUDE.md` files this repo's rules derive from        |
+| [reference/](reference/)                                                           | The Arko `CLAUDE.md` files the rules derive from, and the Arko Guru/ZapSign guide    |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from   |
 | [decisions/](decisions/)                                                           | Architecture decision records (one dated note per decision)                          |
 
