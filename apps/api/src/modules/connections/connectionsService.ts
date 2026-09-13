@@ -13,6 +13,7 @@ import {
   type StoreConnector,
 } from "@ecommerce/contracts/connectors";
 import { prismaClient } from "@ecommerce/database/client";
+import { recordActivity } from "@/modules/audit/contract";
 import { currentDay } from "@/shared/config/clock";
 import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError } from "@/shared/http/httpError";
@@ -134,6 +135,10 @@ export async function requestConnection(
       requestedById: auth.userId,
     },
     select: requestSelect,
+  });
+  await recordActivity(auth, auth.clientId, {
+    action: "CONNECTION_REQUESTED",
+    connector: connector.label,
   });
   return toRequest(row);
 }

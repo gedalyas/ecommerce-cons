@@ -1,5 +1,6 @@
 import {
   IMPORT_MAX_ROWS,
+  importKindLabel,
   type ImportJob,
   type ImportKind,
   type ImportPreview,
@@ -9,7 +10,9 @@ import {
 import type { ConnectorKey } from "@ecommerce/contracts/connectors";
 import { prismaClient } from "@ecommerce/database/client";
 import type { ImportStatus } from "@ecommerce/database/enums";
+import { recordActivity } from "@/modules/audit/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
+import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
 import { CsvLimitError, decodeCsvBuffer, hasBinaryContent, parseCsv } from "./csvParse";
 import { importOutcome, type ImportCounts } from "./importOutcome";
@@ -174,12 +177,12 @@ const toJob = (row: JobRow, canUndo: boolean): ImportJob => ({
 });
 
 export async function runImport(
-  clientId: string,
-  userId: string,
+  auth: AuthContext,
   kind: ImportKind,
   file: UploadedFile,
   now: Date,
 ): Promise<ImportJob> {
+  const { clientId, userId } = auth;
   const undo = undoRecorder();
   const { counts, errors, sources } = await process({ clientId, kind, file, undo });
   const status = importOutcome(counts);
@@ -204,6 +207,13 @@ export async function runImport(
   });
   const entries = counts.imported > 0 ? undo.entries() : [];
   await saveUndoEntries(clientId, kind, job.id, entries);
+  await recordActivity(auth, clientId, {
+    action: "IMPORT_RUN",
+    kind: importKindLabel[kind],
+    fileName: file.name,
+    imported: counts.imported,
+    total: counts.total,
+  });
   return toJob(job, entries.length > 0);
 }
 
@@ -223,7 +233,13 @@ export async function importJobOf(clientId: string, id: string): Promise<ImportJ
   return toJob(row, (await undoableJobIds(clientId)).has(row.id));
 }
 
-export async function undoImportJob(clientId: string, id: string, now: Date): Promise<ImportJob> {
-  await undoImport(clientId, id, now);
-  return importJobOf(clientId, id);
+export async function undoImportJob(auth: AuthContext, id: string, now: Date): Promise<ImportJob> {
+  await undoImport(auth.clientId, id, now);
+  const job = await importJobOf(auth.clientId, id);
+  await recordActivity(auth, auth.clientId, {
+    action: "IMPORT_UNDONE",
+    kind: importKindLabel[job.kind],
+    fileName: job.fileName,
+  });
+  return job;
 }

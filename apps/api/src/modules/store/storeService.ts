@@ -3,9 +3,10 @@ import { connectorCatalog, connectorKindLabel } from "@ecommerce/contracts/conne
 import { engagementTemplate, milestoneTemplate } from "@ecommerce/contracts/consulting";
 import type { Store, StoreProfileParsed } from "@ecommerce/contracts/store";
 import { prismaClient } from "@ecommerce/database/client";
+import { recordActivity } from "@/modules/audit/contract";
 import { provisionStore } from "@ecommerce/database/provisionStore";
 import { slugify } from "@/modules/auth/contract";
-import type { Principal } from "@/shared/http/auth.types";
+import type { AuthContext, Principal } from "@/shared/http/auth.types";
 import { forbidden, HttpError, notFound } from "@/shared/http/httpError";
 
 const storeSelect = {
@@ -100,6 +101,7 @@ export async function createStore(
     }
     return created;
   });
+  await recordActivity(principal, store.id, { action: "STORE_CREATED", storeName: store.name });
   return { id: store.id, slug: store.slug, name: store.name, onboardedAt: now.toISOString() };
 }
 
@@ -112,11 +114,12 @@ export async function storeOf(clientId: string): Promise<Store> {
   return toStore(row);
 }
 
-export async function updateStore(clientId: string, input: StoreProfileParsed): Promise<Store> {
+export async function updateStore(auth: AuthContext, input: StoreProfileParsed): Promise<Store> {
   const row = await prismaClient.client.update({
-    where: { id: clientId },
+    where: { id: auth.clientId },
     data: input,
     select: storeSelect,
   });
+  await recordActivity(auth, auth.clientId, { action: "STORE_UPDATED", storeName: row.name });
   return toStore(row);
 }

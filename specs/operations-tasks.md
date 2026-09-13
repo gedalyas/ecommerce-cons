@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **O0 done, O1 next** — last updated 2026-09-13
+Status: **O0–O1 done, O2 next** — last updated 2026-09-13
 
 ---
 
@@ -15,16 +15,19 @@ Status: **O0 done, O1 next** — last updated 2026-09-13
 
 ## O1 — Audit events
 
-- [ ] Schema: `AuditEvent` (`clientId?`, `actorId?`, `actorName`, `actorRole`, `action`,
+- [x] Schema: `AuditEvent` (`clientId?`, `actorId?`, `actorName`, `actorRole`, `action`,
       `summary`, `metadata Json?`, `createdAt`; index `[clientId, createdAt]`); migration
-- [ ] Contracts `audit/`: `auditActions` + `auditActionLabel`, `ActivityEntry`,
+- [x] Contracts `audit/`: `auditActions` + `auditActionLabel`, `ActivityEntry`,
       `ActivityPage`, `activityQuerySchema`
-- [ ] API `modules/audit`: `recordActivity(actor, event)` (never throws), pure
+- [x] API `modules/audit`: `recordActivity(actor, event)` (never throws), pure
       `auditSummary.ts` (action + metadata → Portuguese sentence, tested)
-- [ ] Recording: admin (invite created/resent/revoked, consultants assigned, request
+- [x] Recording: admin (invite created/resent/revoked, consultants assigned, request
       resolved), auth (user registered), store (created, updated), imports (run, undone),
       consulting (pillar, manual KPI, recommendation created/updated/done/deleted,
-      milestone), connections (request); consulting and store services take `AuthContext`
+      milestone), connections (request); consulting and store services take `AuthContext`;
+      imports take it too (`runImport(auth, …)`, `undoImportJob(auth, …)`); migration
+      `20260913200000_audit_event`; `visibleClientIds` published by the admin contract and
+      injected into the activity routers from `app.ts` (audit never imports admin)
 
 ## O2 — Activity screens
 

@@ -33,8 +33,7 @@ export function importsController({ now }: ImportsDependencies) {
   return {
     async upload(req: Request, res: Response) {
       const { kind, file } = uploadedCsv(req);
-      const { clientId, userId } = authOf(req);
-      res.status(201).json(await runImport(clientId, userId, kind, file, now()));
+      res.status(201).json(await runImport(authOf(req), kind, file, now()));
     },
     async preview(req: Request, res: Response) {
       const { kind, file } = uploadedCsv(req);
@@ -49,7 +48,7 @@ export function importsController({ now }: ImportsDependencies) {
     },
     async undo(req: Request, res: Response) {
       const { id } = parseOrThrow(importIdSchema, req.params);
-      res.json(await undoImportJob(authOf(req).clientId, id, now()));
+      res.json(await undoImportJob(authOf(req), id, now()));
     },
     templates(_req: Request, res: Response) {
       res.json(importTemplates);

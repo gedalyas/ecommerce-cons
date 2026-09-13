@@ -1,7 +1,8 @@
 import cors from "cors";
 import express, { type Express } from "express";
 import { createAnalysisRouter } from "@/modules/analysis/contract";
-import { createAdminRouter } from "@/modules/admin/contract";
+import { createAdminRouter, visibleClientIds } from "@/modules/admin/contract";
+import { createStaffActivityRouter, createStoreActivityRouter } from "@/modules/audit/contract";
 import { createAuthRouter, createRequireAuth, resolveClient } from "@/modules/auth/contract";
 import { createConnectionsRouter } from "@/modules/connections/contract";
 import { createConsultingRouter } from "@/modules/consulting/contract";
@@ -47,6 +48,7 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
     API_PREFIX,
     requireAuth,
     createAdminRouter({ now, mailer, appUrl }),
+    createStaffActivityRouter({ visibleStoresOf: visibleClientIds }),
     createStoreOnboardingRouter({ now }),
   );
 
@@ -66,6 +68,7 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
     createConnectionsRouter(),
     createConsultingRouter({ now }),
     createImportsRouter({ now, rateLimited }),
+    createStoreActivityRouter({ visibleStoresOf: visibleClientIds }),
   ];
   app.use(API_PREFIX, requireAuth, resolveClient, ...storeRouters);
 

@@ -145,6 +145,7 @@ model User {
   assignments        ConsultantAssignment[]
   invitationsSent    Invitation[]
   connectionRequests ConnectionRequest[]
+  auditEvents        AuditEvent[]
 
   @@index([clientId])
   @@map("user")
@@ -650,8 +651,32 @@ model Client {
   costExpenses       CostExpense[]
   goals              Goal[]
   influencers        Influencer[]
+  auditEvents        AuditEvent[]
 
   @@map("client")
+}
+
+/// Who did what on a store. `clientId` is null for events outside any store (inviting a
+/// consultant). Actor name and role are copied at write so the entry survives the user.
+model AuditEvent {
+  id        String   @id @default(cuid())
+  clientId  String?  @map("client_id")
+  actorId   String?  @map("actor_id")
+  actorName String   @map("actor_name")
+  actorRole UserRole @map("actor_role")
+  /// Closed set in packages/contracts/src/audit.
+  action    String
+  /// Portuguese sentence produced at write.
+  summary   String
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  actor  User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([clientId, createdAt])
+  @@index([actorId])
+  @@map("audit_event")
 }
 
 /// One pillar of the engagement for one store; the titles and the KPI list come from the

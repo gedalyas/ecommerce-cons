@@ -6,9 +6,15 @@ import type {
   Invitation,
   InvitationInput,
 } from "@ecommerce/contracts/admin";
-import type { ConnectionRequestResolveInput, ConnectorKey } from "@ecommerce/contracts/connectors";
+import {
+  connectionRequestStatusLabel,
+  connectorOf,
+  type ConnectionRequestResolveInput,
+  type ConnectorKey,
+} from "@ecommerce/contracts/connectors";
 import { invitationStatusOf } from "@ecommerce/contracts/admin";
 import { prismaClient } from "@ecommerce/database/client";
+import { recordActivity } from "@/modules/audit/contract";
 import {
   INVITATION_TOKEN_SECONDS,
   hashToken,
@@ -29,7 +35,7 @@ function requireStaff(principal: Principal) {
   if (principal.role === "CLIENT") throw forbidden();
 }
 
-async function visibleClientIds(principal: Principal): Promise<string[] | null> {
+export async function visibleClientIds(principal: Principal): Promise<string[] | null> {
   if (principal.role === "ADMIN") return null;
   const rows = await prismaClient.consultantAssignment.findMany({
     where: { consultantId: principal.userId },
@@ -231,6 +237,12 @@ export async function createInvitation(
     select: invitationSelect,
   });
   await deliverInvitation(row, token, delivery);
+  await recordActivity(principal, row.client ? input.clientId : null, {
+    action: "INVITATION_CREATED",
+    email: row.email,
+    role: row.role,
+    storeName: row.client?.name ?? null,
+  });
   return toInvitation(row, now);
 }
 
@@ -255,6 +267,12 @@ export async function resendInvitation(
     select: invitationSelect,
   });
   await deliverInvitation(row, token, delivery);
+  await recordActivity(principal, existing.clientId, {
+    action: "INVITATION_RESENT",
+    email: row.email,
+    role: row.role,
+    storeName: row.client?.name ?? null,
+  });
   return toInvitation(row, now);
 }
 
@@ -262,12 +280,24 @@ export async function revokeInvitation(principal: Principal, id: string): Promis
   requireStaff(principal);
   const row = await prismaClient.invitation.findUnique({
     where: { id },
-    select: { clientId: true, acceptedAt: true },
+    select: {
+      clientId: true,
+      acceptedAt: true,
+      email: true,
+      role: true,
+      client: { select: { name: true } },
+    },
   });
   if (!row) throw notFound("Convite não encontrado");
   if (row.acceptedAt) throw new HttpError(409, "Este convite já foi usado.");
   if (row.clientId) await assertVisible(principal, row.clientId);
   await prismaClient.invitation.delete({ where: { id } });
+  await recordActivity(principal, row.clientId, {
+    action: "INVITATION_REVOKED",
+    email: row.email,
+    role: row.role,
+    storeName: row.client?.name ?? null,
+  });
 }
 
 export async function assignConsultants(
@@ -286,6 +316,10 @@ export async function assignConsultants(
       data: consultants.map((c) => ({ clientId, consultantId: c.id })),
     }),
   ]);
+  await recordActivity(principal, clientId, {
+    action: "CONSULTANTS_ASSIGNED",
+    names: consultants.map((c) => c.name),
+  });
   return consultants;
 }
 
@@ -307,6 +341,11 @@ export async function resolveRequest(
     where: { id },
     data: { status: input.status, note: input.note, resolvedAt: resolved ? now : null },
     select: requestSelect,
+  });
+  await recordActivity(principal, existing.clientId, {
+    action: "CONNECTION_REQUEST_RESOLVED",
+    connector: connectorOf(row.connectorKey as ConnectorKey).label,
+    status: connectionRequestStatusLabel[row.status],
   });
   return toRequest(row);
 }

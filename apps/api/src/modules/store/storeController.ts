@@ -17,7 +17,7 @@ export function storeController({ now }: StoreDependencies) {
     },
     async update(req: Request, res: Response) {
       const input = parseOrThrow(storeProfileSchema, req.body);
-      res.json(await updateStore(authOf(req).clientId, input));
+      res.json(await updateStore(authOf(req), input));
     },
   };
 }

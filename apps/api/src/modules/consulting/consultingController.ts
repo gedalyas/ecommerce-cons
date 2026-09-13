@@ -44,37 +44,37 @@ export function consultingController({ now }: ConsultingDependencies) {
     async updateMilestone(req: Request, res: Response) {
       const { key } = parseOrThrow(milestoneKeySchema, req.params);
       const input = parseOrThrow(milestoneUpdateSchema, req.body);
-      res.json(await updateMilestone(editorOf(req).clientId, key, input));
+      res.json(await updateMilestone(editorOf(req), key, input));
     },
     async updatePillar(req: Request, res: Response) {
       const { pillarKey } = parseOrThrow(pillarKeySchema, req.params);
       const input = parseOrThrow(pillarUpdateSchema, req.body);
-      res.json(await updatePillar(editorOf(req).clientId, pillarKey, input));
+      res.json(await updatePillar(editorOf(req), pillarKey, input));
     },
     async setManualKpi(req: Request, res: Response) {
       const { pillarKey, kpiKey } = parseOrThrow(kpiKeySchema, req.params);
       const input = parseOrThrow(manualKpiInputSchema, req.body);
-      await setManualKpi(editorOf(req).clientId, pillarKey, kpiKey, input);
+      await setManualKpi(editorOf(req), pillarKey, kpiKey, input);
       res.status(204).end();
     },
     async createRecommendation(req: Request, res: Response) {
       const input = parseOrThrow(recommendationInputSchema, req.body);
-      res.status(201).json(await createRecommendation(editorOf(req).clientId, input));
+      res.status(201).json(await createRecommendation(editorOf(req), input));
     },
     async updateRecommendation(req: Request, res: Response) {
       const { id } = parseOrThrow(idSchema, req.params);
       const input = parseOrThrow(recommendationInputSchema, req.body);
-      res.json(await updateRecommendation(editorOf(req).clientId, id, input));
+      res.json(await updateRecommendation(editorOf(req), id, input));
     },
     async setRecommendationDone(req: Request, res: Response) {
       const { id } = parseOrThrow(idSchema, req.params);
       const { done } = parseOrThrow(recommendationDoneSchema, req.body);
-      await setRecommendationDone(editorOf(req).clientId, id, done, now());
+      await setRecommendationDone(editorOf(req), id, done, now());
       res.status(204).end();
     },
     async deleteRecommendation(req: Request, res: Response) {
       const { id } = parseOrThrow(idSchema, req.params);
-      await deleteRecommendation(editorOf(req).clientId, id);
+      await deleteRecommendation(editorOf(req), id);
       res.status(204).end();
     },
   };

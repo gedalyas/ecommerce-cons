@@ -4,6 +4,8 @@ import {
   type ConsultingRecommendation,
   type ConsultingSection,
   type LiveKpiValues,
+  milestoneTemplate,
+  pillarStatusLabel,
   type ManualKpiInput,
   type MilestoneCriterion,
   type MilestoneSummary,
@@ -13,6 +15,8 @@ import {
   type SectionKey,
 } from "@ecommerce/contracts/consulting";
 import { prismaClient } from "@ecommerce/database/client";
+import { recordActivity } from "@/modules/audit/contract";
+import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
 import {
   buildSection,
@@ -100,7 +104,8 @@ export async function openRecommendationsFor(
   return rows.map((r) => toRecommendation(toRow(r)));
 }
 
-export async function updatePillar(clientId: string, pillarKey: string, input: PillarUpdateInput) {
+export async function updatePillar(auth: AuthContext, pillarKey: string, input: PillarUpdateInput) {
+  const { clientId } = auth;
   const areaKey = areaKeyOfPillar(pillarKey);
   if (!areaKey) throw notFound("Pilar não encontrado");
   const row = await prismaClient.pillar.upsert({
@@ -116,6 +121,11 @@ export async function updatePillar(clientId: string, pillarKey: string, input: P
     update: { status: pillarStatusEnum[input.status], dataPending: input.dataPending || null },
     select: { key: true, status: true, dataPending: true },
   });
+  await recordActivity(auth, clientId, {
+    action: "PILLAR_UPDATED",
+    pillar: pillarTemplateOf(pillarKey)?.title ?? pillarKey,
+    status: pillarStatusLabel[input.status],
+  });
   return row;
 }
 
@@ -129,7 +139,8 @@ async function pillarIdOf(clientId: string, pillarKey: string | null): Promise<s
   return pillar.id;
 }
 
-export async function createRecommendation(clientId: string, input: RecommendationInput) {
+export async function createRecommendation(auth: AuthContext, input: RecommendationInput) {
+  const { clientId } = auth;
   const pillarId = await pillarIdOf(clientId, input.pillarKey);
   const position = await prismaClient.recommendation.count({ where: { clientId } });
   const row = await prismaClient.recommendation.create({
@@ -143,14 +154,16 @@ export async function createRecommendation(clientId: string, input: Recommendati
     },
     select: recommendationSelect,
   });
+  await recordActivity(auth, clientId, { action: "RECOMMENDATION_CREATED", text: input.text });
   return toRecommendation(toRow(row));
 }
 
 export async function updateRecommendation(
-  clientId: string,
+  auth: AuthContext,
   id: string,
   input: RecommendationInput,
 ) {
+  const { clientId } = auth;
   const pillarId = await pillarIdOf(clientId, input.pillarKey);
   const existing = await prismaClient.recommendation.findFirst({
     where: { clientId, id },
@@ -167,43 +180,66 @@ export async function updateRecommendation(
     },
     select: recommendationSelect,
   });
+  await recordActivity(auth, clientId, { action: "RECOMMENDATION_UPDATED", text: input.text });
   return toRecommendation(toRow(row));
 }
 
+async function recommendationTextOf(clientId: string, id: string): Promise<string> {
+  const row = await prismaClient.recommendation.findFirst({
+    where: { clientId, id },
+    select: { text: true },
+  });
+  if (!row) throw notFound("Recomendação não encontrada");
+  return row.text;
+}
+
 export async function setRecommendationDone(
-  clientId: string,
+  auth: AuthContext,
   id: string,
   done: boolean,
   now: Date,
 ) {
-  const result = await prismaClient.recommendation.updateMany({
-    where: { clientId, id },
+  const text = await recommendationTextOf(auth.clientId, id);
+  await prismaClient.recommendation.updateMany({
+    where: { clientId: auth.clientId, id },
     data: { doneAt: done ? now : null },
   });
-  if (result.count === 0) throw notFound("Recomendação não encontrada");
+  await recordActivity(auth, auth.clientId, {
+    action: done ? "RECOMMENDATION_DONE" : "RECOMMENDATION_REOPENED",
+    text,
+  });
 }
 
-export async function deleteRecommendation(clientId: string, id: string) {
-  const result = await prismaClient.recommendation.deleteMany({ where: { clientId, id } });
-  if (result.count === 0) throw notFound("Recomendação não encontrada");
+export async function deleteRecommendation(auth: AuthContext, id: string) {
+  const text = await recommendationTextOf(auth.clientId, id);
+  await prismaClient.recommendation.deleteMany({ where: { clientId: auth.clientId, id } });
+  await recordActivity(auth, auth.clientId, { action: "RECOMMENDATION_DELETED", text });
 }
 
-export async function updateMilestone(clientId: string, key: string, input: MilestoneUpdateInput) {
+export async function updateMilestone(auth: AuthContext, key: string, input: MilestoneUpdateInput) {
+  const { clientId } = auth;
   const position = await prismaClient.milestoneCriterion.count({ where: { clientId } });
   await prismaClient.milestoneCriterion.upsert({
     where: { clientId_key: { clientId, key } },
     create: { clientId, key, position, ...input },
     update: input,
   });
+  await recordActivity(auth, clientId, {
+    action: "MILESTONE_UPDATED",
+    criterion: milestoneTemplate.find((m) => m.key === key)?.name ?? key,
+    progress: input.progress,
+    achieved: input.achieved,
+  });
   return milestoneCriteriaFor(clientId);
 }
 
 export async function setManualKpi(
-  clientId: string,
+  auth: AuthContext,
   pillarKey: string,
   kpiKey: string,
   input: ManualKpiInput,
 ) {
+  const { clientId } = auth;
   const template = pillarTemplateOf(pillarKey);
   const kpi = template?.kpis.find((k) => k.key === kpiKey);
   if (!kpi || kpi.source !== "manual")
@@ -212,5 +248,11 @@ export async function setManualKpi(
     where: { clientId_pillarKey_kpiKey: { clientId, pillarKey, kpiKey } },
     create: { clientId, pillarKey, kpiKey, ...input },
     update: input,
+  });
+  await recordActivity(auth, clientId, {
+    action: "MANUAL_KPI_SET",
+    pillar: template?.title ?? pillarKey,
+    kpi: kpi.label,
+    value: input.value,
   });
 }

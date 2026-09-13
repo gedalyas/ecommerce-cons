@@ -12,6 +12,7 @@ import { hashPassword, verifyPassword } from "@ecommerce/database/passwordHash";
 import type { Principal } from "@/shared/http/auth.types";
 import { HttpError, unauthorized } from "@/shared/http/httpError";
 import type { Mailer } from "@/shared/mail/mailer.types";
+import { recordActivity } from "@/modules/audit/contract";
 import { passwordResetLink, passwordResetMail } from "./authMail";
 import { type StoreAccess } from "./storeAccess";
 import {
@@ -188,6 +189,10 @@ export async function register(input: RegisterInput, secret: string, now: Date) 
       data: { acceptedAt: now, tokenHash: null },
     });
     return created;
+  });
+  await recordActivity({ userId: user.id, role: user.role }, invitation.clientId, {
+    action: "USER_REGISTERED",
+    email: user.email,
   });
   return { user: await toAuthUser(user), tokens: await issueTokens(user, secret, now) };
 }
