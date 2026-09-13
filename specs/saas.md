@@ -16,15 +16,35 @@ fresh install has one user and no store.
 
 ## Access by invitation
 
-1. A staff user releases an e-mail on `/admin` › Convites (role, and for clients the store —
-   or "Nova loja", meaning the invitee creates one).
-2. The invitee opens `/cadastro` (the page checks the e-mail as it is typed and shows the
-   invitation: "Convite de cliente para Loja X"), sets name and password (`POST
-/auth/register`, invitation required), and is signed in.
+1. A staff user invites an e-mail on `/admin` › Convites (role, and for clients the store —
+   or "Nova loja", meaning the invitee creates one). The API issues a random token (sha256
+   stored, 7 days) and sends the link `/cadastro?convite=<token>` through the mailer; the
+   table shows Pendente · Expirado · Aceito, "Reenviar" rotates the token and sends again.
+2. The invitee opens the link: `/cadastro` resolves the token (`GET /auth/invitation`),
+   shows "Convite de cliente para Loja X" with the e-mail read-only, and `POST
+/auth/register` takes `{ token, name, password }` — the e-mail comes from the invitation, so
+   knowing a released address is not enough. An invalid, expired or used link explains
+   itself and points to `/entrar`; the hash is cleared on acceptance.
 3. A client without a store lands on `/configurar-loja` (name, segmento, plataforma, faixa de
    faturamento → `POST /stores`), which provisions the store: the four areas' pillars, the
    four milestone criteria and one data-source row per connector of the catalog. A
    consultant without stores lands on `/admin` until an admin assigns one.
+
+## Password reset
+
+"Esqueci minha senha" on `/entrar` opens `/esqueci-senha`; `POST /auth/password/forgot`
+always answers 202 (no account enumeration) and, when the e-mail exists, sends
+`/redefinir-senha?token=` (sha256 stored, 1 hour, single use). `POST /auth/password/reset`
+sets the new password, marks the token used and revokes every refresh token of the user.
+
+## E-mail
+
+`apps/api/src/shared/mail`: `Mailer` is injected into the auth and admin routers. With
+`SMTP_URL` set, nodemailer sends through that server as `MAIL_FROM`; without it, in
+development, each message is written as a text file to `MAIL_OUTBOX_DIR` (default
+`apps/api/outbox/`, gitignored) so the flows can be exercised offline. Production refuses to
+boot without `SMTP_URL`. Links use `APP_URL`. Templates are pure functions in
+`modules/auth/authMail.ts`.
 
 ## The active store
 

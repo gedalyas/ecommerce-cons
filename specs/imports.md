@@ -42,12 +42,33 @@ written in chunks of 200 inside transactions. The response (201) is the `ImportJ
 `Google Ads` / `TikTok Ads`, `Google Analytics`; `NOT_CONNECTED` or `ERROR` become `MANUAL`)
 and, for orders, the customer aggregates and RFM are refreshed.
 
+`POST /imports/preview` — same multipart, same rules 1–7 (30 previews / 15 min), but nothing
+is written: the answer is `ImportPreview` — `counts { total, valid, rejected }`, the first 50
+errors, a `summary` (count, Portuguese label, first and last date) and `sample` (the first 10
+mapped rows as typed cells: text, date, integer, currency — the web formats them) with its
+`columns`. Orders are grouped by number before sampling.
+
+`POST /imports/:id/undo` — undoes an import. While writing, the import records in
+`import_undo` what it touched (`previous = null` for a created row, the JSON of the replaced
+row otherwise): orders with their items, customers (name), products created for unknown
+SKUs, ad-spend days (platform + date) and traffic rows. Only the most recent non-undone job
+of its kind can be undone (409 otherwise — a later import may have overwritten the same
+keys); snapshots are kept for the three latest jobs per kind, so undoing twice in a row
+works, and purged beyond that. Undo deletes the created rows, restores the replaced ones
+(customers and products created by the import go only when nothing else references them),
+marks the job `UNDONE`, resets the data sources it stamped when no other import remains
+(`MANUAL` → `NOT_CONNECTED`) and, for orders, refreshes the customer aggregates. `ImportJob`
+carries `undoneAt` and `canUndo`.
+
 `GET /imports` (last 20), `GET /imports/:id`, `GET /imports/templates`.
 
 ## Screen
 
 Inside Conexões: kind selector (Pedidos · Mídia paga · Tráfego do site), the template's
 description and columns, "Baixar modelo", the drop zone ("Arraste o CSV aqui ou selecione um
-arquivo · Formato aceito: .csv · até 10 MB"), the "Importar …" button, a result card
-(status badge, "N de M linhas importadas · K rejeitadas", the first 10 errors) and the history
-table (Quando · Tipo · Arquivo · Status · Linhas · Rejeitadas).
+arquivo · Formato aceito: .csv · até 10 MB"), the "Conferir …" button, then the preview card
+("Prévia da importação": "12 pedidos · 01/09 a 10/09 · 11 de 12 linhas válidas · 1 serão
+rejeitadas", the first errors, the sample table, "Importar N linhas" / Cancelar), the result
+card (status badge, "N de M linhas importadas · K rejeitadas", the first 10 errors) and the
+history table (Quando · Tipo · Arquivo · Status · Linhas · Rejeitadas · Desfazer on the job
+that can be undone, behind a confirm dialog; an undone job shows Desfeita).

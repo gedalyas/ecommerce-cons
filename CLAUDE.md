@@ -212,7 +212,18 @@ module load order cannot form a runtime cycle either.
 - **Auth.** `POST /auth/login` (rate-limited) returns `{ user, tokens }`; access token HS256
   15 min, refresh token 30 days rotated on use and stored as sha256 (reuse → 401);
   `GET /me`; `requireAuth` sets `req.auth = { userId, clientId, role }`. Passwords are scrypt
-  via `@ecommerce/database/passwordHash` (shared with the seed).
+  via `@ecommerce/database/passwordHash` (shared with the seed). Invitations and password
+  resets are opaque tokens (`newOpaqueToken` / `hashToken`, sha256 stored, expiry per use)
+  sent by e-mail — see `specs/saas.md`.
+- **Mail is a dependency.** `shared/mail/createMailer(env, now)` returns SMTP (nodemailer,
+  `SMTP_URL`) or the development file outbox; `app.ts` injects `mailer` and `appUrl` into
+  the routers that send. Templates are pure functions (`authMail.ts`, tested); a service
+  never builds a transport.
+- **Imports are undoable.** Whatever writes rows for a CSV import records what it touched in
+  the `UndoRecorder` (created → `previous = null`, replaced → snapshot) so
+  `POST /imports/:id/undo` can restore it; a new kind of imported row needs its entity in
+  `importUndo.types.ts` and its branch in `undoPlan.ts` / `importsUndoService.ts`. See
+  `specs/imports.md` for the LIFO rule.
 - **Errors** are thrown (`HttpError`, `ValidationError`, `unauthorized()`, `notFound()`) and
   rendered by `errorHandler`; unexpected ones are logged with `console.error` and answered
   500 with a Portuguese message. `console.log` only in `index.ts`.

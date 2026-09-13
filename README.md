@@ -37,6 +37,11 @@ loja de desenvolvimento com 18 meses de dados sintéticos, rode `npm run db:seed
 "Loja Exemplo", usuários `cliente@lojaexemplo.dev` e `consultor@ecommerce-insights.dev`,
 senha `SEED_USER_PASSWORD`) e mantenha `DEMO_TODAY=2026-09-10` no `.env`.
 
+Convites e redefinição de senha chegam por e-mail. Sem `SMTP_URL` no `.env`, em
+desenvolvimento cada mensagem vira um arquivo em `apps/api/outbox/` (abra o `.txt` e siga o
+link); com `SMTP_URL` (`smtp://usuario:senha@host:587`) e `MAIL_FROM`, a API envia de verdade.
+Em produção `SMTP_URL` é obrigatório e `APP_URL` precisa ser o endereço público do web.
+
 Outros alvos úteis (`make help` lista todos):
 
 | Comando                        | O que faz                                          |

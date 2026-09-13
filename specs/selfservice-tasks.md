@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **A0–A5 done, A6 next** — last updated 2026-09-13
+Status: **A0–A6 done (2026-09-13)** — the self-service plan is complete — last updated 2026-09-13
 
 ---
 
@@ -97,6 +97,14 @@ Status: **A0–A5 done, A6 next** — last updated 2026-09-13
 
 ## A6 — Docs and close
 
-- [ ] `specs/saas.md` (invitation link, password reset), `specs/imports.md` (preview, undo,
-      LIFO rule), README and `.env.example` (mail variables, outbox), CLAUDE.md (mailer as a
-      dependency, undo rule); e2e script kept in the scratchpad; board closed
+- [x] `specs/saas.md` (invitation link, password reset, e-mail), `specs/imports.md`
+      (preview, undo, LIFO rule, screen), README and `.env.example` (mail variables, outbox),
+      CLAUDE.md (tokens, mailer as a dependency, undo rule); e2e scripts `e2e_invite.mjs`,
+      `e2e_reset.mjs`, `e2e_preview.mjs`, `e2e_undo.mjs` in the scratchpad; board closed
+
+## Follow-ups (not scheduled)
+
+- Invitation e-mails carry no branding; a layout and the consultancy's sender domain come
+  with the provider choice (SPF/DKIM)
+- Undo depth is three jobs per kind; an audit log of who imported and undid what
+- Preview is a sample of ten rows; a full "mapped file" download when files get bigger

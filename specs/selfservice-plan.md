@@ -1,6 +1,6 @@
 # Self-service — invitations by e-mail, password reset, import preview and undo
 
-Status: **approved 2026-09-13, in execution** — board in `selfservice-tasks.md`.
+Status: **delivered 2026-09-13** — board in `selfservice-tasks.md`; behaviour in `saas.md` and `imports.md`.
 
 ## Why this round
 
