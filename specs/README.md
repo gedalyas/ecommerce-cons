@@ -38,6 +38,8 @@ because that is what ships.
 | [selfservice-plan.md](selfservice-plan.md)                                         | Invitations by e-mail, password reset, import preview and undo — plan and endpoints  |
 | [selfservice-tasks.md](selfservice-tasks.md)                                       | Task checklist for the self-service plan — tick as work lands                        |
 | [commercial-plan.md](commercial-plan.md)                                           | Draft: subscription via Guru and contract via ZapSign — intended flow, not scheduled |
+| [operations-plan.md](operations-plan.md)                                           | Activity log and store archiving — plan and endpoints                                |
+| [operations-tasks.md](operations-tasks.md)                                         | Task checklist for the operations plan — tick as work lands                          |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force; see CLAUDE.md)   |
 | [reference/](reference/)                                                           | The Arko backend and frontend `CLAUDE.md` files this repo's rules derive from        |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from   |
