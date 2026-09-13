@@ -311,5 +311,6 @@ contracts.
 - [x] Metas with 6 inputs / 8 derived — `/metas` (2026-09-13): Resumo with
       Realizado × Meta and pacing, Planejamento grid per year, suggestion from
       the previous year's actuals; `specs/goals.md`
-- [ ] Regional views (choropleth by UF) for orders and ROAS
+- [~] Regional views: Pedidos › Regiões done (2026-09-13, tile cartogram instead
+  of a choropleth); ROAS por região pending (needs ad spend by UF)
 - [ ] Influencer hub

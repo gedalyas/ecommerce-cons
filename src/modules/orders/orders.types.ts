@@ -127,7 +127,31 @@ export type OrdersListPage = {
 };
 
 /** What the `/pedidos` loader returns: only the active tab's data. */
+export type RegionRow = {
+  key: string;
+  label: string;
+  province: string;
+  paid: number;
+  paidShare: number;
+  captured: number;
+  approvalRate: number | null;
+  paidOrders: number;
+  capturedOrders: number;
+  averageTicket: number | null;
+  customers: number;
+  items: number;
+  itemsPerOrder: number | null;
+  discounts: number;
+  discountPerOrder: number | null;
+};
+
+export type OrdersRegions = {
+  provinces: RegionRow[];
+  cities: RegionRow[];
+};
+
 export type OrdersScreen =
   | { aba: Extract<OrdersTab, "resumo">; summary: OrdersSummary }
   | { aba: Extract<OrdersTab, "aprovacao">; approval: OrdersApproval; options: OrdersFilterOptions }
-  | { aba: Extract<OrdersTab, "lista">; list: OrdersListPage; options: OrdersFilterOptions };
+  | { aba: Extract<OrdersTab, "lista">; list: OrdersListPage; options: OrdersFilterOptions }
+  | { aba: Extract<OrdersTab, "regioes">; regions: OrdersRegions; options: OrdersFilterOptions };

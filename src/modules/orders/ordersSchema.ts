@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ordersTabs = ["resumo", "aprovacao", "lista"] as const;
+export const ordersTabs = ["resumo", "aprovacao", "lista", "regioes"] as const;
 export type OrdersTab = (typeof ordersTabs)[number];
 
 export const ordersFilterKeys = [

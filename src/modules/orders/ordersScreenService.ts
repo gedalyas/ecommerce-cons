@@ -26,6 +26,7 @@ import { ordersSummaryKeys } from "./orders.types";
 import { financialStatusLabel, labelFor, processingMethodLabel } from "./ordersLabels";
 import type { OrdersSearch, OrdersSortField } from "./ordersSchema";
 import { ordersAggregate, ordersByBucket, ordersWhere, sourceExpression } from "./ordersService";
+import { salesByCity, salesByProvince } from "./regionsService";
 import { computeOrdersSummary, type OrdersSummaryValues } from "./ordersSummaryMetrics";
 
 const platformFor = (channel: Channel): SalesPlatform | null =>
@@ -426,6 +427,17 @@ export async function ordersScreen(
         ordersFilterOptions(clientId, search),
       ]);
       return { aba: "lista", list, options };
+    }
+    case "regioes": {
+      const period = resolvePeriod(search);
+      const platform = platformFor(search.canal);
+      const filters = filtersOf(search);
+      const [provinces, cities, options] = await Promise.all([
+        salesByProvince(clientId, period.current, platform, filters),
+        salesByCity(clientId, period.current, platform, filters),
+        ordersFilterOptions(clientId, search),
+      ]);
+      return { aba: "regioes", regions: { provinces, cities }, options };
     }
   }
 }

@@ -10,7 +10,7 @@ from the URL, so a plain `/pedidos` is the Resumo of the last 30 days.
 
 Header: title "Pedidos", subtitle "Captura, aprovação e detalhe dos pedidos
 de {período} · Loja Aurora". Controls row: `PeriodSelector` + `ChannelToggle`.
-Then the `TabBar`: **Resumo · Aprovação · Lista**.
+Then the `TabBar`: **Resumo · Aprovação · Lista · Regiões**.
 
 ## Resumo (`?aba=resumo`)
 
@@ -59,6 +59,23 @@ Telefone · Total vendido · Itens · Custo · Lucro bruto · Margem. Custo is �
 qty × unit cost of the items; Lucro bruto = total − custo; Margem = lucro ÷
 total. "Exportar CSV" calls `getOrdersExport` and downloads the whole result
 (up to 5.000 rows).
+
+## Regiões (`?aba=regioes`)
+
+Where the paid revenue comes from, by delivery address (`regionsService.ts`, rows shaped by
+`regionRows.ts`, tested). Filters: Estado and Cidade (the same multi-selects of the list),
+plus the channel toggle.
+
+1. **Overview tiles** — Estados com venda · Cidades com venda · Maior estado (share of the
+   paid total) · Top 3 estados (concentration).
+2. **Mapa de pedidos por estado** — `BrazilTileMap` (`shared/ui`): a tile cartogram of the 27
+   UFs in their approximate geographic positions, coloured in five intensity levels by the
+   paid total; the tooltip shows the value. A tile map replaces the choropleth on purpose: no
+   GeoJSON, no map library, and every state is readable at phone width.
+3. **Pedidos por estado** and **Pedidos por cidade** — the same family of columns as Prax:
+   Total pago · % do total pago · Total captado · Taxa de aprovação · Pedidos pagos · Pedidos
+   captados · Ticket médio · Clientes · Itens · Itens por pedido · Total de descontos ·
+   Desconto por pedido pago. Sortable, CSV.
 
 ## Data flow
 

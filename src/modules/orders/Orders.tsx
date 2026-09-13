@@ -9,6 +9,7 @@ import { formatPeriodLabel } from "@/shared/utils/format";
 import type { OrdersScreen } from "./orders.types";
 import { OrdersApproval } from "./OrdersApproval";
 import { OrdersList } from "./OrdersList";
+import { OrdersRegions } from "./OrdersRegions";
 import { OrdersSummary } from "./OrdersSummary";
 import { useOrdersSearch } from "./useOrdersSearch";
 
@@ -16,6 +17,7 @@ const tabs = [
   { key: "resumo", label: "Resumo" },
   { key: "aprovacao", label: "Aprovação" },
   { key: "lista", label: "Lista" },
+  { key: "regioes", label: "Regiões" },
 ] as const;
 
 export function Orders({ data }: { data: OrdersScreen }) {
@@ -50,6 +52,15 @@ export function Orders({ data }: { data: OrdersScreen }) {
         {data.aba === "lista" && (
           <OrdersList
             data={data.list}
+            options={data.options}
+            search={search}
+            period={period}
+            onPatch={patch}
+          />
+        )}
+        {data.aba === "regioes" && (
+          <OrdersRegions
+            data={data.regions}
             options={data.options}
             search={search}
             period={period}
