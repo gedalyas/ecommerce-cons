@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     parsePeriodSearch(search),
   search: {
     middlewares: [
-      retainSearchParams(["inicio", "fim", "por", "comparar"]),
+      retainSearchParams(["inicio", "fim", "por", "comparar", "canal"]),
       stripSearchParams(defaultPeriodSearch),
     ],
   },

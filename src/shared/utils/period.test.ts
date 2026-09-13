@@ -39,6 +39,7 @@ describe("resolveComparison", () => {
     fim: "2026-09-10",
     por: "dia",
     comparar: "nenhum",
+    canal: "todos",
   } as const;
 
   it("returns null when comparison is off", () => {
@@ -67,9 +68,10 @@ describe("resolveComparison", () => {
 describe("parsePeriodSearch", () => {
   it("falls back to the defaults for missing or malformed values", () => {
     expect(parsePeriodSearch({})).toEqual(defaultPeriodSearch);
-    expect(parsePeriodSearch({ inicio: "not-a-date", por: "hora", comparar: "x" })).toEqual(
-      defaultPeriodSearch,
-    );
+    expect(
+      parsePeriodSearch({ inicio: "not-a-date", por: "hora", comparar: "x", canal: "loja" }),
+    ).toEqual(defaultPeriodSearch);
+    expect(parsePeriodSearch({ canal: "marketplace" }).canal).toBe("marketplace");
   });
 
   it("swaps an inverted range instead of rejecting it", () => {

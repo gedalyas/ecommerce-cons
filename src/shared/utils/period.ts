@@ -27,13 +27,23 @@ export type Comparison = (typeof comparisons)[number];
 /** Calendar dates are ISO `YYYY-MM-DD` strings; `fim` is inclusive. */
 export type DateRange = { inicio: string; fim: string };
 
-export type PeriodSearch = DateRange & { por: Granularity; comparar: Comparison };
+export const channels = ["todos", "ecommerce", "marketplace"] as const;
+export type Channel = (typeof channels)[number];
+
+/** The five global params every data screen shares: range, granularity, comparison, channel. */
+export type PeriodSearch = DateRange & { por: Granularity; comparar: Comparison; canal: Channel };
 
 export const granularityLabel: Record<Granularity, string> = {
   dia: "Dia",
   semana: "Semana",
   mes: "Mês",
   ano: "Ano",
+};
+
+export const channelLabel: Record<Channel, string> = {
+  todos: "Todos os canais",
+  ecommerce: "E-commerce",
+  marketplace: "Marketplace",
 };
 
 export const comparisonLabel: Record<Comparison, string> = {
@@ -119,6 +129,7 @@ export const defaultPeriodSearch: PeriodSearch = {
   ...periodPresets.find((p) => p.key === "ultimos-30-dias")!.range(fromIsoDate(PROTOTYPE_TODAY)),
   por: "dia",
   comparar: "periodo-anterior",
+  canal: "todos",
 };
 
 /** Key of the preset that matches the range exactly, if any. */
@@ -172,5 +183,6 @@ export function parsePeriodSearch(
   if (inicio > fim) [inicio, fim] = [fim, inicio];
   const por = granularities.find((g) => g === input["por"]) ?? defaultPeriodSearch.por;
   const comparar = comparisons.find((c) => c === input["comparar"]) ?? defaultPeriodSearch.comparar;
-  return { inicio, fim, por, comparar };
+  const canal = channels.find((c) => c === input["canal"]) ?? defaultPeriodSearch.canal;
+  return { inicio, fim, por, comparar, canal };
 }
