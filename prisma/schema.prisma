@@ -350,6 +350,77 @@ model AdSpendRegionDaily {
   @@map("ad_spend_region_daily")
 }
 
+enum InfluencerStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+
+  @@map("influencer_status")
+}
+
+/// How an influencer is paid. The PERCENT_* modes store percentage points in `value`.
+enum InfluencerRuleType {
+  FIXED
+  DAILY
+  WEEKLY
+  MONTHLY
+  PER_ORDER
+  PERCENT_OF_PRODUCTS
+  PERCENT_OF_TOTAL
+
+  @@map("influencer_rule_type")
+}
+
+/// A creator partnership: remuneration rules plus the coupons that attribute orders.
+model Influencer {
+  id        String           @id @default(cuid())
+  clientId  String           @map("client_id")
+  name      String
+  handle    String?
+  status    InfluencerStatus @default(ACTIVE)
+  notes     String?
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  client  Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  rules   InfluencerRule[]
+  coupons InfluencerCoupon[]
+
+  @@index([clientId, status])
+  @@map("influencer")
+}
+
+model InfluencerRule {
+  id           String             @id @default(cuid())
+  influencerId String             @map("influencer_id")
+  type         InfluencerRuleType
+  value        Decimal            @db.Decimal(12, 2)
+  startDate    DateTime           @map("start_date") @db.Date
+  endDate      DateTime?          @map("end_date") @db.Date
+  /// Ceiling per period (BRL); null means no ceiling.
+  cap          Decimal?           @db.Decimal(12, 2)
+  notes        String?
+  position     Int
+
+  influencer Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+
+  @@index([influencerId])
+  @@map("influencer_rule")
+}
+
+model InfluencerCoupon {
+  id           String    @id @default(cuid())
+  influencerId String    @map("influencer_id")
+  code         String
+  activeFrom   DateTime? @map("active_from") @db.Date
+  activeUntil  DateTime? @map("active_until") @db.Date
+
+  influencer Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+
+  @@index([influencerId])
+  @@map("influencer_coupon")
+}
+
 /// Monthly goal inputs (six drivers); the goals engine derives the other KPIs.
 model Goal {
   id             String   @id @default(cuid())
@@ -422,6 +493,7 @@ model Client {
   costExpenses       CostExpense[]
   goals              Goal[]
   adSpendRegionDaily AdSpendRegionDaily[]
+  influencers        Influencer[]
 
   @@map("client")
 }

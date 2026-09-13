@@ -15,6 +15,7 @@ import { Route as customersRouteImport } from './routes/customers'
 import { Route as connectionsRouteImport } from './routes/connections'
 import { Route as moneyRouteImport } from './routes/money'
 import { Route as managementRouteImport } from './routes/management'
+import { Route as influencersRouteImport } from './routes/influencers'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as marketingRouteImport } from './routes/marketing'
 import { Route as goalsRouteImport } from './routes/goals'
@@ -50,6 +51,11 @@ const moneyRoute = moneyRouteImport.update({
 const managementRoute = managementRouteImport.update({
   id: '/gestao',
   path: '/gestao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const influencersRoute = influencersRouteImport.update({
+  id: '/influenciadores',
+  path: '/influenciadores',
   getParentRoute: () => rootRouteImport,
 } as any)
 const logisticsRoute = logisticsRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/conexoes': typeof connectionsRoute
   '/dinheiro': typeof moneyRoute
   '/gestao': typeof managementRoute
+  '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/conexoes': typeof connectionsRoute
   '/dinheiro': typeof moneyRoute
   '/gestao': typeof managementRoute
+  '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/conexoes': typeof connectionsRoute
   '/dinheiro': typeof moneyRoute
   '/gestao': typeof managementRoute
+  '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/conexoes'
     | '/dinheiro'
     | '/gestao'
+    | '/influenciadores'
     | '/logistica'
     | '/marketing'
     | '/metas'
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/conexoes'
     | '/dinheiro'
     | '/gestao'
+    | '/influenciadores'
     | '/logistica'
     | '/marketing'
     | '/metas'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/conexoes'
     | '/dinheiro'
     | '/gestao'
+    | '/influenciadores'
     | '/logistica'
     | '/marketing'
     | '/metas'
@@ -178,6 +190,7 @@ export interface RootRouteChildren {
   connectionsRoute: typeof connectionsRoute
   moneyRoute: typeof moneyRoute
   managementRoute: typeof managementRoute
+  influencersRoute: typeof influencersRoute
   logisticsRoute: typeof logisticsRoute
   marketingRoute: typeof marketingRoute
   goalsRoute: typeof goalsRoute
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       path: '/gestao'
       fullPath: '/gestao'
       preLoaderRoute: typeof managementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/influenciadores': {
+      id: '/influenciadores'
+      path: '/influenciadores'
+      fullPath: '/influenciadores'
+      preLoaderRoute: typeof influencersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logistica': {
@@ -282,6 +302,7 @@ const rootRouteChildren: RootRouteChildren = {
   connectionsRoute: connectionsRoute,
   moneyRoute: moneyRoute,
   managementRoute: managementRoute,
+  influencersRoute: influencersRoute,
   logisticsRoute: logisticsRoute,
   marketingRoute: marketingRoute,
   goalsRoute: goalsRoute,

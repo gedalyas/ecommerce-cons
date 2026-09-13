@@ -17,4 +17,5 @@ export const routes = rootRoute("__root.tsx", [
   route("/clientes", "customers.tsx"),
   route("/metas", "goals.tsx"),
   route("/metricas", "analysis.tsx"),
+  route("/influenciadores", "influencers.tsx"),
 ]);

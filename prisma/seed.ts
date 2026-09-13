@@ -27,6 +27,7 @@ import { logisticsSection } from "../src/modules/logistics/contract.ts";
 import { managementSection } from "../src/modules/management/contract.ts";
 import { connections } from "../src/modules/connections/contract.ts";
 import { goalsPlan2026 } from "../src/modules/goals/contract.ts";
+import { influencersSeed } from "../src/modules/influencers/contract.ts";
 import type { Section } from "../src/shared/ui/sectionPage.types.ts";
 import type { Metric } from "../src/shared/ui/metricTile.types.ts";
 import type { Recommendation } from "../src/shared/ui/recommendationList.types.ts";
@@ -187,6 +188,36 @@ async function main() {
   await prisma.goal.createMany({
     data: goalsPlan2026.map((m) => ({ clientId: client.id, year: 2026, ...m })),
   });
+
+  for (const influencer of influencersSeed) {
+    await prisma.influencer.create({
+      data: {
+        clientId: client.id,
+        name: influencer.name,
+        handle: influencer.handle || null,
+        status: influencer.status,
+        notes: influencer.notes || null,
+        rules: {
+          create: influencer.rules.map((r, position) => ({
+            type: r.type,
+            value: r.value,
+            startDate: new Date(`${r.startDate}T00:00:00.000Z`),
+            endDate: r.endDate ? new Date(`${r.endDate}T00:00:00.000Z`) : null,
+            cap: r.cap,
+            notes: r.notes || null,
+            position,
+          })),
+        },
+        coupons: {
+          create: influencer.coupons.map((c) => ({
+            code: c.code,
+            activeFrom: c.activeFrom ? new Date(`${c.activeFrom}T00:00:00.000Z`) : null,
+            activeUntil: c.activeUntil ? new Date(`${c.activeUntil}T00:00:00.000Z`) : null,
+          })),
+        },
+      },
+    });
+  }
 
   await seedSection(client.id, "money", moneySection, 0);
   await seedSection(client.id, "marketing", marketingSection, 1);

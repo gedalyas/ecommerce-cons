@@ -1,0 +1,23 @@
+import type { ReactNode } from "react";
+import { textClass } from "@/shared/styles/typography";
+import { cn } from "@/shared/utils/cn";
+
+export function FormField({
+  label,
+  error,
+  className,
+  children,
+}: {
+  label: string;
+  error?: string | undefined;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className={cn("block", className)}>
+      <span className={cn(textClass.label, "text-muted-foreground")}>{label}</span>
+      <div className="mt-1">{children}</div>
+      {error && <span className={cn(textClass.meta, "mt-1 block text-destructive")}>{error}</span>}
+    </label>
+  );
+}

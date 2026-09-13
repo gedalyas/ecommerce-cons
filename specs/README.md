@@ -10,6 +10,7 @@ because that is what ships.
 | [layout-and-navigation.md](layout-and-navigation.md)                               | App shell, sidebar, responsive behavior, routes                                     |
 | [finance.md](finance.md)                                                           | Dinheiro: Visão com KPIs vivos, DRE gerencial, cadastro de custos                   |
 | [analysis.md](analysis.md)                                                         | Métricas: diagnóstico por métrica com veredito, série e árvore de drivers           |
+| [influencers.md](influencers.md)                                                   | Influenciadores: parcerias, regras de remuneração, cupons e ROI                     |
 | [goals.md](goals.md)                                                               | Metas: realizado × meta com pacing e o planejamento anual (6 entradas, 8 derivadas) |
 | [marketing.md](marketing.md)                                                       | Marketing: visão com KPIs vivos, resumo por canal e funil, campanhas, descontos     |
 | [customers.md](customers.md)                                                       | Clientes: segmentação RFM com filtros, recompra, LTV e CAC                          |

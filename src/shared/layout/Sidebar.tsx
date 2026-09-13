@@ -9,6 +9,7 @@ import {
   Plug,
   Users,
   ShoppingBag,
+  Sparkles,
   Target,
   Truck,
   Building2,
@@ -31,6 +32,7 @@ const dataItems = [
   { label: "Clientes", to: "/clientes", icon: Users },
   { label: "Metas", to: "/metas", icon: Target },
   { label: "Métricas", to: "/metricas", icon: Activity },
+  { label: "Influenciadores", to: "/influenciadores", icon: Sparkles },
 ];
 
 export function Sidebar() {

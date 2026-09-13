@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 6 done (2026-09-13) — Marketing data live; the plan is complete (backlog unscheduled)** — last updated 2026-09-13
+Status: **Plan and backlog complete (2026-09-13) — every Prax section with data behind it is live** — last updated 2026-09-13
 
 ---
 
@@ -300,7 +300,7 @@ contracts.
 
 ---
 
-## Backlog (post-Stage 6, being worked in this order: Metas → Alerts → Métricas → Regiões → Influenciadores)
+## Backlog (post-Stage 6) — all five items done on 2026-09-13
 
 - [x] Narrative analysis per metric with driver trees (2026-09-13): `/metricas`,
       14 metrics, trees in code, rule-generated text (an AI key would turn the
@@ -313,4 +313,5 @@ contracts.
       the previous year's actuals; `specs/goals.md`
 - [~] Regional views: Pedidos › Regiões done (2026-09-13, tile cartogram instead
   of a choropleth); ROAS por região pending (needs ad spend by UF)
-- [ ] Influencer hub
+- [x] Influencer hub (2026-09-13): `/influenciadores`, rules × coupons → ROI;
+      `specs/influencers.md`
