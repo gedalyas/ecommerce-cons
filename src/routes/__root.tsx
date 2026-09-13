@@ -2,14 +2,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Link,
   createRootRouteWithContext,
+  retainSearchParams,
+  stripSearchParams,
   useRouter,
   HeadContent,
   Scripts,
+  type SearchSchemaInput,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportError } from "../lib/error-reporting";
+import { defaultPeriodSearch, parsePeriodSearch, type PeriodSearch } from "@/lib/period";
 import { AppShell } from "@/layout/AppShell";
 
 function NotFoundComponent() {
@@ -71,6 +75,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // The global period lives on the root so every screen shares it. Links keep
+  // it across navigations and the URL stays clean while it equals the default.
+  validateSearch: (search: Partial<PeriodSearch> & SearchSchemaInput): PeriodSearch =>
+    parsePeriodSearch(search),
+  search: {
+    middlewares: [
+      retainSearchParams(["inicio", "fim", "por", "comparar"]),
+      stripSearchParams(defaultPeriodSearch),
+    ],
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },

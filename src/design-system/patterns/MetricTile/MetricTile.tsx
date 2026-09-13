@@ -65,7 +65,9 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
           >
             {formatPtNumbers(metric.delta)}
           </span>
-          <span className="hidden text-muted-foreground sm:inline">vs mês anterior</span>
+          <span className="hidden text-muted-foreground sm:inline">
+            {metric.deltaLabel ?? "vs mês anterior"}
+          </span>
         </div>
       )}
       {metric.subNote && (

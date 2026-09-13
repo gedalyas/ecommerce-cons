@@ -5,6 +5,8 @@ export type Metric = {
   value: string;
   delta?: string;
   deltaDirection?: "up" | "down" | "neutral";
+  /** Text after the delta, defaults to "vs mês anterior". */
+  deltaLabel?: string;
   subNote?: string;
   fidelity: Fidelity;
   fidelityNote: string;

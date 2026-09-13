@@ -37,6 +37,32 @@ export function formatCompact(value: number) {
   return nf({ notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
+/** Multipliers such as ROAS: 3.1 -> "3,10x". */
+export function formatMultiplier(value: number, decimals = 2) {
+  return `${formatNumber(value, decimals)}x`;
+}
+
+/** Signed percent change: 8.2 -> "+8,2%", -3.4 -> "−3,4%". */
+export function formatVariation(value: number, decimals = 1) {
+  const sign = value > 0 ? "+" : value < 0 ? "−" : "";
+  return `${sign}${formatNumber(Math.abs(value), decimals)}%`;
+}
+
+/**
+ * "01/09 – 10/09", with the year appended when the range crosses years or when
+ * `withYear` is set (e.g. a comparison window in another year).
+ */
+export function formatPeriodLabel(inicio: string, fim: string, withYear = false) {
+  const sameYear = inicio.slice(0, 4) === fim.slice(0, 4);
+  const options: Intl.DateTimeFormatOptions =
+    sameYear && !withYear
+      ? { day: "2-digit", month: "2-digit" }
+      : { day: "2-digit", month: "2-digit", year: "2-digit" };
+  const start = formatDate(`${inicio}T00:00:00`, options);
+  const end = formatDate(`${fim}T00:00:00`, options);
+  return start === end ? start : `${start} – ${end}`;
+}
+
 export function formatDate(
   value: Date | string,
   options: Intl.DateTimeFormatOptions = { day: "2-digit", month: "2-digit" },

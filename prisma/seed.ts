@@ -29,6 +29,7 @@ import { connections } from "../src/features/connections/data/connections.ts";
 import type { Section } from "../src/design-system/patterns/SectionPage/types.ts";
 import type { Metric } from "../src/design-system/patterns/MetricTile/types.ts";
 import type { Recommendation } from "../src/design-system/patterns/RecommendationList/types.ts";
+import { seedAnalytics } from "./seed-analytics.ts";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -195,6 +196,11 @@ async function main() {
   ]);
   console.log(
     `seeded client "${CLIENT_SLUG}": ${counts[2]} pillars, ${counts[0]} metrics, ${counts[1]} recommendations, ${counts[3]} data sources`,
+  );
+
+  const facts = await seedAnalytics(prisma, client.id);
+  console.log(
+    `seeded analytics: ${facts.products} products, ${facts.variants} variants, ${facts.customers} customers, ${facts.orders} orders, ${facts.items} items, ${facts.traffic} traffic rows, ${facts.adSpend} ad spend rows, ${facts.costs} cost rules`,
   );
 }
 
