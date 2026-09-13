@@ -1,4 +1,4 @@
-export { pillarStatusLabel, pillarStatuses, sectionKeys } from "./consulting.types";
+export { pillarStatusLabel, pillarStatuses } from "./consulting.types";
 export type {
   ConsultingMetric,
   ConsultingPillar,
@@ -11,7 +11,6 @@ export type {
   MilestoneCriterion,
   MilestoneSummary,
   PillarStatusKey,
-  SectionKey,
 } from "./consulting.types";
 export {
   areaKeyOfPillar,
@@ -20,6 +19,7 @@ export {
   liveKpiKeys,
   milestoneTemplate,
   pillarTemplateOf,
+  sectionKeys,
 } from "./engagementTemplate";
 export type {
   AreaTemplate,
@@ -27,6 +27,7 @@ export type {
   MilestoneTemplate,
   PillarKpiTemplate,
   PillarTemplate,
+  SectionKey,
 } from "./engagementTemplate";
 export {
   idSchema,

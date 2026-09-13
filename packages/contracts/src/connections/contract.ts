@@ -1,6 +1,4 @@
-export { dataSourceStatuses } from "./connections.types";
 export type {
-  DataSourceStatus,
   DataSourceState,
   ConnectionsSummary,
   ConnectionsScreen,

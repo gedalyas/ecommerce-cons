@@ -1,4 +1,5 @@
-import type { SectionKey } from "./consulting.types";
+export const sectionKeys = ["money", "marketing", "logistics", "management"] as const;
+export type SectionKey = (typeof sectionKeys)[number];
 
 export const liveKpiKeys = [
   "contributionMarginRate",

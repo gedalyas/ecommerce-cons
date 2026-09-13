@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dataSourceStatuses } from "@ecommerce/contracts/connections";
+import { dataSourceStatuses } from "@ecommerce/contracts/connectors";
 import { DataSourceStatus } from "@ecommerce/database/enums";
 
 describe("connections closed sets", () => {

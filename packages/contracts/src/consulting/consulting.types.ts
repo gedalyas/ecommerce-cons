@@ -1,9 +1,6 @@
 import type { Fidelity } from "../shared/fidelity";
 import type { MetricValue } from "../shared/metric.types";
-import type { LiveKpiKey } from "./engagementTemplate";
-
-export const sectionKeys = ["money", "marketing", "logistics", "management"] as const;
-export type SectionKey = (typeof sectionKeys)[number];
+import type { LiveKpiKey, SectionKey } from "./engagementTemplate";
 
 export const pillarStatuses = ["done", "in-progress", "not-started", "blocked"] as const;
 export type PillarStatusKey = (typeof pillarStatuses)[number];

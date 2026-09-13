@@ -16,10 +16,15 @@ export type {
   ConnectorKey,
   ConnectorKind,
 } from "./connectorCatalog";
-export { connectionRequestStatusLabel, connectionRequestStatuses } from "./connectors.types";
+export {
+  connectionRequestStatusLabel,
+  connectionRequestStatuses,
+  dataSourceStatuses,
+} from "./connectors.types";
 export type {
   ConnectionRequest,
   ConnectionRequestStatus,
+  DataSourceStatus,
   StoreConnector,
 } from "./connectors.types";
 export {

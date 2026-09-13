@@ -2,8 +2,9 @@ import { useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, CheckCircle2, CircleDashed, FileSpreadsheet } from "lucide-react";
 import { useState } from "react";
-import type { ConnectionsScreen, DataSourceStatus } from "@ecommerce/contracts/connections";
+import type { ConnectionsScreen } from "@ecommerce/contracts/connections";
 import { summaryDetail } from "@ecommerce/contracts/connections";
+import type { DataSourceStatus } from "@ecommerce/contracts/connectors";
 import {
   connectionRequestStatusLabel,
   connectorFeedLabel,

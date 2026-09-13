@@ -1,4 +1,5 @@
-import type { ConnectionsSummary, DataSourceStatus } from "./connections.types";
+import type { DataSourceStatus } from "../connectors/connectors.types";
+import type { ConnectionsSummary } from "./connections.types";
 
 type WithStatus = { status: DataSourceStatus };
 

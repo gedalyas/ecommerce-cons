@@ -1,5 +1,7 @@
-import type { DataSourceStatus } from "../connections/connections.types";
 import type { Connector, ConnectorKey } from "./connectorCatalog";
+
+export const dataSourceStatuses = ["CONNECTED", "ERROR", "NOT_CONNECTED", "MANUAL"] as const;
+export type DataSourceStatus = (typeof dataSourceStatuses)[number];
 
 export const connectionRequestStatuses = ["REQUESTED", "IN_PROGRESS", "DONE", "DECLINED"] as const;
 export type ConnectionRequestStatus = (typeof connectionRequestStatuses)[number];

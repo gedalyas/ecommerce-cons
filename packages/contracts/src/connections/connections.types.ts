@@ -1,7 +1,5 @@
 import type { ConnectorKey } from "../connectors/connectorCatalog";
-import type { StoreConnector } from "../connectors/connectors.types";
-export const dataSourceStatuses = ["CONNECTED", "ERROR", "NOT_CONNECTED", "MANUAL"] as const;
-export type DataSourceStatus = (typeof dataSourceStatuses)[number];
+import type { DataSourceStatus, StoreConnector } from "../connectors/connectors.types";
 
 export type DataSourceState = {
   connectorKey: ConnectorKey;
