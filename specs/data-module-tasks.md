@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 3 done (2026-09-12) — Custos + DRE live; Stage 4 (Produtos) is next** — last updated 2026-09-12
+Status: **Stage 4 done (2026-09-12) — Produtos live; Stage 5 (Clientes + Recompra) is next** — last updated 2026-09-12
 
 ---
 
@@ -219,23 +219,26 @@ contracts.
 
 ## Stage 4 — Produtos (`/produtos`)
 
-- [ ] Route `products.tsx` ↔ `/produtos`, tabs `?aba=resumo|lista|estoque`
-- [ ] ABC classification query (cumulative revenue Pareto, A/B/C)
-- [ ] **Lista**: product DataTable (classe ABC, categoria, saúde do estoque,
-      sessões, unidades, conversão, total vendido, % vendas, lucro, preço
-      médio, custo, margem) + filters (categoria, subcategoria, marca,
-      coleção) + CSV
-- [ ] **Estoque** (no period selector): velocity, dias para zerar, data de
-      fim de estoque, valor do estoque, potencial de receita, receita
-      perdida desde ruptura, custo de ruptura/dia; fixed sales windows
-      (total / 90 / 30 / 7 dias)
-- [ ] **Estoque**: chip filters (risco · maior velocidade · sem estoque)
-- [ ] **Resumo**: KPIs (receita de produtos, itens vendidos, valor médio por
-      item, itens por pedido)
-- [ ] **Resumo**: top/bottom 20 by volume, by conversion, inventory risk,
-      out of stock, bought together
-- [ ] Logística pillars (Ruptura, Cobertura de estoque) read derived values
-- [ ] Write `specs/products.md`
+- [x] Route `products.tsx` ↔ `/produtos`, tabs `?aba=resumo|lista|estoque`;
+      sidebar "Dados" entry
+- [x] ABC classification (cumulative revenue Pareto 80/95) — `abcClassification.ts`, tested
+- [x] **Lista**: product DataTable (classe ABC, categoria, saúde do estoque,
+      unidades, total vendido, % vendas, lucro, preço médio, custo, margem) +
+      filters (categoria, subcategoria, marca, coleção) + CSV. Sessões and
+      conversão por produto are a data pending (no GA4 by product page yet)
+- [x] **Estoque** (no period selector): velocity, dias para zerar, data de
+      fim de estoque, valor do estoque, potencial de receita, receita perdida
+      desde ruptura, custo de ruptura/dia; fixed sales windows (total / 90 /
+      30 / 7 dias) — `inventoryMetrics.ts`, tested
+- [x] **Estoque**: chip filters (risco · maior velocidade · sem estoque) +
+      sales-window chips
+- [x] **Resumo**: KPIs (receita de produtos, itens vendidos, valor médio por
+      item, itens por pedido) with comparison
+- [x] **Resumo**: top/bottom 20 by volume, inventory risk, out of stock,
+      bought together (by conversion pending the product-page sessions)
+- [x] Logística pillars (Ruptura, Cobertura de estoque) read the live stock
+      position through `products/contract.server.ts`
+- [x] Write `specs/products.md`
 
 ---
 
