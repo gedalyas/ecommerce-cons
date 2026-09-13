@@ -656,6 +656,7 @@ model Client {
   auditEvents        AuditEvent[]
   subscription       Subscription?
   contract           Contract?
+  connections        Connection[]
 
   @@map("client")
 }
@@ -867,6 +868,70 @@ model DataSource {
 
   @@unique([clientId, connectorKey])
   @@map("data_source")
+}
+
+enum ConnectionAuthPattern {
+  OAUTH
+  DOMAIN_OAUTH
+  CREDENTIALS
+
+  @@map("connection_auth_pattern")
+}
+
+enum ConnectionStage {
+  AUTHORIZED
+  IMPORTING
+  PROCESSING
+  READY
+  ERROR
+
+  @@map("connection_stage")
+}
+
+/// A store's live link to a platform: the sealed credentials, the external account and the
+/// ingestion stage the Conexões stepper shows. `DataSource` stays the display row.
+model Connection {
+  id            String                @id @default(cuid())
+  clientId      String                @map("client_id")
+  connectorKey  String                @map("connector_key")
+  authPattern   ConnectionAuthPattern @map("auth_pattern")
+  /// Store id, ad account id, property id… on the platform.
+  externalId    String                @map("external_id")
+  externalLabel String                @map("external_label")
+  /// AES-256-GCM sealed JSON (tokens, secrets). Never leaves the API.
+  credentials   String
+  stage         ConnectionStage       @default(AUTHORIZED)
+  /// Provider-specific incremental cursor (e.g. { orders: "2026-09-01T00:00:00Z" }).
+  syncCursor    Json?                 @map("sync_cursor")
+  lastSyncAt    DateTime?             @map("last_sync_at")
+  lastError     String?               @map("last_error")
+  authorizedBy  String?               @map("authorized_by")
+  createdAt     DateTime              @default(now()) @map("created_at")
+  updatedAt     DateTime              @updatedAt @map("updated_at")
+
+  client     Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  rawRecords RawRecord[]
+
+  @@unique([clientId, connectorKey])
+  @@map("connection")
+}
+
+/// Every row pulled from a platform, as it came, before mapping. Keyed by the platform's own
+/// id so a re-pull updates instead of duplicating.
+model RawRecord {
+  id           String   @id @default(cuid())
+  connectionId String   @map("connection_id")
+  /// order · product · customer · ad_insight · traffic
+  kind         String
+  externalId   String   @map("external_id")
+  payload      Json
+  fetchedAt    DateTime @map("fetched_at")
+
+  connection Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, kind, externalId])
+  @@index([connectionId, kind, fetchedAt])
+  @@map("raw_record")
 }
 
 model ConnectionRequest {

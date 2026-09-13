@@ -12,7 +12,11 @@ export type CommercialDetail = Extract<
       | "CONTRACT_CREATED"
       | "CONTRACT_SIGNED"
       | "CONTRACT_REFUSED"
-      | "CONTRACT_RESENT";
+      | "CONTRACT_RESENT"
+      | "CONNECTION_AUTHORIZED"
+      | "CONNECTION_REMOVED"
+      | "CONNECTION_SYNCED"
+      | "CONNECTION_FAILED";
   }
 >;
 
@@ -36,5 +40,13 @@ export function commercialSummary(detail: CommercialDetail): string {
       return `Contrato recusado por ${detail.signerEmail}`;
     case "CONTRACT_RESENT":
       return `Reenviou o contrato para ${detail.signerEmail}`;
+    case "CONNECTION_AUTHORIZED":
+      return `Conectou ${detail.connector} (${detail.account})`;
+    case "CONNECTION_REMOVED":
+      return `Desconectou ${detail.connector} (${detail.account})`;
+    case "CONNECTION_SYNCED":
+      return `${detail.connector}: sincronização concluída, ${detail.rows} registros`;
+    case "CONNECTION_FAILED":
+      return `${detail.connector}: sincronização falhou — ${detail.message}`;
   }
 }

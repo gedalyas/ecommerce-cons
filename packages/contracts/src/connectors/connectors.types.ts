@@ -23,8 +23,46 @@ export type ConnectionRequest = {
   resolvedAt: string | null;
 };
 
+export const connectionStages = [
+  "AUTHORIZED",
+  "IMPORTING",
+  "PROCESSING",
+  "READY",
+  "ERROR",
+] as const;
+export type ConnectionStage = (typeof connectionStages)[number];
+
+export const connectionStageLabel: Record<ConnectionStage, string> = {
+  AUTHORIZED: "Fonte autorizada",
+  IMPORTING: "Importando dados",
+  PROCESSING: "Processando análises",
+  READY: "Pronto para usar",
+  ERROR: "Erro na sincronização",
+};
+
+export const connectionStageHint: Record<ConnectionStage, string> = {
+  AUTHORIZED: "O acesso à plataforma foi autorizado.",
+  IMPORTING: "O histórico da loja está sendo importado.",
+  PROCESSING: "As tabelas de análise estão sendo preparadas.",
+  READY: "Os painéis já usam os dados desta conexão.",
+  ERROR: "A última sincronização falhou; tente de novo ou reconecte.",
+};
+
+export type ConnectionSummary = {
+  stage: ConnectionStage;
+  externalLabel: string;
+  lastSyncAt: string | null;
+  lastError: string | null;
+};
+
 export type StoreConnector = Connector & {
   status: DataSourceStatus;
   syncLabel: string;
   request: ConnectionRequest | null;
+  connection: ConnectionSummary | null;
+};
+
+export type DataReadiness = {
+  hasSource: boolean;
+  connectedKeys: ConnectorKey[];
 };

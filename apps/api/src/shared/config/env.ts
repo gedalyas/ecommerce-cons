@@ -15,6 +15,8 @@ const envSchema = z.object({
         .filter(Boolean),
     ),
   APP_URL: z.string().url().default("http://localhost:8080"),
+  API_PUBLIC_URL: z.string().url().default("http://localhost:3001"),
+  CREDENTIALS_KEY: z.string().min(1),
   MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
   SMTP_URL: z
     .string()

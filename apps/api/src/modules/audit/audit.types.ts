@@ -38,4 +38,7 @@ export type AuditDetail =
   | {
       action: "CONTRACT_CREATED" | "CONTRACT_SIGNED" | "CONTRACT_REFUSED" | "CONTRACT_RESENT";
       signerEmail: string;
-    };
+    }
+  | { action: "CONNECTION_AUTHORIZED" | "CONNECTION_REMOVED"; connector: string; account: string }
+  | { action: "CONNECTION_SYNCED"; connector: string; rows: number }
+  | { action: "CONNECTION_FAILED"; connector: string; message: string };

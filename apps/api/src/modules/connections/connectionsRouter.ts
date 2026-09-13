@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { asyncHandler } from "@/shared/http/asyncHandler";
-import { connectionsController } from "./connectionsController";
+import { connectionsController, type ConnectionsDependencies } from "./connectionsController";
 
-export function createConnectionsRouter(): Router {
+export function createConnectionsRouter(deps: ConnectionsDependencies): Router {
   const router = Router();
-  const controller = connectionsController();
+  const controller = connectionsController(deps);
   router.get("/connections", asyncHandler(controller.screen));
   router.get("/connections/health", asyncHandler(controller.health));
   router.post("/connections/:key/request", asyncHandler(controller.request));

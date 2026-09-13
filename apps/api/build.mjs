@@ -7,12 +7,13 @@ const { dependencies } = JSON.parse(readFileSync(new URL("./package.json", impor
 const external = Object.keys(dependencies).filter((name) => !name.startsWith("@ecommerce/"));
 
 await build({
-  entryPoints: ["src/index.ts"],
+  entryPoints: ["src/index.ts", "src/worker.ts"],
   bundle: true,
   platform: "node",
   format: "esm",
   target: "node22",
-  outfile: "dist/index.mjs",
+  outdir: "dist",
+  outExtension: { ".js": ".mjs" },
   external: [...external, "@prisma/client", "@prisma/adapter-pg", "pg", "dotenv"],
   sourcemap: true,
   logLevel: "info",

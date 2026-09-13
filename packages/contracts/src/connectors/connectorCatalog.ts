@@ -34,12 +34,16 @@ export const connectorFeedLabel: Record<ConnectorFeed, string> = {
   traffic: "Tráfego",
 };
 
+export const authPatterns = ["oauth", "domain_oauth", "credentials"] as const;
+export type AuthPattern = (typeof authPatterns)[number];
+
 export type Connector = {
   key: ConnectorKey;
   label: string;
   kind: ConnectorKind;
   feeds: ConnectorFeed[];
   availability: ConnectorAvailability;
+  authPattern: AuthPattern | null;
   description: string;
 };
 
@@ -50,6 +54,7 @@ export const connectorCatalog: Connector[] = [
     kind: "manual",
     feeds: ["orders", "ad_spend", "traffic"],
     availability: "manual",
+    authPattern: null,
     description: "Planilhas exportadas da sua plataforma ou das contas de mídia.",
   },
   {
@@ -58,6 +63,7 @@ export const connectorCatalog: Connector[] = [
     kind: "erp",
     feeds: ["orders"],
     availability: "request",
+    authPattern: "oauth",
     description: "Pedidos, produtos e estoque do ERP.",
   },
   {
@@ -66,6 +72,7 @@ export const connectorCatalog: Connector[] = [
     kind: "storefront",
     feeds: ["orders"],
     availability: "request",
+    authPattern: "domain_oauth",
     description: "Pedidos e clientes da loja.",
   },
   {
@@ -74,6 +81,7 @@ export const connectorCatalog: Connector[] = [
     kind: "storefront",
     feeds: ["orders"],
     availability: "request",
+    authPattern: "domain_oauth",
     description: "Pedidos e clientes da loja.",
   },
   {
@@ -82,6 +90,7 @@ export const connectorCatalog: Connector[] = [
     kind: "storefront",
     feeds: ["orders"],
     availability: "request",
+    authPattern: "credentials",
     description: "Pedidos e clientes da loja.",
   },
   {
@@ -90,6 +99,7 @@ export const connectorCatalog: Connector[] = [
     kind: "paid_media",
     feeds: ["ad_spend"],
     availability: "request",
+    authPattern: "oauth",
     description: "Investimento, campanhas e resultados do Facebook e Instagram.",
   },
   {
@@ -98,6 +108,7 @@ export const connectorCatalog: Connector[] = [
     kind: "paid_media",
     feeds: ["ad_spend"],
     availability: "request",
+    authPattern: "oauth",
     description: "Investimento, campanhas e resultados do Google.",
   },
   {
@@ -106,6 +117,7 @@ export const connectorCatalog: Connector[] = [
     kind: "paid_media",
     feeds: ["ad_spend"],
     availability: "request",
+    authPattern: "oauth",
     description: "Investimento, campanhas e resultados do TikTok.",
   },
   {
@@ -114,6 +126,7 @@ export const connectorCatalog: Connector[] = [
     kind: "analytics",
     feeds: ["traffic"],
     availability: "request",
+    authPattern: "oauth",
     description: "Sessões, usuários e eventos do funil do site.",
   },
 ];

@@ -88,7 +88,7 @@ export default tseslint.config(
     },
   },
   { files: ["src/**/*.test.ts"], rules: { "max-lines-per-function": "off" } },
-  { files: ["src/index.ts"], rules: { "no-console": "off" } },
+  { files: ["src/index.ts", "src/worker.ts"], rules: { "no-console": "off" } },
   {
     files: ["src/shared/**/*.ts"],
     rules: restrictedImports([noReactHere, sharedKnowsNoDomain, dependenciesOnlyInService]),

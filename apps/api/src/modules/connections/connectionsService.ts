@@ -9,6 +9,7 @@ import {
   connectorKindLabel,
   type ConnectionRequest,
   type ConnectionRequestInput,
+  type ConnectionSummary,
   type ConnectorKey,
   type StoreConnector,
 } from "@ecommerce/contracts/connectors";
@@ -65,9 +66,15 @@ export async function dataSourcesFor(
   }));
 }
 
-export async function storeConnectorsFor(clientId: string): Promise<StoreConnector[]> {
-  const [sources, requests] = await Promise.all([
+export type ConnectionsOf = (clientId: string) => Promise<Map<ConnectorKey, ConnectionSummary>>;
+
+export async function storeConnectorsFor(
+  clientId: string,
+  connectionsOf: ConnectionsOf,
+): Promise<StoreConnector[]> {
+  const [sources, connections, requests] = await Promise.all([
     dataSourcesFor(clientId),
+    connectionsOf(clientId),
     prismaClient.connectionRequest.findMany({
       where: { clientId, status: { in: ["REQUESTED", "IN_PROGRESS"] } },
       orderBy: { createdAt: "desc" },
@@ -83,12 +90,16 @@ export async function storeConnectorsFor(clientId: string): Promise<StoreConnect
       status: source?.status ?? "NOT_CONNECTED",
       syncLabel: source?.syncLabel ?? "—",
       request: openRequest.get(connector.key) ?? null,
+      connection: connections.get(connector.key) ?? null,
     };
   });
 }
 
-export async function connectionsScreen(auth: AuthContext): Promise<ConnectionsScreen> {
-  const connectors = await storeConnectorsFor(auth.clientId);
+export async function connectionsScreen(
+  auth: AuthContext,
+  connectionsOf: ConnectionsOf,
+): Promise<ConnectionsScreen> {
+  const connectors = await storeConnectorsFor(auth.clientId, connectionsOf);
   return { connectors, summary: connectionsSummaryOf(connectors), canRequest: true };
 }
 

@@ -2,12 +2,19 @@ import type { Request, Response } from "express";
 import { connectionRequestInputSchema, connectorKeySchema } from "@ecommerce/contracts/connectors";
 import { authOf } from "@/shared/http/authOf";
 import { parseOrThrow } from "@/shared/http/validate";
-import { connectionsHealth, connectionsScreen, requestConnection } from "./connectionsService";
+import {
+  connectionsHealth,
+  connectionsScreen,
+  requestConnection,
+  type ConnectionsOf,
+} from "./connectionsService";
 
-export function connectionsController() {
+export type ConnectionsDependencies = { connectionsOf: ConnectionsOf };
+
+export function connectionsController({ connectionsOf }: ConnectionsDependencies) {
   return {
     async screen(req: Request, res: Response) {
-      res.json(await connectionsScreen(authOf(req)));
+      res.json(await connectionsScreen(authOf(req), connectionsOf));
     },
     async health(req: Request, res: Response) {
       res.json(await connectionsHealth(authOf(req).clientId));

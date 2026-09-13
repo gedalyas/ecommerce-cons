@@ -31,6 +31,10 @@ export const auditActions = [
   "CONTRACT_SIGNED",
   "CONTRACT_REFUSED",
   "CONTRACT_RESENT",
+  "CONNECTION_AUTHORIZED",
+  "CONNECTION_REMOVED",
+  "CONNECTION_SYNCED",
+  "CONNECTION_FAILED",
 ] as const;
 export type AuditAction = (typeof auditActions)[number];
 
@@ -65,6 +69,10 @@ export const auditActionLabel: Record<AuditAction, string> = {
   CONTRACT_SIGNED: "Contrato assinado",
   CONTRACT_REFUSED: "Contrato recusado",
   CONTRACT_RESENT: "Contrato reenviado",
+  CONNECTION_AUTHORIZED: "Conexão autorizada",
+  CONNECTION_REMOVED: "Conexão removida",
+  CONNECTION_SYNCED: "Sincronização concluída",
+  CONNECTION_FAILED: "Sincronização falhou",
 };
 
 export type ActivityEntry = {
