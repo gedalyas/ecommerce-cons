@@ -1,5 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Connections, getConnectionsScreen } from "@/modules/connections/contract";
+import { getImportsScreen } from "@/modules/imports/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 
@@ -20,14 +21,17 @@ export const Route = createFileRoute("/conexoes")({
       },
     ],
   }),
-  loader: () => getConnectionsScreen(),
+  loader: async () => {
+    const [data, imports] = await Promise.all([getConnectionsScreen(), getImportsScreen()]);
+    return { data, imports };
+  },
   component: RouteComponent,
   errorComponent: RouteError,
 });
 
 function RouteComponent() {
-  const data = Route.useLoaderData();
-  return <Connections data={data} />;
+  const { data, imports } = Route.useLoaderData();
+  return <Connections data={data} imports={imports} />;
 }
 
 function RouteError() {

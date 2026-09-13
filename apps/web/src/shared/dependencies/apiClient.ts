@@ -30,14 +30,20 @@ function baseUrl() {
   return `${url.replace(/\/$/, "")}/api/v1`;
 }
 
+function bodyOf(body: unknown): { headers: Record<string, string>; body: BodyInit | null } {
+  if (body === undefined) return { headers: {}, body: null };
+  if (body instanceof FormData) return { headers: {}, body };
+  return { headers: { "content-type": "application/json" }, body: JSON.stringify(body) };
+}
+
 async function send(path: string, init: ApiRequest, token: string | null) {
-  const headers: Record<string, string> = { accept: "application/json" };
-  if (init.body !== undefined) headers["content-type"] = "application/json";
+  const encoded = bodyOf(init.body);
+  const headers: Record<string, string> = { accept: "application/json", ...encoded.headers };
   if (token) headers["authorization"] = `Bearer ${token}`;
   const response = await fetch(`${baseUrl()}${path}${toQueryString(init.query)}`, {
     method: init.method ?? "GET",
     headers,
-    body: init.body === undefined ? null : JSON.stringify(init.body),
+    body: encoded.body,
   });
   const text = await response.text();
   const body: unknown = text ? JSON.parse(text) : undefined;

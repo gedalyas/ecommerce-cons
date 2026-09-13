@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **I3 done (2026-09-13)** — last updated 2026-09-13
+Status: **I4 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -52,11 +52,16 @@ Status: **I3 done (2026-09-13)** — last updated 2026-09-13
 
 ## I4 — Web
 
-- [ ] `contracts` templates rendered on Conexões; "Baixar modelo" CSV per kind
-- [ ] File input + drag-and-drop, client-side size/extension check, `uploadImportFn` (FormData
-      through the BFF), result card, history table (`getImportsScreen`)
-- [ ] Headless-browser check: upload a valid orders CSV, see the result and the new rows on
-      Pedidos › Lista
+- [x] `modules/imports` in the web: `ImportPanel` (kind `SegmentedControl`, the template's
+      columns with required marks and examples, "Baixar modelo" CSV), `ImportResult`,
+      `importHistoryColumns`; the Conexões route loads `getImportsScreen` alongside the
+      sources and the old visual-only block is gone
+- [x] File input + drag-and-drop with the client-side check (`importFile.ts`, tested:
+      extension, 10 MB, empty), `uploadImportFn` forwards the `FormData` through the BFF
+      (`apiFetch` now sends `FormData` as multipart), result card and history table
+- [x] Headless browser: picked a 3-line orders CSV on Conexões → "PARCIAL · 2 de 3 linhas
+      importadas · 1 rejeitadas" with the row error, history row, the two orders on
+      Pedidos › Lista, `.xlsx` refused client-side; database reseeded afterwards
 
 ## I5 — Docs
 

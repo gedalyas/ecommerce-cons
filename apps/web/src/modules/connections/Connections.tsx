@@ -4,11 +4,12 @@ import { PageHeader } from "@/shared/ui/PageHeader";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { AlertBanner } from "@/shared/ui/AlertBanner";
 import { layout } from "@/shared/styles/spacing";
-import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import type { ConnectionsScreen, DataSourceStatus } from "@ecommerce/contracts/connections";
 import { summaryDetail } from "@ecommerce/contracts/connections";
+import type { ImportsScreen } from "@ecommerce/contracts/imports";
+import { ImportPanel } from "@/modules/imports/contract";
 
 const statusMeta: Record<
   DataSourceStatus,
@@ -24,7 +25,13 @@ const statusMeta: Record<
   MANUAL: { label: "Importação manual", icon: FileSpreadsheet, className: "text-muted-foreground" },
 };
 
-export function Connections({ data }: { data: ConnectionsScreen }) {
+export function Connections({
+  data,
+  imports,
+}: {
+  data: ConnectionsScreen;
+  imports: ImportsScreen;
+}) {
   const detail = summaryDetail(data.summary);
   return (
     <div className={layout.page}>
@@ -92,25 +99,7 @@ export function Connections({ data }: { data: ConnectionsScreen }) {
           </ul>
         </SectionBlock>
 
-        <SectionBlock
-          title="Importação manual"
-          description="Extratos e planilhas que ainda não têm integração automática."
-          bodyClassName={layout.cardPadding}
-        >
-          <div
-            className={cn("border border-dashed border-border bg-background p-5", radiusClass.card)}
-          >
-            <div className="text-[15px] font-semibold text-foreground">
-              Arraste a planilha aqui ou selecione um arquivo
-            </div>
-            <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
-              Formatos aceitos: .xlsx, .csv · até 10 MB
-            </p>
-            <Button variant="outline" size="sm" className="mt-4 h-11 md:h-8">
-              Selecionar arquivo
-            </Button>
-          </div>
-        </SectionBlock>
+        <ImportPanel data={imports} />
       </div>
     </div>
   );
