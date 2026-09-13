@@ -2,15 +2,22 @@
  * Order queries. Each exported function feeds one visual block and returns
  * the `{ current, previous }` envelope resolved server-side.
  */
-import { db } from "@/server/db";
-import { metricValue, type BreakdownSlice, type MetricValue, type Series } from "@/lib/metrics";
-import type { PeriodSearch } from "@/lib/period";
-import { fillSeries, isoDay, resolvePeriod, truncUnit, type Window } from "./period";
+import { prismaClient } from "@/shared/dependencies/prismaClient";
+import type { BreakdownSlice, MetricValue, Series } from "@/shared/models/types/metric.types";
+import { metricValue } from "@/shared/utils/metricFormat";
+import type { PeriodSearch } from "@/shared/utils/period";
+import {
+  fillSeries,
+  isoDay,
+  resolvePeriod,
+  truncUnit,
+  type Window,
+} from "@/shared/utils/periodWindow";
 
 type Totals = { revenue: number; orders: number; captured: number; capturedOrders: number };
 
 async function totals(clientId: string, w: Window): Promise<Totals> {
-  const [row] = await db.$queryRaw<
+  const [row] = await prismaClient.$queryRaw<
     { revenue: number; orders: number; captured: number; captured_orders: number }[]
   >`
     select
@@ -32,7 +39,7 @@ async function totals(clientId: string, w: Window): Promise<Totals> {
 type BucketRow = { bucket: Date; revenue: number; orders: number };
 
 async function byBucket(clientId: string, w: Window, unit: string): Promise<BucketRow[]> {
-  return db.$queryRaw<BucketRow[]>`
+  return prismaClient.$queryRaw<BucketRow[]>`
     select
       date_trunc(${unit}, placed_at) as bucket,
       coalesce(sum(total_price) filter (where financial_status = 'PAID'), 0)::float8 as revenue,
@@ -53,7 +60,7 @@ const statusLabel: Record<string, string> = {
 };
 
 async function byStatus(clientId: string, w: Window): Promise<BreakdownSlice[]> {
-  const rows = await db.$queryRaw<{ status: string; value: number }[]>`
+  const rows = await prismaClient.$queryRaw<{ status: string; value: number }[]>`
     select financial_status::text as status, coalesce(sum(total_price), 0)::float8 as value
     from sales_order
     where client_id = ${clientId} and placed_at >= ${w.start} and placed_at < ${w.end}
@@ -70,7 +77,7 @@ async function byStatus(clientId: string, w: Window): Promise<BreakdownSlice[]> 
 }
 
 async function clientIdFor(slug: string) {
-  const client = await db.client.findUnique({ where: { slug }, select: { id: true } });
+  const client = await prismaClient.client.findUnique({ where: { slug }, select: { id: true } });
   if (!client) throw new Error(`Unknown client "${slug}"`);
   return client.id;
 }

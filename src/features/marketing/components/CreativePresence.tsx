@@ -1,7 +1,7 @@
 import { Check, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { FidelityBadge } from "@/design-system/patterns/FidelityBadge";
-import type { Fidelity } from "@/design-system/patterns/FidelityBadge";
+import { cn } from "@/shared/utils/cn";
+import { FidelityBadge } from "@/shared/ui/FidelityBadge";
+import type { Fidelity } from "@/shared/ui/FidelityBadge";
 
 const palette = ["#1B4332", "#2D6A4F", "#D8F3DC", "#FFB703", "#212529"];
 

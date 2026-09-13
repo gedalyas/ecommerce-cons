@@ -7,7 +7,7 @@ import {
   MoreHorizontal,
   Truck,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 const items = [
   { label: "Dashboard", to: "/", icon: LayoutDashboard },

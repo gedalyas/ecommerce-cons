@@ -1,4 +1,4 @@
-import { SectionPage } from "@/design-system/patterns/SectionPage";
+import { SectionPage } from "@/shared/ui/SectionPage";
 import { logisticsSection } from "./data/logistics";
 
 export function LogisticsPage() {

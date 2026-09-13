@@ -1,6 +1,7 @@
 import { Outlet, useRouterState } from "@tanstack/react-router";
-import { ScrollShadows, useScrollShadow } from "@/design-system/patterns/ScrollShadow";
-import { TooltipProvider } from "@/design-system/primitives/Tooltip";
+import { ScrollShadows } from "@/shared/ui/ScrollShadow";
+import { useScrollShadow } from "@/shared/hooks/useScrollShadow";
+import { TooltipProvider } from "@/shared/ui/Tooltip";
 import { Sidebar } from "../Sidebar";
 import { BottomNav } from "../BottomNav";
 import { AssistantPanel } from "../AssistantPanel";

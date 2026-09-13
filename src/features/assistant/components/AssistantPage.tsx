@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { FileText, Mic, Paperclip, Play, Send, X } from "lucide-react";
-import { ScrollShadows, useScrollShadow } from "@/design-system/patterns/ScrollShadow";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ScrollShadows } from "@/shared/ui/ScrollShadow";
+import { useScrollShadow } from "@/shared/hooks/useScrollShadow";
+import { Button } from "@/shared/ui/Button";
+import { cn } from "@/shared/utils/cn";
 
 type Attachment = { name: string; size: string };
 

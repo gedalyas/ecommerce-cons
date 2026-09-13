@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { AlertBanner } from "@/design-system/patterns/AlertBanner";
-import { SectionPage } from "@/design-system/patterns/SectionPage";
-import type { Pillar } from "@/design-system/patterns/PillarCard";
+import { AlertBanner } from "@/shared/ui/AlertBanner";
+import { SectionPage } from "@/shared/ui/SectionPage";
+import type { Pillar } from "@/shared/ui/PillarCard";
 import { CreativePresence } from "./components/CreativePresence";
 import { marketingSection } from "./data/marketing";
 

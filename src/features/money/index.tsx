@@ -1,4 +1,4 @@
-import { SectionPage } from "@/design-system/patterns/SectionPage";
+import { SectionPage } from "@/shared/ui/SectionPage";
 import { moneySection } from "./data/money";
 
 export function MoneyPage() {

@@ -1,12 +1,12 @@
 import { AlertTriangle, CheckCircle2, CircleDashed, FileSpreadsheet } from "lucide-react";
-import { Button } from "@/design-system/primitives/Button";
-import { PageHeader } from "@/design-system/patterns/PageHeader";
-import { SectionBlock } from "@/design-system/patterns/SectionBlock";
-import { AlertBanner } from "@/design-system/patterns/AlertBanner";
-import { layout } from "@/design-system/tokens/spacing";
-import { radiusClass } from "@/design-system/tokens/radius";
-import { textClass } from "@/design-system/tokens/typography";
-import { cn } from "@/lib/utils";
+import { Button } from "@/shared/ui/Button";
+import { PageHeader } from "@/shared/ui/PageHeader";
+import { SectionBlock } from "@/shared/ui/SectionBlock";
+import { AlertBanner } from "@/shared/ui/AlertBanner";
+import { layout } from "@/shared/styles/spacing";
+import { radiusClass } from "@/shared/styles/radius";
+import { textClass } from "@/shared/styles/typography";
+import { cn } from "@/shared/utils/cn";
 import { connections } from "./data/connections";
 
 const statusMeta = {

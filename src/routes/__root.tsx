@@ -11,9 +11,9 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import appCss from "../styles.css?url";
-import { reportError } from "../lib/error-reporting";
-import { defaultPeriodSearch, parsePeriodSearch, type PeriodSearch } from "@/lib/period";
+import appCss from "@/shared/styles/global.css?url";
+import { reportError } from "@/shared/utils/errorReporting";
+import { defaultPeriodSearch, parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
 import { AppShell } from "@/layout/AppShell";
 
 function NotFoundComponent() {

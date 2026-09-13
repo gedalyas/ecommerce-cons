@@ -1,4 +1,4 @@
-import type { Section } from "@/design-system/patterns/SectionPage";
+import type { Section } from "@/shared/ui/SectionPage";
 
 export const marketingSection: Section = {
   title: "Marketing",

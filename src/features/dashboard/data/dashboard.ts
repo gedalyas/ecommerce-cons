@@ -1,5 +1,5 @@
-import type { Metric } from "@/design-system/patterns/MetricTile";
-import type { Recommendation } from "@/design-system/patterns/RecommendationList";
+import type { Metric } from "@/shared/ui/MetricTile";
+import type { Recommendation } from "@/shared/ui/RecommendationList";
 
 export const dashboardKpis: Metric[] = [
   {

@@ -3,12 +3,12 @@
  * inside the handler so the client bundle never resolves `@/server/*`.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { CLIENT_SLUG } from "@/lib/client";
-import { parsePeriodSearch, type PeriodSearch } from "@/lib/period";
+import { PROTOTYPE_CLIENT_SLUG } from "@/shared/config/prototype";
+import { parsePeriodSearch, type PeriodSearch } from "@/shared/utils/period";
 
 export const getOrdersOverview = createServerFn({ method: "GET" })
   .validator((input: PeriodSearch) => parsePeriodSearch(input))
   .handler(async ({ data }) => {
     const { ordersOverview } = await import("@/server/analytics/orders");
-    return ordersOverview(CLIENT_SLUG, data);
+    return ordersOverview(PROTOTYPE_CLIENT_SLUG, data);
   });

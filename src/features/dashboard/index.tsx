@@ -8,14 +8,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { MetricTileGroup } from "@/design-system/patterns/MetricTileGroup";
-import { PageHeader } from "@/design-system/patterns/PageHeader";
-import { RecommendationList } from "@/design-system/patterns/RecommendationList";
-import { SectionBlock } from "@/design-system/patterns/SectionBlock";
-import { layout } from "@/design-system/tokens/spacing";
-import { textClass } from "@/design-system/tokens/typography";
-import { cn } from "@/lib/utils";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
+import { PageHeader } from "@/shared/ui/PageHeader";
+import { RecommendationList } from "@/shared/ui/RecommendationList";
+import { SectionBlock } from "@/shared/ui/SectionBlock";
+import { layout } from "@/shared/styles/spacing";
+import { textClass } from "@/shared/styles/typography";
+import { cn } from "@/shared/utils/cn";
+import { formatCurrency, formatPercent } from "@/shared/utils/format";
 import {
   alerts,
   dashboardKpis,

@@ -8,8 +8,8 @@ import {
   Truck,
   Building2,
 } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
+import { cn } from "@/shared/utils/cn";
 
 const mainItems = [
   { label: "Assistente", to: "/assistente", icon: MessageSquare },
