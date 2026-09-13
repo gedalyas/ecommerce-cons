@@ -300,10 +300,12 @@ contracts.
 
 ---
 
-## Backlog (post-Stage 6, not scheduled)
+## Backlog (post-Stage 6, being worked in this order: Metas → Alerts → Métricas → Regiões → Influenciadores)
 
 - [ ] Narrative AI analysis per metric with driver trees (doc §11)
 - [ ] Alerts derived from data (queda de vendas, risco de estoque…)
-- [ ] Metas with 6 inputs / 8 derived
+- [x] Metas with 6 inputs / 8 derived — `/metas` (2026-09-13): Resumo with
+      Realizado × Meta and pacing, Planejamento grid per year, suggestion from
+      the previous year's actuals; `specs/goals.md`
 - [ ] Regional views (choropleth by UF) for orders and ROAS
 - [ ] Influencer hub
