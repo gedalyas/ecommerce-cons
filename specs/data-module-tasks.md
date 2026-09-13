@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 0.5 done (2026-09-12) — architecture in force; Stage 1 (Painel de Controle) is next** — last updated 2026-09-12
+Status: **Stage 1 done (2026-09-12) — Painel de Controle on live queries; Stage 2 (Pedidos) is next** — last updated 2026-09-12
 
 ---
 
@@ -144,22 +144,31 @@ contracts.
 
 ## Stage 1 — Painel de Controle (`/`)
 
-- [ ] Period selector on the dashboard header (moved from Stage 0)
-- [ ] "Falha na requisição" error block for data cards (moved from Stage 0)
-- [ ] Remove the `/dev/pedidos` proving ground once its blocks live in a real screen
-- [ ] Server functions: `getDashboardOverview` (all 10 scalars),
-      `getDashboardMetricByDate(metric)`, `getSalesBySource`,
-      `getFinancialOverview` (metric × bucket matrix, paginated)
-- [ ] Indicator carousel with the 10 metrics (Total vendido, Pedidos, Ticket
-      médio, Taxa de conversão, Investimento em marketing, ROI, CAC, CPA,
-      Lucro líquido, Clientes)
-- [ ] "Vendas por origem" block (UTM source/medium)
-- [ ] "Resumo financeiro" matrix table with CSV
-- [ ] Channel toggle (E-commerce / Marketplace) as a search param
-- [ ] Keep alerts, milestone, recommendations — wire headline KPIs to queries
-- [ ] Fidelity badge per metric derived from `DataSource` status (per-metric
-      degradation instead of Prax's full-screen gate)
-- [ ] Update `specs/dashboard.md`
+- [x] Period selector on the dashboard header + `ChannelToggle` (canal as a
+      global search param)
+- [x] "Falha na requisição" error block — `shared/ui/RequestError.tsx`, used as
+      the dashboard route `errorComponent`
+- [x] Remove the `/dev/pedidos` proving ground
+- [x] Server function `getDashboardOverview` returns scalars, series, source
+      breakdown and the matrix in one payload (one loader instead of Prax's
+      5–9 calls); facts come from `orders`, `customers`, `marketing`, `money`
+      and `connections` through their `contract.server.ts`
+- [x] Indicator carousel with the 10 metrics + big number + comparison series;
+      formulas in `dashboardMetrics.ts` (tested)
+- [x] "Vendas por origem" block (UTM source/medium; marketplaces by channel)
+- [x] "Resumo financeiro" matrix table with CSV (12 rows × buckets)
+- [x] Channel toggle (Todos / E-commerce / Marketplace) as `canal` search param
+- [x] Keep alerts, milestone, recommendations — headline KPIs (Faturamento,
+      Margem de contribuição, CAC, Recompra) wired to the live metrics; the
+      fixture 12-month chart was dropped (the period series replaces it)
+- [x] Fidelity badge per metric derived from `DataSource` status —
+      `dashboardFidelity.ts` (tested): weakest source wins, informed costs cap
+      at B, the note names the culprit
+- [x] Update `specs/dashboard.md`
+- [x] Cost engine (`money/costEngine.ts`, tested) built early because Lucro
+      líquido, ROI and CAC need it; Stage 3 adds the registry UI and the DRE
+- [x] Two contracts per module (`contract.ts` + `contract.server.ts`) —
+      recorded in `specs/architecture.md`
 
 ---
 

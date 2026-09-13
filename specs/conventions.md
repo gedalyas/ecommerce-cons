@@ -36,7 +36,7 @@ them.
 src/
   routes.ts            virtual route map (URL ↔ file)
   routes/              composition root: thin route files + __root.tsx
-  modules/<domain>/    flat; contract.ts is the only importable file
+  modules/<domain>/    flat; contract.ts (isomorphic) + contract.server.ts (services)
   shared/              kernel without domain knowledge
     ui/                design system, flat (Component.tsx + component.types.ts)
     styles/            global.css + token files

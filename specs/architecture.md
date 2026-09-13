@@ -17,8 +17,9 @@ Consequences, all enforced by ESLint unless marked otherwise:
 
 1. No layer folders at the root (`components/`, `hooks/`, `lib/`, `server/`,
    `features/`, `layout/`, `design-system/` become `extinct`).
-2. A module is **flat** (`MAX_MODULE_DEPTH = 0`) and exposes exactly one file,
-   `contract.ts`, written by hand — never a barrel.
+2. A module is **flat** (`MAX_MODULE_DEPTH = 0`) and exposes two hand-written
+   files, never a barrel: `contract.ts` (isomorphic: pages, pure functions,
+   types) and `contract.server.ts` (server-only: the `*Service.ts` functions).
 3. Inside a module, imports are relative (`./x`). Crossing a boundary uses the
    alias: `@/modules/<other>/contract` or `@/shared/...`.
 4. `shared/` never imports `modules/`.
@@ -37,7 +38,8 @@ src/
 │   ├── __root.tsx                #   shell + global search params; injects domain widgets into AppShell
 │   └── <name>.tsx                #   head() + loader + component — imports ONLY @/modules/*/contract and @/shared
 ├── modules/<domain>/             # flat; one contract.ts per module
-│   ├── contract.ts               #   the only importable file from outside
+│   ├── contract.ts               #   isomorphic port: components, pure functions, types
+│   ├── contract.server.ts        #   server-only port: *Service.ts functions (other services import it)
 │   ├── <Domain>.tsx              #   ENTRY: the page (PascalCase = exports a component)
 │   ├── <Widget>.tsx              #   other components of the module
 │   ├── <domain>Controller.ts     #   TRANSPORT: createServerFn — validates input, calls the service. Isomorphic.
@@ -68,14 +70,14 @@ modules with a contract.
 
 ## 3. Roles by file (what each may import)
 
-| Role             | File                                | Knows                                                                                         | Ignores                                 |
-| ---------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Composition root | `routes/*.tsx`, `routes/__root.tsx` | every `modules/*/contract`, `shared`                                                          | any module internal                     |
-| Entry            | `<Domain>.tsx`, other `.tsx`        | own module (relative), `shared/ui`, `shared/hooks`, other contracts                           | Prisma, `shared/dependencies`           |
-| Transport        | `<domain>Controller.ts`             | `./<domain>Service`, `./<domain>Schema`, `shared/utils`                                       | React, Prisma directly                  |
-| Orchestrator     | `<domain>Service.ts`                | `@/shared/dependencies/prismaClient`, `@/generated/prisma/client`, pure core, other contracts | React, the request                      |
-| Pure core        | `<rule>.ts`                         | own types, `shared/utils`, `date-fns`, Prisma **enums** (`@/generated/prisma/enums`)          | Prisma client, fetch, React, clock, env |
-| Kernel           | `shared/**`                         | `shared`, node_modules                                                                        | any module                              |
+| Role             | File                                | Knows                                                                                                                         | Ignores                                 |
+| ---------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Composition root | `routes/*.tsx`, `routes/__root.tsx` | every `modules/*/contract`, `shared`                                                                                          | any module internal, `contract.server`  |
+| Entry            | `<Domain>.tsx`, other `.tsx`        | own module (relative), `shared/ui`, `shared/hooks`, other contracts                                                           | Prisma, `shared/dependencies`           |
+| Transport        | `<domain>Controller.ts`             | `./<domain>Service`, `./<domain>Schema`, `shared/utils`                                                                       | React, Prisma directly                  |
+| Orchestrator     | `<domain>Service.ts`                | `@/shared/dependencies/prismaClient`, `@/generated/prisma/client`, pure core, other modules' `contract` and `contract.server` | React, the request                      |
+| Pure core        | `<rule>.ts`                         | own types, `shared/utils`, `date-fns`, Prisma **enums** (`@/generated/prisma/enums`)                                          | Prisma client, fetch, React, clock, env |
+| Kernel           | `shared/**`                         | `shared`, node_modules                                                                                                        | any module                              |
 
 Direction: `routes → contract → (module internals) → shared → node_modules`.
 Module ↔ module only through contracts; a cycle between two contracts is
@@ -86,6 +88,10 @@ allowed by the lint and **caught by the ratchet**.
 - `contract.ts` is a manual list of `export { X } from './x'` and
   `export type { T } from './x.types'`. No logic, no `export *`, no
   speculative exports: only what has a consumer today.
+- `contract.server.ts` lists the `*Service.ts` functions other modules'
+  services may call. It exists because a route importing a page from a
+  contract that also re-exported a service would pull Prisma into the client
+  graph (import protection fails the build). Client code never imports it.
 - Owner = producer. A type with a domain owner lives in that module and comes
   out through its contract; a second consumer does not move it to `shared/`.
 - When publishing through the producer would close a cycle, the **consumer
@@ -125,9 +131,10 @@ Here it can, so two guards:
 
 1. **Lint** — `dependenciesOnlyInService`: `@/shared/dependencies/*` and
    `@/generated/prisma/client` only importable from `src/modules/*/*Service.ts`.
-2. **Build** — `vite.config.ts` `importProtection.client.files` moves from
-   `**/server/**` to `**/shared/dependencies/**` and `**/*Service.ts`. A
-   `*Service.ts` that leaks into the client bundle fails the build.
+2. **Build** — `vite.config.ts` `importProtection.client.files` covers
+   `**/shared/dependencies/**`, `**/modules/*/*Service.ts` and
+   `**/modules/*/contract.server.ts`. Anything server-only that leaks into the
+   client bundle fails the build.
 
 Verified on 2026-09-12: a `createServerFn` file that **statically** imports the
 Prisma-touching module builds fine — the Start compiler strips the handler and
@@ -136,15 +143,15 @@ the `await import()` workaround in `features/orders/api.ts` goes away.
 
 ## 7. Naming
 
-| Thing          | Rule                                                                                                             | Example                            |
-| -------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| Module folder  | `camelCase`, singular, English, business capability                                                              | `orders`, `assistant`              |
-| Component file | `PascalCase.tsx`, one component, default export re-exported as named in the contract                             | `Orders.tsx`, `DataTable.tsx`      |
-| Any other file | `camelCase.ts` — **no kebab-case**                                                                               | `usePeriod.ts`, `seedAnalytics.ts` |
-| Role suffixes  | `*Controller.ts`, `*Service.ts`, `*Schema.ts`, `*.types.ts`, `*Fixture.ts`, `use*.ts`, `*.test.ts`               | `ordersService.ts`                 |
-| Route files    | English `camelCase.tsx`; the URL stays Portuguese in `src/routes.ts`                                             | `devOrders.tsx` ↔ `/dev/pedidos`   |
-| Identifiers    | English; accented identifiers are a lint error; UI strings and data keys may be Portuguese (matches `CLAUDE.md`) | —                                  |
-| Exports        | named everywhere; default only for the component of a `.tsx`                                                     | —                                  |
+| Thing          | Rule                                                                                                                                     | Example                            |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Module folder  | `camelCase`, singular, English, business capability                                                                                      | `orders`, `assistant`              |
+| Component file | `PascalCase.tsx`, one component, default export re-exported as named in the contract                                                     | `Orders.tsx`, `DataTable.tsx`      |
+| Any other file | `camelCase.ts` — **no kebab-case**                                                                                                       | `usePeriod.ts`, `seedAnalytics.ts` |
+| Role suffixes  | `*Controller.ts`, `*Service.ts`, `*Schema.ts`, `*.types.ts`, `*Fixture.ts`, `use*.ts`, `*.test.ts`; `contract.ts` / `contract.server.ts` | `ordersService.ts`                 |
+| Route files    | English `camelCase.tsx`; the URL stays Portuguese in `src/routes.ts`                                                                     | `devOrders.tsx` ↔ `/dev/pedidos`   |
+| Identifiers    | English; accented identifiers are a lint error; UI strings and data keys may be Portuguese (matches `CLAUDE.md`)                         | —                                  |
+| Exports        | named everywhere; default only for the component of a `.tsx`                                                                             | —                                  |
 
 ## 8. Tooling (what enforces what)
 

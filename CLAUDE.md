@@ -51,8 +51,11 @@ and the cycle ratchet (`scripts/checkCycles.ts`), so a violation fails lint.
   components, `<domain>Controller.ts` (server functions), `<domain>Service.ts`
   (the only file that imports Prisma; server-only), `<domain>Schema.ts`,
   `<domain>.types.ts`, `<domain>Fixture.ts`, pure `<rule>.ts` + `<rule>.test.ts`.
-- `contract.ts` — the only file another module, a route or the seed may import
-  from a module. Hand-written list of `export { X } from "./x"`; never a barrel.
+- `contract.ts` — the only file a route, the seed or another module's client
+  code may import from a module (pages, pure functions, types).
+  `contract.server.ts` publishes the `*Service.ts` functions for other
+  modules' services. Both are hand-written lists of `export { X } from "./x"`;
+  never a barrel, never re-export a service from `contract.ts`.
 - `src/shared/` — kernel that knows no domain: `ui/` (design system, flat, one
   file per component + `<name>.types.ts`), `styles/` (`global.css` + token
   files), `layout/` (AppShell, Sidebar, BottomNav — domain widgets arrive as
