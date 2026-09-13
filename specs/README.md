@@ -35,6 +35,8 @@ because that is what ships.
 | [ingestion-tasks.md](ingestion-tasks.md)                                           | Task checklist for the ingestion plan — tick as work lands                          |
 | [saas-plan.md](saas-plan.md)                                                       | Plan: tenants, roles, invitations, connector catalog, no demo data                  |
 | [saas-tasks.md](saas-tasks.md)                                                     | Task checklist for the SaaS plan — tick as work lands                               |
+| [selfservice-plan.md](selfservice-plan.md)                                         | Invitations by e-mail, password reset, import preview and undo — plan and endpoints |
+| [selfservice-tasks.md](selfservice-tasks.md)                                       | Task checklist for the self-service plan — tick as work lands                       |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force; see CLAUDE.md)  |
 | [reference/](reference/)                                                           | The Arko backend and frontend `CLAUDE.md` files this repo's rules derive from       |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from  |
