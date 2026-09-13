@@ -7,7 +7,13 @@ export const userRoleLabel: Record<UserRole, string> = {
   CLIENT: "Cliente",
 };
 
-export type StoreSummary = { id: string; slug: string; name: string; onboardedAt: string | null };
+export type StoreSummary = {
+  id: string;
+  slug: string;
+  name: string;
+  onboardedAt: string | null;
+  archivedAt: string | null;
+};
 
 export type AuthUser = {
   id: string;

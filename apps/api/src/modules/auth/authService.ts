@@ -28,7 +28,13 @@ import {
 
 export type ResetDelivery = { now: () => Date; mailer: Mailer; appUrl: string };
 
-const storeSelect = { id: true, slug: true, name: true, onboardedAt: true } as const;
+const storeSelect = {
+  id: true,
+  slug: true,
+  name: true,
+  onboardedAt: true,
+  archivedAt: true,
+} as const;
 
 const userSelect = {
   id: true,
@@ -52,11 +58,13 @@ const toStore = (s: {
   slug: string;
   name: string;
   onboardedAt: Date | null;
+  archivedAt: Date | null;
 }): StoreSummary => ({
   id: s.id,
   slug: s.slug,
   name: s.name,
   onboardedAt: s.onboardedAt?.toISOString() ?? null,
+  archivedAt: s.archivedAt?.toISOString() ?? null,
 });
 
 export async function storesOf(
@@ -88,12 +96,18 @@ export async function storesOf(
 export async function storeAccessOf(principal: Principal): Promise<StoreAccess> {
   const user = await prismaClient.user.findUnique({
     where: { id: principal.userId },
-    select: { role: true, clientId: true, assignments: { select: { clientId: true } } },
+    select: {
+      role: true,
+      clientId: true,
+      client: { select: { archivedAt: true } },
+      assignments: { select: { clientId: true } },
+    },
   });
   if (!user) throw unauthorized();
   return {
     role: user.role,
     ownClientId: user.clientId,
+    ownClientArchived: Boolean(user.client?.archivedAt),
     assignedClientIds: user.assignments.map((a) => a.clientId),
   };
 }

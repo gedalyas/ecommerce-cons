@@ -23,6 +23,7 @@ import { Route as managementRouteImport } from './routes/management'
 import { Route as influencersRouteImport } from './routes/influencers'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as storeRouteImport } from './routes/store'
+import { Route as storeArchivedRouteImport } from './routes/storeArchived'
 import { Route as marketingRouteImport } from './routes/marketing'
 import { Route as goalsRouteImport } from './routes/goals'
 import { Route as analysisRouteImport } from './routes/analysis'
@@ -100,6 +101,11 @@ const storeRoute = storeRouteImport.update({
   path: '/loja',
   getParentRoute: () => rootRouteImport,
 } as any)
+const storeArchivedRoute = storeArchivedRouteImport.update({
+  id: '/loja-arquivada',
+  path: '/loja-arquivada',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const marketingRoute = marketingRouteImport.update({
   id: '/marketing',
   path: '/marketing',
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
   '/loja': typeof storeRoute
+  '/loja-arquivada': typeof storeArchivedRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
   '/metricas': typeof analysisRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
   '/loja': typeof storeRoute
+  '/loja-arquivada': typeof storeArchivedRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
   '/metricas': typeof analysisRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/influenciadores': typeof influencersRoute
   '/logistica': typeof logisticsRoute
   '/loja': typeof storeRoute
+  '/loja-arquivada': typeof storeArchivedRoute
   '/marketing': typeof marketingRoute
   '/metas': typeof goalsRoute
   '/metricas': typeof analysisRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/influenciadores'
     | '/logistica'
     | '/loja'
+    | '/loja-arquivada'
     | '/marketing'
     | '/metas'
     | '/metricas'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/influenciadores'
     | '/logistica'
     | '/loja'
+    | '/loja-arquivada'
     | '/marketing'
     | '/metas'
     | '/metricas'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/influenciadores'
     | '/logistica'
     | '/loja'
+    | '/loja-arquivada'
     | '/marketing'
     | '/metas'
     | '/metricas'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   influencersRoute: typeof influencersRoute
   logisticsRoute: typeof logisticsRoute
   storeRoute: typeof storeRoute
+  storeArchivedRoute: typeof storeArchivedRoute
   marketingRoute: typeof marketingRoute
   goalsRoute: typeof goalsRoute
   analysisRoute: typeof analysisRoute
@@ -390,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof storeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/loja-arquivada': {
+      id: '/loja-arquivada'
+      path: '/loja-arquivada'
+      fullPath: '/loja-arquivada'
+      preLoaderRoute: typeof storeArchivedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketing': {
       id: '/marketing'
       path: '/marketing'
@@ -450,6 +470,7 @@ const rootRouteChildren: RootRouteChildren = {
   influencersRoute: influencersRoute,
   logisticsRoute: logisticsRoute,
   storeRoute: storeRoute,
+  storeArchivedRoute: storeArchivedRoute,
   marketingRoute: marketingRoute,
   goalsRoute: goalsRoute,
   analysisRoute: analysisRoute,

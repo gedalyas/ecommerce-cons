@@ -12,6 +12,7 @@ import {
   resendInvitation,
   resolveRequest,
   revokeInvitation,
+  setStoreArchived,
 } from "./adminService";
 
 const idSchema = z.string().min(1);
@@ -27,6 +28,14 @@ export function adminController(deps: AdminDependencies) {
     async invite(req: Request, res: Response) {
       const input = parseOrThrow(invitationInputSchema, req.body);
       res.status(201).json(await createInvitation(principalOf(req), input, deps));
+    },
+    async archive(req: Request, res: Response) {
+      const id = parseOrThrow(idSchema, req.params["id"]);
+      res.json(await setStoreArchived(principalOf(req), id, true, now()));
+    },
+    async restore(req: Request, res: Response) {
+      const id = parseOrThrow(idSchema, req.params["id"]);
+      res.json(await setStoreArchived(principalOf(req), id, false, now()));
     },
     async resend(req: Request, res: Response) {
       const id = parseOrThrow(idSchema, req.params["id"]);

@@ -72,6 +72,7 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
                 {account.stores.map((s) => (
                   <SelectItem key={s.id} value={s.id}>
                     {s.name}
+                    {s.isArchived ? " (arquivada)" : ""}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -79,6 +80,9 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
           ) : (
             <div className="mt-1 truncate text-[15px] font-semibold text-foreground">
               {account.store?.name ?? "Nenhuma loja"}
+              {account.store?.isArchived ? (
+                <span className="t-meta ml-1 text-warning">(arquivada)</span>
+              ) : null}
             </div>
           )}
         </div>

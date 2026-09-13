@@ -102,7 +102,13 @@ export async function createStore(
     return created;
   });
   await recordActivity(principal, store.id, { action: "STORE_CREATED", storeName: store.name });
-  return { id: store.id, slug: store.slug, name: store.name, onboardedAt: now.toISOString() };
+  return {
+    id: store.id,
+    slug: store.slug,
+    name: store.name,
+    onboardedAt: now.toISOString(),
+    archivedAt: null,
+  };
 }
 
 export async function storeOf(clientId: string): Promise<Store> {

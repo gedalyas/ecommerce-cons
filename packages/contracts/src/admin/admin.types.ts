@@ -9,6 +9,7 @@ export type AdminStore = {
   name: string;
   createdAt: string;
   onboardedAt: string | null;
+  archivedAt: string | null;
   users: number;
   consultants: ConsultantSummary[];
   pendingRequests: number;

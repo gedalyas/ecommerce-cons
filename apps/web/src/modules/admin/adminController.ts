@@ -4,6 +4,7 @@ import {
   invitationInputSchema,
   type AdminConnectionRequest,
   type AdminScreen,
+  type AdminStore,
   type ConsultantSummary,
   type Invitation,
 } from "@ecommerce/contracts/admin";
@@ -60,6 +61,21 @@ export const resendInvitationFn = createServerFn({ method: "POST" })
         }),
       "Não foi possível reenviar o convite.",
     ),
+  );
+
+const archiveCall = (id: string, verb: "archive" | "restore") =>
+  apiFetch<AdminStore>(`/admin/stores/${encodeURIComponent(id)}/${verb}`, { method: "PUT" });
+
+export const archiveStoreFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data }) =>
+    attempt(() => archiveCall(data.id, "archive"), "Não foi possível arquivar a loja."),
+  );
+
+export const restoreStoreFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => idSchema.parse(input))
+  .handler(async ({ data }) =>
+    attempt(() => archiveCall(data.id, "restore"), "Não foi possível reativar a loja."),
   );
 
 export const assignConsultantsFn = createServerFn({ method: "POST" })

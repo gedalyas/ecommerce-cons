@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **O0–O2 done, O3 next** — last updated 2026-09-13
+Status: **O0–O3 done, O4 next** — last updated 2026-09-13
 
 ---
 
@@ -43,13 +43,19 @@ Status: **O0–O2 done, O3 next** — last updated 2026-09-13
 
 ## O3 — Store archiving
 
-- [ ] Schema: `Client.archivedAt`; migration
-- [ ] API: `PUT /admin/stores/:id/archive` and `/restore` (admin only, audited);
+- [x] Schema: `Client.archivedAt`; migration
+- [x] API: `PUT /admin/stores/:id/archive` and `/restore` (admin only, audited);
       `StoreSummary.archivedAt`; `resolveClient` answers 403 "Esta loja está arquivada" to a
       `CLIENT`; `AdminStore.archivedAt`
-- [ ] Web: root guard sends a client with an archived store to `/loja-arquivada` (message +
+- [x] Web: root guard sends a client with an archived store to `/loja-arquivada` (message +
       sign out); sidebar badge for staff; `/admin` › Lojas shows Arquivar / Reativar
-- [ ] Flow: archive → client blocked on every screen → restore → client back
+- [x] Flow (`e2e_archive.mjs`): admin archives → badge + Reativar; the client lands on
+      `/loja-arquivada` after login and from any URL, the API answers 403; the consultant
+      still opens the store (sidebar "(arquivada)"); restore → the client is back at once (the
+      session refreshes the user whenever the active store is archived); both events in the
+      activity log
+- [x] Migration `20260913203000_client_archived`; the root loader skips the shell status for
+      an archived client (it would 403)
 
 ## O4 — Docs and close
 

@@ -3,7 +3,7 @@ export type ShellStatus = {
   connectionsAlert: boolean;
 };
 
-export type ShellStore = { id: string; name: string };
+export type ShellStore = { id: string; name: string; isArchived: boolean };
 
 export type ShellAccount = {
   name: string;

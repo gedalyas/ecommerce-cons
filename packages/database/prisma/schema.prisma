@@ -629,6 +629,8 @@ model Client {
   monthlyRevenueBand String?   @map("monthly_revenue_band")
   timezone           String    @default("America/Sao_Paulo")
   onboardedAt        DateTime? @map("onboarded_at")
+  /// Set by an admin when the engagement ends; clients are blocked, data stays.
+  archivedAt         DateTime? @map("archived_at")
   createdAt          DateTime  @default(now()) @map("created_at")
   updatedAt          DateTime  @updatedAt @map("updated_at")
 

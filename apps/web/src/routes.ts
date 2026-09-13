@@ -12,6 +12,7 @@ export const routes = rootRoute("__root.tsx", [
   route("/redefinir-senha", "resetPassword.tsx"),
   route("/configurar-loja", "storeOnboarding.tsx"),
   route("/loja", "store.tsx"),
+  route("/loja-arquivada", "storeArchived.tsx"),
   route("/admin", "admin.tsx"),
   route("/dinheiro", "money.tsx"),
   route("/marketing", "marketing.tsx"),

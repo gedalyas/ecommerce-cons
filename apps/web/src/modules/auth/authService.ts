@@ -108,9 +108,16 @@ export async function refreshSessionUser(): Promise<AuthUser | null> {
   return refreshUserInto(session);
 }
 
-function isStale(session: { user?: AuthUser; userRefreshedAt?: number }): boolean {
+function isStale(session: {
+  user?: AuthUser;
+  userRefreshedAt?: number;
+  activeClientId?: string | null;
+}): boolean {
   const age = Date.now() - (session.userRefreshedAt ?? 0);
-  return age > USER_STALE_MS || (session.user?.stores.length ?? 0) === 0;
+  const active = activeStoreOf(session.user?.stores ?? [], session.activeClientId ?? null);
+  return (
+    age > USER_STALE_MS || (session.user?.stores.length ?? 0) === 0 || Boolean(active?.archivedAt)
+  );
 }
 
 export async function sessionState(): Promise<SessionState | null> {

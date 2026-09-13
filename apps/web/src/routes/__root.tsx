@@ -45,6 +45,7 @@ const PUBLIC_PATHS = ["/entrar", "/cadastro", "/esqueci-senha", "/redefinir-senh
 const ONBOARDING_PATH = "/configurar-loja";
 const ADMIN_PATH = "/admin";
 const NO_STORE_PATHS = ["/configurar-loja", "/admin"];
+const ARCHIVED_PATH = "/loja-arquivada";
 const emptyStatus = { maturity: { achieved: 0, total: 0 }, connectionsAlert: false };
 
 function NotFoundComponent() {
@@ -162,13 +163,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       }
       return { session };
     }
+    const archivedClient = user.role === "CLIENT" && Boolean(activeStore.archivedAt);
+    if (archivedClient && location.pathname !== ARCHIVED_PATH) {
+      throw redirect({ to: ARCHIVED_PATH });
+    }
+    if (!archivedClient && location.pathname === ARCHIVED_PATH) throw redirect({ to: "/" });
     if (location.pathname === ONBOARDING_PATH) throw redirect({ to: "/" });
     if (location.pathname === ADMIN_PATH && user.role === "CLIENT") throw redirect({ to: "/" });
     return { session };
   },
   loaderDeps: () => ({}),
   loader: async ({ context }) => {
-    if (!context.session?.activeStore) return { status: emptyStatus };
+    const { session } = context;
+    if (!session?.activeStore) return { status: emptyStatus };
+    if (session.user.role === "CLIENT" && session.activeStore.archivedAt)
+      return { status: emptyStatus };
     const [maturity, connections] = await Promise.all([
       getMilestoneSummary(),
       getConnectionsHealth(),
@@ -208,7 +217,7 @@ function RootComponent() {
   const select = useServerFn(selectStoreFn);
 
   if (!user) return <Outlet />;
-  if (!activeStore && user.role === "CLIENT") return <Outlet />;
+  if (user.role === "CLIENT" && (!activeStore || activeStore.archivedAt)) return <Outlet />;
 
   const signOut = async () => {
     await logout();
@@ -231,8 +240,18 @@ function RootComponent() {
           name: user.name,
           role: user.role,
           onSignOut: () => void signOut(),
-          store: activeStore ? { id: activeStore.id, name: activeStore.name } : null,
-          stores: user.stores.map((s) => ({ id: s.id, name: s.name })),
+          store: activeStore
+            ? {
+                id: activeStore.id,
+                name: activeStore.name,
+                isArchived: Boolean(activeStore.archivedAt),
+              }
+            : null,
+          stores: user.stores.map((s) => ({
+            id: s.id,
+            name: s.name,
+            isArchived: Boolean(s.archivedAt),
+          })),
           onSelectStore: (id) => void switchStore(id),
         }}
       />

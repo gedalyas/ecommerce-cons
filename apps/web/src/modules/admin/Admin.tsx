@@ -32,6 +32,7 @@ import {
   revokeInvitationFn,
 } from "./adminController";
 import { AdminActivity } from "./AdminActivity";
+import { StoreArchiveButton } from "./StoreArchiveButton";
 import { InviteForm } from "./InviteForm";
 
 const invitationTone: Record<InvitationStatus, "accent" | "muted" | "warning"> = {
@@ -52,7 +53,7 @@ function useAdminAction() {
     }
     await router.invalidate();
   };
-  return { error, run };
+  return { error, setError, run };
 }
 
 function StoreConsultants({
@@ -91,7 +92,7 @@ export function Admin({
   const revoke = useServerFn(revokeInvitationFn);
   const resend = useServerFn(resendInvitationFn);
   const resolve = useServerFn(resolveRequestFn);
-  const { error, run } = useAdminAction();
+  const { error, setError, run } = useAdminAction();
 
   return (
     <div className={layout.page}>
@@ -111,7 +112,17 @@ export function Admin({
         <SectionBlock title="Lojas" description="Cada loja é um cliente com seus próprios dados.">
           <DataTable
             columns={[
-              { key: "name", header: "Loja", render: (r) => r.name, sortValue: (r) => r.name },
+              {
+                key: "name",
+                header: "Loja",
+                render: (r) => (
+                  <span className="inline-flex items-center gap-2">
+                    {r.name}
+                    {r.archivedAt && <Badge tone="warning">Arquivada</Badge>}
+                  </span>
+                ),
+                sortValue: (r) => r.name,
+              },
               {
                 key: "consultants",
                 header: "Consultores",
@@ -141,6 +152,18 @@ export function Admin({
                 render: (r) =>
                   formatDate(r.createdAt, { day: "2-digit", month: "2-digit", year: "2-digit" }),
               },
+              ...(isAdmin
+                ? [
+                    {
+                      key: "archive",
+                      header: "",
+                      align: "right" as const,
+                      render: (r: AdminStore) => (
+                        <StoreArchiveButton store={r} onError={setError} />
+                      ),
+                    },
+                  ]
+                : []),
             ]}
             rows={data.stores}
             rowKey={(r) => r.id}

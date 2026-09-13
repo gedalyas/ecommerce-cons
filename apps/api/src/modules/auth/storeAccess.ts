@@ -3,8 +3,16 @@ import type { UserRole } from "@ecommerce/contracts/auth";
 export type StoreAccess = {
   role: UserRole;
   ownClientId: string | null;
+  ownClientArchived: boolean;
   assignedClientIds: readonly string[];
 };
+
+export const ARCHIVED_STORE_MESSAGE =
+  "Esta loja está arquivada. Fale com sua consultoria para reativá-la.";
+
+export function isBlockedByArchive(access: StoreAccess, clientId: string): boolean {
+  return access.role === "CLIENT" && access.ownClientId === clientId && access.ownClientArchived;
+}
 
 export function canAccessStore(access: StoreAccess, clientId: string): boolean {
   switch (access.role) {

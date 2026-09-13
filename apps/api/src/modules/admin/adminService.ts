@@ -13,7 +13,7 @@ import {
   type ConnectorKey,
 } from "@ecommerce/contracts/connectors";
 import { invitationStatusOf } from "@ecommerce/contracts/admin";
-import { prismaClient } from "@ecommerce/database/client";
+import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
 import {
   INVITATION_TOKEN_SECONDS,
@@ -60,20 +60,58 @@ async function storesFor(principal: Principal): Promise<AdminStore[]> {
       name: true,
       createdAt: true,
       onboardedAt: true,
+      archivedAt: true,
       _count: { select: { users: true, connectionRequests: { where: { status: "REQUESTED" } } } },
       consultants: { select: { consultant: { select: consultantSelect } } },
     },
   });
-  return rows.map((r) => ({
-    id: r.id,
-    slug: r.slug,
-    name: r.name,
-    createdAt: r.createdAt.toISOString(),
-    onboardedAt: r.onboardedAt?.toISOString() ?? null,
-    users: r._count.users,
-    consultants: r.consultants.map((c) => c.consultant),
-    pendingRequests: r._count.connectionRequests,
-  }));
+  return rows.map(toAdminStore);
+}
+
+const adminStoreSelect = {
+  id: true,
+  slug: true,
+  name: true,
+  createdAt: true,
+  onboardedAt: true,
+  archivedAt: true,
+  _count: { select: { users: true, connectionRequests: { where: { status: "REQUESTED" } } } },
+  consultants: { select: { consultant: { select: consultantSelect } } },
+} as const;
+
+type AdminStoreRow = Prisma.ClientGetPayload<{ select: typeof adminStoreSelect }>;
+
+const toAdminStore = (r: AdminStoreRow): AdminStore => ({
+  id: r.id,
+  slug: r.slug,
+  name: r.name,
+  createdAt: r.createdAt.toISOString(),
+  onboardedAt: r.onboardedAt?.toISOString() ?? null,
+  archivedAt: r.archivedAt?.toISOString() ?? null,
+  users: r._count.users,
+  consultants: r.consultants.map((c) => c.consultant),
+  pendingRequests: r._count.connectionRequests,
+});
+
+export async function setStoreArchived(
+  principal: Principal,
+  id: string,
+  archived: boolean,
+  now: Date,
+): Promise<AdminStore> {
+  if (principal.role !== "ADMIN") throw forbidden("Só um administrador arquiva lojas.");
+  const existing = await prismaClient.client.findUnique({ where: { id }, select: { id: true } });
+  if (!existing) throw notFound("Loja não encontrada");
+  const row = await prismaClient.client.update({
+    where: { id },
+    data: { archivedAt: archived ? now : null },
+    select: adminStoreSelect,
+  });
+  await recordActivity(principal, id, {
+    action: archived ? "STORE_ARCHIVED" : "STORE_RESTORED",
+    storeName: row.name,
+  });
+  return toAdminStore(row);
 }
 
 type InvitationRow = {
