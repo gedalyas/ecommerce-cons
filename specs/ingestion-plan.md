@@ -69,7 +69,8 @@ web (Conexões)  ──FormData──►  BFF uploadImportFn  ──multipart─
   10 MB CSV is seconds) and the response is the finished `ImportJob`.
 - Data sources: a successful `ORDERS` import stamps `lastSyncedAt` on the "Loja" source,
   `AD_SPEND` on the platform's source (Meta Ads / Google Ads / TikTok Ads), `TRAFFIC` on
-  "Google Analytics"; a source in `NOT_CONNECTED` becomes `MANUAL`. The Conexões summary,
+  "Google Analytics"; a source in `NOT_CONNECTED` or `ERROR` becomes `MANUAL` (its data is
+  now maintained by hand, so the "não sincroniza" banner no longer applies). The Conexões summary,
   the sidebar dot and the Marketing banner derive from those rows already.
 - Orders: `orderNumberForCustomer` is set from the customer's existing paid orders at insert
   time (the screens rank by `row_number()` anyway); customer aggregates and RFM are refreshed

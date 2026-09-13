@@ -8,6 +8,7 @@ import { createCustomersRouter, retentionSummary } from "@/modules/customers/con
 import { createDashboardRouter } from "@/modules/dashboard/contract";
 import { createGoalsRouter } from "@/modules/goals/contract";
 import { createHealthRouter } from "@/modules/health/contract";
+import { createImportsRouter } from "@/modules/imports/contract";
 import { createInfluencersRouter } from "@/modules/influencers/contract";
 import { createLogisticsRouter } from "@/modules/logistics/contract";
 import { createManagementRouter } from "@/modules/management/contract";
@@ -47,6 +48,7 @@ export function createApp(env: Env, now: () => Date = () => new Date()): Express
     createInfluencersRouter(),
     createConnectionsRouter(),
     createConsultingRouter(),
+    createImportsRouter({ now }),
   ];
   app.use(API_PREFIX, requireAuth, ...protectedRouters);
 

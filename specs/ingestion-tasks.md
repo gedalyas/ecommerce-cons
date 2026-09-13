@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **I2 done (2026-09-13)** — last updated 2026-09-13
+Status: **I3 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -30,16 +30,25 @@ Status: **I2 done (2026-09-13)** — last updated 2026-09-13
 
 ## I3 — API `imports` module
 
-- [ ] `POST /imports` with multer (memory, 10 MB), rate limit, extension + mime, content check,
-      header check against the template — each failure a Portuguese JSON error (400/413/415/422)
-- [ ] `csvParse.ts` (tested): BOM, `;` or `,` auto-detected, quotes, CRLF, row cap, time budget
-- [ ] `mapOrders.ts`, `mapAdSpend.ts`, `mapTraffic.ts` (tested): header → typed rows +
-      `{ row, message }` errors; orders grouped by number
-- [ ] `importsService.ts`: persistence per kind in chunks, `ImportJob` row, data-source stamp,
-      customer aggregates refresh after orders
-- [ ] `GET /imports`, `GET /imports/:id`, `GET /imports/templates`
-- [ ] Smoke with curl: a valid file per kind, a 12 MB file (413), a `.xlsx` (415), a header
-      missing a required column (400), rows with bad values (PARTIAL with errors)
+- [x] `POST /imports`: rate limit (10 / 15 min), multer memory storage with the 10 MB ceiling
+      (413), `uploadRules.ts` extension + mime (415, tested), NUL-byte content check (415),
+      required-header check against the template (400), empty file (422)
+- [x] `csvParse.ts` (tested): BOM, UTF-8 with latin-1 fallback, `;` `,` or tab auto-detected,
+      quotes and escaped quotes, CRLF, blank lines, row cap and time budget (`CsvLimitError` → 422)
+- [x] `rowReader.ts` + `mapRows.ts` (tested): header → typed rows with Portuguese row errors
+      (`Linha N: coluna "x" …`); orders grouped by number with product revenue and total;
+      ids of ads default to their names; traffic source/medium lowercased
+- [x] `importsWriteService.ts`: orders upserted by number with customers by e-mail and
+      variants by SKU (items replaced, `orderNumberForCustomer` from the customer's paid
+      orders), ad spend replaced per platform × day, traffic upserted; chunks of 200 in
+      transactions. `importsService.ts`: outcome (`importOutcome.ts`, tested), data sources
+      stamped (`NOT_CONNECTED`/`ERROR` → `MANUAL`), customer aggregates refreshed after
+      orders, `ImportJob` recorded with the first 50 errors
+- [x] `GET /imports` (last 20), `GET /imports/:id`, `GET /imports/templates`
+- [x] Smoke: orders PARTIAL (4 of 5 rows, row 6 rejected for the date), idempotent re-run,
+      ad spend DONE, traffic DONE, missing `meio` → 400, `.xlsx` → 415, binary → 415, 12 MB →
+      413, header only → 422, no file → 400, history and templates listed, the imported
+      orders visible on Pedidos, sources stamped
 
 ## I4 — Web
 

@@ -1,0 +1,52 @@
+import { Router, type NextFunction, type Request, type Response } from "express";
+import rateLimit from "express-rate-limit";
+import multer from "multer";
+import { IMPORT_MAX_BYTES } from "@ecommerce/contracts/imports";
+import { asyncHandler } from "@/shared/http/asyncHandler";
+import { HttpError } from "@/shared/http/httpError";
+import { importsController, type ImportsDependencies } from "./importsController";
+
+const UPLOADS_PER_15_MIN = 10;
+
+function singleCsv() {
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: IMPORT_MAX_BYTES, files: 1 },
+  });
+  const handler = upload.single("file");
+  return (req: Request, res: Response, next: NextFunction) => {
+    handler(req, res, (error: unknown) => {
+      if (error instanceof multer.MulterError) {
+        const tooBig = error.code === "LIMIT_FILE_SIZE";
+        next(
+          new HttpError(
+            tooBig ? 413 : 400,
+            tooBig
+              ? `O arquivo passa de ${Math.round(IMPORT_MAX_BYTES / 1024 / 1024)} MB.`
+              : "Envio inválido.",
+          ),
+        );
+        return;
+      }
+      next(error);
+    });
+  };
+}
+
+export function createImportsRouter(deps: ImportsDependencies): Router {
+  const router = Router();
+  const controller = importsController(deps);
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: UPLOADS_PER_15_MIN,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { message: "Muitos envios. Aguarde alguns minutos." },
+  });
+
+  router.post("/imports", limiter, singleCsv(), asyncHandler(controller.upload));
+  router.get("/imports", asyncHandler(controller.list));
+  router.get("/imports/templates", controller.templates);
+  router.get("/imports/:id", asyncHandler(controller.one));
+  return router;
+}
