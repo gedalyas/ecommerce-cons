@@ -25,10 +25,21 @@ export const connectorSettingsSchema = z.object({
 });
 export type ConnectorSettingsInput = z.infer<typeof connectorSettingsSchema>;
 
-export const connectorCallbackSchema = z.object({
-  code: z.string().min(1),
-  state: z.string().min(1),
-});
+export const connectorCallbackSchema = z
+  .object({
+    code: z.string().min(1).optional(),
+    auth_code: z.string().min(1).optional(),
+    state: z.string().min(1),
+  })
+  .passthrough()
+  .transform((query) => ({
+    code: query.code ?? query.auth_code ?? "",
+    state: query.state,
+    query: Object.fromEntries(
+      Object.entries(query).flatMap(([k, v]) => (typeof v === "string" ? [[k, v]] : [])),
+    ) as Record<string, string>,
+  }))
+  .refine((value) => value.code.length > 0, { message: "code" });
 
 export const connectionRequestResolveSchema = z.object({
   status: z.enum(connectionRequestStatuses),

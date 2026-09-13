@@ -139,19 +139,19 @@ async function saveConnection(
 
 export async function completeCallback(
   key: ConnectorKey,
-  code: string,
-  stateToken: string,
+  callback: { code: string; state: string; query: Record<string, string> },
   deps: ConnectorsDependencies,
 ): Promise<{ redirectTo: string }> {
-  const state = verifyOAuthState(stateToken, deps.secret);
+  const state = verifyOAuthState(callback.state, deps.secret);
   const target = `${deps.appUrl.replace(/\/$/, "")}/conexoes`;
   if (!state || state.key !== key) return { redirectTo: `${target}?erro=estado` };
   const provider = providerOf(deps, key);
   try {
     const authorized = await provider.exchangeCode({
-      code,
+      code: callback.code,
       redirectUri: redirectUriOf(deps.apiUrl, key),
       domain: state.domain,
+      query: callback.query,
     });
     await saveConnection(state, key, authorized, deps);
     return { redirectTo: `${target}?conectado=${key}` };

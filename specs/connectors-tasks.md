@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **K0–K5 done, K6 next** — last updated 2026-09-13
+Status: **K0–K6 done, K7 (docs) next** — last updated 2026-09-13
 
 ---
 
@@ -119,7 +119,18 @@ Status: **K0–K5 done, K6 next** — last updated 2026-09-13
 
 ## K6 — Shopify, TikTok
 
-- [ ] Shopify custom-distribution app, GraphQL orders/products/customers; TikTok reports
+- [x] `shopifyProvider` (domain + OAuth): shop domain normalised (`loja` →
+      `loja.myshopify.com`), authorize with scopes, callback **HMAC verified over the sorted
+      query** and the `shop` param checked against the state, offline token, GraphQL Admin
+      `orders` sorted by `updated_at` with cursor paging; pure `shopifyOrders` (financial
+      status, cancelledAt, gateway → method, first-visit UTMs, discount codes, product type
+      as category). `SHOPIFY_SHOP_BASE_URL` points dev at a stub
+- [x] `tiktokAdsProvider`: portal auth (callback param `auth_code` — the callback schema now
+      accepts `code` or `auth_code` and hands the whole query to the provider), token +
+      `advertiser_ids` as the account picker, integrated report at ad level per 30-day chunk
+      with paging; pure `tiktokAdsRows`. Unit-tested only — no stub e2e yet
+- [x] Flow (`e2e_shopify.mjs` + `shopify_stub.mjs` on :4014): Conectar → domain → signed
+      callback → token → 3 orders over 2 GraphQL pages on /pedidos with UTMs
 
 ## K7 — Docs and close
 

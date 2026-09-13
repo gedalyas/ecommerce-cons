@@ -29,8 +29,8 @@ export function connectorsController(deps: ConnectorsDependencies) {
     },
     async callback(req: Request, res: Response) {
       const { key } = parseOrThrow(connectorKeySchema, req.params);
-      const { code, state } = parseOrThrow(connectorCallbackSchema, req.query);
-      const { redirectTo } = await completeCallback(key, code, state, deps);
+      const { code, state, query } = parseOrThrow(connectorCallbackSchema, req.query);
+      const { redirectTo } = await completeCallback(key, { code, state, query }, deps);
       res.redirect(302, redirectTo);
     },
     async credentials(req: Request, res: Response) {

@@ -6,6 +6,8 @@ import { ga4Provider } from "./ga4Provider";
 import { googleAdsProvider } from "./googleAdsProvider";
 import { metaAdsProvider } from "./metaAdsProvider";
 import { nuvemshopProvider } from "./nuvemshopProvider";
+import { shopifyProvider } from "./shopifyProvider";
+import { tiktokAdsProvider } from "./tiktokAdsProvider";
 
 function nuvemshopOf(env: Env): ConnectorProvider[] {
   if (!env.NUVEMSHOP_APP_ID || !env.NUVEMSHOP_CLIENT_SECRET) return [];
@@ -75,7 +77,43 @@ function metaOf(env: Env): ConnectorProvider[] {
   ];
 }
 
+function shopifyOf(env: Env): ConnectorProvider[] {
+  if (!env.SHOPIFY_CLIENT_ID || !env.SHOPIFY_CLIENT_SECRET) return [];
+  return [
+    shopifyProvider({
+      clientId: env.SHOPIFY_CLIENT_ID,
+      clientSecret: env.SHOPIFY_CLIENT_SECRET,
+      scopes: env.SHOPIFY_SCOPES,
+      apiVersion: env.SHOPIFY_API_VERSION,
+      userAgent: env.CONNECTOR_USER_AGENT,
+      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+      shopBaseUrl: env.SHOPIFY_SHOP_BASE_URL || null,
+    }),
+  ];
+}
+
+function tiktokOf(env: Env): ConnectorProvider[] {
+  if (!env.TIKTOK_APP_ID || !env.TIKTOK_APP_SECRET) return [];
+  return [
+    tiktokAdsProvider({
+      appId: env.TIKTOK_APP_ID,
+      secret: env.TIKTOK_APP_SECRET,
+      authUrl: env.TIKTOK_AUTH_URL,
+      apiUrl: env.TIKTOK_API_URL,
+      userAgent: env.CONNECTOR_USER_AGENT,
+      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+    }),
+  ];
+}
+
 export function providersOf(env: Env): ProviderRegistry {
-  const providers = [...nuvemshopOf(env), ...blingOf(env), ...googleOf(env), ...metaOf(env)];
+  const providers = [
+    ...nuvemshopOf(env),
+    ...blingOf(env),
+    ...googleOf(env),
+    ...metaOf(env),
+    ...shopifyOf(env),
+    ...tiktokOf(env),
+  ];
   return new Map<ConnectorKey, ConnectorProvider>(providers.map((p) => [p.key, p]));
 }

@@ -50,7 +50,12 @@ export type SyncContext = {
 export type SyncResult = { cursor: SyncCursor; written: number };
 
 export type AuthorizeParams = { state: string; redirectUri: string; domain: string };
-export type ExchangeParams = { code: string; redirectUri: string; domain: string };
+export type ExchangeParams = {
+  code: string;
+  redirectUri: string;
+  domain: string;
+  query: Record<string, string>;
+};
 
 export type ConnectorProvider = {
   key: ConnectorKey;

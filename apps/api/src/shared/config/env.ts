@@ -41,6 +41,15 @@ const envSchema = z.object({
   META_APP_SECRET: z.string().default(""),
   META_AUTH_URL: z.string().url().default("https://www.facebook.com/v21.0/dialog/oauth"),
   META_GRAPH_URL: z.string().url().default("https://graph.facebook.com/v21.0"),
+  SHOPIFY_CLIENT_ID: z.string().default(""),
+  SHOPIFY_CLIENT_SECRET: z.string().default(""),
+  SHOPIFY_SCOPES: z.string().default("read_orders,read_all_orders,read_products,read_customers"),
+  SHOPIFY_API_VERSION: z.string().default("2026-07"),
+  SHOPIFY_SHOP_BASE_URL: z.string().default(""),
+  TIKTOK_APP_ID: z.string().default(""),
+  TIKTOK_APP_SECRET: z.string().default(""),
+  TIKTOK_AUTH_URL: z.string().url().default("https://business-api.tiktok.com/portal/auth"),
+  TIKTOK_API_URL: z.string().url().default("https://business-api.tiktok.com/open_api/v1.3"),
   MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
   SMTP_URL: z
     .string()
