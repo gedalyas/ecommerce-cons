@@ -180,7 +180,14 @@ export async function invitationFor(token: string, now: Date): Promise<Invitatio
   };
 }
 
-export async function register(input: RegisterInput, secret: string, now: Date) {
+export type RegisteredUser = { email: string; clientId: string | null };
+
+export async function register(
+  input: RegisterInput,
+  secret: string,
+  now: Date,
+  afterRegister: (user: RegisteredUser) => Promise<void>,
+) {
   const invitation = await pendingInvitation(input.token, now);
   const user = await prismaClient.$transaction(async (tx) => {
     const created = await tx.user.create({
@@ -208,6 +215,7 @@ export async function register(input: RegisterInput, secret: string, now: Date) 
     action: "USER_REGISTERED",
     email: user.email,
   });
+  await afterRegister({ email: user.email, clientId: user.clientId });
   return { user: await toAuthUser(user), tokens: await issueTokens(user, secret, now) };
 }
 

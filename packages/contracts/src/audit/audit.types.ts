@@ -22,6 +22,15 @@ export const auditActions = [
   "RECOMMENDATION_REOPENED",
   "RECOMMENDATION_DELETED",
   "MILESTONE_UPDATED",
+  "SUBSCRIPTION_ACTIVATED",
+  "SUBSCRIPTION_PAST_DUE",
+  "SUBSCRIPTION_CANCELED",
+  "ACCESS_GRANTED",
+  "ACCESS_REVOKED",
+  "CONTRACT_CREATED",
+  "CONTRACT_SIGNED",
+  "CONTRACT_REFUSED",
+  "CONTRACT_RESENT",
 ] as const;
 export type AuditAction = (typeof auditActions)[number];
 
@@ -47,6 +56,15 @@ export const auditActionLabel: Record<AuditAction, string> = {
   RECOMMENDATION_REOPENED: "Recomendação reaberta",
   RECOMMENDATION_DELETED: "Recomendação excluída",
   MILESTONE_UPDATED: "Marco atualizado",
+  SUBSCRIPTION_ACTIVATED: "Assinatura ativada",
+  SUBSCRIPTION_PAST_DUE: "Assinatura em atraso",
+  SUBSCRIPTION_CANCELED: "Assinatura encerrada",
+  ACCESS_GRANTED: "Acesso liberado",
+  ACCESS_REVOKED: "Acesso encerrado",
+  CONTRACT_CREATED: "Contrato enviado",
+  CONTRACT_SIGNED: "Contrato assinado",
+  CONTRACT_REFUSED: "Contrato recusado",
+  CONTRACT_RESENT: "Contrato reenviado",
 };
 
 export type ActivityEntry = {
@@ -54,7 +72,7 @@ export type ActivityEntry = {
   storeId: string | null;
   storeName: string | null;
   actorName: string;
-  actorRole: UserRole;
+  actorRole: UserRole | null;
   action: AuditAction;
   summary: string;
   createdAt: string;

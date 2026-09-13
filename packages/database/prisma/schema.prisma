@@ -762,7 +762,8 @@ model AuditEvent {
   clientId  String?  @map("client_id")
   actorId   String?  @map("actor_id")
   actorName String   @map("actor_name")
-  actorRole UserRole @map("actor_role")
+  /// Null for a system actor (a webhook).
+  actorRole UserRole? @map("actor_role")
   /// Closed set in packages/contracts/src/audit.
   action    String
   /// Portuguese sentence produced at write.

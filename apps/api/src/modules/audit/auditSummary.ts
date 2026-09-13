@@ -1,5 +1,6 @@
 import { userRoleLabel } from "@ecommerce/contracts/auth";
 import type { AuditDetail } from "./audit.types";
+import { commercialSummary, type CommercialDetail } from "./commercialSummary";
 
 const TEXT_LIMIT = 80;
 
@@ -73,5 +74,7 @@ export function auditSummary(detail: AuditDetail): string {
       return `${recommendationVerb[detail.action]} a recomendação ${quote(detail.text)}`;
     case "MILESTONE_UPDATED":
       return `Atualizou o critério ${detail.criterion}: ${detail.progress}%${detail.achieved ? ", atingido" : ""}`;
+    default:
+      return commercialSummary(detail as CommercialDetail);
   }
 }

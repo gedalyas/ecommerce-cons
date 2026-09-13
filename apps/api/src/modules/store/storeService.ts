@@ -4,6 +4,7 @@ import { engagementTemplate, milestoneTemplate } from "@ecommerce/contracts/cons
 import type { Store, StoreProfileParsed } from "@ecommerce/contracts/store";
 import { prismaClient } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
+import { linkSubscriptionToStore } from "@/modules/billing/contract";
 import { provisionStore } from "@ecommerce/database/provisionStore";
 import { slugify } from "@/modules/auth/contract";
 import type { AuthContext, Principal } from "@/shared/http/auth.types";
@@ -79,7 +80,7 @@ export async function createStore(
 ): Promise<StoreSummary> {
   const user = await prismaClient.user.findUniqueOrThrow({
     where: { id: principal.userId },
-    select: { id: true, role: true, clientId: true },
+    select: { id: true, role: true, clientId: true, email: true },
   });
   if (user.role === "CLIENT" && user.clientId) {
     throw forbidden("Sua conta já está ligada a uma loja.");
@@ -102,6 +103,7 @@ export async function createStore(
     return created;
   });
   await recordActivity(principal, store.id, { action: "STORE_CREATED", storeName: store.name });
+  if (user.role === "CLIENT") await linkSubscriptionToStore(user.email, store.id);
   return {
     id: store.id,
     slug: store.slug,

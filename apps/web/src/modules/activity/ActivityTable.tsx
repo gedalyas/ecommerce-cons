@@ -27,7 +27,7 @@ const baseColumns: DataTableColumn<ActivityEntry>[] = [
       <span>
         {r.actorName}
         <span className={cn(textClass.meta, "ml-1 text-muted-foreground")}>
-          {userRoleLabel[r.actorRole].toLowerCase()}
+          {r.actorRole ? userRoleLabel[r.actorRole].toLowerCase() : "sistema"}
         </span>
       </span>
     ),

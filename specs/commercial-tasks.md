@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B0–B1 done, B2 next** — last updated 2026-09-13
+Status: **B0–B2 done, B3 next** — last updated 2026-09-13
 
 ---
 
@@ -32,17 +32,24 @@ Status: **B0–B1 done, B2 next** — last updated 2026-09-13
 
 ## B2 — Guru webhooks
 
-- [ ] Contracts `billing/`: closed sets + labels (`subscriptionStatuses`,
+- [x] Contracts `billing/`: closed sets + labels (`subscriptionStatuses`,
       `contractStatuses`), `BillingScreen`, permissive zod for the two payloads (raw or
       envelope)
-- [ ] API `modules/billing`: public router mounted before `requireAuth`; `assertAccountToken`;
+- [x] API `modules/billing`: public router mounted before `requireAuth`; `assertAccountToken`;
       `guruWebhookStore` (upsert by guru id); pure `guruSaleRules.ts` (approved+paid of a
       known offer → ACTIVE; pastdue → PAST_DUE; refund/chargeback/canceled → CANCELED;
       otherwise ignored) with tests; `applySubscriptionEvent` (upsert by e-mail, link to
       the store of the user with that e-mail); automatic `CLIENT` invitation when no user
       exists (mailer injected); audit events with a system actor ("Guru")
-- [ ] Flow: simulated sale → invitation e-mail in the outbox → register → store linked;
-      simulated cancel → CANCELED; retry of the same id → no duplicate
+- [x] Flow (`e2e_guru.mjs`): 401 without/with a wrong token, 422 without id; approved sale in
+      the envelope → invitation in the outbox → register → onboarding → `/billing` shows the
+      GURU subscription linked to the new store; retry of the same id sends nothing; pastdue
+      invoice → PAST_DUE; cancellation webhook → CANCELED; a new approved transaction →
+      ACTIVE again without a second invitation; every step in the activity log as "Guru"
+- [x] Audit gains a system actor (`actorRole` nullable); `auth` no longer imports billing —
+      `afterRegister` is injected from `app.ts` (a cycle auth → billing → admin → auth showed
+      up and was broken there); schema errors answer 422 (the API's validation status), not
+      400 as the plan said
 
 ## B3 — Gate and screens
 

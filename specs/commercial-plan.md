@@ -13,7 +13,7 @@ Recorded in `decisions/2026-09-13-billing-gate-and-contract.md`:
    `POST /webhooks/guru/subscriptions` (cancellation), validated by the Account Token the
    Guru sends in the body (`api_token` = `GURU_ACCOUNT_TOKEN`), accepting the raw payload or
    the `{ payload, … }` envelope. Every delivery is stored in `guru_webhook` keyed by the
-   Guru id (transaction or `sub_…`), so retries never duplicate. Answers: 200 stored, 400
+   Guru id (transaction or `sub_…`), so retries never duplicate. Answers: 200 stored, 422
    schema, 401 token, 500 unexpected (the Guru retries on 500).
 2. **A subscription belongs to an e-mail first and to a store later.** `Subscription`
    (`email` unique, `clientId?`, status, plan, dates, source `GURU | MANUAL`). An approved and

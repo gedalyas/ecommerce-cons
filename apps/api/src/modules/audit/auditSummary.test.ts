@@ -50,3 +50,17 @@ describe("auditSummary", () => {
     );
   });
 });
+
+describe("commercial actions", () => {
+  it("describe the subscription and the contract", () => {
+    expect(
+      auditSummary({ action: "SUBSCRIPTION_ACTIVATED", email: "a@b.c", plan: "Plano X" }),
+    ).toBe("Assinatura de a@b.c ativada (Plano X)");
+    expect(auditSummary({ action: "SUBSCRIPTION_CANCELED", email: "a@b.c", plan: null })).toBe(
+      "Assinatura de a@b.c encerrada",
+    );
+    expect(auditSummary({ action: "CONTRACT_SIGNED", signerEmail: "a@b.c" })).toBe(
+      "Contrato assinado por a@b.c",
+    );
+  });
+});

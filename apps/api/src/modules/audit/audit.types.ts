@@ -28,4 +28,14 @@ export type AuditDetail =
         | "RECOMMENDATION_DELETED";
       text: string;
     }
-  | { action: "MILESTONE_UPDATED"; criterion: string; progress: number; achieved: boolean };
+  | { action: "MILESTONE_UPDATED"; criterion: string; progress: number; achieved: boolean }
+  | {
+      action: "SUBSCRIPTION_ACTIVATED" | "SUBSCRIPTION_PAST_DUE" | "SUBSCRIPTION_CANCELED";
+      email: string;
+      plan: string | null;
+    }
+  | { action: "ACCESS_GRANTED" | "ACCESS_REVOKED"; storeName: string }
+  | {
+      action: "CONTRACT_CREATED" | "CONTRACT_SIGNED" | "CONTRACT_REFUSED" | "CONTRACT_RESENT";
+      signerEmail: string;
+    };

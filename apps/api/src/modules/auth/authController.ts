@@ -19,6 +19,7 @@ import {
   register,
   requestPasswordReset,
   resetPassword,
+  type RegisteredUser,
 } from "./authService";
 
 export type AuthDependencies = {
@@ -27,6 +28,7 @@ export type AuthDependencies = {
   rateLimited: boolean;
   mailer: Mailer;
   appUrl: string;
+  afterRegister: (user: RegisteredUser) => Promise<void>;
 };
 
 export function authController(deps: AuthDependencies) {
@@ -56,7 +58,7 @@ export function authController(deps: AuthDependencies) {
     },
     async register(req: Request, res: Response) {
       const input = parseOrThrow(registerSchema, req.body);
-      res.status(201).json(await register(input, secret, now()));
+      res.status(201).json(await register(input, secret, now(), deps.afterRegister));
     },
     async invitation(req: Request, res: Response) {
       const { token } = parseOrThrow(invitationLookupSchema, req.query);

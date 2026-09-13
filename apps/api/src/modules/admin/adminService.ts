@@ -259,6 +259,21 @@ export async function createInvitation(
     select: { id: true },
   });
   if (taken) throw new HttpError(409, "Este e-mail já tem cadastro.");
+  const row = await issueInvitation(input, principal.userId, delivery);
+  await recordActivity(principal, row.client ? input.clientId : null, {
+    action: "INVITATION_CREATED",
+    email: row.email,
+    role: row.role,
+    storeName: row.client?.name ?? null,
+  });
+  return toInvitation(row, delivery.now());
+}
+
+async function issueInvitation(
+  input: InvitationInput,
+  invitedById: string | null,
+  delivery: InvitationDelivery,
+): Promise<InvitationRow> {
   const now = delivery.now();
   const token = newOpaqueToken();
   const stamp = { tokenHash: hashToken(token), expiresAt: invitationExpiry(now), acceptedAt: null };
@@ -268,20 +283,31 @@ export async function createInvitation(
       email: input.email,
       role: input.role,
       clientId: input.clientId,
-      invitedById: principal.userId,
+      invitedById,
       ...stamp,
     },
-    update: { role: input.role, clientId: input.clientId, invitedById: principal.userId, ...stamp },
+    update: { role: input.role, clientId: input.clientId, invitedById, ...stamp },
     select: invitationSelect,
   });
   await deliverInvitation(row, token, delivery);
-  await recordActivity(principal, row.client ? input.clientId : null, {
+  return row;
+}
+
+export async function inviteFromSale(email: string, delivery: InvitationDelivery): Promise<void> {
+  const pending = await prismaClient.invitation.findUnique({
+    where: { email },
+    select: { acceptedAt: true, expiresAt: true },
+  });
+  if (pending && !pending.acceptedAt && pending.expiresAt && pending.expiresAt > delivery.now()) {
+    return;
+  }
+  const row = await issueInvitation({ email, role: "CLIENT", clientId: null }, null, delivery);
+  await recordActivity({ system: "Guru" }, null, {
     action: "INVITATION_CREATED",
     email: row.email,
     role: row.role,
-    storeName: row.client?.name ?? null,
+    storeName: null,
   });
-  return toInvitation(row, now);
 }
 
 export async function resendInvitation(

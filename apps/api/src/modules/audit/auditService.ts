@@ -7,23 +7,32 @@ import { auditSummary } from "./auditSummary";
 const PAGE_SIZE = 50;
 const REMOVED_ACTOR = "Usuário removido";
 
+export type AuditActor = Principal | { system: string };
+
+async function actorFields(actor: AuditActor) {
+  if ("system" in actor) return { actorId: null, actorName: actor.system, actorRole: null };
+  const user = await prismaClient.user.findUnique({
+    where: { id: actor.userId },
+    select: { name: true },
+  });
+  return {
+    actorId: user ? actor.userId : null,
+    actorName: user?.name ?? REMOVED_ACTOR,
+    actorRole: actor.role,
+  };
+}
+
 export async function recordActivity(
-  actor: Principal,
+  actor: AuditActor,
   clientId: string | null,
   detail: AuditDetail,
 ): Promise<void> {
   try {
-    const user = await prismaClient.user.findUnique({
-      where: { id: actor.userId },
-      select: { name: true },
-    });
     const { action, ...metadata } = detail;
     await prismaClient.auditEvent.create({
       data: {
         clientId,
-        actorId: user ? actor.userId : null,
-        actorName: user?.name ?? REMOVED_ACTOR,
-        actorRole: actor.role,
+        ...(await actorFields(actor)),
         action,
         summary: auditSummary(detail),
         metadata: metadata as Prisma.InputJsonObject,
