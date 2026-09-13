@@ -29,6 +29,7 @@ import { connections } from "./fixtures/connectionsFixture.ts";
 import { goalsPlan2026 } from "./fixtures/goalsFixture.ts";
 import { influencersSeed } from "./fixtures/influencersFixture.ts";
 import type { MetricSeed, RecommendationSeed, SectionSeed } from "./fixtures/fixture.types.ts";
+import { hashPassword } from "../src/passwordHash.ts";
 import { seedAnalytics } from "./seedAnalytics.ts";
 
 loadEnv({ path: fileURLToPath(new URL("../../../.env", import.meta.url)) });
@@ -37,6 +38,7 @@ const adapter = new PrismaPg({ connectionString: process.env["DATABASE_URL"]! })
 const prisma = new PrismaClient({ adapter });
 
 const CLIENT_SLUG = "loja-aurora";
+const SEED_USER_EMAIL = "consultor@lojaaurora.com.br";
 
 /** UI status values -> Prisma enum. */
 const pillarStatus: Record<string, PillarStatus> = {
@@ -118,6 +120,16 @@ async function main() {
 
   const client = await prisma.client.create({
     data: { slug: CLIENT_SLUG, name: "Loja Aurora" },
+  });
+
+  await prisma.user.create({
+    data: {
+      clientId: client.id,
+      email: SEED_USER_EMAIL,
+      name: "Consultor Aurora",
+      passwordHash: hashPassword(process.env["SEED_USER_PASSWORD"] ?? "aurora2026"),
+      role: "CONSULTANT",
+    },
   });
 
   // Headline KPIs (dashboard top row).
@@ -223,6 +235,9 @@ async function main() {
     prisma.pillar.count(),
     prisma.dataSource.count(),
   ]);
+  console.log(
+    `seeded user ${SEED_USER_EMAIL} (password from SEED_USER_PASSWORD, default aurora2026)`,
+  );
   console.log(
     `seeded client "${CLIENT_SLUG}": ${counts[2]} pillars, ${counts[0]} metrics, ${counts[1]} recommendations, ${counts[3]} data sources`,
   );

@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B3 done (2026-09-13)** — last updated 2026-09-13
+Status: **B4 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -53,13 +53,25 @@ Status: **B3 done (2026-09-13)** — last updated 2026-09-13
 
 ## B4 — `apps/api` foundation
 
-- [ ] Express 4 app: `createApp()`, `index.ts`, zod-validated config, JSON error middleware
-      (`{ message }` / `{ errors }`), `GET /api/v1/health`
-- [ ] `User` + `RefreshToken` models (migration), seed user for Loja Aurora
-- [ ] `auth` module: `POST /auth/login|refresh|logout`, `GET /me`, `requireAuth`, scrypt +
-      JWT helpers (pure, tested), login rate limit
-- [ ] Lint sections for the API (boundaries, `dependenciesOnlyInService`), cycles cap 0, vitest
-- [ ] `apps/api/Dockerfile`; compose `api` service; `.env.example` updated
+- [x] Express 4 app: `createApp(env, now)`, `index.ts`, zod-validated env (`readEnv`), JSON
+      error middleware (`{ message }` / `{ message, errors }`, 400 on bad JSON, 404 on unknown
+      routes, 500 logged), `parseOrThrow` (zod → 422 keyed by field, tested),
+      `GET /api/v1/health` (pings the DB)
+- [x] `User` (role `CONSULTANT | CLIENT`, scrypt hash) + `RefreshToken` (sha256 of the token,
+      rotation, revocation) — migration `20260913…_users_and_refresh_tokens`; the seed creates
+      `consultor@lojaaurora.com.br` (password `SEED_USER_PASSWORD`, default `aurora2026`);
+      `@ecommerce/database/passwordHash` (tested) so seed and API share the hash format
+- [x] `auth` module: `POST /auth/login|refresh|logout`, `GET /me`, `createRequireAuth(secret)`
+      (bearer JWT HS256, 15 min; refresh 30 days, rotated on use, reuse → 401), `tokens.ts`
+      tested, login limited to 20 attempts / 15 min; `@ecommerce/contracts/auth` holds the
+      schemas and the `AuthUser`/`AuthTokens` shapes; `contracts/shared/apiError.ts` the error
+      shape every client parses
+- [x] Lint for the API (module boundaries, `dependenciesOnlyInService` on the database
+      client, no React), cycles cap 0, vitest; smoke with curl: health, login, me, refresh
+      rotation, wrong password 401, validation 422, unknown route 404
+- [x] `apps/api/Dockerfile` (esbuild bundle, `prisma migrate deploy` on start); compose `api`
+      service and the web pointed at it; `npm run dev` starts api + web; `.env.example` gains
+      `API_PORT`, `JWT_SECRET`, `CORS_ORIGINS`, `SEED_USER_PASSWORD`, `API_URL`, `SESSION_SECRET`
 
 ## B5 — Web session
 

@@ -65,6 +65,48 @@ enum MessageRole {
   @@map("message_role")
 }
 
+enum UserRole {
+  CONSULTANT
+  CLIENT
+
+  @@map("user_role")
+}
+
+/// Someone who signs in: a consultant of the agency or a person at the client.
+/// One user belongs to one client (the consultant sees the client they work on).
+model User {
+  id           String   @id @default(cuid())
+  clientId     String   @map("client_id")
+  email        String   @unique
+  name         String
+  /// scrypt hash, "salt:hash" in hex.
+  passwordHash String   @map("password_hash")
+  role         UserRole
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@index([clientId])
+  @@map("user")
+}
+
+/// Rotating refresh tokens; only the sha256 of the token is stored.
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_token")
+}
+
 // ---------------------------------------------------------------------------
 // Analytics facts (specs/data-module-plan.md). Everything the data screens
 // show is a query over these tables; the presentation models above stay as
@@ -495,6 +537,7 @@ model Client {
   goals              Goal[]
   adSpendRegionDaily AdSpendRegionDaily[]
   influencers        Influencer[]
+  users              User[]
 
   @@map("client")
 }

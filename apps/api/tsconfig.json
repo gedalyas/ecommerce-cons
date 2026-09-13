@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*.ts", "prisma/**/*.ts", "prisma.config.ts", "vitest.config.ts"],
+  "include": ["src/**/*.ts", "vitest.config.ts", "eslint.config.js", "build.mjs"],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
@@ -7,6 +7,7 @@
     "types": ["node"],
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
+    "allowJs": true,
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
@@ -15,6 +16,10 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

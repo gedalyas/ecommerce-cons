@@ -1,0 +1,35 @@
+{
+  "name": "@ecommerce/api",
+  "version": "0.1.0",
+  "description": "E-commerce Insights HTTP API (Express 4 + Zod + Prisma)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../../.env src/index.ts",
+    "start": "node dist/index.mjs",
+    "build": "node build.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:cycles": "tsx ../../scripts/checkCycles.ts"
+  },
+  "dependencies": {
+    "@ecommerce/contracts": "*",
+    "@ecommerce/database": "*",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.16.5",
+    "esbuild": "^0.25.5",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3",
+    "vitest": "^5.0.0"
+  }
+}

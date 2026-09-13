@@ -41,16 +41,16 @@ migrate: ## Apply Prisma migrations (creates them in dev if none exist)
 seed: ## Seed the database with the prototype dataset
 	npm run db:seed
 
-dev: ## Start the dev servers (web http://localhost:8080)
+dev: ## Start the dev servers (api :3001, web http://localhost:8080)
 	npm run dev
 
 # ---------------------------------------------------------------------------
 # Containerized run
 # ---------------------------------------------------------------------------
 
-up: ## Build and run postgres + web fully in Docker
+up: ## Build and run postgres + api + web fully in Docker
 	$(COMPOSE) --profile app up -d --build
-	@echo web on http://localhost:8080
+	@echo web on http://localhost:8080, api on http://localhost:3001/api/v1
 
 down: ## Stop and remove containers (keeps the database volume)
 	$(COMPOSE) --profile app down

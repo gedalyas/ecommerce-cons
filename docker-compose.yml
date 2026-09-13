@@ -27,6 +27,25 @@ services:
       retries: 20
       start_period: 5s
 
+  api:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: ecommerce-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      API_PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ecommerce}:${POSTGRES_PASSWORD:-ecommerce}@postgres:5432/${POSTGRES_DB:-ecommerce_insights}?schema=public
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+    ports:
+      - "${API_PORT:-3001}:3001"
+
   web:
     profiles: ["app"]
     build:
@@ -35,11 +54,13 @@ services:
     container_name: ecommerce-web
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
+      api:
+        condition: service_started
     environment:
       NODE_ENV: production
       PORT: 8080
+      API_URL: http://api:3001
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
       # Inside the compose network the database answers at `postgres`, not localhost.
       DATABASE_URL: postgresql://${POSTGRES_USER:-ecommerce}:${POSTGRES_PASSWORD:-ecommerce}@postgres:5432/${POSTGRES_DB:-ecommerce_insights}?schema=public
     ports:
