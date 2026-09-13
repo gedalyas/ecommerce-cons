@@ -1,8 +1,9 @@
 # Design system
 
-Source of truth: `src/design-system` (tokens, primitives, patterns, hooks) and
-`src/styles.css` (CSS variables, type-scale utilities). The Dashboard screen is
-the canonical layout reference. `src/design-system/README.md` carries the
+Source of truth: `src/shared/ui` (components, flat) and `src/shared/styles`
+(`global.css` with the CSS variables and type-scale utilities, plus the token
+files). The Dashboard screen is
+the canonical layout reference. `src/shared/ui/README.md` carries the
 day-to-day rules; this spec records the intent.
 
 ## Visual language
@@ -24,30 +25,33 @@ density.
   drawer/modal.
 - **Breakpoints**: `sm 640`, `md 768`, `lg 1024`, `xl 1280`, `2xl 1536` — no
   new ones.
-- All of the above live only in `tokens/` + `styles.css`; screens never declare
+- All of the above live only in `shared/styles/`; screens never declare
   a color, size or spacing locally.
-- Numbers/currency/dates formatted only through `src/lib/format.ts`; numeric
+- Numbers/currency/dates formatted only through `src/shared/utils/format.ts`; numeric
   text gets the `num` class (lining-nums).
-- Dependency direction: features import from the design system, never the
-  reverse.
+- Dependency direction: modules import from `shared/ui`, never the reverse
+  (`shared/` knows no domain — enforced by lint).
 
 ## Layers
 
-- `tokens/` — colors (semantic, mirrored to CSS vars), typography, spacing +
-  `layout` class recipes (page container, block rhythm, card padding),
-  radius, shadows, breakpoints.
-- `primitives/` — Button, Badge, Card, Divider, Tooltip, Input, Skeleton.
-- `patterns/` — MetricTile(-Group), FidelityBadge, StatusBadge, PillarCard,
-  SectionPage, SectionBlock, PageHeader, RecommendationList, AlertBanner,
-  ScrollShadow.
-- `hooks/` — `useBreakpoint`, `useScrollShadow`.
+`src/shared/ui/` is flat: one `Component.tsx` per component and a
+`component.types.ts` when its types are consumed elsewhere. The classification
+below is a reading aid, not a folder.
 
-`src/components/ui/` holds the stock shadcn/ui components; app code prefers
-the design-system primitives and treats `components/ui` as vendored support
-material (some patterns wrap it, e.g. Tooltip).
+- Tokens (`src/shared/styles/`) — colors (semantic, mirrored to CSS vars),
+  typography, spacing + `layout` class recipes (page container, block rhythm,
+  card padding), radius, shadows, breakpoints.
+- Primitives — Button, Badge, Card, Divider, Tooltip, Input, Skeleton, plus the
+  vendored shadcn pieces still in use (Calendar, Popover, Select).
+- Patterns — MetricTile(-Group), KpiCard/metricToTile, FidelityBadge,
+  StatusBadge, PillarCard, SectionPage, SectionBlock, PageHeader,
+  RecommendationList, AlertBanner, ScrollShadow, PeriodSelector, DataTable,
+  TimeSeriesChart, DonutBreakdown, IndicatorCarousel.
+- Hooks (`src/shared/hooks/`) — `useBreakpoint`, `useScrollShadow`,
+  `usePeriod`.
 
 ## Theme
 
 Light theme only for now. The CSS defines a `.dark` custom variant hook but no
-dark palette; adding one means defining the full variable set in `styles.css`,
+dark palette; adding one means defining the full variable set in `global.css`,
 not per-component overrides.

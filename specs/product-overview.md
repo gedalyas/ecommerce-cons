@@ -12,7 +12,8 @@ questions grounded in the client's own numbers.
 ## Current stage: presentation prototype
 
 - No backend calls, no login, no real integrations.
-- All data is fixture data in `src/features/*/data`, describing one client
+- The consulting screens render fixtures (`src/modules/<x>/<x>Fixture.ts`)
+  describing one client
   ("Loja Aurora") in August 2026.
 - The assistant replies with canned text.
 - The upload area in Conexões is visual only.

@@ -1,13 +1,13 @@
 # Assistente
 
 Two surfaces, one shared state hook (`useAssistant` in
-`src/layout/AssistantPanel/AssistantPanel.tsx`):
+`src/modules/assistant/AssistantPanel.tsx`):
 
 - **Docked panel** (≥1280px): 360px right column, always visible, collapsible
   to a 56px rail.
 - **Drawer / full page** (<1280px): floating "Assistente" button opens a drawer
   from `md`; below `md` it links to the full-screen `/assistente` page
-  (`src/features/assistant`).
+  (`src/modules/assistant/Assistant.tsx`).
 
 ## Header
 

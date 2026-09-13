@@ -1,32 +1,35 @@
-# Design system
+# Design system (`src/shared/ui`)
 
-A cross-cutting layer, independent of any feature. The **Dashboard** is the
+Part of the shared kernel: it knows no domain. The **Dashboard** is the
 canonical reference for layout, spacing and responsiveness: everything here was
 extracted from it.
 
 ## Structure
 
-- `tokens/` — color, typography, spacing, radius, shadow and breakpoints.
-- `primitives/` — Button, Badge, Card, Divider, Tooltip, Input, Skeleton.
-- `patterns/` — compositions reused by more than one feature.
-- `hooks/` — `useBreakpoint`, `useScrollShadow`.
+Flat. One `Component.tsx` per component and a `component.types.ts` beside it
+when the types are consumed outside the file. Tokens live in
+`src/shared/styles/` (`global.css` + `colors.ts`, `typography.ts`, `spacing.ts`,
+`radius.ts`, `shadows.ts`, `breakpoints.ts`); hooks in `src/shared/hooks/`.
 
 ## Allowed
 
-- Import tokens and components from `@/design-system` or from the folder path.
-- Compose patterns inside a feature.
-- Use `layout.page`, `layout.blockStack`, `layout.cardPadding` for screen rhythm.
+- Import a component from its file: `@/shared/ui/DataTable`,
+  `@/shared/ui/dataTable.types`. There is no barrel.
+- Compose patterns inside a module.
+- Use `layout.page`, `layout.blockStack`, `layout.cardPadding` from
+  `@/shared/styles/spacing` for screen rhythm.
 
 ## Not allowed
 
 - Declaring a color, spacing, radius, shadow, font size or breakpoint outside
-  `tokens/`. No screen overrides these locally.
+  `src/shared/styles/`. No screen overrides these locally.
 - Creating a new breakpoint. Only `sm 640`, `md 768`, `lg 1024`, `xl 1280`,
   `2xl 1536`.
 - Formatting a number, currency, percentage or date in a screen — use
-  `@/lib/format`.
-- Importing from inside a feature. The dependency direction is always
-  feature → design system, never the reverse.
+  `@/shared/utils/format` (and `@/shared/utils/metricFormat` for `MetricValue`).
+- Importing from `@/modules/*`. The dependency direction is always
+  module → shared, never the reverse (lint: `sharedKnowsNoDomain`).
+- A widget that only one module uses. That widget belongs to the module.
 
 ## Reference layout (Dashboard)
 

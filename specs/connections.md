@@ -1,6 +1,6 @@
 # Conexões (`/conexoes`)
 
-Feature: `src/features/connections`. Fixtures: `data/connections.ts`.
+Module: `src/modules/connections`. Fixtures: `connectionsFixture.ts`.
 Lists the data sources feeding the dashboard, one per row.
 
 ## Summary banner

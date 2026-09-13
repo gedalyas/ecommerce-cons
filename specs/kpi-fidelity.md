@@ -1,7 +1,7 @@
 # KPI and the data-fidelity seal
 
 The KPI is the system's central component (`MetricTile` + `FidelityBadge` in
-`src/design-system/patterns`).
+`src/shared/ui`).
 
 ## MetricTile
 
@@ -39,7 +39,7 @@ refinement, not a regression to preserve.
 
 ## Formatting rules
 
-Never format numbers inline. `src/lib/format.ts` (locale pt-BR) is the only
+Never format numbers inline. `src/shared/utils/format.ts` (locale pt-BR) is the only
 formatter: `formatNumber`, `formatCurrency` (BRL), `formatPercent` (input in
 percentage points), `formatCompact`, `formatDate`, `formatPtNumbers` (fixes
 separators inside fixture strings). Numeric text uses the `num` utility class

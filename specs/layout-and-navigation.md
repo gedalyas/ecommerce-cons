@@ -1,6 +1,6 @@
 # Layout and navigation
 
-## Global shell (`src/layout/AppShell`)
+## Global shell (`src/shared/layout/AppShell.tsx`)
 
 Three columns on desktop (≥1280px):
 
@@ -20,7 +20,7 @@ The content area (`#app-scroll`) owns the scrolling; `PageHeader` is sticky
 inside it and gains a bottom border + shadow after 1px of scroll. Scroll
 shadows (top/bottom gradients) indicate clipped content.
 
-## Sidebar (`src/layout/Sidebar`)
+## Sidebar (`src/shared/layout/Sidebar.tsx`)
 
 - Top: product name "Nome Provisório", then the selected client under a
   "Cliente" label: "Loja Aurora".
@@ -46,7 +46,8 @@ Route **files** are English; **URLs** are Portuguese. The mapping is defined in
 | `/assistente` | `routes/assistant.tsx`   | Assistente (mobile full-screen) |
 
 Route files stay thin: `head()` meta (Portuguese titles/descriptions) plus the
-feature component import. Screens live in `src/features/<area>/index.tsx`.
+component import from the module contract. Screens live in
+`src/modules/<domain>/<Domain>.tsx`.
 
 `/assistente` hides the docked panel and the floating button (the page itself
 is the assistant) and locks the shell scroll.
@@ -54,8 +55,8 @@ is the assistant) and locks the shell scroll.
 ## Error handling
 
 - `routes/__root.tsx` renders the 404 and the root error boundary (both with a
-  "go home" action) and reports boundary errors via `src/lib/error-reporting`.
+  "go home" action) and reports boundary errors via `src/shared/utils/errorReporting`.
 - `src/start.ts` adds server middleware: converts unexpected SSR errors into a
-  friendly static 500 page (`src/lib/error-page.ts`) and installs CSRF
+  friendly static 500 page (`src/shared/utils/errorPage.ts`) and installs CSRF
   protection for server functions.
 - `src/server.ts` wraps the server entry to recover errors h3 swallows.

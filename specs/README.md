@@ -19,8 +19,9 @@ because that is what ships.
 | [prax-analytics-documentacao-completa.md](prax-analytics-documentacao-completa.md) | Competitor study (Prax Analytics), pt-BR research notes                            |
 | [data-module-plan.md](data-module-plan.md)                                         | Plan: data module (orders, products, customers, DRE, marketing) in 6 stages        |
 | [data-module-tasks.md](data-module-tasks.md)                                       | Task checklist for the data module plan — tick as work lands                       |
-| [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (proposal, Stage 0.5)     |
+| [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force)                |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from |
+| [decisions/](decisions/)                                                           | Architecture decision records (one dated note per decision)                        |
 
 The single fictional client is **Loja Aurora**; all numbers are fixtures. When a
 spec and the code disagree, fix one of them in the same change — they must not

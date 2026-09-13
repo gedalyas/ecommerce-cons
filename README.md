@@ -11,7 +11,7 @@ maturidade" que destrava áreas conforme o cliente evolui.
 ## Stack
 
 - **React 19 + TypeScript** com **TanStack Start** (SSR, roteamento por arquivo)
-- **Tailwind CSS 4** com design system próprio (`src/design-system`)
+- **Tailwind CSS 4** com design system próprio (`src/shared/ui`)
 - **Prisma 7 + PostgreSQL** (schema e seed prontos; a UI ainda lê mocks — ver
   [specs/data-layer-migration.md](specs/data-layer-migration.md))
 - **Docker + docker compose** para o banco e para a imagem de produção
@@ -45,14 +45,12 @@ Outros alvos úteis (`make help` lista todos):
 ```
 src/
   routes/          rotas (arquivos em inglês; URLs em português via src/routes.ts)
-  features/        uma pasta por área: dashboard, money, marketing, ...
-  design-system/   tokens, primitivos e patterns — fonte única de estilo
-  layout/          AppShell, Sidebar, AssistantPanel, BottomNav
-  lib/             formatação pt-BR, tratamento de erro
+  modules/         um módulo plano por domínio, cada um com seu contract.ts
+  shared/          kernel sem domínio: ui, styles, layout, hooks, utils, dependencies
   generated/       Prisma Client (gerado, fora do git)
 prisma/            schema, migrações e seed
 specs/             especificações do produto e convenções
 ```
 
-As especificações completas estão em [specs/](specs/) e as regras de trabalho no
-[CLAUDE.md](CLAUDE.md).
+As especificações completas estão em [specs/](specs/), a arquitetura de pastas em
+[specs/architecture.md](specs/architecture.md) e as regras de trabalho no [CLAUDE.md](CLAUDE.md).

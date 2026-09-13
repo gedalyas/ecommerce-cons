@@ -2,7 +2,8 @@
 
 E-commerce consulting dashboard prototype ("E-commerce Insights"). React 19 +
 TanStack Start (SSR) + Tailwind 4 + Prisma 7/PostgreSQL. Single fictional
-client ("Loja Aurora"); the UI renders fixture data from `src/features/*/data`.
+client ("Loja Aurora"); the consulting screens render fixtures from
+`src/modules/<x>/<x>Fixture.ts`; the data screens query Postgres.
 Product specs live in `specs/` — read the relevant one before changing a screen.
 
 ## Language rule (enforced)
@@ -29,36 +30,53 @@ npm run db:migrate | db:seed | db:studio | db:reset
 make up          # postgres + built app, fully in Docker
 ```
 
-There are no automated tests yet; validate with `npm run typecheck` and
-`npm run build`.
+```sh
+npm run test          # vitest, colocated *.test.ts next to pure functions
+npm run check:cycles  # files inside import cycles; CI caps it at 0
+npm run format:check
+```
+
+Definition of done for any change: `typecheck`, `lint` (0 warnings),
+`check:cycles -- --max-files 0`, `test`, `format:check` and `build` green.
 
 ## Architecture
 
-- `src/routes.ts` — virtual route map (English file ↔ Portuguese URL).
-- `src/routes/*.tsx` — thin route files: head() meta + component import only.
-- `src/features/<area>/` — one folder per area (dashboard, money, marketing,
-  logistics, management, connections, assistant). Screen component in
-  `index.tsx`, fixtures in `data/`, feature-only components in `components/`.
-- `src/design-system/` — tokens, primitives, patterns, hooks. **All** color,
-  spacing, radius, shadow, type-scale and breakpoint values live in `tokens/`
-  and `src/styles.css`; no screen declares them locally. Numbers, currency,
-  percentages and dates are formatted only via `src/lib/format.ts` (pt-BR).
-  Dependency direction: feature → design-system, never the reverse.
-- `src/layout/` — AppShell (3-column shell), Sidebar, AssistantPanel (docked
-  ≥1280px, drawer below), BottomNav (mobile).
-- `src/components/ui/` — stock shadcn/ui; prefer `src/design-system` primitives
-  in app code.
-- `prisma/` — schema, migrations, seed. Client generated into `src/generated/`
-  (gitignored; run `npx prisma generate`). Prisma 7: connection URL lives in
-  `prisma.config.ts`, client uses the `@prisma/adapter-pg` driver adapter.
-- The UI still reads fixtures, not the DB. The migration plan is
-  `specs/data-layer-migration.md` — follow it when wiring Prisma to screens.
+**The folder is the business domain. The layer is the file.** Full rules in
+`specs/architecture.md`; the boundaries are enforced by `eslint.config.js`
+and the cycle ratchet (`scripts/checkCycles.ts`), so a violation fails lint.
+
+- `src/modules/<domain>/` — flat, one folder per business capability
+  (dashboard, money, marketing, logistics, management, connections,
+  assistant, orders, ...). Files by role: `<Domain>.tsx` page and other
+  components, `<domain>Controller.ts` (server functions), `<domain>Service.ts`
+  (the only file that imports Prisma; server-only), `<domain>Schema.ts`,
+  `<domain>.types.ts`, `<domain>Fixture.ts`, pure `<rule>.ts` + `<rule>.test.ts`.
+- `contract.ts` — the only file another module, a route or the seed may import
+  from a module. Hand-written list of `export { X } from "./x"`; never a barrel.
+- `src/shared/` — kernel that knows no domain: `ui/` (design system, flat, one
+  file per component + `<name>.types.ts`), `styles/` (`global.css` + token
+  files), `layout/` (AppShell, Sidebar, BottomNav — domain widgets arrive as
+  slots from `__root.tsx`), `hooks/`, `utils/` (`format.ts` is the only place
+  numbers, currency, percentages and dates are formatted), `models/types/`,
+  `config/prototype.ts`, `dependencies/prismaClient.ts`.
+- `src/routes/*.tsx` — composition root: head() + loader + component, importing
+  only `@/modules/*/contract` and `@/shared`. `src/routes.ts` maps English
+  files to Portuguese URLs.
+- Imports: inside a module `./file`; crossing a boundary `@/modules/<x>/contract`
+  or `@/shared/...`; `shared/` never imports `modules/`; no `index.ts` barrels.
+- `prisma/` — schema, migrations, `seed.ts` + `seedAnalytics.ts` (imports
+  fixtures through contracts). Client generated into `src/generated/`
+  (gitignored; `npx prisma generate`). Enums come from
+  `@/generated/prisma/enums` anywhere; the client only in `*Service.ts`.
+- The consulting screens still read fixtures; `specs/data-layer-migration.md`
+  is the plan to wire them to Prisma. The data module plan is
+  `specs/data-module-plan.md` with `specs/data-module-tasks.md` as the board.
 
 ## Constraints
 
 - Design system is strict: 6 type sizes (`t-label`...`t-kpi`), weights 400/600
   only, spacing scale 4/8/12/16/24/32/48, radii 8/6/4, one accent color
-  (dark green), orange only for warnings. See `src/design-system/README.md`.
+  (dark green), orange only for warnings. See `src/shared/ui/README.md`.
 - `src/routeTree.gen.ts` and `src/generated/` are generated — never edit.
 - Keep `<Outlet />` in AppShell; removing it breaks every child route.
 - `src/server.ts` and `src/start.ts` wrap SSR errors deliberately; don't

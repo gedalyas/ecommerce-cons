@@ -66,16 +66,16 @@ yet except the period selector on the dashboard.
    `usePeriod()` hook + `PeriodSelector` pattern (presets: hoje, ontem,
    esta semana, este mês, últimos 30/90 dias, últimos 12 meses, ano até
    hoje, custom range).
-4. **Server-function conventions** (`src/server/analytics/*`): every query
+4. **Server-function conventions** (`src/modules/<x>/<x>Service.ts`): every query
    returns `{ current, previous }`; scalar metrics are objects
    `{ value, unit, variation }`, never bare numbers. One server function
    per visual block so cards load and fail independently.
-5. **Base patterns** in `src/design-system/patterns/`: `KpiCard` (extends
+5. **Base patterns** in `src/shared/ui/`: `KpiCard` (extends
    MetricTile with computed variation), `DataTable` (pagination, sort,
    TOTAL row, CSV export), `TimeSeriesChart` (solid = current, dashed =
    previous), `DonutBreakdown`, `IndicatorCarousel` (chips → big number +
    series). All within token constraints.
-6. **`src/lib/format.ts` additions**: `formatVariation`, `formatPeriodLabel`,
+6. **`src/shared/utils/format.ts` additions**: `formatVariation`, `formatPeriodLabel`,
    `formatMultiplier` ("0,00x").
 
 Deliverable: dashboard gains a working period selector; a hidden dev route
@@ -169,7 +169,7 @@ credible.
   value), sales by UTM.
 - **Campanhas**: platform table → chart selection, best/worst campaigns,
   ROAS quality bands (>5 alto / 2–5 médio / <2 baixo) centralized in one
-  module (`src/server/analytics/quality-bands.ts`).
+  module (`src/modules/marketing/qualityBands.ts`).
 - **Descontos**: coupon KPIs + coupon table (new customer vs. subsidized
   recurring).
 - Existing Marketing pillars become derived.

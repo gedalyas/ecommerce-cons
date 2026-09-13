@@ -1,11 +1,11 @@
 # Architecture — modules, contracts and cycle control
 
-**Status: PROPOSAL, awaiting approval (2026-09-12).** Nothing has moved yet.
-Once approved, this file becomes the living rulebook and the migration map at
-the end is executed in the order given. The source of the rules is
-`architecture-reference.md` (the `arko_frontend` + `arko_backend` dossier);
-this document only adapts them to one repo running React 19 + TanStack Start
-SSR + Prisma 7.
+**Status: in force since 2026-09-12** (decision:
+`decisions/2026-09-12-modules-contracts-cycle-ratchet.md`). This is the living
+rulebook; the boundaries are enforced by `eslint.config.js` and
+`scripts/checkCycles.ts`. The source of the rules is `architecture-reference.md`
+(the `arko_frontend` + `arko_backend` dossier); this document only adapts them
+to one repo running React 19 + TanStack Start SSR + Prisma 7.
 
 ## 1. The rule
 
@@ -146,24 +146,23 @@ the `await import()` workaround in `features/orders/api.ts` goes away.
 | Identifiers    | English; accented identifiers are a lint error; UI strings and data keys may be Portuguese (matches `CLAUDE.md`) | —                                  |
 | Exports        | named everywhere; default only for the component of a `.tsx`                                                     | —                                  |
 
-## 8. Tooling to add
+## 8. Tooling (what enforces what)
 
-- `eslint.config.js`: the reference's boundary block (`MAX_MODULE_DEPTH = 0`,
-  `EXTINCT = ['features','lib','hooks','components','design-system','layout','server']`),
-  `eslint-plugin-unused-imports`, `no-console` (allow `error`), the
-  English-identifier selector, `max-lines` 600. Not copied: `sort-imports`
-  (would churn every file for no architectural gain).
-- `dependency-cruiser` + `tsx` (already present) + `scripts/checkCycles.ts` +
-  `scripts/cyclicFiles.ts` + `scripts/cyclicFiles.test.ts`, byte-copied from
-  the reference; `npm run check:cycles`.
-- `vitest`: `npm test`; first tests are the copied `cyclicFiles.test.ts` plus
-  `period.test.ts` and `metricFormat.test.ts` for the pure core we already
-  have. Coverage ratchet later, when there is coverage to protect.
-- `.github/workflows/ci.yml`: lint `--max-warnings <measured>`, typecheck,
-  `check:cycles --max-files 0`, test, `format:check`, build (after
-  `prisma generate`). **Optional — only if the repo lives on GitHub.**
-- `specs/decisions/` with the ADR format from the reference; the first ADR is
-  this alignment.
+| Rule                                                                                                                           | Enforced by                                                                                         | Level               |
+| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ------------------- |
+| Extinct folders, contract-only imports, relative inside / alias across, `shared` knows no domain, Prisma only in `*Service.ts` | `eslint.config.js` (`no-restricted-imports`)                                                        | lint error          |
+| Files inside import cycles                                                                                                     | `scripts/checkCycles.ts` over the dependency-cruiser graph, `npm run check:cycles -- --max-files 0` | CI, ratchet         |
+| `*Service.ts` and `shared/dependencies` never in the client bundle                                                             | `vite.config.ts` `importProtection`                                                                 | build error         |
+| Unused imports, `console.log`, accented identifiers, files over 600 lines                                                      | `eslint.config.js`                                                                                  | lint error          |
+| Prettier                                                                                                                       | `npm run format:check`                                                                              | CI                  |
+| Pure core born tested                                                                                                          | `vitest` (`npm test`), colocated `*.test.ts`                                                        | convention + review |
+| No `index.ts` barrels; contract exports only what has a consumer today                                                         | —                                                                                                   | convention + review |
+| Entry → orchestrator → pure core; `now` and data as parameters                                                                 | —                                                                                                   | convention + review |
+| Module named by capability, not by entity or audience                                                                          | —                                                                                                   | convention + review |
+
+`.github/workflows/ci.yml` runs typecheck, `lint --max-warnings 0`,
+`check:cycles --max-files 0`, tests, prettier and build. The two numeric caps
+only go down; whoever lowers a count lowers the cap in the same PR.
 
 ## 9. Deliberate deviations from the reference, and why
 
@@ -176,90 +175,3 @@ the `await import()` workaround in `features/orders/api.ts` goes away.
 | `staticImportsOnly` (no `import()`)                         | not adopted                                                                           | SPA-deploy problem the reference itself says to reevaluate under SSR; Start's route splitting is the framework's job.                                                      |
 | Prettier single quotes / width 80                           | keep double quotes / width 100                                                        | Formatting is not architecture; changing it would touch every file.                                                                                                        |
 | `check:module-load-order`                                   | not adopted                                                                           | ESM fails loudly on real cycles.                                                                                                                                           |
-
-## 10. Migration map (executed only after approval)
-
-Order, per the reference rollout: `git mv` → write contracts → rewrite imports
-→ turn the lint on already green → typecheck/lint/build/`/dev/pedidos` check →
-update docs. Schema, migrations and seed content are untouched.
-
-### 10.1 Delete
-
-- `src/components/ui/*` except the six files in use (`button`, `calendar`,
-  `input`, `popover`, `select`, `tooltip`) — 40 vendored shadcn files nothing
-  imports. `src/hooks/use-mobile.tsx` goes with `sidebar.tsx`.
-- All `index.ts` barrels under `src/design-system/**` and `src/layout/**`.
-
-### 10.2 Move — shared kernel
-
-| From                                                                   | To                                                                                                                                       |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/components/ui/{button,calendar,input,popover,select,tooltip}.tsx` | `src/shared/ui/{Button,Calendar,Input,Popover,Select,Tooltip}.tsx` (the `design-system/primitives/*` re-export wrappers merge into them) |
-| `src/design-system/primitives/{Badge,Card,Divider,Skeleton}/`          | `src/shared/ui/<Name>.tsx` (+ `<name>.types.ts` when the types are consumed outside)                                                     |
-| `src/design-system/patterns/<Name>/` (17 patterns)                     | `src/shared/ui/<Name>.tsx` + `<name>.types.ts`; `KpiCard/metricToTile.ts` → `src/shared/ui/metricToTile.ts`                              |
-| `src/design-system/tokens/*.ts`                                        | `src/shared/styles/*.ts`                                                                                                                 |
-| `src/styles.css`                                                       | `src/shared/styles/global.css`                                                                                                           |
-| `src/design-system/hooks/*` + `src/hooks/use-period.ts`                | `src/shared/hooks/{useBreakpoint,useScrollShadow,usePeriod}.ts`                                                                          |
-| `src/lib/{format,utils,csv,period}.ts`                                 | `src/shared/utils/{format,cn,csv,period}.ts`                                                                                             |
-| `src/lib/metrics.ts`                                                   | split: `src/shared/models/types/metric.types.ts` + `src/shared/utils/metricFormat.ts`                                                    |
-| `src/lib/error-{capture,page,reporting}.ts`                            | `src/shared/utils/error{Capture,Page,Reporting}.ts`                                                                                      |
-| `src/lib/client.ts` + `REFERENCE_TODAY`                                | `src/shared/config/prototype.ts`                                                                                                         |
-| `src/server/db.ts`                                                     | `src/shared/dependencies/prismaClient.ts`                                                                                                |
-| `src/server/analytics/period.ts`                                       | `src/shared/utils/periodWindow.ts`                                                                                                       |
-| `src/layout/{AppShell,Sidebar,BottomNav}/`                             | `src/shared/layout/{AppShell,Sidebar,BottomNav}.tsx`; AppShell gains `assistant`/`assistantFab` slots                                    |
-
-### 10.3 Move — modules
-
-| From                                                                                                            | To                                                                                                                                                        |
-| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/features/dashboard/index.tsx`, `data/dashboard.ts`                                                         | `src/modules/dashboard/Dashboard.tsx`, `dashboardFixture.ts`, `contract.ts`                                                                               |
-| `src/features/money/…`                                                                                          | `src/modules/money/Money.tsx`, `moneyFixture.ts`, `contract.ts`                                                                                           |
-| `src/features/marketing/…` (+ `components/CreativePresence.tsx`)                                                | `src/modules/marketing/Marketing.tsx`, `CreativePresence.tsx`, `marketingFixture.ts`, `contract.ts`                                                       |
-| `src/features/logistics/…`, `src/features/management/…`                                                         | `src/modules/logistics/…`, `src/modules/management/…` (same shape)                                                                                        |
-| `src/features/connections/…`                                                                                    | `src/modules/connections/Connections.tsx`, `connectionsFixture.ts`, `contract.ts`                                                                         |
-| `src/features/assistant/components/AssistantPage.tsx`, `src/layout/AssistantPanel/*`, `src/layout/AssistantFab` | `src/modules/assistant/Assistant.tsx`, `AssistantPanel.tsx`, `assistantReplies.ts`, `contract.ts` (exports `Assistant`, `AssistantPanel`, `AssistantFab`) |
-| `src/features/orders/api.ts`                                                                                    | `src/modules/orders/ordersController.ts` (static import of the service)                                                                                   |
-| `src/server/analytics/orders.ts`                                                                                | `src/modules/orders/ordersService.ts` + `orders.types.ts` (`OrdersOverview` and friends)                                                                  |
-| `src/features/orders/dev.tsx`                                                                                   | `src/modules/orders/OrdersDev.tsx` (still temporary)                                                                                                      |
-| `src/routes/dev-orders.tsx`                                                                                     | `src/routes/devOrders.tsx`                                                                                                                                |
-| `prisma/seed-analytics.ts`                                                                                      | `prisma/seedAnalytics.ts`; `seed.ts` imports fixtures via `../src/modules/<x>/contract.ts`                                                                |
-
-### 10.4 Config
-
-- `vite.config.ts`: import protection globs → `**/shared/dependencies/**`, `**/*Service.ts`.
-- `tsconfig.json`: add `scripts/**/*.ts` to `include`; alias unchanged (`@/*`).
-- `eslint.config.js`: rewrite per §8.
-- `package.json`: `check:cycles`, `test`, `format:check`; devDeps
-  `dependency-cruiser`, `eslint-plugin-unused-imports`, `vitest`.
-- `CLAUDE.md` Architecture section, `specs/conventions.md` "Project
-  structure", `src/design-system/README.md` → `src/shared/ui/README.md`,
-  `data-layer-migration.md` and `data-module-plan.md` file references.
-
----
-
-## Appendix — gap analysis against the reference (snapshot 2026-09-12)
-
-Delete this appendix once the migration lands; the ADR keeps the history.
-
-| #   | Reference rule                                                                         | Here today                                                                                                                                                                  | Verdict                                                 | Files affected                    |
-| --- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------- |
-| 1   | Folder = domain, layer = file; only `modules/` + `shared/` + bootstrap at root         | `features/` (domain-ish) **and** six layer folders: `components/`, `design-system/`, `hooks/`, `layout/`, `lib/`, `server/`                                                 | **different**                                           | whole `src/`                      |
-| 2   | Modules flat (`MAX_MODULE_DEPTH = 0`)                                                  | `features/<x>/data/`, `features/<x>/components/`                                                                                                                            | different                                               | marketing, assistant, all `data/` |
-| 3   | One `contract.ts` per module, manual list                                              | none; `features/assistant/index.tsx` is a barrel, `features/orders/api.ts` is imported directly by the route                                                                | **missing**                                             | every feature                     |
-| 4   | `moduleExposesOnlyContract` / `insideModuleIsRelative` / `crossingUsesAlias` in ESLint | ESLint has no boundary rule at all (only `server-only` package ban)                                                                                                         | **missing**                                             | `eslint.config.js`                |
-| 5   | `sharedKnowsNoDomain`                                                                  | `layout/AppShell` imports `AssistantPanel` (assistant domain with canned replies); `layout/Sidebar` hardcodes "2 de 4 critérios" (dashboard)                                | different                                               | AppShell, Sidebar                 |
-| 6   | No barrels except contract                                                             | 40+ `index.ts` re-export files in `design-system/`, `layout/`; `design-system/index.ts` does `export *` four levels deep                                                    | **different** — main cycle risk in the repo             | design-system, layout             |
-| 7   | I/O only in `*Service.ts`; SDK client only importable there                            | Prisma in `server/analytics/orders.ts`, guarded by folder glob in `vite.config.ts` only; no lint rule                                                                       | different (build guard yes, lint no)                    | server/, features/orders/api.ts   |
-| 8   | Cycle ratchet (`check:cycles`, files-in-SCC)                                           | nothing; `madge`/depcruise absent                                                                                                                                           | **missing**                                             | scripts/, package.json            |
-| 9   | Entry → orchestrator → pure core; `now` as parameter                                   | `period.ts` is pure and takes `today`; `orders.ts` mixes query + shaping (acceptable orchestrator); `REFERENCE_TODAY` read as a module constant inside `period.ts` defaults | mostly same; move the clock constant to `shared/config` | lib/period.ts                     |
-| 10  | Colocated `.test.ts`, vitest, born tested                                              | no test runner                                                                                                                                                              | **missing**                                             | package.json                      |
-| 11  | Enums from Prisma, never redeclared; UI mirrors when it can't see Prisma               | `statusLabel` map in `orders.ts` keys on raw strings (`PAID`…) instead of the enum; UI unions (`"up" \| "down"`) are fine (UI-only)                                         | different (minor)                                       | server/analytics/orders.ts        |
-| 12  | `x.types.ts` for exported types                                                        | design-system uses `types.ts` per folder (same idea, different name); `OrdersOverview` type exported from the Prisma-touching file                                          | different (naming)                                      | patterns/*/types.ts, orders.ts    |
-| 13  | camelCase files, PascalCase only components, no kebab                                  | kebab in `use-mobile.tsx`, `use-period.ts`, `error-*.ts`, `dev-orders.tsx`, `seed-analytics.ts`                                                                             | different                                               | 7 files                           |
-| 14  | English identifiers enforced by lint                                                   | convention in `CLAUDE.md`, no rule                                                                                                                                          | missing (cheap to add)                                  | eslint                            |
-| 15  | `unused-imports`, `no-console`, `max-lines`                                            | `no-unused-vars` off, nothing else                                                                                                                                          | missing (cheap)                                         | eslint                            |
-| 16  | Three ratchets in CI, no pre-commit                                                    | no CI at all                                                                                                                                                                | missing (optional)                                      | .github/                          |
-| 17  | `CLAUDE.md` / `REVIEW.md` / `docs/decisions`                                           | `CLAUDE.md` + `specs/`; no ADRs, no review checklist                                                                                                                        | partially same                                          | specs/decisions/                  |
-| 18  | Composition root injects across modules (DIP)                                          | `__root.tsx` renders `AppShell` which reaches into the assistant itself                                                                                                     | different                                               | __root.tsx, AppShell              |
-| 19  | Server-only physical separation                                                        | single repo; `importProtection` in vite on `**/server/**`                                                                                                                   | n/a → §6                                                | vite.config.ts                    |
-| 20  | Prettier single-quote/80                                                               | double-quote/100                                                                                                                                                            | different — **not adopting**                            | —                                 |

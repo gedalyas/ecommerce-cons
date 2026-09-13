@@ -6,7 +6,7 @@ way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **Stage 0.5 — gap analysis and mapping written (`specs/architecture.md`), waiting for approval before moving files** — last updated 2026-09-12
+Status: **Stage 0.5 done (2026-09-12) — architecture in force; Stage 1 (Painel de Controle) is next** — last updated 2026-09-12
 
 ---
 
@@ -47,10 +47,10 @@ Status: **Stage 0.5 — gap analysis and mapping written (`specs/architecture.md
 
 - [x] Define search-param schema (`inicio`, `fim`, `por`, `comparar`) on the
       root route with validation + defaults (últimos 30 dias, dia, período anterior)
-      — `src/lib/period.ts`, validated in `src/routes/__root.tsx`. "Today" is
+      — `src/shared/utils/period.ts`, validated in `src/routes/__root.tsx`. "Today" is
       pinned to `REFERENCE_TODAY = 2026-09-10` so defaults match the dataset
 - [x] `usePeriod()` hook (reads/writes params, resolves comparison window) —
-      `src/hooks/use-period.ts`
+      `src/shared/hooks/usePeriod.ts`
 - [x] `PeriodSelector` pattern: presets list, groupBy select, compare select,
       dual-month calendar for custom range
 - [x] Period preserved across route changes (link-shareable) —
@@ -58,26 +58,26 @@ Status: **Stage 0.5 — gap analysis and mapping written (`specs/architecture.md
 
 ### Server conventions
 
-- [x] `src/server/db.ts` (memoized PrismaClient + adapter) — step 0 of
+- [x] `src/shared/dependencies/prismaClient.ts` (memoized PrismaClient + adapter) — step 0 of
       `data-layer-migration.md`
 - [x] Shared types: `MetricValue { value, unit, previous, variation }`,
       `Envelope<T> { current, previous }`, `SeriesPoint`, `BreakdownSlice` —
-      `src/lib/metrics.ts`
+      `src/shared/models/types/metric.types.ts` + `src/shared/utils/metricFormat.ts`
 - [x] Helper that resolves the period into the two windows and the bucket
-      list for `por` — `src/server/analytics/period.ts` (`fillSeries` zero-fills)
+      list for `por` — `src/shared/utils/periodWindow.ts` (`fillSeries` zero-fills)
 - [x] First server function `getOrdersOverview` returning the envelope —
-      `src/features/orders/api.ts` → `src/server/analytics/orders.ts`
+      `src/modules/orders/ordersController.ts` → `ordersService.ts`
 - [x] Enum mapping at the boundary (Prisma UPPER → Portuguese labels in the
       query layer; no Prisma types reach screens)
 
-### Base patterns (design-system)
+### Base patterns (shared/ui)
 
 - [x] `KpiCard` + `metricToTile` — MetricValue → MetricTile with computed
       variation, `goodWhen` direction and configurable comparison label
 - [x] `DataTable` — pagination (10/20/50/100), sort, TOTAL row, empty state
       "Não há dados disponíveis para os filtros selecionados." (client-side;
       server-side paging comes with Pedidos › Lista)
-- [x] CSV export helper (pt-BR separators, BOM for Excel) — `src/lib/csv.ts`
+- [x] CSV export helper (pt-BR separators, BOM for Excel) — `src/shared/utils/csv.ts`
 - [x] `TimeSeriesChart` — solid current, dashed previous, tooltip via format.ts
 - [x] `DonutBreakdown` — share + legend table
 - [x] `IndicatorCarousel` — scrollable chips → selected big number + series
@@ -95,14 +95,14 @@ Status: **Stage 0.5 — gap analysis and mapping written (`specs/architecture.md
 - [-] Dashboard shows the period selector — moved to Stage 1 (the dashboard
   still renders fixtures; adding the selector without live KPIs would mislead)
 - [x] Dev-only route renders the envelope with comparison — `/dev/pedidos`
-      (`src/routes/dev-orders.tsx`, `src/features/orders/dev.tsx`)
+      (`src/routes/devOrders.tsx`, `src/modules/orders/OrdersDev.tsx`)
 - [x] `npm run typecheck` + `npm run build` green
 
 ---
 
 ## Stage 0.5 — Architecture alignment (before any new screen)
 
-The current layout (`features/` + `design-system/` + `server/` + `lib/`) was
+The layout at the time (`features/` + `design-system/` + `server/` + `lib/`) was
 not validated against the folder architecture the team uses elsewhere. Align
 it now, while only Stage 0 sits on top of it, instead of refactoring five
 stages later. Focus: cycle prevention and file-to-file communication through
@@ -114,25 +114,31 @@ contracts.
 - [x] Gap analysis: reference layers/rules vs. this repo, listed per rule with
       "same / different / missing" and the files affected — appendix of
       `specs/architecture.md` (20 rules: 8 missing, 10 different, 2 kept as-is)
-- [~] Proposed mapping for this stack (React 19 + TanStack Start + Prisma):
-  target tree, layer diagram, where contracts live, alias policy,
-  server-only guarantee — written to `specs/architecture.md`; **awaiting
-  approval** before moving anything
-- [ ] Enforce cycles and boundaries with tooling, not convention (ESLint
-      boundaries / `import/no-cycle` / dependency-cruiser — whichever the
-      reference uses), wired into `npm run lint`
-- [ ] Barrel (`index.ts`) policy decided and applied (design-system currently
-      re-exports everything from `patterns/index.ts`)
-- [ ] Contract convention: naming, ownership (producer / consumer / neutral
-      folder), how the client/server boundary validates input and types
-      output; `src/lib/metrics.ts`, `src/lib/period.ts` and
-      `features/orders/api.ts` re-shaped to follow it
-- [ ] Move the Stage 0 files to the new layout (schema/seed untouched);
-      `npm run typecheck`, `npm run lint`, `npm run build` green; `/dev/pedidos`
-      still renders
-- [ ] Update `CLAUDE.md` (Architecture section), `src/design-system/README.md`,
-      `specs/conventions.md` and the file references in `data-module-plan.md`
-- [ ] Record what is enforced by lint vs. what is convention only
+- [x] Proposed mapping for this stack (React 19 + TanStack Start + Prisma):
+      target tree, layer diagram, where contracts live, alias policy,
+      server-only guarantee — `specs/architecture.md`, approved 2026-09-12
+- [x] Enforce cycles and boundaries with tooling, not convention — the
+      reference's `no-restricted-imports` patterns in `eslint.config.js`;
+      dependency-cruiser graph + `scripts/checkCycles.ts` (Tarjan) as
+      `npm run check:cycles`, cap 0
+- [x] Barrel (`index.ts`) policy decided and applied — no barrels; every
+      `index.ts` deleted, `shared/ui` is flat, `contract.ts` is the one
+      hand-written exception
+- [x] Contract convention: producer owns; `contract.ts` per module;
+      `<x>Controller.ts` (server fns) → `<x>Service.ts` (Prisma) →
+      `<x>.types.ts`; `metrics.ts` split into `shared/models/types/metric.types.ts` + `shared/utils/metricFormat.ts`; orders module re-shaped
+- [x] Move the Stage 0 files to the new layout (schema/seed untouched) —
+      four commits; typecheck, lint (0 warnings), cycles (0), tests, build
+      green; all routes incl. `/dev/pedidos` render
+- [x] Update `CLAUDE.md` (Architecture section), `src/shared/ui/README.md`,
+      `specs/conventions.md`, `design-system.md`, `data-layer-migration.md`,
+      the other specs' paths and `data-module-plan.md`
+- [x] Record what is enforced by lint vs. what is convention only —
+      `specs/architecture.md` §8; decision in
+      `specs/decisions/2026-09-12-modules-contracts-cycle-ratchet.md`
+- [x] CI: `.github/workflows/ci.yml` (typecheck, lint 0 warnings, cycles 0,
+      tests, prettier, build)
+- [x] Vitest with the first colocated tests (period, metricFormat, cyclicFiles)
 
 ---
 

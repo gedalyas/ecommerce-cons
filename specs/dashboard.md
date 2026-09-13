@@ -1,6 +1,6 @@
 # Dashboard (`/`)
 
-Feature: `src/features/dashboard`. Fixtures: `data/dashboard.ts`.
+Module: `src/modules/dashboard`. Fixtures: `dashboardFixture.ts`.
 Header: title "Dashboard", subtitle "Visão consolidada de agosto de 2026 · Loja Aurora".
 
 Blocks, in order:
