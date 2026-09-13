@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **K0–K1 (API) done, K2 next** — the Conexões UI for live connectors lands with K2 — last updated 2026-09-13
+Status: **K0–K2 done, K3 (Bling) next** — last updated 2026-09-13
 
 ---
 
@@ -29,7 +29,9 @@ Status: **K0–K1 (API) done, K2 next** — the Conexões UI for live connectors
       `connector.sync`, `connector.refresh`; schedule `connector.sync` hourly per connection
 - [x] Contracts `connectors/`: `authPatterns`, `connectionStages` + labels, `StoreConnector`
       gains `connection` (stage, label, lastSyncAt, lastError) and `authPattern`;
-      `connectorCatalog` availability `oauth` for Nuvemshop (K2) and Bling (K3)
+      the catalog keeps `request`; the API flips `availability` to `oauth` for every
+      connector whose provider is registered (env credentials present), so the web needs no
+      per-environment knowledge
 - [x] API `modules/connectors`: provider registry (`ConnectorProvider` interface:
       `authorizeUrl`, `exchangeCode`, `refresh?`, `backfill`, `sync`), signed OAuth `state`
       (JWT 10 min with clientId, userId, key), `POST /connectors/:key/authorize` → `{ url }`,
@@ -37,9 +39,11 @@ Status: **K0–K1 (API) done, K2 next** — the Conexões UI for live connectors
       `DELETE /connectors/:key`, `POST /connectors/:key/sync`, `GET /data-readiness`;
       audit events CONNECTION_AUTHORIZED / CONNECTION_REMOVED / CONNECTION_SYNCED /
       CONNECTION_FAILED
-- [~] Web: Conexões (with K2, against the Nuvemshop stub) — "Conectar" for live connectors (redirect), stepper per connection
-  (4 stages), "Sincronizar agora", "Desconectar"; shell banner "Conecte uma fonte de
-  dados da loja" until a source is connected or imported
+- [x] Web: Conexões — "Conectar" for live connectors (dialog with the store domain when the
+      pattern is domain + OAuth, then redirect), stepper per connection (4 stages, error on
+      the import step), "Sincronizar" / "Desconectar", feedback banner after the callback
+      (`?conectado=` / `?erro=`); shell banner "Conecte uma fonte de dados da loja" until a
+      source is connected, imported or orders exist (`GET /data-readiness`)
 - [x] Raw layer + mappers: `raw_record` (connection, kind, externalId, payload, fetchedAt)
       and the bridge from provider rows to `OrderInput` / `AdSpendRow` / `TrafficRow`
       through the import write service (undo recorder unused for syncs)
@@ -50,11 +54,20 @@ Status: **K0–K1 (API) done, K2 next** — the Conexões UI for live connectors
 
 ## K2 — Nuvemshop
 
-- [ ] Provider: authorize URL, token exchange, `user_id` as store id; backfill orders
-      (`updated_at_min`, pages of 200) → `OrderInput`; products and customers; incremental
-      sync by cursor; status mapping `payment_status` → `FinancialStatus`
-- [ ] Webhook `order/paid` (HMAC) as a fast path (optional)
-- [ ] Flow with a local Nuvemshop stub (auth + API): connect → stepper → orders on /pedidos
+- [x] Provider (`nuvemshopProvider.ts`, pure `nuvemshopOrders.ts` tested): authorize URL,
+      token exchange (`user_id` = store id), backfill of the last `CONNECTOR_BACKFILL_MONTHS`
+      by `updated_at_min` in pages of 200 → raw rows + `OrderInput` (payment status →
+      `FinancialStatus`, province name → UF, UTMs from `landing_url`, coupons, PIX/boleto/card);
+      incremental sync from the cursor with a one-day overlap; registered only when
+      `NUVEMSHOP_APP_ID` + `NUVEMSHOP_CLIENT_SECRET` are set (`NUVEMSHOP_AUTH_URL` /
+      `NUVEMSHOP_API_URL` point the dev env at a stub)
+- [-] Webhook `order/paid` — the hourly sync covers it for now
+- [x] Flow (`e2e_nuvemshop.mjs` + `nuvemshop_stub.mjs` on :4010): Conectar → domain → stub
+      authorize → callback → "Nuvemshop conectado" + stepper → worker backfills 7 orders →
+      stage Pronto, source Conectado, activity entries → orders on /pedidos → manual sync
+      hits the API with the cursor → Desconectar
+- [x] Fix on the way: imported orders are stored at noon UTC so the day does not shift in
+      Brazilian time zones (they were midnight UTC → shown as the previous day)
 
 ## K3 — Bling
 

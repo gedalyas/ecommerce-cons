@@ -22,7 +22,13 @@ import { Textarea } from "@/shared/ui/Textarea";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { requestConnectionFn } from "./connectionsController";
+import { ConnectDialog } from "./ConnectDialog";
+import { ConnectionStepper } from "./ConnectionStepper";
+import {
+  disconnectConnectorFn,
+  requestConnectionFn,
+  syncConnectorFn,
+} from "./connectionsController";
 
 const statusMeta: Record<
   DataSourceStatus,
@@ -41,10 +47,20 @@ const statusMeta: Record<
 function ConnectorAction({
   connector,
   onRequest,
+  onConnect,
 }: {
   connector: StoreConnector;
   onRequest: (c: StoreConnector) => void;
+  onConnect: (c: StoreConnector) => void;
 }) {
+  if (connector.availability === "oauth" && !connector.connection) {
+    return (
+      <Button size="sm" className="h-11 w-full md:h-8 md:w-40" onClick={() => onConnect(connector)}>
+        Conectar
+      </Button>
+    );
+  }
+  if (connector.connection) return <ConnectionButtons connector={connector} />;
   if (connector.availability === "manual") {
     return (
       <a href="#importacao" className={cn(textClass.meta, "font-semibold text-primary")}>
@@ -65,6 +81,42 @@ function ConnectorAction({
     >
       Solicitar conexão
     </Button>
+  );
+}
+
+function ConnectionButtons({ connector }: { connector: StoreConnector }) {
+  const sync = useServerFn(syncConnectorFn);
+  const remove = useServerFn(disconnectConnectorFn);
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const run = async (action: () => Promise<{ ok: boolean }>) => {
+    setBusy(true);
+    try {
+      await action();
+      await router.invalidate();
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="flex gap-1">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={busy || connector.connection?.stage === "IMPORTING"}
+        onClick={() => void run(() => sync({ data: { key: connector.key } }))}
+      >
+        Sincronizar
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        disabled={busy}
+        onClick={() => void run(() => remove({ data: { key: connector.key } }))}
+      >
+        Desconectar
+      </Button>
+    </div>
   );
 }
 
@@ -133,17 +185,38 @@ function RequestDialog({
 export function Connections({
   data,
   imports,
+  justConnected,
+  failed,
 }: {
   data: ConnectionsScreen;
   imports: ImportsScreen;
+  justConnected: string;
+  failed: string;
 }) {
+  const connectedLabel = data.connectors.find((c) => c.key === justConnected)?.label ?? null;
   const detail = summaryDetail(data.summary);
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
+  const [connecting, setConnecting] = useState<StoreConnector | null>(null);
   return (
     <div className={layout.page}>
       <PageHeader title="Conexões" subtitle="Fontes que alimentam os indicadores da loja" />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
+        {connectedLabel && (
+          <AlertBanner icon={false}>
+            <span role="status" className="font-semibold text-foreground">
+              {connectedLabel} conectado. O histórico está sendo importado — acompanhe abaixo.
+            </span>
+          </AlertBanner>
+        )}
+        {failed && (
+          <AlertBanner>
+            <span role="alert" className="text-foreground">
+              Não foi possível concluir a conexão. Tente de novo; se persistir, fale com sua
+              consultoria.
+            </span>
+          </AlertBanner>
+        )}
         <AlertBanner icon={false}>
           <span className={cn(textClass.numeric, "font-semibold text-foreground")}>
             {data.summary.active} de {data.summary.total} fontes ativas
@@ -195,8 +268,17 @@ export function Connections({
                     {c.syncLabel}
                   </div>
                   <div className="md:w-40">
-                    <ConnectorAction connector={c} onRequest={setRequesting} />
+                    <ConnectorAction
+                      connector={c}
+                      onRequest={setRequesting}
+                      onConnect={setConnecting}
+                    />
                   </div>
+                  {c.connection && (
+                    <div className="w-full border-t border-border pt-3">
+                      <ConnectionStepper connection={c.connection} />
+                    </div>
+                  )}
                 </li>
               );
             })}
@@ -209,6 +291,7 @@ export function Connections({
       </div>
 
       <RequestDialog connector={requesting} onClose={() => setRequesting(null)} />
+      <ConnectDialog connector={connecting} onClose={() => setConnecting(null)} />
     </div>
   );
 }

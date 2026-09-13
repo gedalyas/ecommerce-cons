@@ -1,10 +1,17 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { z } from "zod";
 import { Connections, getConnectionsScreen } from "@/modules/connections/contract";
 import { getImportsScreen } from "@/modules/imports/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 
+const searchSchema = z.object({
+  conectado: z.string().catch(""),
+  erro: z.string().catch(""),
+});
+
 export const Route = createFileRoute("/conexoes")({
+  validateSearch: searchSchema,
   head: () => ({
     meta: [
       { title: "Conexões · E-commerce Insights" },
@@ -31,7 +38,8 @@ export const Route = createFileRoute("/conexoes")({
 
 function RouteComponent() {
   const { data, imports } = Route.useLoaderData();
-  return <Connections data={data} imports={imports} />;
+  const { conectado, erro } = Route.useSearch();
+  return <Connections data={data} imports={imports} justConnected={conectado} failed={erro} />;
 }
 
 function RouteError() {

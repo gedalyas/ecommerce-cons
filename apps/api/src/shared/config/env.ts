@@ -17,6 +17,12 @@ const envSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:8080"),
   API_PUBLIC_URL: z.string().url().default("http://localhost:3001"),
   CREDENTIALS_KEY: z.string().min(1),
+  CONNECTOR_USER_AGENT: z.string().default("E-commerce Insights (contato@ecommerce-insights.dev)"),
+  CONNECTOR_BACKFILL_MONTHS: z.coerce.number().int().min(1).max(60).default(18),
+  NUVEMSHOP_APP_ID: z.string().default(""),
+  NUVEMSHOP_CLIENT_SECRET: z.string().default(""),
+  NUVEMSHOP_AUTH_URL: z.string().url().default("https://www.nuvemshop.com.br"),
+  NUVEMSHOP_API_URL: z.string().url().default("https://api.nuvemshop.com.br/v1"),
   MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
   SMTP_URL: z
     .string()

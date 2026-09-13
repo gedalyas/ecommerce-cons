@@ -103,7 +103,10 @@ function storeRouters(
     createGoalsRouter(),
     createAnalysisRouter(),
     createInfluencersRouter(),
-    createConnectionsRouter({ connectionsOf: connectionSummariesFor }),
+    createConnectionsRouter({
+      connectionsOf: connectionSummariesFor,
+      liveKeys: [...connectors.providers.keys()],
+    }),
     createConsultingRouter({ now }),
     createImportsRouter({ now, rateLimited }),
     createStoreActivityRouter({ visibleStoresOf: visibleClientIds }),

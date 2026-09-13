@@ -6,15 +6,15 @@ import {
   connectionsHealth,
   connectionsScreen,
   requestConnection,
-  type ConnectionsOf,
+  type ConnectorSources,
 } from "./connectionsService";
 
-export type ConnectionsDependencies = { connectionsOf: ConnectionsOf };
+export type ConnectionsDependencies = ConnectorSources;
 
-export function connectionsController({ connectionsOf }: ConnectionsDependencies) {
+export function connectionsController(sources: ConnectionsDependencies) {
   return {
     async screen(req: Request, res: Response) {
-      res.json(await connectionsScreen(authOf(req), connectionsOf));
+      res.json(await connectionsScreen(authOf(req), sources));
     },
     async health(req: Request, res: Response) {
       res.json(await connectionsHealth(authOf(req).clientId));

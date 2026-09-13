@@ -1,6 +1,8 @@
 import type { OrderInput } from "./importRows.types";
 
-const dayOf = (day: string) => new Date(`${day}T00:00:00.000Z`);
+const NOON_UTC = "T12:00:00.000Z";
+
+const dayOf = (day: string) => new Date(`${day}${NOON_UTC}`);
 
 export function orderRowOf(order: OrderInput, customerId: string, orderNumberForCustomer: number) {
   const placedAt = dayOf(order.placedAt);

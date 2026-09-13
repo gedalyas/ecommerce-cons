@@ -1,6 +1,7 @@
 export type ShellStatus = {
   maturity: { achieved: number; total: number };
   connectionsAlert: boolean;
+  hasSource: boolean;
 };
 
 export type ShellStore = { id: string; name: string; isArchived: boolean };

@@ -32,7 +32,7 @@ const order: OrderInput = {
 describe("orderRowOf", () => {
   it("maps the mapped order to the row, paid on the same day when paid", () => {
     const row = orderRowOf(order, "cust-1", 3);
-    expect(row.placedAt.toISOString()).toBe("2026-09-05T00:00:00.000Z");
+    expect(row.placedAt.toISOString()).toBe("2026-09-05T12:00:00.000Z");
     expect(row.paidAt).toEqual(row.placedAt);
     expect(row).toMatchObject({
       customerId: "cust-1",

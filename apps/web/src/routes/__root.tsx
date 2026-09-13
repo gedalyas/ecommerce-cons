@@ -26,7 +26,11 @@ import {
 import { AppShell } from "@/shared/layout/AppShell";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
 import { getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
-import { getConnectionsHealth } from "@/modules/connections/contract";
+import {
+  DataReadinessBanner,
+  getConnectionsHealth,
+  getDataReadiness,
+} from "@/modules/connections/contract";
 import { getMilestoneSummary } from "@/modules/consulting/contract";
 
 const SHELL_STALE_MS = 5 * 60_000;
@@ -46,7 +50,11 @@ const ONBOARDING_PATH = "/configurar-loja";
 const ADMIN_PATH = "/admin";
 const NO_STORE_PATHS = ["/configurar-loja", "/admin"];
 const ARCHIVED_PATH = "/loja-arquivada";
-const emptyStatus = { maturity: { achieved: 0, total: 0 }, connectionsAlert: false };
+const emptyStatus = {
+  maturity: { achieved: 0, total: 0 },
+  connectionsAlert: false,
+  hasSource: true,
+};
 
 function NotFoundComponent() {
   return (
@@ -178,11 +186,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     if (!session?.activeStore) return { status: emptyStatus };
     if (session.user.role === "CLIENT" && session.activeStore.archivedAt)
       return { status: emptyStatus };
-    const [maturity, connections] = await Promise.all([
+    const [maturity, connections, readiness] = await Promise.all([
       getMilestoneSummary(),
       getConnectionsHealth(),
+      getDataReadiness(),
     ]);
-    return { status: { maturity, connectionsAlert: connections.hasError } };
+    return {
+      status: { maturity, connectionsAlert: connections.hasError, hasSource: readiness.hasSource },
+    };
   },
   staleTime: SHELL_STALE_MS,
   shellComponent: RootShell,
@@ -235,6 +246,7 @@ function RootComponent() {
       <AppShell
         assistant={<AssistantPanel />}
         assistantFab={<AssistantFab />}
+        banner={status.hasSource ? null : <DataReadinessBanner />}
         status={status}
         account={{
           name: user.name,

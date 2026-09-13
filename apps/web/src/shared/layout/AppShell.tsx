@@ -11,11 +11,13 @@ export function AppShell({
   assistant,
   assistantFab,
   status,
+  banner,
   account,
 }: {
   assistant: ReactNode;
   assistantFab: ReactNode;
   status: ShellStatus;
+  banner?: ReactNode;
   account: ShellAccount;
 }) {
   const { ref, top, bottom } = useScrollShadow<HTMLElement>();
@@ -37,6 +39,7 @@ export function AppShell({
                 : "h-dvh min-w-0 overflow-y-auto pb-20 md:pb-0"
             }
           >
+            {banner}
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>

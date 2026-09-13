@@ -67,10 +67,11 @@ export async function dataSourcesFor(
 }
 
 export type ConnectionsOf = (clientId: string) => Promise<Map<ConnectorKey, ConnectionSummary>>;
+export type ConnectorSources = { connectionsOf: ConnectionsOf; liveKeys: readonly ConnectorKey[] };
 
 export async function storeConnectorsFor(
   clientId: string,
-  connectionsOf: ConnectionsOf,
+  { connectionsOf, liveKeys }: ConnectorSources,
 ): Promise<StoreConnector[]> {
   const [sources, connections, requests] = await Promise.all([
     dataSourcesFor(clientId),
@@ -87,6 +88,7 @@ export async function storeConnectorsFor(
     const source = byKey.get(connector.key);
     return {
       ...connector,
+      availability: liveKeys.includes(connector.key) ? "oauth" : connector.availability,
       status: source?.status ?? "NOT_CONNECTED",
       syncLabel: source?.syncLabel ?? "—",
       request: openRequest.get(connector.key) ?? null,
@@ -97,9 +99,9 @@ export async function storeConnectorsFor(
 
 export async function connectionsScreen(
   auth: AuthContext,
-  connectionsOf: ConnectionsOf,
+  sources: ConnectorSources,
 ): Promise<ConnectionsScreen> {
-  const connectors = await storeConnectorsFor(auth.clientId, connectionsOf);
+  const connectors = await storeConnectorsFor(auth.clientId, sources);
   return { connectors, summary: connectionsSummaryOf(connectors), canRequest: true };
 }
 
