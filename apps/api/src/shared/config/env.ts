@@ -22,6 +22,25 @@ const envSchema = z.object({
     .transform((value) => value.trim() || null)
     .pipe(z.string().url().nullable()),
   MAIL_OUTBOX_DIR: z.string().min(1).default("outbox"),
+  GURU_ACCOUNT_TOKEN: z.string().default(""),
+  GURU_OFFER_IDS: z
+    .string()
+    .default("")
+    .transform((value) =>
+      value
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean),
+    ),
+  GURU_CHECKOUT_URL: z.string().default(""),
+  ZAPSIGN_API_TOKEN: z.string().default(""),
+  ZAPSIGN_API_BASE_URL: z.string().url().default("https://api.zapsign.com.br"),
+  ZAPSIGN_TEMPLATE_ID: z.string().default(""),
+  ZAPSIGN_WEBHOOK_SECRET: z.string().default(""),
+  ZAPSIGN_SANDBOX: z
+    .string()
+    .default("false")
+    .transform((value) => value.trim().toLowerCase() === "true"),
 });
 
 const productionMailSchema = envSchema.refine(

@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B0 done, B1 next** — last updated 2026-09-13
+Status: **B0–B1 done, B2 next** — last updated 2026-09-13
 
 ---
 
@@ -17,16 +17,18 @@ Status: **B0 done, B1 next** — last updated 2026-09-13
 
 ## B1 — Schema and env
 
-- [ ] `GuruWebhook` (`guruId` unique, `kind` SELL|SUBSCRIPTION, `email`, `status`,
+- [x] `GuruWebhook` (`guruId` unique, `kind` SELL|SUBSCRIPTION, `email`, `status`,
       `invoiceStatus?`, `payload`, `processedAt?`, `createdAt`)
-- [ ] `Subscription` (`email` unique, `clientId?` unique, `source` GURU|MANUAL, `status`
+- [x] `Subscription` (`email` unique, `clientId?` unique, `source` GURU|MANUAL, `status`
       ACTIVE|PAST_DUE|CANCELED, `guruSubscriptionId?`, `planName?`, `contactName?`,
       `amount?`, `installments?`, `startedAt?`, `currentPeriodEnd?`, `canceledAt?`,
       `lastEventAt`)
-- [ ] `Contract` (`clientId` unique, `zapsignToken` unique, `signerToken?`, `signerEmail`,
+- [x] `Contract` (`clientId` unique, `zapsignToken` unique, `signerToken?`, `signerEmail`,
       `status` PENDING|SIGNED|REFUSED|DELETED|EXPIRED, `signedAt?`, `signedFileUrl?`,
       `payload`, `createdAt`, `updatedAt`)
-- [ ] Env (`GURU_*`, `ZAPSIGN_*`), `.env.example`, migration
+- [x] Env (`GURU_*`, `ZAPSIGN_*`), `.env.example`, migration `20260913210000_billing`; the
+      dev `.env` carries dummy `GURU_ACCOUNT_TOKEN` / `ZAPSIGN_WEBHOOK_SECRET` so simulated
+      webhooks can be exercised
 
 ## B2 — Guru webhooks
 
