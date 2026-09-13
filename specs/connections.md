@@ -44,6 +44,7 @@ it.
 
 ## Manual import
 
-Below the list, an "Importação manual" block with a dashed upload area
-("Arraste a planilha aqui ou selecione um arquivo", .xlsx/.csv up to 10 MB).
-Visual only — no upload logic in the prototype.
+Below the list, the "Importação manual" block imports CSV files of orders, ad spend or
+traffic into the fact tables — see [imports.md](imports.md). A successful import stamps the
+matching data source (and turns a `NOT_CONNECTED` / `ERROR` source into `MANUAL`), so the
+summary above and the sidebar dot follow.
