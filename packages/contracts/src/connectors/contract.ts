@@ -25,13 +25,18 @@ export {
   connectionStageLabel,
   connectionStages,
   dataSourceStatuses,
+  statusMappingTargetLabel,
+  statusMappingTargets,
 } from "./connectors.types";
 export type {
   ConnectionRequest,
   ConnectionRequestStatus,
   ConnectionStage,
   ConnectionSummary,
+  ConnectorSettings,
+  ConnectorStatusOption,
   DataReadiness,
+  StatusMappingTarget,
   DataSourceStatus,
   StoreConnector,
 } from "./connectors.types";
@@ -41,11 +46,13 @@ export {
   connectorCallbackSchema,
   connectorCredentialsSchema,
   connectorKeySchema,
+  connectorSettingsSchema,
   connectorStartSchema,
 } from "./connectorsSchema";
 export type {
   ConnectionRequestInput,
   ConnectionRequestResolveInput,
   ConnectorCredentialsInput,
+  ConnectorSettingsInput,
   ConnectorStartInput,
 } from "./connectorsSchema";

@@ -23,7 +23,7 @@ const HOURLY = "0 * * * *";
 const RAW_CHUNK = 200;
 const ERROR_LIMIT = 500;
 
-type JobData = { connectionId: string };
+type JobData = { connectionId: string; reprocess?: boolean };
 
 async function saveRaw(connectionId: string, now: Date, kind: RawKind, rows: RawRow[]) {
   for (let i = 0; i < rows.length; i += RAW_CHUNK) {
@@ -55,13 +55,34 @@ type ConnectionRow = {
   externalId: string;
   credentials: string;
   syncCursor: unknown;
+  settings: unknown;
   authorizedBy: string | null;
 };
+
+async function listRaw<T>(connectionId: string, kind: RawKind, skip: number, take: number) {
+  const rows = await prismaClient.rawRecord.findMany({
+    where: { connectionId, kind },
+    orderBy: { externalId: "asc" },
+    skip,
+    take,
+    select: { externalId: true, payload: true },
+  });
+  return rows.map((r) => ({ externalId: r.externalId, payload: r.payload as T }));
+}
+
+async function readRaw<T>(connectionId: string, kind: RawKind, externalId: string) {
+  const row = await prismaClient.rawRecord.findUnique({
+    where: { connectionId_kind_externalId: { connectionId, kind, externalId } },
+    select: { payload: true },
+  });
+  return (row?.payload as T | undefined) ?? null;
+}
 
 function contextOf(
   row: ConnectionRow,
   credentials: Credentials,
   deps: ConnectorsDependencies,
+  reprocess: boolean,
 ): SyncContext {
   const now = deps.now();
   return {
@@ -70,8 +91,12 @@ function contextOf(
     externalId: row.externalId,
     credentials,
     cursor: (row.syncCursor ?? {}) as SyncCursor,
+    settings: (row.settings ?? {}) as Record<string, unknown>,
+    reprocess,
     now,
     saveRaw: (kind, rows) => saveRaw(row.id, now, kind, rows),
+    readRaw: (kind, externalId) => readRaw(row.id, kind, externalId),
+    listRaw: (kind, skip, take) => listRaw(row.id, kind, skip, take),
     writeOrders: (orders) => writeSyncedOrders(row.clientId, orders),
     writeAdSpend: (rows) => writeSyncedAdSpend(row.clientId, rows),
     writeTraffic: (rows) => writeSyncedTraffic(row.clientId, rows),
@@ -149,15 +174,15 @@ async function fail(row: ConnectionRow, error: unknown, deps: ConnectorsDependen
   );
 }
 
-async function run(connectionId: string, mode: "backfill" | "sync", deps: ConnectorsDependencies) {
-  const row = await prismaClient.connection.findUnique({ where: { id: connectionId } });
+async function run(data: JobData, mode: "backfill" | "sync", deps: ConnectorsDependencies) {
+  const row = await prismaClient.connection.findUnique({ where: { id: data.connectionId } });
   if (!row) return;
   const provider = deps.providers.get(row.connectorKey as ConnectorKey);
   if (!provider) return;
   try {
     await prismaClient.connection.update({ where: { id: row.id }, data: { stage: "IMPORTING" } });
     const credentials = await credentialsOf(row, provider, deps);
-    const context = contextOf(row, credentials, deps);
+    const context = contextOf(row, credentials, deps, data.reprocess === true);
     const result =
       mode === "backfill" ? await provider.backfill(context) : await provider.sync(context);
     await finish(row, result.cursor, result.written, deps);
@@ -171,8 +196,8 @@ export async function registerConnectorJobs(
   jobs: Jobs,
   deps: ConnectorsDependencies,
 ): Promise<void> {
-  await jobs.work<JobData>(BACKFILL_QUEUE, (data) => run(data.connectionId, "backfill", deps));
-  await jobs.work<JobData>(SYNC_QUEUE, (data) => run(data.connectionId, "sync", deps));
+  await jobs.work<JobData>(BACKFILL_QUEUE, (data) => run(data, "backfill", deps));
+  await jobs.work<JobData>(SYNC_QUEUE, (data) => run(data, "sync", deps));
   await jobs.work<object>(SYNC_ALL_QUEUE, async () => {
     const ready = await prismaClient.connection.findMany({
       where: { stage: { in: ["READY", "ERROR"] } },

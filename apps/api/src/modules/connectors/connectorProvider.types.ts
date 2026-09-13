@@ -1,4 +1,8 @@
-import type { AuthPattern, ConnectorKey } from "@ecommerce/contracts/connectors";
+import type {
+  AuthPattern,
+  ConnectorKey,
+  ConnectorStatusOption,
+} from "@ecommerce/contracts/connectors";
 import type { AdSpendRow, OrderInput, TrafficRow } from "@/modules/imports/contract";
 
 export type Credentials = Record<string, unknown>;
@@ -21,8 +25,16 @@ export type SyncContext = {
   externalId: string;
   credentials: Credentials;
   cursor: SyncCursor;
+  settings: Record<string, unknown>;
+  reprocess: boolean;
   now: Date;
   saveRaw(kind: RawKind, rows: RawRow[]): Promise<void>;
+  readRaw<T>(kind: RawKind, externalId: string): Promise<T | null>;
+  listRaw<T>(
+    kind: RawKind,
+    skip: number,
+    take: number,
+  ): Promise<{ externalId: string; payload: T }[]>;
   writeOrders(orders: OrderInput[]): Promise<number>;
   writeAdSpend(rows: AdSpendRow[]): Promise<number>;
   writeTraffic(rows: TrafficRow[]): Promise<number>;
@@ -40,6 +52,7 @@ export type ConnectorProvider = {
   exchangeCode(params: ExchangeParams): Promise<Authorized>;
   fromCredentials?(fields: Record<string, string>): Promise<Authorized>;
   refresh?(credentials: Credentials, now: Date): Promise<Credentials | null>;
+  describeSettings?(credentials: Credentials): Promise<ConnectorStatusOption[]>;
   backfill(context: SyncContext): Promise<SyncResult>;
   sync(context: SyncContext): Promise<SyncResult>;
 };

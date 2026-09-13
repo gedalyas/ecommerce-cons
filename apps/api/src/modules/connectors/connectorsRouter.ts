@@ -9,6 +9,8 @@ export function createConnectorsRouter(deps: ConnectorsDependencies): Router {
   router.post("/connectors/:key/authorize", asyncHandler(controller.authorize));
   router.post("/connectors/:key/credentials", asyncHandler(controller.credentials));
   router.post("/connectors/:key/sync", asyncHandler(controller.sync));
+  router.get("/connectors/:key/settings", asyncHandler(controller.settings));
+  router.put("/connectors/:key/settings", asyncHandler(controller.saveSettings));
   router.delete("/connectors/:key", asyncHandler(controller.remove));
   router.get("/data-readiness", asyncHandler(controller.readiness));
   return router;

@@ -24,6 +24,7 @@ import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { ConnectDialog } from "./ConnectDialog";
 import { ConnectionStepper } from "./ConnectionStepper";
+import { StatusMappingDialog } from "./StatusMappingDialog";
 import {
   disconnectConnectorFn,
   requestConnectionFn,
@@ -48,10 +49,12 @@ function ConnectorAction({
   connector,
   onRequest,
   onConnect,
+  onSettings,
 }: {
   connector: StoreConnector;
   onRequest: (c: StoreConnector) => void;
   onConnect: (c: StoreConnector) => void;
+  onSettings: (c: StoreConnector) => void;
 }) {
   if (connector.availability === "oauth" && !connector.connection) {
     return (
@@ -60,7 +63,9 @@ function ConnectorAction({
       </Button>
     );
   }
-  if (connector.connection) return <ConnectionButtons connector={connector} />;
+  if (connector.connection) {
+    return <ConnectionButtons connector={connector} onSettings={onSettings} />;
+  }
   if (connector.availability === "manual") {
     return (
       <a href="#importacao" className={cn(textClass.meta, "font-semibold text-primary")}>
@@ -84,7 +89,13 @@ function ConnectorAction({
   );
 }
 
-function ConnectionButtons({ connector }: { connector: StoreConnector }) {
+function ConnectionButtons({
+  connector,
+  onSettings,
+}: {
+  connector: StoreConnector;
+  onSettings: (c: StoreConnector) => void;
+}) {
   const sync = useServerFn(syncConnectorFn);
   const remove = useServerFn(disconnectConnectorFn);
   const router = useRouter();
@@ -99,7 +110,12 @@ function ConnectionButtons({ connector }: { connector: StoreConnector }) {
     }
   };
   return (
-    <div className="flex gap-1">
+    <div className="flex flex-wrap gap-1">
+      {connector.kind === "erp" && (
+        <Button variant="outline" size="sm" disabled={busy} onClick={() => onSettings(connector)}>
+          Situações
+        </Button>
+      )}
       <Button
         variant="outline"
         size="sm"
@@ -197,6 +213,7 @@ export function Connections({
   const detail = summaryDetail(data.summary);
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
   const [connecting, setConnecting] = useState<StoreConnector | null>(null);
+  const [mapping, setMapping] = useState<StoreConnector | null>(null);
   return (
     <div className={layout.page}>
       <PageHeader title="Conexões" subtitle="Fontes que alimentam os indicadores da loja" />
@@ -272,6 +289,7 @@ export function Connections({
                       connector={c}
                       onRequest={setRequesting}
                       onConnect={setConnecting}
+                      onSettings={setMapping}
                     />
                   </div>
                   {c.connection && (
@@ -292,6 +310,7 @@ export function Connections({
 
       <RequestDialog connector={requesting} onClose={() => setRequesting(null)} />
       <ConnectDialog connector={connecting} onClose={() => setConnecting(null)} />
+      <StatusMappingDialog connector={mapping} onClose={() => setMapping(null)} />
     </div>
   );
 }

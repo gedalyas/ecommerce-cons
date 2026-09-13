@@ -3,8 +3,11 @@ import {
   type ConnectionSummary,
   type ConnectorCredentialsInput,
   type ConnectorKey,
+  type ConnectorSettings,
+  type ConnectorSettingsInput,
   type ConnectorStartInput,
   type DataReadiness,
+  type StatusMappingTarget,
 } from "@ecommerce/contracts/connectors";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import type { ConnectionAuthPattern } from "@ecommerce/database/enums";
@@ -15,6 +18,7 @@ import type { Jobs } from "@/shared/jobs/jobs.types";
 import type { Vault } from "@/shared/crypto/vault";
 import type { Authorized, ProviderRegistry } from "./connectorProvider.types";
 import { signOAuthState, verifyOAuthState } from "./oauthState";
+import { defaultStatusMap } from "./blingOrders";
 
 export type ConnectorsDependencies = {
   providers: ProviderRegistry;
@@ -225,6 +229,48 @@ export async function connectionSummariesFor(
     select: summarySelect,
   });
   return new Map(rows.map((r) => [r.connectorKey as ConnectorKey, toSummary(r)]));
+}
+
+async function connectionRow(auth: AuthContext, key: ConnectorKey) {
+  const row = await prismaClient.connection.findUnique({
+    where: { clientId_connectorKey: { clientId: auth.clientId, connectorKey: key } },
+    select: { id: true, credentials: true, settings: true },
+  });
+  if (!row) throw notFound("Conexão não encontrada");
+  return row;
+}
+
+export async function connectorSettings(
+  auth: AuthContext,
+  key: ConnectorKey,
+  deps: ConnectorsDependencies,
+): Promise<ConnectorSettings> {
+  const provider = providerOf(deps, key);
+  if (!provider.describeSettings) throw new HttpError(422, "Este conector não tem configurações.");
+  const row = await connectionRow(auth, key);
+  const statuses = await provider.describeSettings(deps.vault.open(row.credentials));
+  const stored = (row.settings as { statusMap?: Record<string, StatusMappingTarget> } | null)
+    ?.statusMap;
+  return { statuses, statusMap: { ...defaultStatusMap(statuses), ...(stored ?? {}) } };
+}
+
+export async function saveConnectorSettings(
+  auth: AuthContext,
+  key: ConnectorKey,
+  input: ConnectorSettingsInput,
+  deps: ConnectorsDependencies,
+): Promise<void> {
+  providerOf(deps, key);
+  const row = await connectionRow(auth, key);
+  await prismaClient.connection.update({
+    where: { id: row.id },
+    data: { settings: { statusMap: input.statusMap } },
+  });
+  await deps.jobs.send(
+    SYNC_QUEUE,
+    { connectionId: row.id, reprocess: true },
+    { singletonKey: `${row.id}:reprocess` },
+  );
 }
 
 export async function dataReadiness(clientId: string): Promise<DataReadiness> {

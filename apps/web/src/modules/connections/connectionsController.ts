@@ -3,8 +3,10 @@ import type { ConnectionsHealth, ConnectionsScreen } from "@ecommerce/contracts/
 import {
   connectionRequestInputSchema,
   connectorKeySchema,
+  connectorSettingsSchema,
   connectorStartSchema,
   type ConnectionRequest,
+  type ConnectorSettings,
   type DataReadiness,
 } from "@ecommerce/contracts/connectors";
 import { ApiRequestError, apiFetch } from "@/shared/dependencies/apiClient";
@@ -66,6 +68,25 @@ export const syncConnectorFn = createServerFn({ method: "POST" })
       () =>
         apiFetch<unknown>(`/connectors/${encodeURIComponent(data.key)}/sync`, { method: "POST" }),
       "Não foi possível sincronizar agora.",
+    ),
+  );
+
+export const getConnectorSettings = createServerFn({ method: "GET" })
+  .validator((input: unknown) => connectorKeySchema.parse(input))
+  .handler(({ data }) =>
+    apiFetch<ConnectorSettings>(`/connectors/${encodeURIComponent(data.key)}/settings`),
+  );
+
+export const saveConnectorSettingsFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => connectorKeySchema.merge(connectorSettingsSchema).parse(input))
+  .handler(({ data }) =>
+    plain(
+      () =>
+        apiFetch<void>(`/connectors/${encodeURIComponent(data.key)}/settings`, {
+          method: "PUT",
+          body: { statusMap: data.statusMap },
+        }),
+      "Não foi possível salvar o mapeamento.",
     ),
   );
 

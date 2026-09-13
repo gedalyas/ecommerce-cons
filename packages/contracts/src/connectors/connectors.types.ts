@@ -62,6 +62,24 @@ export type StoreConnector = Connector & {
   connection: ConnectionSummary | null;
 };
 
+export const statusMappingTargets = ["PAID", "PENDING", "CANCELLED", "REFUNDED", "IGNORE"] as const;
+export type StatusMappingTarget = (typeof statusMappingTargets)[number];
+
+export const statusMappingTargetLabel: Record<StatusMappingTarget, string> = {
+  PAID: "Pago",
+  PENDING: "Pendente",
+  CANCELLED: "Cancelado",
+  REFUNDED: "Reembolsado",
+  IGNORE: "Ignorar",
+};
+
+export type ConnectorStatusOption = { id: string; label: string };
+
+export type ConnectorSettings = {
+  statuses: ConnectorStatusOption[];
+  statusMap: Record<string, StatusMappingTarget>;
+};
+
 export type DataReadiness = {
   hasSource: boolean;
   connectedKeys: ConnectorKey[];

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { connectorKeys } from "./connectorCatalog";
-import { connectionRequestStatuses } from "./connectors.types";
+import { connectionRequestStatuses, statusMappingTargets } from "./connectors.types";
 
 export const connectorKeySchema = z.object({ key: z.enum(connectorKeys) });
 
@@ -18,6 +18,11 @@ export const connectorCredentialsSchema = z.object({
   fields: z.record(z.string().min(1), z.string().trim().max(500)),
 });
 export type ConnectorCredentialsInput = z.infer<typeof connectorCredentialsSchema>;
+
+export const connectorSettingsSchema = z.object({
+  statusMap: z.record(z.string().min(1), z.enum(statusMappingTargets)),
+});
+export type ConnectorSettingsInput = z.infer<typeof connectorSettingsSchema>;
 
 export const connectorCallbackSchema = z.object({
   code: z.string().min(1),

@@ -3,6 +3,7 @@ import {
   connectorCallbackSchema,
   connectorCredentialsSchema,
   connectorKeySchema,
+  connectorSettingsSchema,
   connectorStartSchema,
 } from "@ecommerce/contracts/connectors";
 import { authOf } from "@/shared/http/authOf";
@@ -10,7 +11,9 @@ import { parseOrThrow } from "@/shared/http/validate";
 import {
   completeCallback,
   connectWithCredentials,
+  connectorSettings,
   dataReadiness,
+  saveConnectorSettings,
   disconnect,
   startAuthorization,
   triggerSync,
@@ -45,6 +48,16 @@ export function connectorsController(deps: ConnectorsDependencies) {
       const { key } = parseOrThrow(connectorKeySchema, req.params);
       await triggerSync(authOf(req), key, deps);
       res.status(202).json({ queued: true });
+    },
+    async settings(req: Request, res: Response) {
+      const { key } = parseOrThrow(connectorKeySchema, req.params);
+      res.json(await connectorSettings(authOf(req), key, deps));
+    },
+    async saveSettings(req: Request, res: Response) {
+      const { key } = parseOrThrow(connectorKeySchema, req.params);
+      const input = parseOrThrow(connectorSettingsSchema, req.body);
+      await saveConnectorSettings(authOf(req), key, input, deps);
+      res.status(204).end();
     },
     async readiness(req: Request, res: Response) {
       res.json(await dataReadiness(authOf(req).clientId));

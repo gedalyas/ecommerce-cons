@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **K0–K2 done, K3 (Bling) next** — last updated 2026-09-13
+Status: **K0–K3 done, K4 (Google) next** — last updated 2026-09-13
 
 ---
 
@@ -71,8 +71,22 @@ Status: **K0–K2 done, K3 (Bling) next** — last updated 2026-09-13
 
 ## K3 — Bling
 
-- [ ] Provider: OAuth with Basic token endpoint, refresh job, orders + detail, products,
-      contacts cache; status mapping screen (situações → Pago / Pendente / Cancelado)
+- [x] Provider (`blingProvider.ts`, pure `blingOrders.ts` tested): OAuth with the Basic
+      token endpoint, `refresh` when the access token is within 10 minutes of expiry
+      (refresh token rotated and re-sealed), order list by `dataAlteracaoInicial/Final` in
+      pages of 100 + detail per order, contacts fetched once and cached in `raw_record`
+      (`readRaw`), channel names from `/canais-venda`, min interval between calls
+      (`BLING_MIN_INTERVAL_MS`); registered when `BLING_CLIENT_ID` + `BLING_CLIENT_SECRET`
+      are set (`BLING_AUTH_URL` / `BLING_API_URL` point dev at a stub)
+- [x] Status mapping: `Connection.settings.statusMap`, `GET/PUT /connectors/:key/settings`
+      (statuses read live from `/situacoes/modulos/{vendas}`, defaults guessed from the
+      names — `guessStatusTarget`), "Situações" dialog on Conexões for ERP connectors;
+      saving enqueues a sync with `reprocess: true` that re-maps every stored raw order
+      before pulling (an unchanged order never comes back from the API)
+- [x] Flow (`e2e_bling.mjs` + `bling_stub.mjs` on :4011): Conectar (no domain) → stub
+      authorize → callback → backfill of 5 orders with Bling / Mercado Livre channels and
+      mapped statuses → Situações dialog shows the 4 statuses with guesses → "Em aberto" →
+      Pago → saved → the pending order becomes PAID from the raw layer
 
 ## K4 — Google (Ads + GA4)
 

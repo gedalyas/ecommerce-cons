@@ -903,6 +903,8 @@ model Connection {
   stage         ConnectionStage       @default(AUTHORIZED)
   /// Provider-specific incremental cursor (e.g. { orders: "2026-09-01T00:00:00Z" }).
   syncCursor    Json?                 @map("sync_cursor")
+  /// Per-connection settings the user edits (e.g. the ERP status mapping).
+  settings      Json?
   lastSyncAt    DateTime?             @map("last_sync_at")
   lastError     String?               @map("last_error")
   authorizedBy  String?               @map("authorized_by")

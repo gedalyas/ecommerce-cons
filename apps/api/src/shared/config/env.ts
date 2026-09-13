@@ -23,6 +23,11 @@ const envSchema = z.object({
   NUVEMSHOP_CLIENT_SECRET: z.string().default(""),
   NUVEMSHOP_AUTH_URL: z.string().url().default("https://www.nuvemshop.com.br"),
   NUVEMSHOP_API_URL: z.string().url().default("https://api.nuvemshop.com.br/v1"),
+  BLING_CLIENT_ID: z.string().default(""),
+  BLING_CLIENT_SECRET: z.string().default(""),
+  BLING_AUTH_URL: z.string().url().default("https://www.bling.com.br"),
+  BLING_API_URL: z.string().url().default("https://www.bling.com.br/Api/v3"),
+  BLING_MIN_INTERVAL_MS: z.coerce.number().int().min(0).max(5000).default(350),
   MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
   SMTP_URL: z
     .string()
