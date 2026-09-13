@@ -3,6 +3,7 @@ import {
   Activity,
   Banknote,
   LayoutDashboard,
+  LogOut,
   Megaphone,
   MessageSquare,
   Package,
@@ -16,7 +17,7 @@ import {
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
 import { cn } from "@/shared/utils/cn";
-import type { ShellStatus } from "./shellStatus.types";
+import type { ShellAccount, ShellStatus } from "./shellStatus.types";
 
 const mainItems = [
   { label: "Assistente", to: "/assistente", icon: MessageSquare },
@@ -36,7 +37,7 @@ const dataItems = [
   { label: "Influenciadores", to: "/influenciadores", icon: Sparkles },
 ];
 
-export function Sidebar({ status }: { status: ShellStatus }) {
+export function Sidebar({ status, account }: { status: ShellStatus; account: ShellAccount }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { maturity } = status;
   const maturityPercent = maturity.total > 0 ? (maturity.achieved / maturity.total) * 100 : 0;
@@ -127,6 +128,27 @@ export function Sidebar({ status }: { status: ShellStatus }) {
           </TooltipContent>
         </Tooltip>
       </nav>
+
+      <div className="border-t border-sidebar-border px-3 py-3 xl:px-4">
+        <div className="flex items-center justify-between gap-2">
+          <span className="hidden min-w-0 truncate text-[13px] font-semibold text-foreground xl:inline">
+            {account.name}
+          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={account.onSignOut}
+                aria-label="Sair"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Sair</TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
 
       <div className="border-t border-sidebar-border px-3 py-4 xl:px-4">
         <div className="hidden items-baseline justify-between xl:flex">

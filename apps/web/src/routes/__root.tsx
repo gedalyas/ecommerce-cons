@@ -1,14 +1,18 @@
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Link,
+  Outlet,
   createRootRouteWithContext,
+  redirect,
   retainSearchParams,
   stripSearchParams,
+  useNavigate,
   useRouter,
   HeadContent,
   Scripts,
   type SearchSchemaInput,
 } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "@/shared/styles/global.css?url";
@@ -20,10 +24,13 @@ import {
 } from "@ecommerce/contracts/shared/period";
 import { AppShell } from "@/shared/layout/AppShell";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
+import { getSessionUser, logoutFn } from "@/modules/auth/contract";
 import { getConnectionsHealth } from "@/modules/connections/contract";
 import { getMilestoneSummary } from "@/modules/consulting/contract";
 
 const SHELL_STALE_MS = 5 * 60_000;
+const LOGIN_PATH = "/entrar";
+const emptyStatus = { maturity: { achieved: 0, total: 0 }, connectionsAlert: false };
 
 function NotFoundComponent() {
   return (
@@ -126,12 +133,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
-  loader: async () => {
+  loader: async ({ location }) => {
+    const user = await getSessionUser();
+    if (!user) {
+      if (location.pathname !== LOGIN_PATH) throw redirect({ to: LOGIN_PATH });
+      return { user: null, status: emptyStatus };
+    }
     const [maturity, connections] = await Promise.all([
       getMilestoneSummary(),
       getConnectionsHealth(),
     ]);
-    return { status: { maturity, connectionsAlert: connections.hasError } };
+    return { user, status: { maturity, connectionsAlert: connections.hasError } };
   },
   staleTime: SHELL_STALE_MS,
   shellComponent: RootShell,
@@ -156,11 +168,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { status } = Route.useLoaderData();
+  const { user, status } = Route.useLoaderData();
+  const router = useRouter();
+  const navigate = useNavigate();
+  const logout = useServerFn(logoutFn);
+
+  if (!user) return <Outlet />;
+
+  const signOut = async () => {
+    await logout();
+    await router.invalidate();
+    await navigate({ to: LOGIN_PATH });
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell assistant={<AssistantPanel />} assistantFab={<AssistantFab />} status={status} />
+      <AppShell
+        assistant={<AssistantPanel />}
+        assistantFab={<AssistantFab />}
+        status={status}
+        account={{ name: user.name, onSignOut: () => void signOut() }}
+      />
     </QueryClientProvider>
   );
 }

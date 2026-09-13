@@ -5,16 +5,18 @@ import { useScrollShadow } from "@/shared/hooks/useScrollShadow";
 import { TooltipProvider } from "@/shared/ui/Tooltip";
 import { Sidebar } from "./Sidebar";
 import { BottomNav } from "./BottomNav";
-import type { ShellStatus } from "./shellStatus.types";
+import type { ShellAccount, ShellStatus } from "./shellStatus.types";
 
 export function AppShell({
   assistant,
   assistantFab,
   status,
+  account,
 }: {
   assistant: ReactNode;
   assistantFab: ReactNode;
   status: ShellStatus;
+  account: ShellAccount;
 }) {
   const { ref, top, bottom } = useScrollShadow<HTMLElement>();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -23,7 +25,7 @@ export function AppShell({
   return (
     <TooltipProvider delayDuration={150}>
       <div className="flex min-h-dvh w-full bg-background">
-        <Sidebar status={status} />
+        <Sidebar status={status} account={account} />
         <div className="relative min-w-0 flex-1">
           <ScrollShadows top={top} bottom={bottom} />
           <main

@@ -5,7 +5,7 @@ when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **B4 done (2026-09-13)** — last updated 2026-09-13
+Status: **B5 done (2026-09-13)** — last updated 2026-09-13
 
 ---
 
@@ -75,9 +75,21 @@ Status: **B4 done (2026-09-13)** — last updated 2026-09-13
 
 ## B5 — Web session
 
-- [ ] `shared/dependencies/session.ts` (sealed cookie) + `apiClient.ts` (bearer, refresh on 401)
-- [ ] `/entrar` login page (`login.tsx` ↔ `/entrar`), root `beforeLoad` guard, logout in the sidebar
-- [ ] Smoke: login → dashboard renders; expired session → `/entrar`
+- [x] `shared/dependencies/session.ts` (Start `useSession`, sealed httpOnly cookie
+      `ecommerce_session`, 30 days) + `apiClient.ts` (`apiFetch`, bearer from the session,
+      one refresh on 401 re-sealing the cookie, `redirect` to `/entrar` when no session,
+      `ApiRequestError` carrying the API's `{ message, errors }`); `shared/utils/queryString.ts`
+      serializes query objects (arrays repeated, nested bracketed; tested)
+- [x] `modules/auth` in the web: `authService.ts` (sign in → session, sign out → API logout +
+      clear, session user), `authController.ts` (`loginFn`, `logoutFn`, `getSessionUser`),
+      `Login.tsx`; route `login.tsx` ↔ `/entrar` (redirects home when signed in); the root
+      loader redirects to `/entrar` without a session and renders the login page without
+      the shell; the sidebar shows the user and a "Sair" button
+- [x] Lint: web `shared/` may import `contracts/auth`; `*Controller.ts` may import
+      `shared/dependencies/*` (the BFF calls the API from the transport layer, B7)
+- [x] End-to-end in a headless browser: unauthenticated → `/entrar`; wrong password shows
+      "E-mail ou senha incorretos"; login lands on `/` with the sidebar; httpOnly cookie;
+      `/entrar` while signed in → `/`; logout → `/entrar` and `/` redirects again
 
 ## B6 — API modules (services copied, endpoints live)
 

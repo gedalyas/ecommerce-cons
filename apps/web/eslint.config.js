@@ -30,9 +30,9 @@ const extinct = {
 };
 
 const sharedKnowsNoDomain = {
-  regex: "(^|/)modules/|^@ecommerce/contracts/(?!shared/)",
+  regex: "(^|/)modules/|^@ecommerce/contracts/(?!shared/|auth$)",
   message:
-    "shared/ does not know any domain: only @ecommerce/contracts/shared/* is allowed here. Invert the dependency or move the file to the module.",
+    "shared/ does not know any domain: only @ecommerce/contracts/shared/* (and the auth session shape) is allowed here. Invert the dependency or move the file to the module.",
 };
 
 const moduleExposesOnlyContract = {
@@ -177,7 +177,10 @@ export default tseslint.config(
       ]),
     },
     {
-      files: [`src/modules/*/${"*/".repeat(depth)}*Service.ts`],
+      files: [
+        `src/modules/*/${"*/".repeat(depth)}*Service.ts`,
+        `src/modules/*/${"*/".repeat(depth)}*Controller.ts`,
+      ],
       rules: restrictedImports([
         extinct,
         moduleExposesOnlyContract,

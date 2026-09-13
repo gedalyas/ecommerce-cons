@@ -1,0 +1,80 @@
+import { redirect } from "@tanstack/react-router";
+import type { AuthTokens } from "@ecommerce/contracts/auth";
+import type { ApiError } from "@ecommerce/contracts/shared/apiError";
+import { toQueryString, type QueryObject } from "@/shared/utils/queryString";
+import { appSession } from "./session";
+
+export class ApiRequestError extends Error {
+  readonly status: number;
+  readonly body: ApiError;
+
+  constructor(status: number, body: ApiError) {
+    super(body.message);
+    this.status = status;
+    this.body = body;
+  }
+}
+
+export type ApiRequest = {
+  method?: "GET" | "POST" | "PUT" | "DELETE";
+  query?: QueryObject;
+  body?: unknown;
+  auth?: boolean;
+};
+
+const LOGIN_PATH = "/entrar";
+
+function baseUrl() {
+  const url = process.env["API_URL"];
+  if (!url) throw new Error("API_URL is not set");
+  return `${url.replace(/\/$/, "")}/api/v1`;
+}
+
+async function send(path: string, init: ApiRequest, token: string | null) {
+  const headers: Record<string, string> = { accept: "application/json" };
+  if (init.body !== undefined) headers["content-type"] = "application/json";
+  if (token) headers["authorization"] = `Bearer ${token}`;
+  const response = await fetch(`${baseUrl()}${path}${toQueryString(init.query)}`, {
+    method: init.method ?? "GET",
+    headers,
+    body: init.body === undefined ? null : JSON.stringify(init.body),
+  });
+  const text = await response.text();
+  const body: unknown = text ? JSON.parse(text) : undefined;
+  return { status: response.status, ok: response.ok, body };
+}
+
+async function refreshedToken(): Promise<string | null> {
+  const session = await appSession();
+  const refreshToken = session.data.refreshToken;
+  if (!refreshToken) return null;
+  const result = await send("/auth/refresh", { method: "POST", body: { refreshToken } }, null);
+  if (!result.ok) {
+    await session.clear();
+    return null;
+  }
+  const { tokens } = result.body as { tokens: AuthTokens };
+  await session.update({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken });
+  return tokens.accessToken;
+}
+
+export async function apiFetch<T>(path: string, init: ApiRequest = {}): Promise<T> {
+  const auth = init.auth ?? true;
+  let token: string | null = null;
+  if (auth) {
+    const session = await appSession();
+    token = session.data.accessToken ?? null;
+    if (!token) throw redirect({ to: LOGIN_PATH });
+  }
+  let result = await send(path, init, token);
+  if (auth && result.status === 401) {
+    const fresh = await refreshedToken();
+    if (!fresh) throw redirect({ to: LOGIN_PATH });
+    result = await send(path, init, fresh);
+  }
+  if (!result.ok) {
+    const body = (result.body ?? { message: "Falha na requisição" }) as ApiError;
+    throw new ApiRequestError(result.status, body);
+  }
+  return result.body as T;
+}
