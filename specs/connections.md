@@ -13,8 +13,11 @@ active; the detail agrees in number and disappears when nothing is wrong).
 
 ## Source list
 
-Columns (stacked cards below `md`): Fonte (name + category), Status, última
-sincronização, and an action. The action depends on the connector: **"Conectar"** when the
+The catalog is rendered as numbered groups in the order a new store should follow
+(`connectorKindGuide`: 1. Plataforma → 2. Marketplace → 3. ERP → 4. Mídia paga → 5. Redes
+sociais → 6. Analytics → 7. Importação manual), each with a one-line hint; empty groups are
+hidden. Columns (stacked cards below `md`, two bands below `2xl`): Fonte (name + description),
+Status, última sincronização, and an action. The action depends on the connector: **"Conectar"** when the
 API has a provider registered for it (`availability` flipped to `oauth` — the app
 credentials are in the env), **"Solicitar conexão"** otherwise, "Importar CSV" for the manual
 source. A connected row shows "Sincronizar", "Desconectar" and, for connectors with

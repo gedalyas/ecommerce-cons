@@ -87,7 +87,7 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
       save enqueues the backfill for a never-synced connection
 - [x] C3 Callback reasons (`motivo`) with labels in contracts, `error` param from the
       platform handled as "cancelado", "Tentar de novo" in the banner
-- [ ] C4 Catalog grouped by kind in the guided order with a one-line hint per group
+- [x] C4 Catalog grouped by kind in the guided order with a one-line hint per group
 - [ ] C5 "Reconectar" on ERROR rows (keeps the history: a re-authorised connection with a
       previous sync enqueues a sync, not a backfill) + e-mail to the store's users on the
       first ERROR (`connectionMail.ts`, tested; mailer injected into the connector deps and

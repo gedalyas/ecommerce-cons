@@ -35,6 +35,28 @@ export const connectorKindLabel: Record<ConnectorKind, string> = {
   manual: "Importação manual",
 };
 
+export const connectorKindGuide: Record<ConnectorKind, { order: number; hint: string }> = {
+  storefront: { order: 1, hint: "Comece pela sua loja: é de onde vêm os pedidos e os clientes." },
+  marketplace: { order: 2, hint: "Vendas fora do site entram por aqui." },
+  erp: { order: 3, hint: "Se você emite pedidos pelo ERP, conecte-o para completar as vendas." },
+  paid_media: {
+    order: 4,
+    hint: "Cada conta de anúncios conectada aparece nas campanhas e no ROAS.",
+  },
+  social: { order: 5, hint: "Seguidores, alcance e engajamento das suas redes." },
+  analytics: { order: 6, hint: "Sessões e funil do site para calcular conversão." },
+  manual: { order: 7, hint: "Quando uma fonte não tem conexão, importe a planilha exportada." },
+};
+
+export function connectorGroups<T extends { kind: ConnectorKind }>(
+  connectors: readonly T[],
+): { kind: ConnectorKind; items: T[] }[] {
+  return connectorKinds
+    .map((kind) => ({ kind, items: connectors.filter((c) => c.kind === kind) }))
+    .filter((group) => group.items.length > 0)
+    .sort((a, b) => connectorKindGuide[a.kind].order - connectorKindGuide[b.kind].order);
+}
+
 export const connectorAvailabilities = ["manual", "request", "oauth"] as const;
 export type ConnectorAvailability = (typeof connectorAvailabilities)[number];
 

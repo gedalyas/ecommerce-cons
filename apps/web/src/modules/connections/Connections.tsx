@@ -9,6 +9,9 @@ import {
   connectionRequestStatusLabel,
   connectorErrorReasonLabel,
   connectorFeedLabel,
+  connectorGroups,
+  connectorKindGuide,
+  connectorKindLabel,
   type ConnectorErrorReason,
   type StoreConnector,
 } from "@ecommerce/contracts/connectors";
@@ -206,6 +209,59 @@ function RequestDialog({
   );
 }
 
+function ConnectorRow({
+  connector: c,
+  onRequest,
+  onConnect,
+  onSettings,
+}: {
+  connector: StoreConnector;
+  onRequest: (c: StoreConnector) => void;
+  onConnect: (c: StoreConnector) => void;
+  onSettings: (c: StoreConnector) => void;
+}) {
+  const meta = statusMeta[c.status];
+  const Icon = meta.icon;
+  return (
+    <li className="flex flex-col gap-3 px-5 py-4 md:flex-row md:flex-wrap md:items-center md:gap-4">
+      <div className="min-w-0 md:w-full 2xl:w-auto 2xl:flex-1">
+        <div className="text-[15px] font-semibold text-foreground">{c.label}</div>
+        <div className={cn(textClass.meta, "text-muted-foreground")}>
+          {c.description} · {c.feeds.map((f) => connectorFeedLabel[f]).join(", ")}
+        </div>
+      </div>
+      <div
+        className={cn(
+          textClass.meta,
+          "flex min-w-0 items-center gap-2 font-semibold md:w-48",
+          meta.className,
+        )}
+      >
+        <Icon className="h-4 w-4 shrink-0" />
+        {meta.label}
+      </div>
+      <div
+        className={cn(textClass.numeric, textClass.meta, "w-full text-muted-foreground md:w-40")}
+      >
+        {c.syncLabel}
+      </div>
+      <div className="md:w-40">
+        <ConnectorAction
+          connector={c}
+          onRequest={onRequest}
+          onConnect={onConnect}
+          onSettings={onSettings}
+        />
+      </div>
+      {c.connection && (
+        <div className="w-full border-t border-border pt-3">
+          <ConnectionStepper connection={c.connection} />
+        </div>
+      )}
+    </li>
+  );
+}
+
 export function Connections({
   data,
   imports,
@@ -269,67 +325,26 @@ export function Connections({
           {detail && <span className="text-muted-foreground"> · {detail}</span>}
         </AlertBanner>
 
-        <SectionBlock>
-          <div className="hidden border-b border-border px-5 py-3 md:flex md:items-center md:gap-4">
-            <span className={cn(textClass.label, "min-w-0 flex-1 text-muted-foreground")}>
-              Fonte
-            </span>
-            <span className={cn(textClass.label, "w-48 text-muted-foreground")}>Status</span>
-            <span className={cn(textClass.label, "w-40 text-muted-foreground")}>Sincronização</span>
-            <span className={cn(textClass.label, "w-40 text-muted-foreground")}>Ação</span>
-          </div>
-          <ul className="divide-y divide-border">
-            {data.connectors.map((c) => {
-              const meta = statusMeta[c.status];
-              const Icon = meta.icon;
-              return (
-                <li
+        {connectorGroups(data.connectors).map((group) => (
+          <SectionBlock
+            key={group.kind}
+            title={`${connectorKindGuide[group.kind].order}. ${connectorKindLabel[group.kind]}`}
+            description={connectorKindGuide[group.kind].hint}
+            bodyClassName="p-0"
+          >
+            <ul className="divide-y divide-border">
+              {group.items.map((c) => (
+                <ConnectorRow
                   key={c.key}
-                  className="flex flex-col gap-3 px-5 py-4 md:flex-row md:flex-wrap md:items-center md:gap-4"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[15px] font-semibold text-foreground">{c.label}</div>
-                    <div className={cn(textClass.meta, "text-muted-foreground")}>
-                      {c.description} · {c.feeds.map((f) => connectorFeedLabel[f]).join(", ")}
-                    </div>
-                  </div>
-                  <div
-                    className={cn(
-                      textClass.meta,
-                      "flex min-w-0 items-center gap-2 font-semibold md:w-48",
-                      meta.className,
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {meta.label}
-                  </div>
-                  <div
-                    className={cn(
-                      textClass.numeric,
-                      textClass.meta,
-                      "w-full text-muted-foreground md:w-40",
-                    )}
-                  >
-                    {c.syncLabel}
-                  </div>
-                  <div className="md:w-40">
-                    <ConnectorAction
-                      connector={c}
-                      onRequest={setRequesting}
-                      onConnect={setConnecting}
-                      onSettings={setMapping}
-                    />
-                  </div>
-                  {c.connection && (
-                    <div className="w-full border-t border-border pt-3">
-                      <ConnectionStepper connection={c.connection} />
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </SectionBlock>
+                  connector={c}
+                  onRequest={setRequesting}
+                  onConnect={setConnecting}
+                  onSettings={setMapping}
+                />
+              ))}
+            </ul>
+          </SectionBlock>
+        ))}
 
         <div id="importacao">
           <ImportPanel data={imports} />

@@ -6,6 +6,8 @@ export {
   connectorFeeds,
   connectorKeys,
   connectorKindLabel,
+  connectorKindGuide,
+  connectorGroups,
   connectorKinds,
   connectorOf,
   storefrontConnectorKeys,
