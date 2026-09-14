@@ -23,6 +23,7 @@ import {
 } from "./attributionService";
 import { discountAggregate, discountCodes, discountsByBucket } from "./discountsService";
 import { regionPerformance } from "./regionsService";
+import { marketingSocial } from "./socialService";
 import { totalOf } from "./regionPerformance";
 import type {
   AdPerformanceRow,
@@ -391,6 +392,8 @@ export async function marketingScreen(
       return { aba: "descontos", discounts: await marketingDiscounts(clientId, input) };
     case "regioes":
       return { aba: "regioes", regions: await marketingRegions(clientId, input) };
+    case "social":
+      return { aba: "social", social: await marketingSocial(clientId, input) };
   }
 }
 

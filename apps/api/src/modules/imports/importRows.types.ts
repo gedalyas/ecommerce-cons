@@ -3,6 +3,7 @@ import type {
   FinancialStatus,
   ProcessingMethod,
   SalesPlatform,
+  SocialPlatform,
 } from "@ecommerce/database/enums";
 
 export type OrderLine = {
@@ -81,3 +82,30 @@ export type TrafficRow = {
   addToCart: number;
   beginCheckout: number;
 };
+
+export type SocialDailyRow = {
+  platform: SocialPlatform;
+  accountId: string;
+  date: string;
+  followers: number;
+  reach: number;
+  engagement: number;
+  posts: number;
+};
+
+export type SocialPostInput = {
+  platform: SocialPlatform;
+  accountId: string;
+  externalId: string;
+  mediaType: string;
+  publishedAt: string;
+  permalink: string;
+  caption: string;
+  likes: number;
+  comments: number;
+  saves: number;
+  shares: number;
+  reach: number;
+};
+
+export type SocialInput = { daily: SocialDailyRow[]; posts: SocialPostInput[] };

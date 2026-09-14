@@ -2,7 +2,7 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0–P2 done, P3 next** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
+Status: **P0–P3 done, P4 waits for Davi's apps** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
@@ -56,16 +56,27 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
 
 ## P3 — Instagram + Facebook organic
 
-- [ ] Schema: `social_daily`, `social_post` (+ migration, enum parity if any), write service
-      `writeSyncedSocial` in imports (undo not needed: connector-only)
-- [ ] Catalog: `instagram` (`social` kind, `social` feed), docs sheet
-      `docs/apis/instagram.md`; the Meta env is shared with Meta Ads
-- [ ] `instagramProvider` (Facebook Login with the page/instagram scopes, long-lived token,
-      pages as the settings picker, account insights + media insights + page insights in
-      daily chunks) + pure `instagramRows` with test
-- [ ] Web: "Social" tab on /marketing (followers, reach, engagement, top posts of the
-      period), contracts `social` types + schema, API `GET /marketing?aba=social`
-- [ ] Stub `instagram_stub.mjs` (:4018) + `e2e_instagram.mjs`
+- [x] Schema: enum `SocialPlatform` (INSTAGRAM, FACEBOOK; parity test in marketing),
+      `social_daily` (client × platform × account × day) and `social_post` (client ×
+      platform × external id); migration `20260913230000_social`; `writeSyncedSocial` in
+      `imports/socialWriteService.ts` (upserts, no undo: connector-only),
+      `SyncContext.writeSocial`, raw kind `social`
+- [x] Catalog: `instagram` ("Instagram e Facebook", new `social` kind and feed), docs sheet
+      `docs/apis/instagram.md`; the Meta env is shared with Meta Ads (`metaOf` registers both)
+- [x] `metaGraph.ts` extracted from the Meta Ads provider (refactor commit) and
+      `instagramProvider`: Facebook Login with the page + instagram scopes, long-lived token,
+      Pages from `/me/accounts` as the account picker (auto-chosen when only one), page token
+      for the calls, 30-day chunks with Instagram insights + media (insights embedded) and
+      Facebook page insights + posts; pure `instagramRows` (followers walked back from today
+      by the daily gains, engagement from the day's posts, captions trimmed) + test
+- [x] Contracts `socialPlatforms` + label, `MarketingSocial` / `SocialAccountRow` /
+      `SocialPostRow`, tab `social`; API `socialService` + pure `socialMetrics` (+ test) and
+      `bucketOf` exported from `periodWindow`; web `MarketingSocial.tsx` (tiles, reach series,
+      per-network table, top 10 posts) wired into the Marketing TabBar
+- [x] Stub: organic routes added to `meta_stub.mjs` (:4013, same app as Meta Ads) +
+      `e2e_instagram.mjs`: Conectar → callback → READY "Loja Exemplo · @lojaexemplo" → KPIs,
+      series, accounts and top posts on `GET /marketing?aba=social` → the screen renders
+      every block
 
 ## P4 — First real connections (needs Davi's apps)
 

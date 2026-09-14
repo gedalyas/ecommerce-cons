@@ -17,6 +17,7 @@ import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingDescontos } from "./MarketingDescontos";
 import { MarketingRegioes } from "./MarketingRegioes";
 import { MarketingResumo } from "./MarketingResumo";
+import { MarketingSocial } from "./MarketingSocial";
 import { useMarketingSearch } from "./useMarketingSearch";
 
 const tabs = [
@@ -25,6 +26,7 @@ const tabs = [
   { key: "campanhas", label: "Campanhas" },
   { key: "descontos", label: "Descontos" },
   { key: "regioes", label: "Regiões" },
+  { key: "social", label: "Social" },
 ] as const;
 
 function StaleSourceBanner({ source }: { source: StaleSource }) {
@@ -112,6 +114,9 @@ export function Marketing({ data }: { data: MarketingScreen }) {
         )}
         {data.aba === "regioes" && (
           <MarketingRegioes data={data.regions} search={search} period={period} onPatch={patch} />
+        )}
+        {data.aba === "social" && (
+          <MarketingSocial data={data.social} period={period} comparisonLabel={comparisonLabel} />
         )}
       </div>
     </div>

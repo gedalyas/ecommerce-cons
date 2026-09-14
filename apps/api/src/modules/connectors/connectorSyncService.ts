@@ -5,6 +5,7 @@ import { refreshCustomers } from "@/modules/customers/contract";
 import {
   writeSyncedAdSpend,
   writeSyncedOrders,
+  writeSyncedSocial,
   writeSyncedTraffic,
 } from "@/modules/imports/contract";
 import type { Jobs } from "@/shared/jobs/jobs.types";
@@ -100,6 +101,7 @@ function contextOf(
     writeOrders: (orders) => writeSyncedOrders(row.clientId, orders),
     writeAdSpend: (rows) => writeSyncedAdSpend(row.clientId, rows),
     writeTraffic: (rows) => writeSyncedTraffic(row.clientId, rows),
+    writeSocial: (input) => writeSyncedSocial(row.clientId, input),
   };
 }
 

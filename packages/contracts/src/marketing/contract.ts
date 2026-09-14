@@ -1,4 +1,10 @@
-export { adPlatformLabel, adPlatforms, discountMetricKeys } from "./marketing.types";
+export {
+  adPlatformLabel,
+  adPlatforms,
+  discountMetricKeys,
+  socialPlatformLabel,
+  socialPlatforms,
+} from "./marketing.types";
 export type {
   AdPlatform,
   TrafficAggregate,
@@ -21,6 +27,10 @@ export type {
   MarketingDiscounts,
   RegionPerformanceRow,
   MarketingRegions,
+  SocialPlatform,
+  SocialAccountRow,
+  SocialPostRow,
+  MarketingSocial,
   StaleSource,
   MarketingVisao,
   MarketingScreen,

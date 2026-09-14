@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bucketWindows, bucketsFor, fillSeries, toWindow } from "./periodWindow";
+import { bucketOf, bucketWindows, bucketsFor, fillSeries, toWindow } from "./periodWindow";
 
 const window = toWindow({ inicio: "2026-08-28", fim: "2026-09-10" });
 
@@ -41,5 +41,14 @@ describe("fillSeries", () => {
       { bucket: "2026-09-02", value: 5 },
       { bucket: "2026-09-03", value: 0 },
     ]);
+  });
+});
+
+describe("bucketOf", () => {
+  it("maps a day onto its bucket for each granularity", () => {
+    expect(bucketOf("2026-09-10", "dia")).toBe("2026-09-10");
+    expect(bucketOf("2026-09-10", "semana")).toBe("2026-09-07");
+    expect(bucketOf("2026-09-10", "mes")).toBe("2026-09-01");
+    expect(bucketOf("2026-09-10", "ano")).toBe("2026-01-01");
   });
 });

@@ -77,6 +77,9 @@ function step(date: Date, por: Granularity): Date {
 export const isoDay = (date: Date) => date.toISOString().slice(0, 10);
 
 /** Every bucket start (ISO date) covering the window, for zero-filling series. */
+export const bucketOf = (day: string, por: Granularity): string =>
+  isoDay(truncate(new Date(`${day}T00:00:00.000Z`), por));
+
 export function bucketsFor(window: Window, por: Granularity): string[] {
   const buckets: string[] = [];
   for (let b = truncate(window.start, por); b < window.end; b = step(b, por))

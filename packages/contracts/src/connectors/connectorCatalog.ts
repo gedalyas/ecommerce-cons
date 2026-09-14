@@ -6,6 +6,7 @@ export const connectorKeys = [
   "amazon",
   "vtex",
   "meta_ads",
+  "instagram",
   "google_ads",
   "tiktok_ads",
   "ga4",
@@ -18,6 +19,7 @@ export const connectorKinds = [
   "storefront",
   "marketplace",
   "paid_media",
+  "social",
   "analytics",
   "manual",
 ] as const;
@@ -28,6 +30,7 @@ export const connectorKindLabel: Record<ConnectorKind, string> = {
   storefront: "Plataforma",
   marketplace: "Marketplace",
   paid_media: "Mídia paga",
+  social: "Redes sociais",
   analytics: "Analytics",
   manual: "Importação manual",
 };
@@ -35,13 +38,14 @@ export const connectorKindLabel: Record<ConnectorKind, string> = {
 export const connectorAvailabilities = ["manual", "request", "oauth"] as const;
 export type ConnectorAvailability = (typeof connectorAvailabilities)[number];
 
-export const connectorFeeds = ["orders", "ad_spend", "traffic"] as const;
+export const connectorFeeds = ["orders", "ad_spend", "traffic", "social"] as const;
 export type ConnectorFeed = (typeof connectorFeeds)[number];
 
 export const connectorFeedLabel: Record<ConnectorFeed, string> = {
   orders: "Pedidos",
   ad_spend: "Mídia paga",
   traffic: "Tráfego",
+  social: "Redes sociais",
 };
 
 export const authPatterns = ["oauth", "domain_oauth", "credentials"] as const;
@@ -129,6 +133,15 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Investimento, campanhas e resultados do Facebook e Instagram.",
+  },
+  {
+    key: "instagram",
+    label: "Instagram e Facebook",
+    kind: "social",
+    feeds: ["social"],
+    availability: "request",
+    authPattern: "oauth",
+    description: "Seguidores, alcance e engajamento das publicações orgânicas.",
   },
   {
     key: "google_ads",

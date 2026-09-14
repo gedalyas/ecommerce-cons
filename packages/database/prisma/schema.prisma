@@ -254,6 +254,13 @@ enum AdPlatform {
   @@map("ad_platform")
 }
 
+enum SocialPlatform {
+  INSTAGRAM
+  FACEBOOK
+
+  @@map("social_platform")
+}
+
 /// Which side of the business a cost belongs to.
 enum BusinessUnit {
   ECOMMERCE
@@ -448,6 +455,47 @@ model TrafficDaily {
   @@unique([clientId, date, source, medium])
   @@index([clientId, date])
   @@map("traffic_daily")
+}
+
+model SocialDaily {
+  id         String         @id @default(cuid())
+  clientId   String         @map("client_id")
+  platform   SocialPlatform
+  accountId  String         @map("account_id")
+  date       DateTime       @db.Date
+  followers  Int
+  reach      Int
+  engagement Int
+  posts      Int
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, platform, accountId, date])
+  @@index([clientId, date])
+  @@map("social_daily")
+}
+
+model SocialPost {
+  id          String         @id @default(cuid())
+  clientId    String         @map("client_id")
+  platform    SocialPlatform
+  accountId   String         @map("account_id")
+  externalId  String         @map("external_id")
+  mediaType   String         @map("media_type")
+  publishedAt DateTime       @map("published_at")
+  permalink   String
+  caption     String
+  likes       Int
+  comments    Int
+  saves       Int
+  shares      Int
+  reach       Int
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, platform, externalId])
+  @@index([clientId, publishedAt])
+  @@map("social_post")
 }
 
 /// Paid media spend per day at the ad level (campaign > ad set > ad).
@@ -648,6 +696,8 @@ model Client {
   customers          Customer[]
   orders             Order[]
   trafficDaily       TrafficDaily[]
+  socialDaily        SocialDaily[]
+  socialPosts        SocialPost[]
   adSpendDaily       AdSpendDaily[]
   adSpendRegionDaily AdSpendRegionDaily[]
   costExpenses       CostExpense[]

@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-export const marketingTabs = ["visao", "resumo", "campanhas", "descontos", "regioes"] as const;
+export const marketingTabs = [
+  "visao",
+  "resumo",
+  "campanhas",
+  "descontos",
+  "regioes",
+  "social",
+] as const;
 export type MarketingTab = (typeof marketingTabs)[number];
 
 export const investmentMetrics = ["totalSold", "adSpend", "roas", "roi", "cpa", "cac"] as const;

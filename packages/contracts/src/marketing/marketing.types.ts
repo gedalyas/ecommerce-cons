@@ -1,5 +1,13 @@
 import type { BusinessUnit } from "../money/contract";
 
+export const socialPlatforms = ["INSTAGRAM", "FACEBOOK"] as const;
+export type SocialPlatform = (typeof socialPlatforms)[number];
+
+export const socialPlatformLabel: Record<SocialPlatform, string> = {
+  INSTAGRAM: "Instagram",
+  FACEBOOK: "Facebook",
+};
+
 export const adPlatforms = ["META", "GOOGLE", "TIKTOK"] as const;
 export type AdPlatform = (typeof adPlatforms)[number];
 
@@ -9,7 +17,7 @@ export const adPlatformLabel: Record<AdPlatform, string> = {
   TIKTOK: "TikTok Ads",
 };
 import type { ConsultingSection } from "../consulting/contract";
-import type { BreakdownSlice, MetricValue, SeriesPoint } from "../shared/metric.types";
+import type { BreakdownSlice, MetricValue, Series, SeriesPoint } from "../shared/metric.types";
 import type { BenchmarkVerdict, FunnelStep, RoasQuality } from "./marketingRules";
 import type { MarketingTab } from "./marketingSchema";
 
@@ -205,6 +213,42 @@ export type MarketingRegions = {
   total: RegionPerformanceRow;
 };
 
+export type SocialAccountRow = {
+  platform: SocialPlatform;
+  accountId: string;
+  followers: number;
+  reach: number;
+  engagement: number;
+  posts: number;
+  engagementRate: number | null;
+};
+
+export type SocialPostRow = {
+  platform: SocialPlatform;
+  externalId: string;
+  mediaType: string;
+  publishedAt: string;
+  permalink: string;
+  caption: string;
+  likes: number;
+  comments: number;
+  saves: number;
+  shares: number;
+  reach: number;
+  engagement: number;
+};
+
+export type MarketingSocial = {
+  followers: MetricValue;
+  reach: MetricValue;
+  engagement: MetricValue;
+  posts: MetricValue;
+  engagementRate: MetricValue;
+  reachSeries: Series;
+  accounts: SocialAccountRow[];
+  topPosts: SocialPostRow[];
+};
+
 export type StaleSource = { name: string; syncLabel: string };
 
 export type MarketingVisao = {
@@ -219,4 +263,5 @@ export type MarketingScreen =
   | { aba: Extract<MarketingTab, "resumo">; summary: MarketingSummary }
   | { aba: Extract<MarketingTab, "campanhas">; campaigns: MarketingCampaigns }
   | { aba: Extract<MarketingTab, "descontos">; discounts: MarketingDiscounts }
-  | { aba: Extract<MarketingTab, "regioes">; regions: MarketingRegions };
+  | { aba: Extract<MarketingTab, "regioes">; regions: MarketingRegions }
+  | { aba: Extract<MarketingTab, "social">; social: MarketingSocial };

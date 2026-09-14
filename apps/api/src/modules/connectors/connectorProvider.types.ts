@@ -4,7 +4,7 @@ import type {
   ConnectorKey,
   ConnectorStatusOption,
 } from "@ecommerce/contracts/connectors";
-import type { AdSpendRow, OrderInput, TrafficRow } from "@/modules/imports/contract";
+import type { AdSpendRow, OrderInput, SocialInput, TrafficRow } from "@/modules/imports/contract";
 
 export type Credentials = Record<string, unknown>;
 
@@ -20,7 +20,7 @@ export type ProviderSettings = {
   accounts?: ConnectorAccountOption[];
 };
 
-export type RawKind = "order" | "product" | "customer" | "ad_insight" | "traffic";
+export type RawKind = "order" | "product" | "customer" | "ad_insight" | "traffic" | "social";
 
 export type RawRow = { externalId: string; payload: unknown };
 
@@ -45,6 +45,7 @@ export type SyncContext = {
   writeOrders(orders: OrderInput[]): Promise<number>;
   writeAdSpend(rows: AdSpendRow[]): Promise<number>;
   writeTraffic(rows: TrafficRow[]): Promise<number>;
+  writeSocial(input: SocialInput): Promise<number>;
 };
 
 export type SyncResult = { cursor: SyncCursor; written: number };

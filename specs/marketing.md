@@ -1,11 +1,11 @@
 # Marketing (`/marketing`)
 
 Module: `src/modules/marketing`. The route validates
-`?aba=visao|resumo|campanhas|descontos|regioes` plus the tab controls
+`?aba=visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
 (`marketingSchema.ts`: `incluirTaxa`, `metricaInvest`, `metricaSessoes`,
 `base`, `utm`, `nivel`, `plataforma`, `metricaAds`); defaults are stripped
 from the URL. `MarketingScreen` is a union on `aba`. The `TabBar` reads
-**Visão · Resumo · Campanhas · Descontos · Regiões**; the period and channel controls
+**Visão · Resumo · Campanhas · Descontos · Regiões · Social**; the period and channel controls
 sit above it on every tab.
 
 ## Composition root
@@ -135,6 +135,25 @@ are the paid store orders by delivery UF, with buyers, new buyers and repeat ord
 3. **Desempenho regional** — Estado · Investimento Meta · Google · TikTok · Gasto total ·
    Total vendido · ROAS · CPM · CPC · CPA · CAC · Clientes · Ticket médio · Taxa de recompra,
    with a total row. CSV.
+
+## Social (`?aba=social`)
+
+Organic Instagram and Facebook, read from `social_daily` (one row per platform × account ×
+day: followers, reach, engagement, posts) and `social_post` (one row per publication), both
+written only by the Instagram/Facebook connector (`docs/apis/instagram.md`). `socialMetrics.ts`
+(tested) derives the tab; `MarketingSocial.tsx` renders it.
+
+1. **Redes sociais** — tiles Seguidores (latest value per account, summed) · Alcance ·
+   Engajamento (likes + comments + saves + shares of the period's posts; Facebook's
+   `page_post_engagements`) · Taxa de engajamento (engagement ÷ reach) · Publicações, each
+   with the variation against the comparison window.
+2. **Alcance no período** — `TimeSeriesChart` of reach per bucket, both windows.
+3. **Por rede** — Rede · Seguidores · Alcance · Engajamento · Taxa · Publicações. CSV.
+4. **Publicações que mais engajaram** — the 10 posts of the period by engagement then reach:
+   caption (link to the permalink) · Rede · media type · Data · Alcance · Curtidas ·
+   Comentários · Engajamento. CSV.
+
+Empty store: zeros, "—" and the table empty messages pointing to Conexões.
 
 ## Fidelity
 

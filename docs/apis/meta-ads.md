@@ -9,7 +9,9 @@ tarde, insights orgânicos do Instagram/Facebook.
   **Facebook Login for Business**.
 - **Verificação do negócio** (Business Verification) da consultoria + **App Review** das
   permissões `ads_read` e `read_insights` (e `business_management` para listar contas de
-  outros negócios). Sem revisão o app só acessa contas do próprio Business Manager (modo
+  outros negócios). O conector orgânico (`instagram.md`) usa o **mesmo app** e acrescenta
+  `pages_show_list`, `pages_read_engagement`, `instagram_basic` e
+  `instagram_manage_insights` — pedir tudo na mesma revisão. Sem revisão o app só acessa contas do próprio Business Manager (modo
   desenvolvimento) — serve para testar com a loja piloto.
 - Regra 2026: o "Marketing API Access Tier" pede ≥ 500 chamadas em 15 dias com < 15% de
   erro para subir de tier; a revisão não exige mais gravação de tela.

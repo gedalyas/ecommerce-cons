@@ -5,6 +5,7 @@ import { blingProvider } from "./blingProvider";
 import type { ConnectorProvider, ProviderRegistry } from "./connectorProvider.types";
 import { ga4Provider } from "./ga4Provider";
 import { googleAdsProvider } from "./googleAdsProvider";
+import { instagramProvider } from "./instagramProvider";
 import { mercadoLivreProvider } from "./mercadoLivreProvider";
 import { metaAdsProvider } from "./metaAdsProvider";
 import { nuvemshopProvider } from "./nuvemshopProvider";
@@ -67,16 +68,15 @@ function googleOf(env: Env): ConnectorProvider[] {
 
 function metaOf(env: Env): ConnectorProvider[] {
   if (!env.META_APP_ID || !env.META_APP_SECRET) return [];
-  return [
-    metaAdsProvider({
-      appId: env.META_APP_ID,
-      appSecret: env.META_APP_SECRET,
-      authUrl: env.META_AUTH_URL,
-      graphUrl: env.META_GRAPH_URL,
-      userAgent: env.CONNECTOR_USER_AGENT,
-      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
-    }),
-  ];
+  const meta = {
+    appId: env.META_APP_ID,
+    appSecret: env.META_APP_SECRET,
+    authUrl: env.META_AUTH_URL,
+    graphUrl: env.META_GRAPH_URL,
+    userAgent: env.CONNECTOR_USER_AGENT,
+    backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+  };
+  return [metaAdsProvider(meta), instagramProvider(meta)];
 }
 
 function shopifyOf(env: Env): ConnectorProvider[] {
