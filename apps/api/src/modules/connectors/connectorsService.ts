@@ -16,8 +16,10 @@ import { recordActivity } from "@/modules/audit/contract";
 import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
 import type { Jobs } from "@/shared/jobs/jobs.types";
+import type { Mailer } from "@/shared/mail/mailer.types";
 import type { Vault } from "@/shared/crypto/vault";
 import type { Authorized, ProviderRegistry } from "./connectorProvider.types";
+import { needsAccountOf, reconnectSettings } from "./connectionSettings";
 import { signOAuthState, verifyOAuthState } from "./oauthState";
 import { defaultStatusMap } from "./blingOrders";
 
@@ -25,6 +27,7 @@ export type ConnectorsDependencies = {
   providers: ProviderRegistry;
   vault: Vault;
   jobs: Jobs;
+  mailer: Mailer;
   secret: string;
   apiUrl: string;
   appUrl: string;
@@ -103,7 +106,12 @@ async function saveConnection(
 ): Promise<{ id: string; needsAccount: boolean }> {
   const provider = providerOf(deps, key);
   const now = deps.now();
-  const needsAccount = needsAccountOf((authorized.settings ?? null) as Prisma.JsonValue | null);
+  const existing = await prismaClient.connection.findUnique({
+    where: { clientId_connectorKey: { clientId: owner.clientId, connectorKey: key } },
+    select: { lastSyncAt: true, settings: true },
+  });
+  const settings = reconnectSettings(authorized.settings ?? null, existing?.settings ?? null);
+  const needsAccount = needsAccountOf(settings);
   const data = {
     authPattern: authPatternEnum[provider.authPattern] ?? "OAUTH",
     externalId: authorized.externalId,
@@ -112,7 +120,7 @@ async function saveConnection(
     stage: "AUTHORIZED" as const,
     lastError: null,
     authorizedBy: owner.userId,
-    ...(authorized.settings ? { settings: authorized.settings as Prisma.InputJsonObject } : {}),
+    ...(settings ? { settings: settings as Prisma.InputJsonObject } : {}),
   };
   const connection = await prismaClient.connection.upsert({
     where: { clientId_connectorKey: { clientId: owner.clientId, connectorKey: key } },
@@ -120,19 +128,35 @@ async function saveConnection(
     update: data,
     select: { id: true },
   });
-  const connector = connectorOf(key);
   await stampConnected(owner.clientId, key, now);
+  await recordAuthorized(owner, key, authorized.externalLabel);
+  if (needsAccount) return { id: connection.id, needsAccount };
+  if (existing?.lastSyncAt) {
+    await deps.jobs.send(
+      SYNC_QUEUE,
+      { connectionId: connection.id },
+      { singletonKey: connection.id },
+    );
+  } else {
+    await enqueueBackfill(connection.id, deps);
+  }
+  return { id: connection.id, needsAccount };
+}
+
+async function recordAuthorized(
+  owner: { clientId: string; userId: string },
+  key: ConnectorKey,
+  account: string,
+) {
   const actor = await prismaClient.user.findUnique({
     where: { id: owner.userId },
     select: { role: true },
   });
   await recordActivity({ userId: owner.userId, role: actor?.role ?? "CLIENT" }, owner.clientId, {
     action: "CONNECTION_AUTHORIZED",
-    connector: connector.label,
-    account: authorized.externalLabel,
+    connector: connectorOf(key).label,
+    account,
   });
-  if (!needsAccount) await enqueueBackfill(connection.id, deps);
-  return { id: connection.id, needsAccount };
 }
 
 const enqueueBackfill = (connectionId: string, deps: ConnectorsDependencies) =>
@@ -224,13 +248,6 @@ const summarySelect = {
   lastError: true,
   settings: true,
 } as const;
-
-const needsAccountOf = (settings: Prisma.JsonValue | null): boolean =>
-  settings !== null &&
-  typeof settings === "object" &&
-  !Array.isArray(settings) &&
-  "accountId" in settings &&
-  settings["accountId"] === null;
 
 const toSummary = (
   c: Prisma.ConnectionGetPayload<{ select: typeof summarySelect }>,

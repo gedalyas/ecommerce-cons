@@ -2,7 +2,7 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0–P3 done, C1–C5 in execution, P4 waits for Davi's apps** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
+Status: **P0–P3 and C1–C5 done (2026-09-13), P4 waits for Davi's apps** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
@@ -88,7 +88,7 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
 - [x] C3 Callback reasons (`motivo`) with labels in contracts, `error` param from the
       platform handled as "cancelado", "Tentar de novo" in the banner
 - [x] C4 Catalog grouped by kind in the guided order with a one-line hint per group
-- [ ] C5 "Reconectar" on ERROR rows (keeps the history: a re-authorised connection with a
+- [x] C5 "Reconectar" on ERROR rows (keeps the history: a re-authorised connection with a
       previous sync enqueues a sync, not a backfill) + e-mail to the store's users on the
       first ERROR (`connectionMail.ts`, tested; mailer injected into the connector deps and
       the worker)

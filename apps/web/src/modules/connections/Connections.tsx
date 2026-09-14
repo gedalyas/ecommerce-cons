@@ -69,7 +69,9 @@ function ConnectorAction({
     );
   }
   if (connector.connection) {
-    return <ConnectionButtons connector={connector} onSettings={onSettings} />;
+    return (
+      <ConnectionButtons connector={connector} onSettings={onSettings} onConnect={onConnect} />
+    );
   }
   if (connector.availability === "manual") {
     return (
@@ -97,10 +99,13 @@ function ConnectorAction({
 function ConnectionButtons({
   connector,
   onSettings,
+  onConnect,
 }: {
   connector: StoreConnector;
   onSettings: (c: StoreConnector) => void;
+  onConnect: (c: StoreConnector) => void;
 }) {
+  const failed = connector.connection?.stage === "ERROR";
   const needsAccount = connector.connection?.needsAccount ?? false;
   const sync = useServerFn(syncConnectorFn);
   const remove = useServerFn(disconnectConnectorFn);
@@ -117,6 +122,11 @@ function ConnectionButtons({
   };
   return (
     <div className="flex flex-wrap gap-1">
+      {failed && connector.availability === "oauth" && (
+        <Button size="sm" disabled={busy} onClick={() => onConnect(connector)}>
+          Reconectar
+        </Button>
+      )}
       {connector.kind !== "storefront" && (
         <Button
           variant={needsAccount ? "default" : "outline"}

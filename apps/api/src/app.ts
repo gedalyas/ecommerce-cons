@@ -78,6 +78,7 @@ export function connectorsDependencies(
     providers: providersOf(env),
     vault: createVault(vaultKeyOf(env.CREDENTIALS_KEY)),
     jobs,
+    mailer: createMailer(env, now),
     secret: env.JWT_SECRET,
     apiUrl: env.API_PUBLIC_URL,
     appUrl: env.APP_URL,

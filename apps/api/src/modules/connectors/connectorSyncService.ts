@@ -17,6 +17,7 @@ import type {
   SyncContext,
   SyncCursor,
 } from "./connectorProvider.types";
+import { connectionFailedMail, connectionsLink } from "./connectionMail";
 import { BACKFILL_QUEUE, SYNC_QUEUE, type ConnectorsDependencies } from "./connectorsService";
 
 const SYNC_ALL_QUEUE = "connector.sync-all";
@@ -58,6 +59,7 @@ type ConnectionRow = {
   syncCursor: unknown;
   settings: unknown;
   authorizedBy: string | null;
+  stage: string;
 };
 
 async function listRaw<T>(connectionId: string, kind: RawKind, skip: number, take: number) {
@@ -154,9 +156,37 @@ async function finish(
   );
 }
 
+async function notifyFailure(
+  row: ConnectionRow,
+  connector: string,
+  message: string,
+  deps: ConnectorsDependencies,
+) {
+  const [store, users] = await Promise.all([
+    prismaClient.client.findUnique({ where: { id: row.clientId }, select: { name: true } }),
+    prismaClient.user.findMany({
+      where: { clientId: row.clientId, role: "CLIENT" },
+      select: { email: true, name: true },
+    }),
+  ]);
+  for (const user of users) {
+    await deps.mailer.send(
+      connectionFailedMail({
+        to: user.email,
+        name: user.name,
+        storeName: store?.name ?? "",
+        connector,
+        message,
+        link: connectionsLink(deps.appUrl),
+      }),
+    );
+  }
+}
+
 async function fail(row: ConnectionRow, error: unknown, deps: ConnectorsDependencies) {
   const message = (error instanceof Error ? error.message : String(error)).slice(0, ERROR_LIMIT);
   console.error(error);
+  const firstFailure = row.stage !== "ERROR";
   await prismaClient.connection.update({
     where: { id: row.id },
     data: { stage: "ERROR", lastError: message, lastSyncAt: deps.now() },
@@ -174,6 +204,13 @@ async function fail(row: ConnectionRow, error: unknown, deps: ConnectorsDependen
       message,
     },
   );
+  if (!firstFailure) return;
+  await notifyFailure(
+    row,
+    connectorOf(row.connectorKey as ConnectorKey).label,
+    message,
+    deps,
+  ).catch((mailError: unknown) => console.error(mailError));
 }
 
 async function run(data: JobData, mode: "backfill" | "sync", deps: ConnectorsDependencies) {

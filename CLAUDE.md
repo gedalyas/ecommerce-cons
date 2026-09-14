@@ -235,7 +235,9 @@ module load order cannot form a runtime cycle either.
   per-environment knowledge. A provider never touches Prisma: it receives a `SyncContext`
   (`saveRaw`, `readRaw`, `listRaw`, `writeOrders`, `writeAdSpend`, `writeTraffic`, the
   cursor and the settings) and returns the new cursor. Credentials are sealed with the vault
-  and only opened inside the worker. Test a provider against a local stub of the platform
+  and only opened inside the worker. The client connects alone: a new connector needs its
+  `requirements` (and `domainHint`) in the catalog, and a provider that offers several
+  accounts seeds `settings.accountId = null` so the flow asks for the choice before syncing. Test a provider against a local stub of the platform
   (`*_stub.mjs` in the scratchpad) by pointing its `*_URL` env at it.
 - **Imports are undoable.** Whatever writes rows for a CSV import records what it touched in
   the `UndoRecorder` (created → `previous = null`, replaced → snapshot) so

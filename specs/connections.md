@@ -69,6 +69,13 @@ A failed callback lands on `/conexoes?erro=<key>&motivo=cancelado|estado|troca`
 10-minute state expired / the code exchange was refused) with a "Tentar de novo" button that
 reopens the connect dialog.
 
+When a sync fails the connection goes to `ERROR` and, on the first failure only (previous
+stage not ERROR), every CLIENT user of the store gets the e-mail "X parou de sincronizar"
+(`connectionMail.ts`) with the reason and a link to Conexões. The row then shows
+**"Reconectar"** as its primary action: the same authorization flow, but a connection that
+already synced keeps its history and its chosen account (`reconnectSettings`) and queues an
+incremental sync instead of a backfill.
+
 Under the row a **stepper** follows `Connection.stage`: Fonte autorizada → Importando dados
 → Processando análises → Pronto para usar (an error lands on the import step with the
 message). The worker (`apps/api/src/worker.ts`, pg-boss on the same Postgres) runs the
