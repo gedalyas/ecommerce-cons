@@ -85,6 +85,21 @@ permalink, likes, comments, saves, shares, reach). A first screen "Social" under
 (tab) shows the KPIs and the top posts of the period; the catalog card says what it feeds.
 Stub on :4018, e2e.
 
+### C — Connecting must be easy for the client (approved 2026-09-13)
+
+The client always connects by themselves, so the Conexões screen has to carry everything a
+lojista needs to know. C1 puts the prerequisites and the domain hint of each connector in the
+catalog (`requirements`, `domainHint`) and shows them in the connect dialog. C2 makes the
+account choice part of the flow: when the platform returns more than one account/page the
+connection stays AUTHORIZED with `needsAccount`, the browser lands on
+`/conexoes?conectado=<key>&escolher=1` with the picker open, and the backfill only starts
+after the choice — never an ERROR. C3 names the callback failures (`motivo=cancelado |
+estado | troca`, labels in contracts) and offers "Tentar de novo". C4 groups the catalog by
+kind in the order a new store should follow (loja → marketplaces → ERP → mídia → redes →
+analytics → manual). C5 turns a dead token into an action: "Reconectar" on the row (re-runs
+the authorization and keeps the history) and one e-mail to the store's users when a
+connection first enters ERROR.
+
 ### P4 — First real connections
 
 With the provider deployed and the partner's apps registered: connect each source with the

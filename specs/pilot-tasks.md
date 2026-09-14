@@ -2,7 +2,7 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0–P3 done, P4 waits for Davi's apps** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
+Status: **P0–P3 done, C1–C5 in execution, P4 waits for Davi's apps** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
@@ -77,6 +77,21 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
       `e2e_instagram.mjs`: Conectar → callback → READY "Loja Exemplo · @lojaexemplo" → KPIs,
       series, accounts and top posts on `GET /marketing?aba=social` → the screen renders
       every block
+
+## C — Connecting must be easy for the client
+
+- [ ] C1 Catalog `requirements` (pt-BR checklist per connector) + `domainHint`
+      (placeholder + where to find it) shown in `ConnectDialog`; Shopify placeholder fixed
+- [ ] C2 Account choice in the flow: `needsAccount` on the summary, no backfill until chosen,
+      `?escolher=1` opens the picker, "Escolher conta" as the row's primary action, settings
+      save enqueues the backfill for a never-synced connection
+- [ ] C3 Callback reasons (`motivo`) with labels in contracts, `error` param from the
+      platform handled as "cancelado", "Tentar de novo" in the banner
+- [ ] C4 Catalog grouped by kind in the guided order with a one-line hint per group
+- [ ] C5 "Reconectar" on ERROR rows (keeps the history: a re-authorised connection with a
+      previous sync enqueues a sync, not a backfill) + e-mail to the store's users on the
+      first ERROR (`connectionMail.ts`, tested; mailer injected into the connector deps and
+      the worker)
 
 ## P4 — First real connections (needs Davi's apps)
 
