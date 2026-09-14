@@ -30,6 +30,7 @@ export const connectorCallbackSchema = z
     code: z.string().min(1).optional(),
     auth_code: z.string().min(1).optional(),
     spapi_oauth_code: z.string().min(1).optional(),
+    error: z.string().optional(),
     state: z.string().min(1),
   })
   .passthrough()
@@ -40,7 +41,9 @@ export const connectorCallbackSchema = z
       Object.entries(query).flatMap(([k, v]) => (typeof v === "string" ? [[k, v]] : [])),
     ) as Record<string, string>,
   }))
-  .refine((value) => value.code.length > 0, { message: "code" });
+  .refine((value) => value.code.length > 0 || Boolean(value.query["error"]), {
+    message: "code",
+  });
 
 export const connectionRequestResolveSchema = z.object({
   status: z.enum(connectionRequestStatuses),

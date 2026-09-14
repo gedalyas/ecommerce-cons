@@ -1,5 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
+import { connectorErrorReasons } from "@ecommerce/contracts/connectors";
 import { Connections, getConnectionsScreen } from "@/modules/connections/contract";
 import { getImportsScreen } from "@/modules/imports/contract";
 import { RequestError } from "@/shared/ui/RequestError";
@@ -9,6 +10,7 @@ const searchSchema = z.object({
   conectado: z.string().catch(""),
   escolher: z.boolean().catch(false),
   erro: z.string().catch(""),
+  motivo: z.enum(connectorErrorReasons).catch("troca"),
 });
 
 export const Route = createFileRoute("/conexoes")({
@@ -39,7 +41,7 @@ export const Route = createFileRoute("/conexoes")({
 
 function RouteComponent() {
   const { data, imports } = Route.useLoaderData();
-  const { conectado, escolher, erro } = Route.useSearch();
+  const { conectado, escolher, erro, motivo } = Route.useSearch();
   return (
     <Connections
       data={data}
@@ -47,6 +49,7 @@ function RouteComponent() {
       justConnected={conectado}
       chooseAccount={escolher}
       failed={erro}
+      failureReason={motivo}
     />
   );
 }

@@ -85,7 +85,7 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
 - [x] C2 Account choice in the flow: `needsAccount` on the summary, no backfill until chosen,
       `?escolher=true` opens the picker, "Escolher conta" as the row's primary action, settings
       save enqueues the backfill for a never-synced connection
-- [ ] C3 Callback reasons (`motivo`) with labels in contracts, `error` param from the
+- [x] C3 Callback reasons (`motivo`) with labels in contracts, `error` param from the
       platform handled as "cancelado", "Tentar de novo" in the banner
 - [ ] C4 Catalog grouped by kind in the guided order with a one-line hint per group
 - [ ] C5 "Reconectar" on ERROR rows (keeps the history: a re-authorised connection with a

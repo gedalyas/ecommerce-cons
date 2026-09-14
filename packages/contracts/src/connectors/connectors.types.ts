@@ -58,6 +58,18 @@ export type ConnectionSummary = {
 
 export const needsAccountHint = "Escolha a conta para começar a importação.";
 
+export const connectorErrorReasons = ["cancelado", "estado", "troca"] as const;
+export type ConnectorErrorReason = (typeof connectorErrorReasons)[number];
+
+export const connectorErrorReasonLabel: Record<ConnectorErrorReason, string> = {
+  cancelado:
+    "A autorização não foi concluída na plataforma — você cancelou ou a conta não tem permissão para autorizar aplicativos.",
+  estado:
+    "O link de retorno expirou (ele vale por 10 minutos). Comece de novo pelo botão Conectar.",
+  troca:
+    "A plataforma autorizou, mas recusou a troca do código pelo acesso. Tente de novo; se persistir, fale com sua consultoria.",
+};
+
 export type StoreConnector = Connector & {
   status: DataSourceStatus;
   syncLabel: string;

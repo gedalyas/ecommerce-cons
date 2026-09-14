@@ -61,6 +61,10 @@ on `/conexoes?conectado=<key>&escolher=true` with the picker already open ("Esco
 X"), the row's primary action is "Escolher conta", and saving the choice queues the backfill.
 The connect dialog lists the connector's prerequisites (`requirements` in the catalog) and,
 for domain + OAuth platforms, the address placeholder and where to find it (`domainHint`).
+A failed callback lands on `/conexoes?erro=<key>&motivo=cancelado|estado|troca`
+(`connectorErrorReasonLabel`: the user cancelled or lacks permission on the platform / the
+10-minute state expired / the code exchange was refused) with a "Tentar de novo" button that
+reopens the connect dialog.
 
 Under the row a **stepper** follows `Connection.stage`: Fonte autorizada → Importando dados
 → Processando análises → Pronto para usar (an error lands on the import step with the

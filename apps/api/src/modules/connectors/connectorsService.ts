@@ -2,6 +2,7 @@ import {
   connectorOf,
   type ConnectionSummary,
   type ConnectorCredentialsInput,
+  type ConnectorErrorReason,
   type ConnectorKey,
   type ConnectorSettings,
   type ConnectorSettingsInput,
@@ -148,7 +149,11 @@ export async function completeCallback(
 ): Promise<{ redirectTo: string }> {
   const state = verifyOAuthState(callback.state, deps.secret);
   const target = `${deps.appUrl.replace(/\/$/, "")}/conexoes`;
-  if (!state || state.key !== key) return { redirectTo: `${target}?erro=estado` };
+  const failed = (reason: ConnectorErrorReason) => ({
+    redirectTo: `${target}?erro=${key}&motivo=${reason}`,
+  });
+  if (!state || state.key !== key) return failed("estado");
+  if (!callback.code) return failed("cancelado");
   const provider = providerOf(deps, key);
   try {
     const authorized = await provider.exchangeCode({
@@ -163,7 +168,7 @@ export async function completeCallback(
     };
   } catch (error) {
     console.error(error);
-    return { redirectTo: `${target}?erro=${key}` };
+    return failed("troca");
   }
 }
 

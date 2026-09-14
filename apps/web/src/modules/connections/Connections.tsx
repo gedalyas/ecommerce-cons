@@ -7,7 +7,9 @@ import { summaryDetail } from "@ecommerce/contracts/connections";
 import type { DataSourceStatus } from "@ecommerce/contracts/connectors";
 import {
   connectionRequestStatusLabel,
+  connectorErrorReasonLabel,
   connectorFeedLabel,
+  type ConnectorErrorReason,
   type StoreConnector,
 } from "@ecommerce/contracts/connectors";
 import type { ImportsScreen } from "@ecommerce/contracts/imports";
@@ -210,14 +212,17 @@ export function Connections({
   justConnected,
   chooseAccount,
   failed,
+  failureReason,
 }: {
   data: ConnectionsScreen;
   imports: ImportsScreen;
   justConnected: string;
   chooseAccount: boolean;
   failed: string;
+  failureReason: ConnectorErrorReason;
 }) {
   const connected = data.connectors.find((c) => c.key === justConnected) ?? null;
+  const failedConnector = data.connectors.find((c) => c.key === failed) ?? null;
   const connectedLabel = connected?.label ?? null;
   const detail = summaryDetail(data.summary);
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
@@ -240,10 +245,20 @@ export function Connections({
           </AlertBanner>
         )}
         {failed && (
-          <AlertBanner>
+          <AlertBanner
+            action={
+              failedConnector && failedConnector.availability === "oauth" ? (
+                <Button size="sm" variant="outline" onClick={() => setConnecting(failedConnector)}>
+                  Tentar de novo
+                </Button>
+              ) : undefined
+            }
+          >
             <span role="alert" className="text-foreground">
-              Não foi possível concluir a conexão. Tente de novo; se persistir, fale com sua
-              consultoria.
+              {failedConnector
+                ? `Não foi possível conectar ${failedConnector.label}. `
+                : "Não foi possível concluir a conexão. "}
+              {connectorErrorReasonLabel[failureReason]}
             </span>
           </AlertBanner>
         )}
