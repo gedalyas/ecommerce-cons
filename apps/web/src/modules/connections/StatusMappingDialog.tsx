@@ -30,6 +30,7 @@ export function StatusMappingDialog({
   const [accountId, setAccountId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const choosing = connector?.connection?.needsAccount ?? false;
 
   useEffect(() => {
     if (!connector) return;
@@ -62,8 +63,14 @@ export function StatusMappingDialog({
     <Dialog
       open={connector !== null}
       onOpenChange={(open) => !open && !busy && onClose()}
-      title={connector ? `Configurações · ${connector.label}` : ""}
-      description="Salvar dispara uma nova sincronização."
+      title={
+        connector ? `${choosing ? "Escolha a conta" : "Configurações"} · ${connector.label}` : ""
+      }
+      description={
+        choosing
+          ? "A importação do histórico começa assim que você salvar."
+          : "Salvar dispara uma nova sincronização."
+      }
     >
       <div className="grid gap-3">
         {!settings && !error && (

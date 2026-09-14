@@ -23,6 +23,7 @@ export {
   connectionRequestStatusLabel,
   connectionRequestStatuses,
   connectionStageHint,
+  needsAccountHint,
   connectionStageLabel,
   connectionStages,
   dataSourceStatuses,

@@ -96,6 +96,7 @@ function ConnectionButtons({
   connector: StoreConnector;
   onSettings: (c: StoreConnector) => void;
 }) {
+  const needsAccount = connector.connection?.needsAccount ?? false;
   const sync = useServerFn(syncConnectorFn);
   const remove = useServerFn(disconnectConnectorFn);
   const router = useRouter();
@@ -112,14 +113,19 @@ function ConnectionButtons({
   return (
     <div className="flex flex-wrap gap-1">
       {connector.kind !== "storefront" && (
-        <Button variant="outline" size="sm" disabled={busy} onClick={() => onSettings(connector)}>
-          Configurar
+        <Button
+          variant={needsAccount ? "default" : "outline"}
+          size="sm"
+          disabled={busy}
+          onClick={() => onSettings(connector)}
+        >
+          {needsAccount ? "Escolher conta" : "Configurar"}
         </Button>
       )}
       <Button
         variant="outline"
         size="sm"
-        disabled={busy || connector.connection?.stage === "IMPORTING"}
+        disabled={busy || needsAccount || connector.connection?.stage === "IMPORTING"}
         onClick={() => void run(() => sync({ data: { key: connector.key } }))}
       >
         Sincronizar
@@ -202,18 +208,23 @@ export function Connections({
   data,
   imports,
   justConnected,
+  chooseAccount,
   failed,
 }: {
   data: ConnectionsScreen;
   imports: ImportsScreen;
   justConnected: string;
+  chooseAccount: boolean;
   failed: string;
 }) {
-  const connectedLabel = data.connectors.find((c) => c.key === justConnected)?.label ?? null;
+  const connected = data.connectors.find((c) => c.key === justConnected) ?? null;
+  const connectedLabel = connected?.label ?? null;
   const detail = summaryDetail(data.summary);
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
   const [connecting, setConnecting] = useState<StoreConnector | null>(null);
-  const [mapping, setMapping] = useState<StoreConnector | null>(null);
+  const [mapping, setMapping] = useState<StoreConnector | null>(() =>
+    chooseAccount && connected?.connection?.needsAccount ? connected : null,
+  );
   return (
     <div className={layout.page}>
       <PageHeader title="Conexões" subtitle="Fontes que alimentam os indicadores da loja" />
@@ -222,7 +233,9 @@ export function Connections({
         {connectedLabel && (
           <AlertBanner icon={false}>
             <span role="status" className="font-semibold text-foreground">
-              {connectedLabel} conectado. O histórico está sendo importado — acompanhe abaixo.
+              {connected?.connection?.needsAccount
+                ? `${connectedLabel} conectado. Escolha a conta para começar a importação.`
+                : `${connectedLabel} conectado. O histórico está sendo importado — acompanhe abaixo.`}
             </span>
           </AlertBanner>
         )}

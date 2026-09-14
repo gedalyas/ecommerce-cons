@@ -99,9 +99,10 @@ async function saveConnection(
   key: ConnectorKey,
   authorized: Authorized,
   deps: ConnectorsDependencies,
-): Promise<string> {
+): Promise<{ id: string; needsAccount: boolean }> {
   const provider = providerOf(deps, key);
   const now = deps.now();
+  const needsAccount = needsAccountOf((authorized.settings ?? null) as Prisma.JsonValue | null);
   const data = {
     authPattern: authPatternEnum[provider.authPattern] ?? "OAUTH",
     externalId: authorized.externalId,
@@ -129,13 +130,16 @@ async function saveConnection(
     connector: connector.label,
     account: authorized.externalLabel,
   });
-  await deps.jobs.send(
-    BACKFILL_QUEUE,
-    { connectionId: connection.id },
-    { singletonKey: connection.id, retryLimit: 3, expireInMinutes: 6 * 60 },
-  );
-  return connection.id;
+  if (!needsAccount) await enqueueBackfill(connection.id, deps);
+  return { id: connection.id, needsAccount };
 }
+
+const enqueueBackfill = (connectionId: string, deps: ConnectorsDependencies) =>
+  deps.jobs.send(
+    BACKFILL_QUEUE,
+    { connectionId },
+    { singletonKey: connectionId, retryLimit: 3, expireInMinutes: 6 * 60 },
+  );
 
 export async function completeCallback(
   key: ConnectorKey,
@@ -153,8 +157,10 @@ export async function completeCallback(
       domain: state.domain,
       query: callback.query,
     });
-    await saveConnection(state, key, authorized, deps);
-    return { redirectTo: `${target}?conectado=${key}` };
+    const saved = await saveConnection(state, key, authorized, deps);
+    return {
+      redirectTo: `${target}?conectado=${key}${saved.needsAccount ? "&escolher=true" : ""}`,
+    };
   } catch (error) {
     console.error(error);
     return { redirectTo: `${target}?erro=${key}` };
@@ -211,7 +217,15 @@ const summarySelect = {
   externalLabel: true,
   lastSyncAt: true,
   lastError: true,
+  settings: true,
 } as const;
+
+const needsAccountOf = (settings: Prisma.JsonValue | null): boolean =>
+  settings !== null &&
+  typeof settings === "object" &&
+  !Array.isArray(settings) &&
+  "accountId" in settings &&
+  settings["accountId"] === null;
 
 const toSummary = (
   c: Prisma.ConnectionGetPayload<{ select: typeof summarySelect }>,
@@ -220,6 +234,7 @@ const toSummary = (
   externalLabel: c.externalLabel,
   lastSyncAt: c.lastSyncAt?.toISOString() ?? null,
   lastError: c.lastError,
+  needsAccount: needsAccountOf(c.settings),
 });
 
 export async function connectionSummariesFor(
@@ -235,7 +250,7 @@ export async function connectionSummariesFor(
 async function connectionRow(auth: AuthContext, key: ConnectorKey) {
   const row = await prismaClient.connection.findUnique({
     where: { clientId_connectorKey: { clientId: auth.clientId, connectorKey: key } },
-    select: { id: true, credentials: true, settings: true },
+    select: { id: true, credentials: true, settings: true, stage: true, lastSyncAt: true },
   });
   if (!row) throw notFound("Conexão não encontrada");
   return row;
@@ -280,6 +295,10 @@ export async function saveConnectorSettings(
     accountId: input.accountId ?? stored.accountId ?? null,
   } as Prisma.InputJsonObject;
   await prismaClient.connection.update({ where: { id: row.id }, data: { settings } });
+  if (row.stage === "AUTHORIZED" && row.lastSyncAt === null) {
+    await enqueueBackfill(row.id, deps);
+    return;
+  }
   await deps.jobs.send(
     SYNC_QUEUE,
     { connectionId: row.id, reprocess: true },

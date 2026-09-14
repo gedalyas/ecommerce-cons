@@ -2,6 +2,7 @@ import { CheckCircle2, CircleDashed, Loader2 } from "lucide-react";
 import {
   connectionStageHint,
   connectionStageLabel,
+  needsAccountHint,
   type ConnectionSummary,
 } from "@ecommerce/contracts/connectors";
 import { formatDate } from "@ecommerce/contracts/shared/format";
@@ -39,7 +40,9 @@ export function ConnectionStepper({ connection }: { connection: ConnectionSummar
                   {connectionStageLabel[step]}
                 </div>
                 <div className={cn(textClass.meta, "text-muted-foreground")}>
-                  {connectionStageHint[step]}
+                  {step === "AUTHORIZED" && connection.needsAccount
+                    ? needsAccountHint
+                    : connectionStageHint[step]}
                 </div>
               </div>
             </li>

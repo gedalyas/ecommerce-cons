@@ -7,6 +7,7 @@ import { layout } from "@/shared/styles/spacing";
 
 const searchSchema = z.object({
   conectado: z.string().catch(""),
+  escolher: z.boolean().catch(false),
   erro: z.string().catch(""),
 });
 
@@ -38,8 +39,16 @@ export const Route = createFileRoute("/conexoes")({
 
 function RouteComponent() {
   const { data, imports } = Route.useLoaderData();
-  const { conectado, erro } = Route.useSearch();
-  return <Connections data={data} imports={imports} justConnected={conectado} failed={erro} />;
+  const { conectado, escolher, erro } = Route.useSearch();
+  return (
+    <Connections
+      data={data}
+      imports={imports}
+      justConnected={conectado}
+      chooseAccount={escolher}
+      failed={erro}
+    />
+  );
 }
 
 function RouteError() {

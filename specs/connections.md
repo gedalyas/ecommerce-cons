@@ -55,6 +55,12 @@ store, the user and the connector, the provider exchanges the code, the credenti
 sealed (AES-256-GCM, `CREDENTIALS_KEY`) into `connection`, the data source becomes
 `CONNECTED`, any open request is closed and a `connector.backfill` job is queued. The browser
 lands back on `/conexoes?conectado=<key>` ("X conectado. O histórico está sendo importado").
+When the platform returned more than one account, ad account, property or Page, the
+connection stays `AUTHORIZED` with `needsAccount` and no backfill is queued: the browser lands
+on `/conexoes?conectado=<key>&escolher=true` with the picker already open ("Escolha a conta ·
+X"), the row's primary action is "Escolher conta", and saving the choice queues the backfill.
+The connect dialog lists the connector's prerequisites (`requirements` in the catalog) and,
+for domain + OAuth platforms, the address placeholder and where to find it (`domainHint`).
 
 Under the row a **stepper** follows `Connection.stage`: Fonte autorizada → Importando dados
 → Processando análises → Pronto para usar (an error lands on the import step with the

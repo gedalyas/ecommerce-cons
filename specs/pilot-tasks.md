@@ -80,10 +80,10 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
 
 ## C — Connecting must be easy for the client
 
-- [ ] C1 Catalog `requirements` (pt-BR checklist per connector) + `domainHint`
+- [x] C1 Catalog `requirements` (pt-BR checklist per connector) + `domainHint`
       (placeholder + where to find it) shown in `ConnectDialog`; Shopify placeholder fixed
-- [ ] C2 Account choice in the flow: `needsAccount` on the summary, no backfill until chosen,
-      `?escolher=1` opens the picker, "Escolher conta" as the row's primary action, settings
+- [x] C2 Account choice in the flow: `needsAccount` on the summary, no backfill until chosen,
+      `?escolher=true` opens the picker, "Escolher conta" as the row's primary action, settings
       save enqueues the backfill for a never-synced connection
 - [ ] C3 Callback reasons (`motivo`) with labels in contracts, `error` param from the
       platform handled as "cancelado", "Tentar de novo" in the banner

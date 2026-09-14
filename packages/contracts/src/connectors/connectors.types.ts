@@ -53,7 +53,10 @@ export type ConnectionSummary = {
   externalLabel: string;
   lastSyncAt: string | null;
   lastError: string | null;
+  needsAccount: boolean;
 };
+
+export const needsAccountHint = "Escolha a conta para começar a importação.";
 
 export type StoreConnector = Connector & {
   status: DataSourceStatus;
