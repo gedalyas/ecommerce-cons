@@ -1,16 +1,12 @@
 import type { ConnectorAccountOption } from "@ecommerce/contracts/connectors";
-import type {
-  ConnectorProvider,
-  Credentials,
-  SyncContext,
-  SyncResult,
-} from "./connectorProvider.types";
+import type { ConnectorProvider, SyncContext, SyncResult } from "./connectorProvider.types";
 import {
   adSpendRowOfMeta,
   META_INSIGHT_FIELDS,
   metaInsightId,
   type MetaInsight,
 } from "./metaAdsRows";
+import { exchangeMetaCode, graph, longLivedMetaToken, type MetaCredentials } from "./metaGraph";
 
 export type MetaConfig = {
   appId: string;
@@ -21,17 +17,12 @@ export type MetaConfig = {
   backfillMonths: number;
 };
 
-type MetaCredentials = Credentials & { accessToken: string; expiresAt: string };
-
 const SCOPES = "ads_read,read_insights";
 const CURSOR = "adSpend";
 const OVERLAP_DAYS = 3;
 const CHUNK_DAYS = 31;
 const RENEW_AHEAD_DAYS = 7;
 const MAX_PAGES = 200;
-const DEFAULT_TOKEN_DAYS = 60;
-
-class MetaError extends Error {}
 
 const dayOf = (date: Date) => date.toISOString().slice(0, 10);
 const shiftDays = (day: string, days: number) => {
@@ -39,42 +30,6 @@ const shiftDays = (day: string, days: number) => {
   d.setUTCDate(d.getUTCDate() + days);
   return dayOf(d);
 };
-
-async function graph<T>(config: MetaConfig, url: URL | string): Promise<T> {
-  const response = await fetch(url, {
-    headers: { Accept: "application/json", "User-Agent": config.userAgent },
-  });
-  const body = (await response.json().catch(() => ({}))) as T & { error?: { message?: string } };
-  if (!response.ok) {
-    throw new MetaError(`Meta respondeu ${response.status}: ${body.error?.message ?? "erro"}`);
-  }
-  return body;
-}
-
-type TokenBody = { access_token?: string; expires_in?: number };
-
-function credentialsOf(token: TokenBody, now: Date): MetaCredentials {
-  const seconds = token.expires_in ?? DEFAULT_TOKEN_DAYS * 24 * 60 * 60;
-  return {
-    accessToken: token.access_token ?? "",
-    expiresAt: new Date(now.getTime() + seconds * 1000).toISOString(),
-  };
-}
-
-async function longLived(
-  config: MetaConfig,
-  shortToken: string,
-  now: Date,
-): Promise<MetaCredentials> {
-  const url = new URL(`${config.graphUrl.replace(/\/$/, "")}/oauth/access_token`);
-  url.searchParams.set("grant_type", "fb_exchange_token");
-  url.searchParams.set("client_id", config.appId);
-  url.searchParams.set("client_secret", config.appSecret);
-  url.searchParams.set("fb_exchange_token", shortToken);
-  const token = await graph<TokenBody>(config, url);
-  if (!token.access_token) throw new MetaError("Meta não devolveu o token de longa duração");
-  return credentialsOf(token, now);
-}
 
 async function adAccounts(
   config: MetaConfig,
@@ -155,14 +110,8 @@ export function metaAdsProvider(config: MetaConfig): ConnectorProvider {
       return url.toString();
     },
     async exchangeCode({ code, redirectUri }) {
-      const url = new URL(`${config.graphUrl.replace(/\/$/, "")}/oauth/access_token`);
-      url.searchParams.set("client_id", config.appId);
-      url.searchParams.set("client_secret", config.appSecret);
-      url.searchParams.set("redirect_uri", redirectUri);
-      url.searchParams.set("code", code);
-      const short = await graph<TokenBody>(config, url);
-      if (!short.access_token) throw new MetaError("Meta não devolveu o token");
-      const credentials = await longLived(config, short.access_token, new Date());
+      const short = await exchangeMetaCode(config, code, redirectUri);
+      const credentials = await longLivedMetaToken(config, short, new Date());
       const accounts = await adAccounts(config, credentials);
       const first = accounts[0];
       return {
@@ -176,7 +125,7 @@ export function metaAdsProvider(config: MetaConfig): ConnectorProvider {
       const credentials = stored as MetaCredentials;
       const daysLeft = (new Date(credentials.expiresAt).getTime() - now.getTime()) / 86_400_000;
       if (daysLeft > RENEW_AHEAD_DAYS) return null;
-      return longLived(config, credentials.accessToken, now);
+      return longLivedMetaToken(config, credentials.accessToken, now);
     },
     describeSettings: async (credentials) => ({
       accounts: await adAccounts(config, credentials as MetaCredentials),
