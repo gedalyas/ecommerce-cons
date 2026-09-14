@@ -59,7 +59,11 @@ export type Connector = {
   availability: ConnectorAvailability;
   authPattern: AuthPattern | null;
   description: string;
+  requirements: string[];
+  domainHint: DomainHint | null;
 };
+
+export type DomainHint = { placeholder: string; help: string };
 
 export const connectorCatalog: Connector[] = [
   {
@@ -70,6 +74,8 @@ export const connectorCatalog: Connector[] = [
     availability: "manual",
     authPattern: null,
     description: "Planilhas exportadas da sua plataforma ou das contas de mídia.",
+    requirements: [],
+    domainHint: null,
   },
   {
     key: "bling",
@@ -79,6 +85,11 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Pedidos, produtos e estoque do ERP.",
+    requirements: [
+      "Ser o usuário administrador da conta Bling (ou ter permissão para autorizar aplicativos).",
+      "Ter pedidos de venda cadastrados no Bling — é de lá que vêm os dados.",
+    ],
+    domainHint: null,
   },
   {
     key: "shopify",
@@ -88,6 +99,14 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "domain_oauth",
     description: "Pedidos e clientes da loja.",
+    requirements: [
+      "Ser o proprietário da loja ou colaborador com permissão de instalar aplicativos.",
+      "Ter o endereço interno da loja em mãos (termina em .myshopify.com).",
+    ],
+    domainHint: {
+      placeholder: "minhaloja.myshopify.com",
+      help: "No painel da Shopify: Configurações → Domínios. É o endereço que termina em .myshopify.com, não o domínio do site.",
+    },
   },
   {
     key: "nuvemshop",
@@ -97,6 +116,14 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "domain_oauth",
     description: "Pedidos e clientes da loja.",
+    requirements: [
+      "Ser o dono da conta Nuvemshop ou administrador com acesso a aplicativos.",
+      "Ter o endereço da loja em mãos.",
+    ],
+    domainHint: {
+      placeholder: "minhaloja.lojavirtualnuvem.com.br",
+      help: "No painel da Nuvemshop: Configurações → Domínios. Vale o endereço .lojavirtualnuvem.com.br ou o domínio próprio da loja.",
+    },
   },
   {
     key: "mercado_livre",
@@ -106,6 +133,10 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Vendas e compradores do marketplace.",
+    requirements: [
+      "Entrar com a conta vendedora do Mercado Livre (a mesma que administra as vendas).",
+    ],
+    domainHint: null,
   },
   {
     key: "amazon",
@@ -115,6 +146,11 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Vendas do marketplace (Selling Partner API).",
+    requirements: [
+      "Ser administrador da conta no Seller Central (a autorização é concluída lá dentro).",
+      "Vender no marketplace Brasil (Amazon.com.br).",
+    ],
+    domainHint: null,
   },
   {
     key: "vtex",
@@ -124,6 +160,8 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "credentials",
     description: "Pedidos e clientes da loja.",
+    requirements: [],
+    domainHint: null,
   },
   {
     key: "meta_ads",
@@ -133,6 +171,11 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Investimento, campanhas e resultados do Facebook e Instagram.",
+    requirements: [
+      "Ter acesso de administrador ou analista à conta de anúncios no Gerenciador de Negócios.",
+      "Entrar com o seu perfil pessoal do Facebook — a Meta usa ele para confirmar o acesso.",
+    ],
+    domainHint: null,
   },
   {
     key: "instagram",
@@ -142,6 +185,12 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Seguidores, alcance e engajamento das publicações orgânicas.",
+    requirements: [
+      "A conta do Instagram precisa ser profissional (Comercial ou Criador de conteúdo).",
+      "A conta precisa estar vinculada a uma Página do Facebook, e você precisa ser administrador da Página.",
+      "Entrar com o seu perfil pessoal do Facebook.",
+    ],
+    domainHint: null,
   },
   {
     key: "google_ads",
@@ -151,6 +200,11 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Investimento, campanhas e resultados do Google.",
+    requirements: [
+      "Entrar com a conta Google que tem acesso (leitura ou administração) à conta do Google Ads.",
+      "Se houver mais de uma conta, você escolhe qual usar depois de autorizar.",
+    ],
+    domainHint: null,
   },
   {
     key: "tiktok_ads",
@@ -160,6 +214,8 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Investimento, campanhas e resultados do TikTok.",
+    requirements: ["Ter acesso à conta de anúncios no TikTok for Business."],
+    domainHint: null,
   },
   {
     key: "ga4",
@@ -169,6 +225,11 @@ export const connectorCatalog: Connector[] = [
     availability: "request",
     authPattern: "oauth",
     description: "Sessões, usuários e eventos do funil do site.",
+    requirements: [
+      "Entrar com a conta Google que é Leitor ou Editor da propriedade do GA4.",
+      "Se houver mais de uma propriedade, você escolhe qual usar depois de autorizar.",
+    ],
+    domainHint: null,
   },
 ];
 

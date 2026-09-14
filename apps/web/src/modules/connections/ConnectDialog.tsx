@@ -5,6 +5,7 @@ import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/Input";
+import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { startConnectorFn } from "./connectionsController";
@@ -21,6 +22,8 @@ export function ConnectDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const needsDomain = connector?.authPattern === "domain_oauth";
+  const hint = connector?.domainHint ?? null;
+  const requirements = connector?.requirements ?? [];
 
   const submit = async () => {
     if (!connector) return;
@@ -44,12 +47,22 @@ export function ConnectDialog({
       className="max-w-md"
     >
       <div className="grid gap-3">
+        {requirements.length > 0 && (
+          <div className={cn(radiusClass.control, "border border-border bg-muted/40 px-3 py-2")}>
+            <div className={cn(textClass.label, "text-muted-foreground")}>Antes de conectar</div>
+            <ul className={cn(textClass.meta, "mt-1 list-disc space-y-1 pl-4 text-foreground")}>
+              {requirements.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         {needsDomain && (
-          <FormField label="Domínio da loja">
+          <FormField label="Endereço da loja" hint={hint?.help}>
             <Input
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
-              placeholder="minhaloja.lojavirtualnuvem.com.br"
+              placeholder={hint?.placeholder ?? "minhaloja.com.br"}
               autoFocus
             />
           </FormField>

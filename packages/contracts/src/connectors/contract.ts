@@ -13,6 +13,7 @@ export {
 export type {
   AuthPattern,
   Connector,
+  DomainHint,
   ConnectorAvailability,
   ConnectorFeed,
   ConnectorKey,
