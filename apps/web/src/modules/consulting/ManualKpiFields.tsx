@@ -1,11 +1,9 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import type { ConsultingMetric } from "@ecommerce/contracts/consulting";
-import { fidelities, type Fidelity } from "@ecommerce/contracts/shared/fidelity";
 import { Button } from "@/shared/ui/Button";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/Input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { setManualKpiFn } from "./consultingController";
@@ -18,10 +16,9 @@ function ManualKpiRow({ pillarKey, kpi }: { pillarKey: string; kpi: ManualMetric
   const { busy, error, run } = useEditRun();
   const [value, setValue] = useState(kpi.manual?.value ?? "");
   const [delta, setDelta] = useState(kpi.manual?.delta ?? "");
-  const [fidelity, setFidelity] = useState<Fidelity>(kpi.fidelity ?? "B");
   const [note, setNote] = useState(kpi.manual?.note ?? "");
   return (
-    <div className="grid gap-2 border-t border-border pt-3 sm:grid-cols-[1fr_6rem_5rem_1fr_auto] sm:items-end">
+    <div className="grid gap-2 border-t border-border pt-3 sm:grid-cols-[1fr_6rem_1fr_auto] sm:items-end">
       <FormField label={kpi.label}>
         <Input
           value={value}
@@ -37,20 +34,6 @@ function ManualKpiRow({ pillarKey, kpi }: { pillarKey: string; kpi: ManualMetric
           placeholder="+2 pp"
           maxLength={20}
         />
-      </FormField>
-      <FormField label="Selo">
-        <Select value={fidelity} onValueChange={(v) => setFidelity(v as Fidelity)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {fidelities.map((f) => (
-              <SelectItem key={f} value={f}>
-                {f}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </FormField>
       <FormField label="Nota">
         <Input
@@ -71,7 +54,7 @@ function ManualKpiRow({ pillarKey, kpi }: { pillarKey: string; kpi: ManualMetric
                 kpiKey: kpi.key,
                 value,
                 delta: delta.trim() || null,
-                fidelity,
+                fidelity: kpi.fidelity ?? "B",
                 note,
               },
             }),

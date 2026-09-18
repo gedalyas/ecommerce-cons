@@ -288,7 +288,7 @@ apiFetch<Shape>("/path", { query | body }))`. Same names and signatures the comp
   test.
 - **Consulting layer.** Area screens render `ConsultingSection` through
   `consulting/consultingUi.ts` (live KPIs via `metricToTile`, manual KPIs as the consultant's
-  text, "—" with a C seal when empty) and pass `pillarActionOf(section)` so staff get the
+  text, "—" when empty) and pass `pillarActionOf(section)` so staff get the
   `PillarEditor`; the dashboard shows the `MilestoneEditor` for staff. No copy about a store
   lives in code: titles come from `contracts/consulting/engagementTemplate.ts`, values from
   the API.
@@ -392,8 +392,9 @@ Rules, in the order they bite:
   component can wrap the design.
 - **Icons: `lucide-react` only.** Tooltips reveal what is not visible: mandatory on an icon-only
   button (label = the `aria-label`), never on a button with visible text.
-- **Fidelity seal on every KPI** (`A`/`B`/`C` with a Portuguese note); see
-  `specs/kpi-fidelity.md`.
+- **No fidelity seal in the UI.** The API still computes `fidelity` / `fidelityNote` per
+  metric (the assistant and the alerts use them) but no screen renders the A/B/C level or
+  its note (decision of 2026-09-18, `specs/kpi-fidelity.md`).
 - **Mobile.** Desktop is the reference. Below `sm` use `max-sm:` classes; tables wider than the
   screen sit in `overflow-x-auto` or become cards below `md`; focusable fields keep a 16px font;
   `100svh`, never `100vh`. Never edit a primitive for a one-screen adjustment.

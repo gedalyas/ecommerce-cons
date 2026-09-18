@@ -14,8 +14,6 @@ import type {
 } from "@ecommerce/contracts/marketing";
 import { socialPlatformLabel } from "@ecommerce/contracts/marketing";
 
-const FIDELITY_NOTE = "Nível A — lido das contas conectadas (Instagram e Facebook).";
-
 const pct = (v: number | null) => (v == null ? "—" : formatPercent(v * 100));
 
 const tiles = (data: MarketingSocialData, comparisonLabel: string) =>
@@ -25,7 +23,7 @@ const tiles = (data: MarketingSocialData, comparisonLabel: string) =>
     { label: "Engajamento", metric: data.engagement },
     { label: "Taxa de engajamento", metric: data.engagementRate },
     { label: "Publicações", metric: data.posts },
-  ].map((tile) => metricToTile({ ...tile, comparisonLabel, fidelityNote: FIDELITY_NOTE }));
+  ].map((tile) => metricToTile({ ...tile, comparisonLabel }));
 
 const accountColumns: DataTableColumn<SocialAccountRow>[] = [
   {

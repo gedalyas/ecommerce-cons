@@ -20,8 +20,6 @@ export function metricTileOf(kpi: ConsultingMetric, comparisonLabel: string): Me
         label: kpi.label,
         value: EMPTY_VALUE,
         subNote: "sem dados no período",
-        fidelity: "C",
-        fidelityNote: "Nível C — sem pedidos ou fontes suficientes no período para calcular.",
       };
     }
     const tile = metricToTile({
@@ -29,8 +27,6 @@ export function metricTileOf(kpi: ConsultingMetric, comparisonLabel: string): Me
       metric: kpi.live.metric,
       comparisonLabel,
       goodWhen: kpi.live.goodWhen,
-      fidelity: kpi.live.fidelity,
-      fidelityNote: kpi.live.fidelityNote,
     });
     return kpi.live.subNote ? { ...tile, subNote: kpi.live.subNote } : tile;
   }
@@ -39,8 +35,6 @@ export function metricTileOf(kpi: ConsultingMetric, comparisonLabel: string): Me
       label: kpi.label,
       value: EMPTY_VALUE,
       subNote: kpi.hint,
-      fidelity: "C",
-      fidelityNote: "Nível C — indicador informado pela consultoria; ainda sem valor.",
     };
   }
   return {
@@ -48,8 +42,6 @@ export function metricTileOf(kpi: ConsultingMetric, comparisonLabel: string): Me
     value: kpi.manual.value,
     ...(kpi.manual.delta ? { delta: kpi.manual.delta, deltaDirection: "neutral" } : {}),
     subNote: kpi.manual.note || kpi.hint,
-    fidelity: kpi.fidelity ?? "B",
-    fidelityNote: `Nível ${kpi.fidelity ?? "B"} — informado pela consultoria em ${formatDate(kpi.manual.updatedAt)}.`,
   };
 }
 

@@ -45,9 +45,6 @@ export function MoneyDre({
       metric: i.metric,
       comparisonLabel,
       goodWhen: i.goodWhen,
-      fidelity: "B",
-      fidelityNote:
-        "Nível B — calculado sobre pedidos pagos e as regras de custo informadas pelo cliente.",
     }),
   );
 

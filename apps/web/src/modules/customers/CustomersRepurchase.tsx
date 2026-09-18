@@ -21,7 +21,6 @@ const tiles = (metrics: RepurchaseMetric[], comparisonLabel: string) =>
       metric: m.metric,
       comparisonLabel,
       goodWhen: m.goodWhen,
-      fidelityNote: "Nível A — pedidos pagos ordenados por cliente ao longo de todo o histórico.",
     }),
   );
 

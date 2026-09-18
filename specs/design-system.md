@@ -43,7 +43,7 @@ below is a reading aid, not a folder.
   card padding), radius, shadows, breakpoints.
 - Primitives — Button, Badge, Card, Divider, Tooltip, Input, Skeleton, plus the
   vendored shadcn pieces still in use (Calendar, Popover, Select).
-- Patterns — MetricTile(-Group), KpiCard/metricToTile, FidelityBadge,
+- Patterns — MetricTile(-Group), KpiCard/metricToTile,
   StatusBadge, PillarCard, SectionPage, SectionBlock, PageHeader,
   RecommendationList, AlertBanner, ScrollShadow, PeriodSelector, DataTable,
   TimeSeriesChart, DonutBreakdown, IndicatorCarousel.

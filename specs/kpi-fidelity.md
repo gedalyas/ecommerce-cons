@@ -1,7 +1,12 @@
 # KPI and the data-fidelity seal
 
-The KPI is the system's central component (`MetricTile` + `FidelityBadge` in
-`src/shared/ui`).
+The KPI is the system's central component (`MetricTile` in `src/shared/ui`).
+
+> **2026-09-18 — the seal is not shown.** The product owner chose not to expose the
+> A/B/C level to anyone. The API keeps computing `fidelity` and `fidelityNote` on every
+> `MetricValue` (the assistant's caveats and the alerts read them) and the consultant's
+> manual KPI keeps its stored level, but no screen renders the badge, the "Nível X — …"
+> note or the level picker. The section below documents the data model that remains.
 
 ## MetricTile
 
@@ -13,29 +18,23 @@ Each KPI shows:
 - **Delta** — variation vs the previous month, colored by `deltaDirection`:
   `up` green, `down` red, `neutral` muted. Direction is semantic ("good/bad"),
   not the numeric sign: a CAC increase of +21% is `down` (bad, red).
-- **Fidelity seal** — top-right corner.
 - Optional `subNote` line.
 
 `MetricTileGroup` lays tiles in a single bordered container with dividers;
 2 columns up to `lg`, then 4 (or 3). With `bare` it drops border/background to
 sit inside a `PillarCard`.
 
-## Fidelity seal (A/B/C)
+## Fidelity levels (A/B/C) — data only, not rendered
 
-16×16px, 4px radius, 10px semibold, with an explanatory tooltip:
+| Level | Meaning                                       |
+| ----- | --------------------------------------------- |
+| A     | Medido — direct from an integrated source     |
+| B     | Aproximado — estimated/informed by the client |
+| C     | Indicativo — qualitative judgement            |
 
-| Level | Meaning                                       | Rendering                      |
-| ----- | --------------------------------------------- | ------------------------------ |
-| A     | Medido — direct from an integrated source     | solid (primary bg, white text) |
-| B     | Aproximado — estimated/informed by the client | outlined (primary border/text) |
-| C     | Indicativo — qualitative judgement            | light gray (muted bg)          |
-
-Tooltip copy pattern (Portuguese, always states the source and when):
-"Nível B — CMV médio por categoria, informado pelo cliente em março."
-
-The original spec calls for B/C values to render in a lighter weight than A;
-tiles currently render all values at the same weight — treat that as an open
-refinement, not a regression to preserve.
+`fidelityNote` copy pattern (Portuguese, always states the source and when):
+"Nível B — CMV médio por categoria, informado pelo cliente em março." A metric that
+combines sources inherits the worst level (`dashboardFidelity.ts`).
 
 ## Formatting rules
 

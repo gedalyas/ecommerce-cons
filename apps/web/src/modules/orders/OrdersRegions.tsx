@@ -142,11 +142,7 @@ const cityColumns: DataTableColumn<RegionRow>[] = [
 function overviewTiles(provinces: RegionRow[], cities: RegionRow[]) {
   const top = provinces[0];
   const topThree = provinces.slice(0, 3).reduce((s, r) => s + r.paidShare, 0);
-  const note = (text: string) => ({
-    fidelity: "A" as const,
-    fidelityNote: "Nível A — UF e cidade do endereço de entrega dos pedidos.",
-    subNote: text,
-  });
+  const note = (text: string) => ({ subNote: text });
   return [
     {
       label: "Estados com venda",

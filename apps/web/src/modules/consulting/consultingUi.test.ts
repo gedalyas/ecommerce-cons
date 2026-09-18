@@ -23,14 +23,13 @@ describe("metricTileOf", () => {
       delta: "+8,1%",
       deltaDirection: "up",
       deltaLabel: "vs mês anterior",
-      fidelity: "A",
       subNote: "pedidos pagos",
     });
   });
 
-  it("renders a dash and a C seal when the live KPI has no value", () => {
+  it("renders a dash when the live KPI has no value", () => {
     const tile = metricTileOf({ key: "cac", label: "CAC", source: "live", live: null }, "x");
-    expect(tile).toMatchObject({ value: "—", fidelity: "C", subNote: "sem dados no período" });
+    expect(tile).toMatchObject({ value: "—", subNote: "sem dados no período" });
   });
 
   it("renders the consultant's value for a manual KPI, or the hint when empty", () => {
@@ -50,8 +49,7 @@ describe("metricTileOf", () => {
       },
       "x",
     );
-    expect(filled).toMatchObject({ value: "R$ 214.000", fidelity: "A", subNote: "extrato" });
-    expect(filled.fidelityNote).toMatch(/informado pela consultoria em \d{2}\/09/);
+    expect(filled).toMatchObject({ value: "R$ 214.000", subNote: "extrato" });
     const empty = metricTileOf(
       {
         key: "freeCash",
@@ -63,7 +61,7 @@ describe("metricTileOf", () => {
       },
       "x",
     );
-    expect(empty).toMatchObject({ value: "—", fidelity: "C", subNote: "Saldo em caixa" });
+    expect(empty).toMatchObject({ value: "—", subNote: "Saldo em caixa" });
   });
 });
 

@@ -39,8 +39,6 @@ export function HeadlineWidget({ data, comparisonLabel }: BlockProps) {
           metricToTile({
             label: headlineLabel[key] ?? m.label,
             metric: m.metric,
-            fidelity: m.fidelity,
-            fidelityNote: m.fidelityNote,
             comparisonLabel,
             goodWhen: m.goodWhen,
           }),

@@ -1,5 +1,3 @@
-import type { Fidelity } from "./fidelityBadge.types";
-
 export type Metric = {
   label: string;
   value: string;
@@ -8,8 +6,6 @@ export type Metric = {
   /** Text after the delta, defaults to "vs mês anterior". */
   deltaLabel?: string;
   subNote?: string;
-  fidelity: Fidelity;
-  fidelityNote: string;
 };
 
 export type MetricTileAction = { label: string; onClick?: () => void };

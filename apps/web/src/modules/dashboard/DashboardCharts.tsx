@@ -48,9 +48,7 @@ export function IndicatorWidget({ data, period }: ChartProps) {
         <div className={cn(textClass.kpi, textClass.numeric, "text-foreground")}>
           {formatMetric(indicator.metric.value, indicator.unit)}
         </div>
-        <div className={cn(textClass.meta, "text-muted-foreground")}>
-          {indicator.label} · {indicator.fidelityNote}
-        </div>
+        <div className={cn(textClass.meta, "text-muted-foreground")}>{indicator.label}</div>
       </div>
       <TimeSeriesChart
         series={data.series[indicator.key]}

@@ -88,8 +88,6 @@ export function MarketingDescontos({
       metric: m.metric,
       comparisonLabel,
       goodWhen: m.goodWhen,
-      fidelity: "A",
-      fidelityNote: "Nível A — cupons e descontos registrados nos pedidos pagos.",
     }),
   );
   return (

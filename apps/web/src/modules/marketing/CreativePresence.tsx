@@ -1,7 +1,5 @@
 import { Check, AlertTriangle } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
-import { FidelityBadge } from "@/shared/ui/FidelityBadge";
-import type { Fidelity } from "@/shared/ui/FidelityBadge";
 
 const palette = ["#1B4332", "#2D6A4F", "#D8F3DC", "#FFB703", "#212529"];
 
@@ -79,16 +77,11 @@ const landingPages: {
   visits: string;
   conversion: string;
   negative?: boolean;
-  fidelity: Fidelity;
 }[] = [
-  { name: "Página inicial", visits: "42.800", conversion: "1,9%", fidelity: "A" },
-  { name: "Kit verão", visits: "8.140", conversion: "3,2%", fidelity: "A" },
-  { name: "Coleção nova", visits: "5.610", conversion: "0,7%", negative: true, fidelity: "B" },
+  { name: "Página inicial", visits: "42.800", conversion: "1,9%" },
+  { name: "Kit verão", visits: "8.140", conversion: "3,2%" },
+  { name: "Coleção nova", visits: "5.610", conversion: "0,7%", negative: true },
 ];
-
-function seal(fidelity: Fidelity, note: string) {
-  return <FidelityBadge fidelity={fidelity} note={note} />;
-}
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -136,7 +129,6 @@ export function CreativePresence() {
                 Inconsistente
               </span>
               <span className="num text-[17px] font-semibold text-foreground">68%</span>
-              {seal("C", "Nível C — avaliação qualitativa da consultoria, indicativo apenas.")}
             </div>
             <ul className="mt-4 space-y-2">
               {consistencyChecks.map((item) => (
@@ -173,12 +165,6 @@ export function CreativePresence() {
             <div className="min-w-0">
               <div className="num text-[17px] font-semibold text-foreground">3,1%</div>
               <div className="t-label mt-1 text-muted-foreground">Engajamento</div>
-            </div>
-            <div className="pt-1">
-              {seal(
-                "B",
-                "Nível B — importado do relatório manual de 02/08. Conecte o Instagram para atualização diária.",
-              )}
             </div>
           </div>
         </div>
@@ -250,7 +236,6 @@ export function CreativePresence() {
                 <th className="t-label pb-2 text-muted-foreground">Página</th>
                 <th className="t-label pb-2 text-right text-muted-foreground">Visitas</th>
                 <th className="t-label pb-2 text-right text-muted-foreground">Conversão</th>
-                <th className="t-label pb-2 text-right text-muted-foreground">Fidelidade</th>
               </tr>
             </thead>
             <tbody>
@@ -266,11 +251,6 @@ export function CreativePresence() {
                   >
                     {p.conversion}
                   </td>
-                  <td className="py-3">
-                    <div className="flex justify-end">
-                      {seal(p.fidelity, `Nível ${p.fidelity} — dados de sessões da landing page.`)}
-                    </div>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -279,10 +259,7 @@ export function CreativePresence() {
         <ul className="space-y-3 md:hidden">
           {landingPages.map((p) => (
             <li key={p.name} className="rounded-lg border border-border p-4">
-              <div className="flex items-start justify-between gap-3">
-                <span className="min-w-0 text-[15px] text-foreground">{p.name}</span>
-                {seal(p.fidelity, `Nível ${p.fidelity} — dados de sessões da landing page.`)}
-              </div>
+              <div className="min-w-0 text-[15px] text-foreground">{p.name}</div>
               <div className="mt-3 flex items-center gap-6">
                 <div>
                   <div className="t-label text-muted-foreground">Visitas</div>

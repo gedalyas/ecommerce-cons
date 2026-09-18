@@ -158,35 +158,26 @@ function bigNumbers(data: MarketingRegions) {
   const withSpend = data.rows.filter((r) => r.totalSpend > 0 && r.roas != null);
   const best = [...withSpend].sort((a, b) => (b.roas ?? 0) - (a.roas ?? 0))[0];
   const worst = [...withSpend].sort((a, b) => (a.roas ?? 0) - (b.roas ?? 0))[0];
-  const fidelity = {
-    fidelity: "B" as const,
-    fidelityNote:
-      "Nível B — mídia com recorte geográfico das plataformas; Meta Ads sem sincronizar.",
-  };
   return [
     {
       label: "Gasto total",
       value: formatCurrency(data.total.totalSpend),
       subNote: `${formatNumber(withSpend.length)} estados com mídia`,
-      ...fidelity,
     },
     {
       label: "ROAS geral",
       value: times(data.total.roas),
       subNote: roasQualityLabel[roasQuality(data.total.roas)],
-      ...fidelity,
     },
     {
       label: "Melhor ROAS",
       value: best ? `${best.province} · ${times(best.roas)}` : "—",
       subNote: best ? `${formatCurrency(best.totalSpend)} investidos` : "sem mídia",
-      ...fidelity,
     },
     {
       label: "Pior ROAS",
       value: worst ? `${worst.province} · ${times(worst.roas)}` : "—",
       subNote: worst ? `${formatCurrency(worst.totalSpend)} investidos` : "sem mídia",
-      ...fidelity,
     },
   ];
 }

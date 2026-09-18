@@ -1,4 +1,3 @@
-import { FidelityBadge } from "./FidelityBadge";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
@@ -16,18 +15,13 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
         className,
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div
-          className={cn(
-            textClass.kpi,
-            "min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground 2xl:text-[26px] 2xl:leading-[34px]",
-          )}
-        >
-          {formatPtNumbers(metric.value)}
-        </div>
-        <span className="mt-1 shrink-0 scale-75 origin-top-right sm:mt-2 sm:scale-100">
-          <FidelityBadge fidelity={metric.fidelity} note={metric.fidelityNote} />
-        </span>
+      <div
+        className={cn(
+          textClass.kpi,
+          "min-w-0 whitespace-nowrap text-[20px] leading-[26px] text-foreground 2xl:text-[26px] 2xl:leading-[34px]",
+        )}
+      >
+        {formatPtNumbers(metric.value)}
       </div>
 
       <div className="mt-1 flex items-center justify-between gap-2 sm:mt-2 sm:gap-3">

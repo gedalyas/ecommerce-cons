@@ -23,11 +23,6 @@ export function CustomersLtvCac({
       metric: m.metric,
       comparisonLabel,
       goodWhen: m.goodWhen,
-      fidelity: m.key === "cac" || m.key === "ltvCacRatio" ? "B" : "A",
-      fidelityNote:
-        m.key === "cac" || m.key === "ltvCacRatio"
-          ? "Nível B — investimento em mídia (Meta Ads sem sincronizar) e regras de custo informadas."
-          : "Nível A — pedidos pagos e base de clientes.",
     }),
   );
   return (

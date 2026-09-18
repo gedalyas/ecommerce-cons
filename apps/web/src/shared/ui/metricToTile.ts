@@ -10,8 +10,6 @@ import type { KpiCardProps } from "./kpiCard.types";
 export function metricToTile({
   label,
   metric,
-  fidelity = "A",
-  fidelityNote = "Nível A — calculado sobre os pedidos importados.",
   comparisonLabel = "vs período anterior",
   goodWhen = "up",
 }: KpiCardProps): Metric {
@@ -27,7 +25,5 @@ export function metricToTile({
     value: formatMetric(metric.value, metric.unit),
     ...(variation != null ? { delta: formatVariation(variation), deltaDirection: direction } : {}),
     deltaLabel: comparisonLabel,
-    fidelity,
-    fidelityNote,
   };
 }
