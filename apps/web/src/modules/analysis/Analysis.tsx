@@ -3,7 +3,6 @@ import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { TimeSeriesChart } from "@/shared/ui/TimeSeriesChart";
@@ -71,7 +70,7 @@ function useAnalysisSearch() {
 }
 
 export function Analysis({ data }: { data: AnalysisScreen }) {
-  const { period, setPeriod } = usePeriod();
+  const { period } = usePeriod();
   const { search, setMetric } = useAnalysisSearch();
   const { narrative } = data;
 
@@ -96,7 +95,6 @@ export function Analysis({ data }: { data: AnalysisScreen }) {
               ))}
             </SelectContent>
           </Select>
-          <PeriodSelector value={period} onChange={setPeriod} />
           <Button variant="outline" className="ml-auto" onClick={() => window.print()}>
             Baixar PDF
           </Button>

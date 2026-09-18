@@ -1,6 +1,4 @@
-import { ChannelToggle } from "@/shared/ui/ChannelToggle";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { TabBar } from "@/shared/ui/TabBar";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
@@ -21,7 +19,7 @@ const tabs = [
 ] as const;
 
 export function Orders({ data }: { data: OrdersScreen }) {
-  const { period, setPeriod } = usePeriod();
+  const { period } = usePeriod();
   const { search, patch } = useOrdersSearch();
 
   return (
@@ -32,11 +30,6 @@ export function Orders({ data }: { data: OrdersScreen }) {
       />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
-        <div className="flex flex-wrap items-center gap-2">
-          <PeriodSelector value={period} onChange={setPeriod} />
-          <ChannelToggle value={period.canal} onChange={(canal) => setPeriod({ canal })} />
-        </div>
-
         <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
 
         {data.aba === "resumo" && <OrdersSummary data={data.summary} period={period} />}

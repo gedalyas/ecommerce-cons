@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/shared/utils/cn";
+import type { PageHeaderProps } from "./pageHeader.types";
 
 export type { PageHeaderProps } from "./pageHeader.types";
 
-/** Sticky header at the top of the content area; gains a shadow on scroll. */
-export function PageHeader({ title, subtitle }: { title: string; subtitle: string }) {
+export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -19,12 +19,15 @@ export function PageHeader({ title, subtitle }: { title: string; subtitle: strin
   return (
     <header
       className={cn(
-        "sticky top-0 z-20 -mx-4 border-b bg-background px-4 pb-4 pt-6 transition-all duration-200 sm:-mx-6 sm:px-6 xl:-mx-8 xl:px-8",
+        "sticky top-0 z-20 -mx-4 flex items-start justify-between gap-4 border-b bg-background px-4 pb-4 pt-6 transition-all duration-200 sm:-mx-6 sm:px-6 xl:-mx-8 xl:px-8",
         scrolled ? "border-border shadow-sm" : "border-transparent",
       )}
     >
-      <h1 className="t-section-title text-foreground">{title}</h1>
-      <p className="t-meta mt-1 text-muted-foreground">{subtitle}</p>
+      <div className="min-w-0">
+        <h1 className="t-section-title text-foreground">{title}</h1>
+        <p className="t-meta mt-1 text-muted-foreground">{subtitle}</p>
+      </div>
+      {action && <div className="shrink-0 pt-1">{action}</div>}
     </header>
   );
 }

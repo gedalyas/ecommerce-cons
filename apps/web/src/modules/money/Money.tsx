@@ -1,7 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { ChannelToggle } from "@/shared/ui/ChannelToggle";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { PillarCard } from "@/shared/ui/PillarCard";
 import { TabBar } from "@/shared/ui/TabBar";
 import { usePeriod } from "@/shared/hooks/usePeriod";
@@ -20,7 +18,7 @@ const tabs = [
 ] as const;
 
 export function Money({ data }: { data: MoneyScreen }) {
-  const { period, setPeriod, comparison } = usePeriod();
+  const { period, comparison } = usePeriod();
   const search = useSearch({ from: "/dinheiro" });
   const navigate = useNavigate();
   const setTab = (aba: MoneyTab) =>
@@ -38,11 +36,6 @@ export function Money({ data }: { data: MoneyScreen }) {
       <PageHeader title={data.section.title} subtitle={data.section.subtitle} />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
-        <div className="flex flex-wrap items-center gap-2">
-          <PeriodSelector value={period} onChange={setPeriod} />
-          <ChannelToggle value={period.canal} onChange={(canal) => setPeriod({ canal })} />
-        </div>
-
         <TabBar tabs={tabs} value={search.aba} onChange={setTab} />
 
         {data.aba === "visao" && (

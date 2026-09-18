@@ -7,7 +7,6 @@ import { DataTable } from "@/shared/ui/DataTable";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Input } from "@/shared/ui/Input";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { TabBar } from "@/shared/ui/TabBar";
 import { usePeriod } from "@/shared/hooks/usePeriod";
@@ -105,7 +104,7 @@ function SearchBox({ value, onChange }: { value: string; onChange: (v: string) =
 }
 
 export function Influencers({ data }: { data: InfluencersScreen }) {
-  const { period, setPeriod } = usePeriod();
+  const { period } = usePeriod();
   const { search, patch } = useInfluencersSearch();
   const { editing, setEditing, busy, error, submit, confirmDelete } = useInfluencerActions();
   const tabs = influencerStatuses.map((status) => ({
@@ -126,7 +125,6 @@ export function Influencers({ data }: { data: InfluencersScreen }) {
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
         <div className="flex flex-wrap items-center gap-2">
-          <PeriodSelector value={period} onChange={setPeriod} />
           <SearchBox value={search.busca} onChange={(busca) => patch({ busca })} />
           <Button className="ml-auto" onClick={() => setEditing({ kind: "new" })}>
             <Plus className="h-4 w-4" /> Adicionar

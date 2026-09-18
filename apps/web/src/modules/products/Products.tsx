@@ -1,11 +1,9 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
-import { ChannelToggle } from "@/shared/ui/ChannelToggle";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
 import { metricToTile } from "@/shared/ui/metricToTile";
 import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { TabBar } from "@/shared/ui/TabBar";
 import { usePeriod } from "@/shared/hooks/usePeriod";
@@ -122,7 +120,7 @@ function Chips<K extends string>({
 }
 
 export function Products({ data }: { data: ProductsScreen }) {
-  const { period, setPeriod, comparison } = usePeriod();
+  const { period, comparison } = usePeriod();
   const search = useSearch({ from: "/produtos" });
   const navigate = useNavigate();
   const patch = useCallback(
@@ -144,13 +142,6 @@ export function Products({ data }: { data: ProductsScreen }) {
       <PageHeader title="Produtos" subtitle={`Vendas, curva ABC e estoque · ${periodLabel}`} />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
-        {data.aba !== "estoque" && (
-          <div className="flex flex-wrap items-center gap-2">
-            <PeriodSelector value={period} onChange={setPeriod} />
-            <ChannelToggle value={period.canal} onChange={(canal) => setPeriod({ canal })} />
-          </div>
-        )}
-
         <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
 
         {data.aba === "resumo" && (

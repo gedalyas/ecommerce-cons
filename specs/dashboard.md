@@ -6,10 +6,52 @@ with the global params (`?inicio&fim&por&comparar&canal`); the payload is
 (`src/modules/alerts`); milestone criteria and open recommendations come from
 the database through `consulting/contract.server.ts`.
 
-Header: title "Dashboard", subtitle "Visão consolidada de {período}". Below it
-the controls row: `PeriodSelector` + `ChannelToggle`.
+Header: title "Dashboard", subtitle "Visão consolidada de {período}" and, on
+the right, the "Personalizar" button. The period, granularity, comparison and
+channel come from the global filter in the top bar (`specs/layout-and-navigation.md`);
+the screen has no controls row of its own.
 
-Blocks, in order:
+## Blocks are widgets the user arranges
+
+The dashboard is a grid of widgets (two columns from `md`; a widget is
+"Linha inteira" or "Meia linha"). Which widgets show, in which order and at
+which width is a per-user, per-store layout (`dashboard_layout`, one row per
+`user_id` × `client_id`) returned inside `GET /dashboard` as `layout` and
+saved through `PUT /dashboard/layout` (`dashboardLayoutSchema`). A layout that
+is missing, empty or only made of unknown kinds falls back to
+`defaultDashboardLayout`; unknown kinds and duplicates are dropped on read
+(`normalizeDashboardLayout`, `contracts/dashboard/dashboardLayoutRules.ts`).
+
+The catalog (`contracts/dashboard/dashboardWidgets.ts`), each kind at most once:
+
+| Kind                  | Widget                       | Data                                                                   |
+| --------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| `headline`            | Indicadores em destaque      | §1                                                                     |
+| `indicator`           | Evolução do indicador        | §2                                                                     |
+| `revenueVsInvestment` | Receita × investimento       | `series.marketingInvestment` (bars) × `series.totalSold`               |
+| `channelSplit`        | Vendas por canal             | `channelSplit`: paid revenue per bucket, e-commerce × marketplace      |
+| `bySource`            | Vendas por origem            | §3                                                                     |
+| `topProducts`         | Produtos mais vendidos       | `topProducts`: ten best sellers by paid revenue (`productSales`)       |
+| `customerMix`         | Clientes novos × recorrentes | `customerMix`: buyers of the period split by first order               |
+| `funnel`              | Funil do e-commerce          | `funnel`: sessions → produto visto → carrinho → checkout → paid orders |
+| `paidMedia`           | Mídia paga                   | `paidMedia`: ad spend (bars) × attributed revenue per bucket           |
+| `matrix`              | Resumo financeiro            | §4                                                                     |
+| `alerts`              | Precisa da sua atenção       | §5                                                                     |
+| `milestone`           | Marco de maturidade          | §5b                                                                    |
+| `recommendations`     | Recomendações em aberto      | §5b                                                                    |
+
+The default layout: headline, indicator (full), then revenue × investment,
+channel split, by source, top products, customer mix and funnel (half), then
+alerts, milestone and recommendations (full). `paidMedia` and `matrix` start
+out of the board.
+
+"Personalizar" opens the dialog "Personalizar dashboard": the chosen widgets
+as a sortable list (drag handle, icon, name and description, Linha inteira /
+Meia linha, remove), "Adicionar bloco" chips for the kinds not on the board,
+Cancelar / Salvar. Salvar is enabled only when something changed and at least
+one widget remains; it PUTs the whole layout and invalidates the router.
+
+Sections below describe each widget's data.
 
 ## 1. Headline KPI row
 

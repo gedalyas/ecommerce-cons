@@ -1,9 +1,7 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { TabBar } from "@/shared/ui/TabBar";
-import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
@@ -35,7 +33,6 @@ function useGoalsSearch() {
 }
 
 export function Goals({ data }: { data: GoalsScreen }) {
-  const { period, setPeriod } = usePeriod();
   const { search, patch } = useGoalsSearch();
 
   return (
@@ -52,7 +49,6 @@ export function Goals({ data }: { data: GoalsScreen }) {
       <div className={cn(layout.headerGap, layout.blockStack)}>
         {data.aba === "resumo" && (
           <div className="flex flex-wrap items-center gap-3">
-            <PeriodSelector value={period} onChange={setPeriod} />
             <label className={cn(textClass.meta, "flex items-center gap-2 text-muted-foreground")}>
               <input
                 type="checkbox"

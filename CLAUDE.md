@@ -264,7 +264,10 @@ module load order cannot form a runtime cycle either.
   navigation in `beforeLoad` — never in a loader, which would race the children: no session →
   `/entrar`; no active store → `/configurar-loja` (client) or `/admin` (staff); clients never
   reach `/admin`. The session state (user, stores, active store) travels in the route
-  context; the loader only fetches the shell status.
+  context; the loader only fetches the shell status. The period, granularity, comparison
+  and channel are edited in one place — the `PeriodSelector` in the shell's `TopBar`
+  (`shared/layout/periodPaths.ts` says which routes show it); a screen reads them with
+  `usePeriod()` and never renders its own period or channel control.
 - **Session and active store.** `shared/dependencies/session.ts` keeps tokens, the user, the
   active store and a refresh stamp; `apiFetch` sends `x-client-id`; the user's store list is
   refreshed from `/me` when stale. After sign-up or onboarding, navigate with
@@ -383,8 +386,7 @@ Rules, in the order they bite:
 - **Domain widget is not design system.** A chart, table or form only one module uses belongs
   to that module. It moves to `shared/ui` the day a second module imports it (`FormField` did)
   — not before. `shared/ui` never imports `modules/` or a contracts domain (lint).
-- **Compose, do not bypass.** Screens are built from `PageHeader`, `PeriodSelector`,
-  `ChannelToggle`, `TabBar`, `SegmentedControl`, `SectionBlock`, `MetricTileGroup` +
+- **Compose, do not bypass.** Screens are built from `PageHeader`, `TabBar`, `SegmentedControl`, `SectionBlock`, `MetricTileGroup` +
   `metricToTile`, `DataTable`, the chart family, `Badge`, `ProgressBar`, `Dialog`, `Button`,
   `Input`, `Select`, `MultiSelect`, `FormField`. Inline markup with tokens only where no
   component can wrap the design.

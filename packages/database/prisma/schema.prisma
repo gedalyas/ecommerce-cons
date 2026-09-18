@@ -169,9 +169,26 @@ model User {
   invitationsSent    Invitation[]
   connectionRequests ConnectionRequest[]
   auditEvents        AuditEvent[]
+  dashboardLayouts   DashboardLayout[]
 
   @@index([clientId])
   @@map("user")
+}
+
+/// The blocks a user chose for a store's dashboard, in order, each with its width.
+model DashboardLayout {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  clientId  String   @map("client_id")
+  widgets   Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clientId])
+  @@map("dashboard_layout")
 }
 
 model ConsultantAssignment {
@@ -735,6 +752,7 @@ model Client {
   subscription       Subscription?
   contract           Contract?
   connections        Connection[]
+  dashboardLayouts   DashboardLayout[]
 
   @@map("client")
 }

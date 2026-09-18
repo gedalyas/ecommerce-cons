@@ -76,6 +76,7 @@ bundle to protect).
   | Method              | Path                                                      | Today                        |
   | ------------------- | --------------------------------------------------------- | ---------------------------- |
   | GET                 | `/dashboard`                                              | `getDashboardOverview`       |
+  | PUT                 | `/dashboard/layout`                                       | `saveDashboardLayoutFn`      |
   | GET                 | `/orders`, `/orders/export`                               | `getOrdersScreen`, export    |
   | GET                 | `/products`                                               | `getProductsScreen`          |
   | GET                 | `/customers`, `/customers/export`                         | `getCustomersScreen`, export |

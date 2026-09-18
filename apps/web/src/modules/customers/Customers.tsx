@@ -1,6 +1,4 @@
-import { ChannelToggle } from "@/shared/ui/ChannelToggle";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { TabBar } from "@/shared/ui/TabBar";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
@@ -19,7 +17,7 @@ const tabs = [
 ] as const;
 
 export function Customers({ data }: { data: CustomersScreen }) {
-  const { period, setPeriod, comparison } = usePeriod();
+  const { period, comparison } = usePeriod();
   const { search, patch } = useCustomersSearch();
   const comparisonLabel = comparison
     ? `vs ${formatPeriodLabel(comparison.inicio, comparison.fim)}`
@@ -37,13 +35,6 @@ export function Customers({ data }: { data: CustomersScreen }) {
       />
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
-        {data.aba !== "rfm" && (
-          <div className="flex flex-wrap items-center gap-2">
-            <PeriodSelector value={period} onChange={setPeriod} />
-            <ChannelToggle value={period.canal} onChange={(canal) => setPeriod({ canal })} />
-          </div>
-        )}
-
         <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
 
         {data.aba === "rfm" && (

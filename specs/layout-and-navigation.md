@@ -8,7 +8,17 @@ Three columns on desktop (≥1280px):
 | --------------- | -------------------------------------------------------- | ----------------------- |
 | Sidebar         | 240px (`w-60`) at `xl`; 72px icon rail from `md` to `xl` | Navigation              |
 | Content         | flexible, `max-w-5xl` container, own scroll              | Active section          |
-| Assistant panel | 360px (`w-90`), collapsible to a 56px rail               | AI chat, always visible |
+| Assistant panel | 288px (`w-72`), collapsible to a 56px rail               | AI chat, always visible |
+
+Above the content column sits the **top bar** (`src/shared/layout/TopBar.tsx`,
+48px): the global filter, rendered as the period text "20/08/26 – 18/09/26 ˅"
+(`PeriodSelector`). It opens one popover with the two-month calendar, the
+"Períodos rápidos" list, and a row with Agrupar por, Comparar com and Canal;
+nothing applies until "Aplicar". The bar shows the filter only on the routes
+that read the period (`periodPaths.ts`: dashboard, areas, data screens, metas,
+métricas, influenciadores) and hides on `/assistente`; below `md` it also shows
+the active store's name. Screens render no period or channel controls of their
+own.
 
 Below `md` the sidebar disappears and a fixed **bottom nav** (6 items:
 Dashboard, Dinheiro, Marketing, Logística, Gestão, Mais→Conexões) takes over.

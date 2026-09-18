@@ -11,8 +11,11 @@ import {
 } from "@/modules/marketing/contract";
 import { type CostActivity, type CostRule } from "@ecommerce/contracts/money";
 import { expandCosts, costRulesFor } from "@/modules/money/contract";
-import type { OrdersAggregate } from "@ecommerce/contracts/orders";
+import type { OrdersAggregate, OrdersBucket } from "@ecommerce/contracts/orders";
+import type { AdSpendBucket, TrafficAggregate } from "@ecommerce/contracts/marketing";
 import { ordersAggregate, ordersByBucket, revenueBySource } from "@/modules/orders/contract";
+import { productSales } from "@/modules/products/contract";
+import type { AuthContext } from "@/shared/http/auth.types";
 import type { Series } from "@ecommerce/contracts/shared/metric.types";
 import { metricValue } from "@ecommerce/contracts/shared/metricValue";
 import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
@@ -29,7 +32,15 @@ import {
   type DashboardMetricKey,
   type DashboardOverview,
 } from "@ecommerce/contracts/dashboard";
+import {
+  channelSplitOf,
+  customerMixOf,
+  funnelOf,
+  paidMediaOf,
+  topProductsOf,
+} from "./dashboardAnalyses";
 import { fidelityFor } from "./dashboardFidelity";
+import { dashboardLayoutFor } from "./dashboardLayoutService";
 import {
   computeDashboardMetrics,
   type DashboardFacts,
@@ -45,14 +56,15 @@ const activityFor = (orders: OrdersAggregate, adSpend: number): CostActivity => 
   adSpend,
 });
 
-/** Facts of a whole window. Marketplaces have no traffic and no ad spend. */
+type WindowFacts = { facts: DashboardFacts; traffic: TrafficAggregate | null };
+
 async function windowFacts(
   clientId: string,
   w: Window,
   channel: Channel,
   rules: readonly CostRule[],
   calendar: { inicio: string; fim: string },
-): Promise<DashboardFacts> {
+): Promise<WindowFacts> {
   const platform = platformFor(channel);
   const mediaApplies = channel !== "marketplace";
   const [orders, customers, traffic, ads] = await Promise.all([
@@ -63,21 +75,26 @@ async function windowFacts(
   ]);
   const adSpend = ads?.spend ?? 0;
   return {
-    revenue: orders.revenue,
-    orders: orders.orders,
-    ecommerceOrders: orders.ecommerce.orders,
-    cogs: orders.cogs,
-    repeatOrders: orders.repeatOrders,
-    customers: customers.customers,
-    newCustomers: customers.newCustomers,
-    sessions: traffic?.sessions ?? 0,
-    adSpend,
-    adPlatformFee: ads?.platformFee ?? 0,
-    costs: expandCosts(rules, calendar, activityFor(orders, adSpend)),
+    facts: {
+      revenue: orders.revenue,
+      orders: orders.orders,
+      ecommerceOrders: orders.ecommerce.orders,
+      cogs: orders.cogs,
+      repeatOrders: orders.repeatOrders,
+      customers: customers.customers,
+      newCustomers: customers.newCustomers,
+      sessions: traffic?.sessions ?? 0,
+      adSpend,
+      adPlatformFee: ads?.platformFee ?? 0,
+      costs: expandCosts(rules, calendar, activityFor(orders, adSpend)),
+    },
+    traffic,
   };
 }
 
-/** Facts per bucket, zero-filled so every bucket of the window is present. */
+type BucketRow = { bucket: string; facts: DashboardFacts };
+type BucketFacts = { rows: BucketRow[]; orders: OrdersBucket[]; ads: AdSpendBucket[] };
+
 async function bucketFacts(
   clientId: string,
   w: Window,
@@ -85,7 +102,7 @@ async function bucketFacts(
   unit: string,
   channel: Channel,
   rules: readonly CostRule[],
-): Promise<{ bucket: string; facts: DashboardFacts }[]> {
+): Promise<BucketFacts> {
   const platform = platformFor(channel);
   const mediaApplies = channel !== "marketplace";
   const [orders, customers, traffic, ads] = await Promise.all([
@@ -115,7 +132,7 @@ async function bucketFacts(
     marketplace: { orders: 0, revenue: 0 },
   };
 
-  return buckets.map((b) => {
+  const rows = buckets.map((b) => {
     const o = ordersMap.get(b.bucket) ?? emptyOrders;
     const c = customersMap.get(b.bucket);
     const t = trafficMap.get(b.bucket);
@@ -138,6 +155,7 @@ async function bucketFacts(
       },
     };
   });
+  return { rows, orders, ads };
 }
 
 const seriesFrom = (
@@ -154,28 +172,27 @@ const seriesFrom = (
   ) as Record<DashboardMetricKey, Series>;
 };
 
-export async function dashboardOverview(
+type OverviewFacts = {
+  current: WindowFacts;
+  previous: WindowFacts | null;
+  currentByBucket: BucketFacts;
+  previousByBucket: BucketFacts | null;
+};
+
+async function overviewFacts(
   clientId: string,
   search: PeriodSearch,
-): Promise<DashboardOverview> {
-  const period = resolvePeriod(search);
+  period: ReturnType<typeof resolvePeriod>,
+  rules: readonly CostRule[],
+): Promise<OverviewFacts> {
   const unit = truncUnit[period.por];
   const channel = search.canal;
-  const [rules, sources, alerts, criteria, recommendations] = await Promise.all([
-    costRulesFor(clientId),
-    dataSourcesFor(clientId),
-    alertsFor(clientId),
-    milestoneCriteriaFor(clientId),
-    openRecommendationsFor(clientId),
-  ]);
-
   const currentBuckets = bucketWindows(period.current, period.por);
   const previousBuckets = period.previous ? bucketWindows(period.previous, period.por) : null;
   const previousCalendar = previousBuckets
     ? { inicio: previousBuckets[0]!.inicio, fim: previousBuckets[previousBuckets.length - 1]!.fim }
     : null;
-
-  const [current, previous, currentByBucket, previousByBucket, bySource] = await Promise.all([
+  const [current, previous, currentByBucket, previousByBucket] = await Promise.all([
     windowFacts(clientId, period.current, channel, rules, {
       inicio: search.inicio,
       fim: search.fim,
@@ -187,53 +204,95 @@ export async function dashboardOverview(
     period.previous && previousBuckets
       ? bucketFacts(clientId, period.previous, previousBuckets, unit, channel, rules)
       : null,
-    revenueBySource(clientId, period.current, platformFor(channel)),
   ]);
+  return { current, previous, currentByBucket, previousByBucket };
+}
 
-  const values = computeDashboardMetrics(current, channel);
-  const previousValues = previous ? computeDashboardMetrics(previous, channel) : null;
-  const currentRows = currentByBucket.map((b) => ({
+type ValueRow = { bucket: string; values: DashboardValues };
+
+const valueRowsOf = (byBucket: BucketFacts, channel: Channel): ValueRow[] =>
+  byBucket.rows.map((b) => ({
     bucket: b.bucket,
     values: computeDashboardMetrics(b.facts, channel),
   }));
-  const previousRows = previousByBucket
-    ? previousByBucket.map((b) => ({
-        bucket: b.bucket,
-        values: computeDashboardMetrics(b.facts, channel),
-      }))
-    : null;
+
+const milestoneOf = (criteria: DashboardOverview["milestone"]["criteria"]) => ({
+  criteria,
+  achieved: criteria.filter((c) => c.achieved).length,
+  total: criteria.length,
+});
+
+const metricsOf = (
+  values: DashboardValues,
+  previousValues: DashboardValues | null,
+  sources: Awaited<ReturnType<typeof dataSourcesFor>>,
+): DashboardOverview["metrics"] =>
+  dashboardMetricDefinitions.map((definition) => {
+    const { fidelity, note } = fidelityFor(definition.key, sources);
+    return {
+      ...definition,
+      metric: metricValue(
+        definition.unit,
+        values[definition.key],
+        previousValues?.[definition.key] ?? null,
+      ),
+      fidelity,
+      fidelityNote: note,
+    };
+  });
+
+const matrixOf = (currentRows: ValueRow[]): DashboardOverview["matrix"] => ({
+  buckets: currentRows.map((r) => r.bucket),
+  rows: dashboardMetricDefinitions.map((d) => ({
+    key: d.key,
+    label: d.label,
+    unit: d.unit,
+    values: currentRows.map((r) => r.values[d.key]),
+  })),
+});
+
+export async function dashboardOverview(
+  auth: AuthContext,
+  search: PeriodSearch,
+): Promise<DashboardOverview> {
+  const { clientId } = auth;
+  const period = resolvePeriod(search);
+  const channel = search.canal;
+  const platform = platformFor(channel);
+  const [rules, sources, alerts, criteria, recommendations, layout] = await Promise.all([
+    costRulesFor(clientId),
+    dataSourcesFor(clientId),
+    alertsFor(clientId),
+    milestoneCriteriaFor(clientId),
+    openRecommendationsFor(clientId),
+    dashboardLayoutFor(auth.userId, clientId),
+  ]);
+  const [facts, bySource, products] = await Promise.all([
+    overviewFacts(clientId, search, period, rules),
+    revenueBySource(clientId, period.current, platform),
+    productSales(clientId, period.current, platform, null),
+  ]);
+  const { current, previous, currentByBucket, previousByBucket } = facts;
+
+  const values = computeDashboardMetrics(current.facts, channel);
+  const previousValues = previous ? computeDashboardMetrics(previous.facts, channel) : null;
+  const currentRows = valueRowsOf(currentByBucket, channel);
+  const previousRows = previousByBucket ? valueRowsOf(previousByBucket, channel) : null;
+  const buckets = currentRows.map((r) => r.bucket);
 
   return {
+    layout,
     alerts,
-    milestone: {
-      criteria,
-      achieved: criteria.filter((c) => c.achieved).length,
-      total: criteria.length,
-    },
+    milestone: milestoneOf(criteria),
     recommendations,
-    metrics: dashboardMetricDefinitions.map((definition) => {
-      const { fidelity, note } = fidelityFor(definition.key, sources);
-      return {
-        ...definition,
-        metric: metricValue(
-          definition.unit,
-          values[definition.key],
-          previousValues?.[definition.key] ?? null,
-        ),
-        fidelity,
-        fidelityNote: note,
-      };
-    }),
+    metrics: metricsOf(values, previousValues, sources),
     series: seriesFrom(currentRows, previousRows),
     bySource,
-    matrix: {
-      buckets: currentRows.map((r) => r.bucket),
-      rows: dashboardMetricDefinitions.map((d) => ({
-        key: d.key,
-        label: d.label,
-        unit: d.unit,
-        values: currentRows.map((r) => r.values[d.key]),
-      })),
-    },
+    matrix: matrixOf(currentRows),
+    channelSplit: channelSplitOf(buckets, currentByBucket.orders),
+    topProducts: topProductsOf(products),
+    customerMix: customerMixOf(current.facts),
+    funnel: funnelOf(current.traffic, current.facts.orders),
+    paidMedia: paidMediaOf(buckets, currentByBucket.ads),
   };
 }

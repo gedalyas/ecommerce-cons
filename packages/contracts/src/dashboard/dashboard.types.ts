@@ -2,6 +2,7 @@ import type { AlertItem } from "../alerts/contract";
 import type { ConsultingRecommendation, MilestoneCriterion } from "../consulting/contract";
 import type { Fidelity } from "../shared/fidelity";
 import type { BreakdownSlice, MetricUnit, MetricValue, Series } from "../shared/metric.types";
+import type { DashboardLayout } from "./dashboardWidgets";
 
 /** The metrics the Painel de Controle derives from the facts, in display order. */
 export const dashboardMetricKeys = [
@@ -83,7 +84,23 @@ export type DashboardMilestone = {
   total: number;
 };
 
+export type DashboardChannelPoint = { bucket: string; ecommerce: number; marketplace: number };
+
+export type DashboardTopProduct = {
+  productId: string;
+  name: string;
+  revenue: number;
+  units: number;
+};
+
+export type DashboardCustomerMix = { newCustomers: number; returningCustomers: number };
+
+export type DashboardFunnelStep = { key: string; label: string; value: number };
+
+export type DashboardPaidMediaPoint = { bucket: string; spend: number; attributedRevenue: number };
+
 export type DashboardOverview = {
+  layout: DashboardLayout;
   alerts: AlertItem[];
   milestone: DashboardMilestone;
   recommendations: ConsultingRecommendation[];
@@ -91,4 +108,9 @@ export type DashboardOverview = {
   series: Record<DashboardMetricKey, Series>;
   bySource: BreakdownSlice[];
   matrix: { buckets: string[]; rows: DashboardMatrixRow[] };
+  channelSplit: DashboardChannelPoint[];
+  topProducts: DashboardTopProduct[];
+  customerMix: DashboardCustomerMix;
+  funnel: DashboardFunnelStep[];
+  paidMedia: DashboardPaidMediaPoint[];
 };

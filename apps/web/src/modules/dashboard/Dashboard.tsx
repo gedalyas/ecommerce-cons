@@ -1,60 +1,74 @@
-import { Link, useRouteContext } from "@tanstack/react-router";
-import { useState } from "react";
-import { ChannelToggle } from "@/shared/ui/ChannelToggle";
-import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
-import { DonutBreakdown } from "@/shared/ui/DonutBreakdown";
-import { IndicatorCarousel } from "@/shared/ui/IndicatorCarousel";
-import { metricToTile } from "@/shared/ui/metricToTile";
-import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
+import { useRouteContext } from "@tanstack/react-router";
 import { PageHeader } from "@/shared/ui/PageHeader";
-import { PeriodSelector } from "@/shared/ui/PeriodSelector";
-import { RecommendationList } from "@/shared/ui/RecommendationList";
-import { MilestoneEditor, recommendationOf } from "@/modules/consulting/contract";
-import { SectionBlock } from "@/shared/ui/SectionBlock";
-import { TimeSeriesChart } from "@/shared/ui/TimeSeriesChart";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
-import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatDate, formatPeriodLabel } from "@ecommerce/contracts/shared/format";
-import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
-import type { Granularity } from "@ecommerce/contracts/shared/period";
-import type {
-  DashboardMatrixRow,
-  DashboardMetricKey,
-  DashboardOverview,
-} from "@ecommerce/contracts/dashboard";
+import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
+import type { DashboardOverview, DashboardWidget } from "@ecommerce/contracts/dashboard";
+import {
+  AlertsWidget,
+  HeadlineWidget,
+  MatrixWidget,
+  MilestoneWidget,
+  RecommendationsWidget,
+} from "./DashboardBlocks";
+import {
+  BySourceWidget,
+  ChannelSplitWidget,
+  CustomerMixWidget,
+  FunnelWidget,
+  IndicatorWidget,
+  PaidMediaWidget,
+  RevenueVsInvestmentWidget,
+  TopProductsWidget,
+} from "./DashboardCharts";
+import { DashboardCustomizer } from "./DashboardCustomizer";
 
-const headlineKeys: DashboardMetricKey[] = [
-  "totalSold",
-  "contributionMargin",
-  "cac",
-  "repurchaseRate",
-];
-const headlineLabel: Partial<Record<DashboardMetricKey, string>> = { totalSold: "Faturamento" };
-
-const bucketHeader = (bucket: string, por: Granularity) => {
-  const date = `${bucket}T00:00:00`;
-  switch (por) {
-    case "dia":
-      return formatDate(date);
-    case "semana":
-      return `sem. ${formatDate(date)}`;
-    case "mes":
-      return formatDate(date, { month: "short", year: "2-digit" });
-    case "ano":
-      return formatDate(date, { year: "numeric" });
-  }
+type WidgetProps = {
+  widget: DashboardWidget;
+  data: DashboardOverview;
+  period: PeriodSearch;
+  comparisonLabel: string;
+  canEdit: boolean;
 };
+
+function DashboardWidgetView({ widget, data, period, comparisonLabel, canEdit }: WidgetProps) {
+  const block = { data, period, comparisonLabel };
+  switch (widget.kind) {
+    case "headline":
+      return <HeadlineWidget {...block} />;
+    case "indicator":
+      return <IndicatorWidget data={data} period={period} />;
+    case "revenueVsInvestment":
+      return <RevenueVsInvestmentWidget data={data} period={period} />;
+    case "channelSplit":
+      return <ChannelSplitWidget data={data} period={period} />;
+    case "bySource":
+      return <BySourceWidget data={data} period={period} />;
+    case "topProducts":
+      return <TopProductsWidget data={data} period={period} />;
+    case "customerMix":
+      return <CustomerMixWidget data={data} period={period} />;
+    case "funnel":
+      return <FunnelWidget data={data} period={period} />;
+    case "paidMedia":
+      return <PaidMediaWidget data={data} period={period} />;
+    case "matrix":
+      return <MatrixWidget {...block} />;
+    case "alerts":
+      return <AlertsWidget {...block} />;
+    case "milestone":
+      return <MilestoneWidget {...block} canEdit={canEdit} />;
+    case "recommendations":
+      return <RecommendationsWidget {...block} />;
+  }
+}
 
 export function Dashboard({ data }: { data: DashboardOverview }) {
   const { session } = useRouteContext({ from: "__root__" });
   const canEdit = session?.user.role !== "CLIENT";
-  const { period, setPeriod, comparison } = usePeriod();
-  const [selected, setSelected] = useState<DashboardMetricKey>("totalSold");
-
-  const byKey = new Map(data.metrics.map((m) => [m.key, m]));
-  const indicator = byKey.get(selected) ?? data.metrics[0]!;
+  const { period, comparison } = usePeriod();
   const comparisonLabel = comparison
     ? `vs ${formatPeriodLabel(
         comparison.inicio,
@@ -63,183 +77,29 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
       )}`
     : "sem comparação";
 
-  const headline = headlineKeys.flatMap((key) => {
-    const m = byKey.get(key);
-    return m
-      ? [
-          metricToTile({
-            label: headlineLabel[key] ?? m.label,
-            metric: m.metric,
-            fidelity: m.fidelity,
-            fidelityNote: m.fidelityNote,
-            comparisonLabel,
-            goodWhen: m.goodWhen,
-          }),
-        ]
-      : [];
-  });
-
-  const matrixColumns: DataTableColumn<DashboardMatrixRow>[] = [
-    {
-      key: "metric",
-      header: "Métrica",
-      render: (r) => r.label,
-      csv: (r) => r.label,
-      className: "whitespace-nowrap font-semibold",
-    },
-    ...data.matrix.buckets.map((bucket, i) => ({
-      key: bucket,
-      header: bucketHeader(bucket, period.por),
-      align: "right" as const,
-      render: (r: DashboardMatrixRow) => formatMetric(r.values[i] ?? null, r.unit),
-      csv: (r: DashboardMatrixRow) => {
-        const v = r.values[i];
-        return v == null ? null : Math.round(v * 100) / 100;
-      },
-      className: "whitespace-nowrap",
-    })),
-  ];
-
   return (
     <div className={layout.page}>
       <PageHeader
         title="Dashboard"
         subtitle={`Visão consolidada de ${formatPeriodLabel(period.inicio, period.fim)}`}
+        action={<DashboardCustomizer layout={data.layout} />}
       />
 
-      <div className={cn(layout.headerGap, layout.blockStack)}>
-        <div className="flex flex-wrap items-center gap-2">
-          <PeriodSelector value={period} onChange={setPeriod} />
-          <ChannelToggle value={period.canal} onChange={(canal) => setPeriod({ canal })} />
-        </div>
-
-        <MetricTileGroup metrics={headline} />
-
-        <SectionBlock
-          title="Resumo do período"
-          meta={
-            <span className={cn(textClass.meta, textClass.numeric, "text-muted-foreground")}>
-              {formatPeriodLabel(period.inicio, period.fim)}
-            </span>
-          }
-          bodyClassName={cn(layout.cardPadding, "space-y-6")}
-        >
-          <IndicatorCarousel
-            items={data.metrics
-              .filter((m) => m.carousel)
-              .map((m) => ({ key: m.key, label: m.label, metric: m.metric, goodWhen: m.goodWhen }))}
-            selected={indicator.key}
-            onSelect={(key) => setSelected(key as DashboardMetricKey)}
-          />
-          <div>
-            <div className={cn(textClass.kpi, textClass.numeric, "text-foreground")}>
-              {formatMetric(indicator.metric.value, indicator.unit)}
-            </div>
-            <div className={cn(textClass.meta, "text-muted-foreground")}>
-              {indicator.label} · {indicator.fidelityNote}
-            </div>
+      <div className={cn(layout.headerGap, "grid gap-6 md:grid-cols-2 sm:gap-8")}>
+        {data.layout.widgets.map((widget) => (
+          <div
+            key={widget.kind}
+            className={cn("min-w-0", widget.size === "full" && "md:col-span-2")}
+          >
+            <DashboardWidgetView
+              widget={widget}
+              data={data}
+              period={period}
+              comparisonLabel={comparisonLabel}
+              canEdit={canEdit}
+            />
           </div>
-          <TimeSeriesChart
-            series={data.series[indicator.key]}
-            unit={indicator.unit}
-            granularity={period.por}
-          />
-        </SectionBlock>
-
-        <SectionBlock
-          title="Vendas por origem"
-          description="Receita paga por origem e meio de tráfego (UTM); marketplaces aparecem pelo nome do canal."
-          bodyClassName={layout.cardPadding}
-        >
-          <DonutBreakdown slices={data.bySource} unit="currency" totalLabel="vendido" />
-        </SectionBlock>
-
-        <SectionBlock
-          title="Resumo financeiro"
-          description="Cada métrica do período, aberta por bucket. Exporte em CSV para trabalhar fora do painel."
-        >
-          <DataTable
-            columns={matrixColumns}
-            rows={data.matrix.rows}
-            rowKey={(r) => r.key}
-            initialPageSize={20}
-            pageSizeOptions={[20]}
-            csvFileName={`resumo-financeiro-${period.inicio}-${period.fim}`}
-          />
-        </SectionBlock>
-
-        <SectionBlock
-          title="Precisa da sua atenção"
-          tone="warning"
-          description="Alertas derivados dos dados: últimos 7 dias contra os 7 anteriores, e o estoque no ritmo dos últimos 30."
-          bodyClassName={layout.cardPaddingX}
-        >
-          {data.alerts.length === 0 ? (
-            <p className={cn(textClass.body, "py-4 text-muted-foreground")}>
-              Nenhum alerta no momento.
-            </p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {data.alerts.map((alert) => (
-                <li key={alert.title} className="group">
-                  <Link
-                    to={alert.to}
-                    search={(prev: Record<string, unknown>) => ({ ...prev, ...alert.search })}
-                    className="flex flex-wrap items-start gap-3 py-4 no-underline"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[15px] font-semibold text-foreground">{alert.title}</div>
-                      <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
-                        {alert.detail}
-                      </p>
-                    </div>
-                    <span className="shrink-0 text-right text-[13px] text-muted-foreground transition-colors duration-150 group-hover:text-primary">
-                      {alert.origin}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SectionBlock>
-
-        <SectionBlock
-          title="Marco de maturidade"
-          tone="highlight"
-          meta={
-            <span className="flex items-center gap-2">
-              <span className={cn(textClass.numeric, textClass.meta, "text-muted-foreground")}>
-                {data.milestone.achieved} de {data.milestone.total} critérios
-              </span>
-              {canEdit && <MilestoneEditor criteria={data.milestone.criteria} />}
-            </span>
-          }
-          description="Atingir os 4 critérios libera as áreas bloqueadas: Canais paralelos e Tecnologia."
-          bodyClassName="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4"
-        >
-          {data.milestone.criteria.map((c) => (
-            <div key={c.name} className="min-w-0 rounded-lg border border-border bg-card p-5">
-              <div className="text-[15px] font-semibold leading-6 text-foreground">{c.name}</div>
-              <div className="mt-3 h-1 w-full overflow-hidden rounded-sm bg-muted">
-                <div
-                  className={cn("h-full rounded-sm", c.achieved ? "bg-primary" : "bg-warning")}
-                  style={{ width: `${c.progress}%` }}
-                />
-              </div>
-              <div className={cn(textClass.meta, "mt-2 text-muted-foreground")}>
-                <span className={cn("font-semibold", c.achieved ? "text-primary" : "text-warning")}>
-                  {c.achieved ? "Atingido" : "Não atingido"}
-                </span>
-                {" · "}
-                {c.note || c.hint}
-              </div>
-            </div>
-          ))}
-        </SectionBlock>
-
-        <SectionBlock title="Recomendações em aberto" bodyClassName={layout.cardPaddingX}>
-          <RecommendationList items={data.recommendations.map(recommendationOf)} />
-        </SectionBlock>
+        ))}
       </div>
     </div>
   );
