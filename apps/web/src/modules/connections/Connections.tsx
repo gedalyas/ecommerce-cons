@@ -61,6 +61,13 @@ function ConnectorAction({
   onConnect: (c: StoreConnector) => void;
   onSettings: (c: StoreConnector) => void;
 }) {
+  if (!connector.canManage) {
+    return (
+      <span className={cn(textClass.meta, "text-muted-foreground")}>
+        {connector.connection || connector.status === "CONNECTED" ? "Somente leitura" : ""}
+      </span>
+    );
+  }
   if (connector.availability === "oauth" && !connector.connection) {
     return (
       <Button size="sm" className="h-11 w-full md:h-8 md:w-40" onClick={() => onConnect(connector)}>
