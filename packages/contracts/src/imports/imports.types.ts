@@ -39,7 +39,7 @@ export type ImportJob = {
   canUndo: boolean;
 };
 
-export type ImportsScreen = { jobs: ImportJob[] };
+export type ImportsScreen = { jobs: ImportJob[]; editableKinds: ImportKind[] };
 
 export const IMPORT_PREVIEW_ROWS = 10;
 

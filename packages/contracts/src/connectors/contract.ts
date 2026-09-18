@@ -64,3 +64,4 @@ export type {
   ConnectorSettingsInput,
   ConnectorStartInput,
 } from "./connectorsSchema";
+export { areaOfFeed, areasOfConnector, canManageConnector } from "./connectorAccess";

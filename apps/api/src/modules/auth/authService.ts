@@ -1,14 +1,17 @@
-import type {
-  AuthTokens,
-  AuthUser,
-  InvitationCheck,
-  LoginInput,
-  RegisterInput,
-  ResetPasswordInput,
-  StoreSummary,
+import {
+  areaAccessOf,
+  grantsOf,
+  type AuthTokens,
+  type AuthUser,
+  type InvitationCheck,
+  type LoginInput,
+  type RegisterInput,
+  type ResetPasswordInput,
+  type StoreSummary,
 } from "@ecommerce/contracts/auth";
 import { prismaClient } from "@ecommerce/database/client";
 import { hashPassword, verifyPassword } from "@ecommerce/database/passwordHash";
+import type { AccessArea, ClientMembership } from "@ecommerce/database/enums";
 import type { Principal } from "@/shared/http/auth.types";
 import { HttpError, unauthorized } from "@/shared/http/httpError";
 import type { Mailer } from "@/shared/mail/mailer.types";
@@ -43,6 +46,9 @@ const userSelect = {
   role: true,
   passwordHash: true,
   clientId: true,
+  membership: true,
+  viewAreas: true,
+  editAreas: true,
 } as const;
 
 type UserRow = {
@@ -51,7 +57,13 @@ type UserRow = {
   email: string;
   role: AuthUser["role"];
   clientId: string | null;
+  membership: ClientMembership;
+  viewAreas: AccessArea[];
+  editAreas: AccessArea[];
 };
+
+const membershipOf = (u: Pick<UserRow, "role" | "membership">): AuthUser["membership"] =>
+  u.role === "CLIENT" ? u.membership : null;
 
 const toStore = (s: {
   id: string;
@@ -101,6 +113,9 @@ export async function storeAccessOf(principal: Principal): Promise<StoreAccess> 
       clientId: true,
       client: { select: { archivedAt: true } },
       assignments: { select: { clientId: true } },
+      membership: true,
+      viewAreas: true,
+      editAreas: true,
     },
   });
   if (!user) throw unauthorized();
@@ -109,11 +124,24 @@ export async function storeAccessOf(principal: Principal): Promise<StoreAccess> 
     ownClientId: user.clientId,
     ownClientArchived: Boolean(user.client?.archivedAt),
     assignedClientIds: user.assignments.map((a) => a.clientId),
+    areaAccess: areaAccessOf({
+      role: user.role,
+      membership: membershipOf(user),
+      grants: grantsOf(user.viewAreas, user.editAreas),
+    }),
   };
 }
 
 async function toAuthUser(u: UserRow): Promise<AuthUser> {
-  return { id: u.id, name: u.name, email: u.email, role: u.role, stores: await storesOf(u) };
+  return {
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    role: u.role,
+    membership: membershipOf(u),
+    grants: grantsOf(u.viewAreas, u.editAreas),
+    stores: await storesOf(u),
+  };
 }
 
 async function issueTokens(user: UserRow, secret: string, now: Date): Promise<AuthTokens> {
@@ -148,6 +176,9 @@ const invitationSelect = {
   id: true,
   email: true,
   role: true,
+  membership: true,
+  viewAreas: true,
+  editAreas: true,
   clientId: true,
   acceptedAt: true,
   expiresAt: true,
@@ -176,6 +207,7 @@ export async function invitationFor(token: string, now: Date): Promise<Invitatio
   return {
     email: invitation.email,
     role: invitation.role,
+    membership: invitation.membership,
     storeName: invitation.client?.name ?? null,
   };
 }
@@ -197,6 +229,9 @@ export async function register(
         passwordHash: hashPassword(input.password),
         role: invitation.role,
         clientId: invitation.role === "CLIENT" ? invitation.clientId : null,
+        membership: invitation.membership,
+        viewAreas: invitation.viewAreas,
+        editAreas: invitation.editAreas,
       },
       select: userSelect,
     });

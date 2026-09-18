@@ -10,6 +10,7 @@ import {
   type BillingDependencies,
 } from "@/modules/billing/contract";
 import {
+  createAreaGuards,
   createAuthRouter,
   createRequireAuth,
   resolveClient,
@@ -37,6 +38,7 @@ import { createMoneyRouter, marketingCostLines } from "@/modules/money/contract"
 import { createOrdersRouter } from "@/modules/orders/contract";
 import { createProductsRouter } from "@/modules/products/contract";
 import { createStoreOnboardingRouter, createStoreRouter } from "@/modules/store/contract";
+import { createTeamRouter } from "@/modules/team/contract";
 import type { Env } from "@/shared/config/env";
 import { createVault, vaultKeyOf } from "@/shared/crypto/vault";
 import type { Jobs } from "@/shared/jobs/jobs.types";
@@ -87,12 +89,15 @@ export function connectorsDependencies(
 }
 
 function storeRouters(
-  { now, rateLimited }: Shared & { rateLimited: boolean },
+  shared: Shared & { rateLimited: boolean },
   billing: BillingDependencies,
   connectors: ConnectorsDependencies,
 ) {
+  const { now, rateLimited } = shared;
   return [
+    createAreaGuards(),
     createStoreRouter({ now }),
+    createTeamRouter(shared),
     createDashboardRouter(),
     createOrdersRouter(),
     createProductsRouter(),

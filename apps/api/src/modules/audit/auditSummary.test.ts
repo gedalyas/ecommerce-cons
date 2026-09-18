@@ -24,6 +24,16 @@ describe("auditSummary", () => {
     );
     expect(
       auditSummary({
+        action: "TEAM_MEMBER_INVITED",
+        email: "m@loja.dev",
+        areas: ["Marketing (editar)", "Dados (ver)"],
+      }),
+    ).toBe("Convidou m@loja.dev para a equipe (Marketing (editar), Dados (ver))");
+    expect(auditSummary({ action: "TEAM_MEMBER_REMOVED", name: "Bia" })).toBe(
+      "Removeu Bia da equipe",
+    );
+    expect(
+      auditSummary({
         action: "IMPORT_RUN",
         kind: "Pedidos",
         fileName: "p.csv",

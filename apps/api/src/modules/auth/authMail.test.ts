@@ -3,8 +3,8 @@ import { invitationLink, invitationMail, passwordResetLink, passwordResetMail } 
 
 describe("invitationLink", () => {
   it("points to the register page with the token, tolerating a trailing slash", () => {
-    expect(invitationLink("http://localhost:8080/", "a+b/c")).toBe(
-      "http://localhost:8080/cadastro?convite=a%2Bb%2Fc",
+    expect(invitationLink("http://localhost:8090/", "a+b/c")).toBe(
+      "http://localhost:8090/cadastro?convite=a%2Bb%2Fc",
     );
   });
 });
@@ -40,6 +40,20 @@ describe("invitationMail", () => {
       expiresInDays: 7,
     }).text;
     expect(text).toContain("como consultor.");
+  });
+  it("invites a team member into the store team", () => {
+    const text = invitationMail({
+      to: "m@loja.dev",
+      inviterName: "Ana",
+      role: "CLIENT",
+      membership: "MEMBER",
+      storeName: "Loja Nova",
+      link: "l",
+      expiresInDays: 7,
+    }).text;
+    expect(text).toContain(
+      "Ana convidou você para a equipe da loja Loja Nova no E-commerce Insights.",
+    );
   });
 });
 

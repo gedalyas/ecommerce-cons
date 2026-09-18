@@ -1,10 +1,12 @@
 import type { Request, Response } from "express";
 import {
+  areaOfImportKind,
   importIdSchema,
   importKindSchema,
   importTemplates,
   type ImportKind,
 } from "@ecommerce/contracts/imports";
+import { assertAreaEdit } from "@/modules/auth/contract";
 import { authOf } from "@/shared/http/authOf";
 import { HttpError } from "@/shared/http/httpError";
 import { parseOrThrow } from "@/shared/http/validate";
@@ -33,14 +35,16 @@ export function importsController({ now }: ImportsDependencies) {
   return {
     async upload(req: Request, res: Response) {
       const { kind, file } = uploadedCsv(req);
-      res.status(201).json(await runImport(authOf(req), kind, file, now()));
+      const auth = authOf(req);
+      assertAreaEdit(auth, areaOfImportKind[kind]);
+      res.status(201).json(await runImport(auth, kind, file, now()));
     },
     async preview(req: Request, res: Response) {
       const { kind, file } = uploadedCsv(req);
       res.json(previewImport(kind, file));
     },
     async list(req: Request, res: Response) {
-      res.json(await importsScreen(authOf(req).clientId));
+      res.json(await importsScreen(authOf(req)));
     },
     async one(req: Request, res: Response) {
       const { id } = parseOrThrow(importIdSchema, req.params);

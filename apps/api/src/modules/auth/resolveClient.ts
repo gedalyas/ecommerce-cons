@@ -22,7 +22,7 @@ export const resolveClient: RequestHandler = (req, _res, next) => {
       if (!requested) throw new HttpError(400, "Informe a loja (cabeçalho x-client-id).");
       if (!canAccessStore(access, requested)) throw forbidden("Você não tem acesso a esta loja.");
       if (isBlockedByArchive(access, requested)) throw forbidden(ARCHIVED_STORE_MESSAGE);
-      req.auth = { ...principal, clientId: requested };
+      req.auth = { ...principal, clientId: requested, access: access.areaAccess };
       next();
     })
     .catch(next);

@@ -19,10 +19,13 @@ const STORE_SLUG = "loja-exemplo";
 const PASSWORD = process.env["SEED_USER_PASSWORD"] ?? "exemplo2026";
 const CLIENT_EMAIL = "cliente@lojaexemplo.dev";
 const CONSULTANT_EMAIL = "consultor@ecommerce-insights.dev";
+const MEMBER_EMAIL = "marketing@lojaexemplo.dev";
 
 async function main() {
   await prisma.client.deleteMany({ where: { slug: STORE_SLUG } });
-  await prisma.user.deleteMany({ where: { email: { in: [CLIENT_EMAIL, CONSULTANT_EMAIL] } } });
+  await prisma.user.deleteMany({
+    where: { email: { in: [CLIENT_EMAIL, CONSULTANT_EMAIL, MEMBER_EMAIL] } },
+  });
 
   const client = await prisma.client.create({
     data: {
@@ -59,6 +62,18 @@ async function main() {
       name: "Cliente Exemplo",
       passwordHash: hashPassword(PASSWORD),
       role: "CLIENT",
+    },
+  });
+  await prisma.user.create({
+    data: {
+      clientId: client.id,
+      email: MEMBER_EMAIL,
+      name: "Equipe de Marketing",
+      passwordHash: hashPassword(PASSWORD),
+      role: "CLIENT",
+      membership: "MEMBER",
+      viewAreas: ["MARKETING", "DATA"],
+      editAreas: ["MARKETING"],
     },
   });
   const consultant = await prisma.user.create({
@@ -109,7 +124,7 @@ async function main() {
 
   const facts = await seedAnalytics(prisma, client.id);
   console.log(
-    `dev store "${STORE_SLUG}" ready: users ${CLIENT_EMAIL} (CLIENT) and ${CONSULTANT_EMAIL} (CONSULTANT), password ${PASSWORD}`,
+    `dev store "${STORE_SLUG}" ready: users ${CLIENT_EMAIL} (CLIENT, owner), ${MEMBER_EMAIL} (CLIENT, team member: Marketing edit + Dados view) and ${CONSULTANT_EMAIL} (CONSULTANT), password ${PASSWORD}`,
   );
   console.log(
     `facts: ${facts.products} products, ${facts.customers} customers, ${facts.orders} orders, ${facts.traffic} traffic rows, ${facts.adSpend} ad spend rows, ${facts.costs} cost rules`,

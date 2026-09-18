@@ -35,6 +35,10 @@ export const auditActions = [
   "CONNECTION_REMOVED",
   "CONNECTION_SYNCED",
   "CONNECTION_FAILED",
+  "TEAM_MEMBER_INVITED",
+  "TEAM_INVITATION_REVOKED",
+  "TEAM_MEMBER_UPDATED",
+  "TEAM_MEMBER_REMOVED",
 ] as const;
 export type AuditAction = (typeof auditActions)[number];
 
@@ -73,6 +77,10 @@ export const auditActionLabel: Record<AuditAction, string> = {
   CONNECTION_REMOVED: "Conexão removida",
   CONNECTION_SYNCED: "Sincronização concluída",
   CONNECTION_FAILED: "Sincronização falhou",
+  TEAM_MEMBER_INVITED: "Membro convidado",
+  TEAM_INVITATION_REVOKED: "Convite de equipe revogado",
+  TEAM_MEMBER_UPDATED: "Acesso do membro alterado",
+  TEAM_MEMBER_REMOVED: "Membro removido",
 };
 
 export type ActivityEntry = {

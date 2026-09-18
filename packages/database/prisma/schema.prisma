@@ -57,6 +57,26 @@ enum UserRole {
   @@map("user_role")
 }
 
+/// Position of a CLIENT user inside their store: the owner manages the team, a member
+/// sees and edits only the areas the owner granted.
+enum ClientMembership {
+  OWNER
+  MEMBER
+
+  @@map("client_membership")
+}
+
+/// The slices of the product a store owner delegates to team members.
+enum AccessArea {
+  MONEY
+  MARKETING
+  LOGISTICS
+  MANAGEMENT
+  DATA
+
+  @@map("access_area")
+}
+
 enum ConnectionRequestStatus {
   REQUESTED
   IN_PROGRESS
@@ -128,15 +148,18 @@ model ImportUndo {
 /// Someone who signs in. CLIENT users belong to one store; consultants and admins have none
 /// and reach stores through assignments (or everything, for admins).
 model User {
-  id           String   @id @default(cuid())
-  clientId     String?  @map("client_id")
-  email        String   @unique
+  id           String           @id @default(cuid())
+  clientId     String?          @map("client_id")
+  email        String           @unique
   name         String
   /// scrypt hash, "salt:hash" in hex.
-  passwordHash String   @map("password_hash")
+  passwordHash String           @map("password_hash")
   role         UserRole
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  membership   ClientMembership @default(OWNER)
+  viewAreas    AccessArea[]     @default([]) @map("view_areas")
+  editAreas    AccessArea[]     @default([]) @map("edit_areas")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
 
   client             Client?                @relation(fields: [clientId], references: [id], onDelete: Cascade)
   refreshTokens      RefreshToken[]
@@ -167,16 +190,19 @@ model ConsultantAssignment {
 /// An e-mail released to use the product; a CLIENT invitation without a store lets the
 /// invitee create one on first access.
 model Invitation {
-  id          String    @id @default(cuid())
-  email       String    @unique
+  id          String           @id @default(cuid())
+  email       String           @unique
   role        UserRole
-  clientId    String?   @map("client_id")
-  invitedById String?   @map("invited_by_id")
+  membership  ClientMembership @default(OWNER)
+  viewAreas   AccessArea[]     @default([]) @map("view_areas")
+  editAreas   AccessArea[]     @default([]) @map("edit_areas")
+  clientId    String?          @map("client_id")
+  invitedById String?          @map("invited_by_id")
   /// sha256 of the token sent by e-mail; cleared once accepted.
-  tokenHash   String?   @unique @map("token_hash")
-  expiresAt   DateTime? @map("expires_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  acceptedAt  DateTime? @map("accepted_at")
+  tokenHash   String?          @unique @map("token_hash")
+  expiresAt   DateTime?        @map("expires_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  acceptedAt  DateTime?        @map("accepted_at")
 
   client    Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
   invitedBy User?   @relation(fields: [invitedById], references: [id], onDelete: SetNull)
@@ -679,6 +705,8 @@ model Client {
   onboardedAt        DateTime? @map("onboarded_at")
   /// Set by an admin when the engagement ends; clients are blocked, data stays.
   archivedAt         DateTime? @map("archived_at")
+  /// How many team members (beyond the owner) the store may have; adjusted by an admin.
+  teamSeatLimit      Int       @default(5) @map("team_seat_limit")
   createdAt          DateTime  @default(now()) @map("created_at")
   updatedAt          DateTime  @updatedAt @map("updated_at")
 
@@ -809,10 +837,10 @@ model Contract {
 /// Who did what on a store. `clientId` is null for events outside any store (inviting a
 /// consultant). Actor name and role are copied at write so the entry survives the user.
 model AuditEvent {
-  id        String   @id @default(cuid())
-  clientId  String?  @map("client_id")
-  actorId   String?  @map("actor_id")
-  actorName String   @map("actor_name")
+  id        String    @id @default(cuid())
+  clientId  String?   @map("client_id")
+  actorId   String?   @map("actor_id")
+  actorName String    @map("actor_name")
   /// Null for a system actor (a webhook).
   actorRole UserRole? @map("actor_role")
   /// Closed set in packages/contracts/src/audit.
@@ -820,7 +848,7 @@ model AuditEvent {
   /// Portuguese sentence produced at write.
   summary   String
   metadata  Json?
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime  @default(now()) @map("created_at")
 
   client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
   actor  User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
@@ -1002,4 +1030,3 @@ model ConnectionRequest {
   @@index([clientId, status])
   @@map("connection_request")
 }
-

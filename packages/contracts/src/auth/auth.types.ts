@@ -1,3 +1,5 @@
+import type { AreaGrant, ClientMembership } from "./accessAreas";
+
 export const userRoles = ["ADMIN", "CONSULTANT", "CLIENT"] as const;
 export type UserRole = (typeof userRoles)[number];
 
@@ -20,6 +22,8 @@ export type AuthUser = {
   name: string;
   email: string;
   role: UserRole;
+  membership: ClientMembership | null;
+  grants: AreaGrant[];
   stores: StoreSummary[];
 };
 
@@ -33,4 +37,9 @@ export type AuthTokens = {
 export type LoginResponse = { user: AuthUser; tokens: AuthTokens };
 export type RefreshResponse = { tokens: AuthTokens };
 export type MeResponse = { user: AuthUser };
-export type InvitationCheck = { email: string; role: UserRole; storeName: string | null };
+export type InvitationCheck = {
+  email: string;
+  role: UserRole;
+  membership: ClientMembership;
+  storeName: string | null;
+};

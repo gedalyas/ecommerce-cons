@@ -9,10 +9,45 @@ How the product serves many stores. Plan and decisions: `saas-plan.md`,
 | ------------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ADMIN`      | every store                 | everything below plus inviting consultants and assigning them to stores                                                                                              |
 | `CONSULTANT` | the stores assigned to them | invite clients into their stores, resolve connection requests, edit the engagement (pillar status, pendências, manual KPIs, recommendations, milestone), import CSVs |
-| `CLIENT`     | their own store             | read every screen, configure the store (`/loja`), request connectors, import CSVs                                                                                    |
+| `CLIENT`     | their own store             | read every screen, configure the store (`/loja`), request connectors, import CSVs, manage the team                                                                   |
 
 The first `ADMIN` is created by `npm run db:seed` from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. A
 fresh install has one user and no store.
+
+### Team members inside a store
+
+A `CLIENT` user is either the store's **owner** (`User.membership = OWNER`, the one the
+invitation or the sale created) or a **team member** (`MEMBER`) the owner invited. Roles stay
+three; the member is a second dimension inside the store. The owner decides, per member and
+per area, one of **Sem acesso · Ver · Editar**. The areas
+(`contracts/auth/accessAreas.ts`) are `MONEY` (/dinheiro), `MARKETING` (/marketing,
+/influenciadores, ad spend / traffic / social connectors and imports), `LOGISTICS`
+(/logistica), `MANAGEMENT` (/gestao, /metas) and `DATA` (/pedidos, /produtos, /clientes,
+/metricas, orders connectors and imports). Stored as `User.viewAreas` / `User.editAreas`
+(edit implies view); `grantsOf` / `areasOfGrants` convert to the wire shape
+`AreaGrant[]`.
+
+- **Everyone in the store sees** the Dashboard, the Assistente and Conexões (status only).
+  `/loja`, the store profile, billing and the team are the owner's.
+- **Enforcement.** The API's `resolveClient` loads the member's grants into
+  `req.auth.access` (`null` = unrestricted: staff and owners); `createAreaGuards()` mounts
+  `requireArea(area)` on each area's route prefixes (`auth/areaRoutes.ts`): a `GET` needs
+  view, anything else needs edit, refused with 403 and a Portuguese message. Cross-cutting
+  writes check the connector's feeds (`canManageConnector`) or the import kind
+  (`areaOfImportKind`): a marketing editor imports ad spend and connects Meta Ads, not
+  Shopify. The web hides what the member cannot open (`shared/layout/screenAccess.ts` for
+  the sidebar, bottom nav and the root guard; `StoreConnector.canManage` and
+  `ImportsScreen.editableKinds` on Conexões). A change of grants applies on the next
+  request — no re-login.
+- **Invitation.** `/loja` › Equipe: the owner invites an e-mail with its grants
+  (`POST /team/invitations`), resends or revokes; the invitee registers through the same
+  `/cadastro?convite=` flow, the `Invitation` row carrying `membership` and the areas. The
+  owner edits a member's grants (`PUT /team/members/:id`) or removes the member (the user
+  row is deleted; the activity log keeps what they did). Every action is an
+  `audit_event` (`TEAM_*`).
+- **Seats.** `Client.teamSeatLimit` (default 5, an admin adjusts it per store; a plan
+  attribute once billing knows plans) caps members plus pending invitations. The form shows
+  "n de N assentos" and refuses with 422 past the limit.
 
 ## Access by invitation
 
@@ -98,6 +133,7 @@ store, marked "(arquivada)". "Reativar" undoes it; both are in the activity log.
 ## Clock
 
 `todayIso()` is the real date. `DEMO_TODAY` (API env) pins the clock for the development
-dataset (`npm run db:seed:dev`, store "Loja Exemplo", users `cliente@lojaexemplo.dev` and
+dataset (`npm run db:seed:dev`, store "Loja Exemplo", users `cliente@lojaexemplo.dev`
+(owner), `marketing@lojaexemplo.dev` (team member: Marketing edit, Dados view) and
 `consultor@ecommerce-insights.dev`, password `SEED_USER_PASSWORD`), whose data ends on
 2026-09-10. Leave it empty in production.

@@ -5,7 +5,13 @@ describe("canAccessStore", () => {
   it("lets admins in everywhere, consultants in their portfolio, clients in their own store", () => {
     expect(
       canAccessStore(
-        { role: "ADMIN", ownClientId: null, ownClientArchived: false, assignedClientIds: [] },
+        {
+          role: "ADMIN",
+          ownClientId: null,
+          ownClientArchived: false,
+          assignedClientIds: [],
+          areaAccess: null,
+        },
         "x",
       ),
     ).toBe(true);
@@ -14,6 +20,7 @@ describe("canAccessStore", () => {
       ownClientId: null,
       ownClientArchived: false,
       assignedClientIds: ["a", "b"],
+      areaAccess: null,
     };
     expect(canAccessStore(consultant, "a")).toBe(true);
     expect(canAccessStore(consultant, "c")).toBe(false);
@@ -22,6 +29,7 @@ describe("canAccessStore", () => {
       ownClientId: "a",
       ownClientArchived: false,
       assignedClientIds: [],
+      areaAccess: null,
     };
     expect(canAccessStore(client, "a")).toBe(true);
     expect(canAccessStore(client, "b")).toBe(false);
@@ -36,6 +44,7 @@ describe("defaultStoreOf", () => {
         ownClientId: "a",
         ownClientArchived: false,
         assignedClientIds: [],
+        areaAccess: null,
       }),
     ).toBe("a");
     expect(
@@ -44,6 +53,7 @@ describe("defaultStoreOf", () => {
         ownClientId: null,
         ownClientArchived: false,
         assignedClientIds: ["a"],
+        areaAccess: null,
       }),
     ).toBe("a");
     expect(
@@ -52,6 +62,7 @@ describe("defaultStoreOf", () => {
         ownClientId: null,
         ownClientArchived: false,
         assignedClientIds: ["a", "b"],
+        areaAccess: null,
       }),
     ).toBeNull();
     expect(
@@ -60,6 +71,7 @@ describe("defaultStoreOf", () => {
         ownClientId: null,
         ownClientArchived: false,
         assignedClientIds: [],
+        areaAccess: null,
       }),
     ).toBeNull();
   });
@@ -79,6 +91,7 @@ describe("isBlockedByArchive", () => {
       ownClientId: "a",
       ownClientArchived: true,
       assignedClientIds: [],
+      areaAccess: null,
     };
     expect(isBlockedByArchive(archived, "a")).toBe(true);
     expect(isBlockedByArchive({ ...archived, ownClientArchived: false }, "a")).toBe(false);

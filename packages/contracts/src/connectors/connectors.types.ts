@@ -75,6 +75,7 @@ export type StoreConnector = Connector & {
   syncLabel: string;
   request: ConnectionRequest | null;
   connection: ConnectionSummary | null;
+  canManage: boolean;
 };
 
 export const statusMappingTargets = ["PAID", "PENDING", "CANCELLED", "REFUNDED", "IGNORE"] as const;

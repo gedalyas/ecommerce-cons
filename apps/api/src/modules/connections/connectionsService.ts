@@ -4,7 +4,9 @@ import type {
   DataSourceState,
 } from "@ecommerce/contracts/connections";
 import { connectionsSummaryOf, hasErrorSource } from "@ecommerce/contracts/connections";
+import type { AreaAccess } from "@ecommerce/contracts/auth";
 import {
+  canManageConnector,
   connectorCatalog,
   connectorKindLabel,
   type ConnectionRequest,
@@ -72,6 +74,7 @@ export type ConnectorSources = { connectionsOf: ConnectionsOf; liveKeys: readonl
 export async function storeConnectorsFor(
   clientId: string,
   { connectionsOf, liveKeys }: ConnectorSources,
+  access: AreaAccess = null,
 ): Promise<StoreConnector[]> {
   const [sources, connections, requests] = await Promise.all([
     dataSourcesFor(clientId),
@@ -93,6 +96,7 @@ export async function storeConnectorsFor(
       syncLabel: source?.syncLabel ?? "—",
       request: openRequest.get(connector.key) ?? null,
       connection: connections.get(connector.key) ?? null,
+      canManage: canManageConnector(access, connector),
     };
   });
 }
@@ -101,7 +105,7 @@ export async function connectionsScreen(
   auth: AuthContext,
   sources: ConnectorSources,
 ): Promise<ConnectionsScreen> {
-  const connectors = await storeConnectorsFor(auth.clientId, sources);
+  const connectors = await storeConnectorsFor(auth.clientId, sources, auth.access);
   return { connectors, summary: connectionsSummaryOf(connectors), canRequest: true };
 }
 

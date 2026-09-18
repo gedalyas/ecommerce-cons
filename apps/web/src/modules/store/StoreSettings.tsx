@@ -1,5 +1,6 @@
 import { useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import type { ReactNode } from "react";
 import type { ActivityPage } from "@ecommerce/contracts/audit";
 import type { Store } from "@ecommerce/contracts/store";
 import { ActivityTable } from "@/modules/activity/contract";
@@ -14,10 +15,12 @@ export function StoreSettings({
   store,
   activity,
   onActivityPage,
+  team,
 }: {
   store: Store;
   activity: ActivityPage;
   onActivityPage: (page: number) => void;
+  team: ReactNode;
 }) {
   const update = useServerFn(updateStoreFn);
   const router = useRouter();
@@ -41,6 +44,7 @@ export function StoreSettings({
             }}
           />
         </SectionBlock>
+        {team}
         <SectionBlock
           title="Atividade"
           description="Quem fez o quê nesta loja: convites, importações, edições do acompanhamento."

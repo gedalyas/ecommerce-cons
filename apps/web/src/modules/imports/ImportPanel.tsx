@@ -116,7 +116,8 @@ function TemplateColumns({ kind }: { kind: ImportKind }) {
 }
 
 export function ImportPanel({ data }: { data: ImportsScreen }) {
-  const [kind, setKind] = useState<ImportKind>("ORDERS");
+  const editableOptions = kindOptions.filter((o) => data.editableKinds.includes(o.key));
+  const [kind, setKind] = useState<ImportKind>(data.editableKinds[0] ?? "ORDERS");
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -145,84 +146,94 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
       description="Planilhas CSV que ainda não têm integração automática. O arquivo é validado e gravado nas mesmas tabelas que alimentam os indicadores."
       bodyClassName={cn(layout.cardPadding, layout.groupStack)}
     >
-      <SegmentedControl
-        options={kindOptions}
-        value={kind}
-        onChange={(next) => {
-          reset();
-          setKind(next);
-        }}
-        label="Tipo de dado"
-      />
-      <TemplateColumns kind={kind} />
-
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() => input.current?.click()}
-        onKeyDown={(e) => e.key === "Enter" && input.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={onDrop}
-        className={cn(
-          "cursor-pointer border border-dashed bg-background p-5 transition-colors duration-150",
-          radiusClass.card,
-          dragging ? "border-primary bg-accent" : "border-border",
-        )}
-      >
-        <input
-          ref={input}
-          type="file"
-          accept=".csv,text/csv"
-          className="hidden"
-          onChange={(e) => pick(e.target.files?.[0] ?? null)}
-        />
-        <div className="flex items-center gap-3">
-          <FileUp className="h-5 w-5 shrink-0 text-muted-foreground" />
-          <div className="min-w-0">
-            <div className="text-[15px] font-semibold text-foreground">
-              {file ? file.name : "Arraste o CSV aqui ou selecione um arquivo"}
-            </div>
-            <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
-              {file
-                ? `${formatFileSize(file.size)} · clique para trocar`
-                : "Formato aceito: .csv · até 10 MB"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {message && (
-        <p role="alert" className={cn(textClass.meta, "text-destructive")}>
-          {message}
+      {editableOptions.length === 0 && (
+        <p role="status" className={cn(textClass.meta, "text-muted-foreground")}>
+          Você não tem permissão para importar planilhas. Peça ao dono da loja para liberar a edição
+          de Dados ou Marketing.
         </p>
       )}
+      {editableOptions.length > 0 && (
+        <>
+          <SegmentedControl
+            options={editableOptions}
+            value={kind}
+            onChange={(next) => {
+              reset();
+              setKind(next);
+            }}
+            label="Tipo de dado"
+          />
+          <TemplateColumns kind={kind} />
 
-      {!preview && (
-        <div className="flex justify-end">
-          <Button
-            disabled={!file || busy}
-            onClick={() => file && void previewFile(kind, file)}
-            className="h-11 w-full md:h-9 md:w-auto"
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => input.current?.click()}
+            onKeyDown={(e) => e.key === "Enter" && input.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={onDrop}
+            className={cn(
+              "cursor-pointer border border-dashed bg-background p-5 transition-colors duration-150",
+              radiusClass.card,
+              dragging ? "border-primary bg-accent" : "border-border",
+            )}
           >
-            {busy ? "Lendo…" : `Conferir ${importKindLabel[kind].toLowerCase()}`}
-          </Button>
-        </div>
-      )}
+            <input
+              ref={input}
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              onChange={(e) => pick(e.target.files?.[0] ?? null)}
+            />
+            <div className="flex items-center gap-3">
+              <FileUp className="h-5 w-5 shrink-0 text-muted-foreground" />
+              <div className="min-w-0">
+                <div className="text-[15px] font-semibold text-foreground">
+                  {file ? file.name : "Arraste o CSV aqui ou selecione um arquivo"}
+                </div>
+                <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
+                  {file
+                    ? `${formatFileSize(file.size)} · clique para trocar`
+                    : "Formato aceito: .csv · até 10 MB"}
+                </p>
+              </div>
+            </div>
+          </div>
 
-      {preview && file && (
-        <ImportPreviewCard
-          preview={preview}
-          busy={busy}
-          onConfirm={() => void submit(kind, file)}
-          onCancel={reset}
-        />
-      )}
+          {message && (
+            <p role="alert" className={cn(textClass.meta, "text-destructive")}>
+              {message}
+            </p>
+          )}
 
-      {job && <ImportResult job={job} />}
+          {!preview && (
+            <div className="flex justify-end">
+              <Button
+                disabled={!file || busy}
+                onClick={() => file && void previewFile(kind, file)}
+                className="h-11 w-full md:h-9 md:w-auto"
+              >
+                {busy ? "Lendo…" : `Conferir ${importKindLabel[kind].toLowerCase()}`}
+              </Button>
+            </div>
+          )}
+
+          {preview && file && (
+            <ImportPreviewCard
+              preview={preview}
+              busy={busy}
+              onConfirm={() => void submit(kind, file)}
+              onCancel={reset}
+            />
+          )}
+
+          {job && <ImportResult job={job} />}
+        </>
+      )}
 
       <DataTable
         columns={[

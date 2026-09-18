@@ -20,6 +20,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
 import { cn } from "@/shared/utils/cn";
+import { openableItems } from "./screenAccess";
 import type { ShellAccount, ShellStatus } from "./shellStatus.types";
 
 const mainItems = [
@@ -43,6 +44,9 @@ const dataItems = [
 export function Sidebar({ status, account }: { status: ShellStatus; account: ShellAccount }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { maturity } = status;
+  const areaItems = openableItems(mainItems, account.access);
+  const dataLinks = openableItems(dataItems, account.access);
+  const isOwner = account.access === null;
   const maturityPercent = maturity.total > 0 ? (maturity.achieved / maturity.total) * 100 : 0;
 
   const linkClass = (active: boolean) =>
@@ -91,7 +95,7 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
       <nav className="relative min-h-0 flex-1 overflow-y-auto py-2">
         <div className="t-label hidden px-3 pb-2 pt-2 text-muted-foreground xl:block">Áreas</div>
         <ul>
-          {mainItems.map((item) => (
+          {areaItems.map((item) => (
             <li key={item.to}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -108,11 +112,13 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
           ))}
         </ul>
 
-        <div className="my-3 border-t border-sidebar-border" />
+        {dataLinks.length > 0 && <div className="my-3 border-t border-sidebar-border" />}
 
-        <div className="t-label hidden px-3 pb-2 text-muted-foreground xl:block">Dados</div>
+        {dataLinks.length > 0 && (
+          <div className="t-label hidden px-3 pb-2 text-muted-foreground xl:block">Dados</div>
+        )}
         <ul>
-          {dataItems.map((item) => (
+          {dataLinks.map((item) => (
             <li key={item.to}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -151,17 +157,19 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
             Conexões
           </TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link to="/loja" className={linkClass(pathname === "/loja")}>
-              <Settings className="h-4 w-4 shrink-0" />
-              <span className="hidden flex-1 truncate xl:inline">Loja</span>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="xl:hidden">
-            Loja
-          </TooltipContent>
-        </Tooltip>
+        {isOwner && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link to="/loja" className={linkClass(pathname === "/loja")}>
+                <Settings className="h-4 w-4 shrink-0" />
+                <span className="hidden flex-1 truncate xl:inline">Loja</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="xl:hidden">
+              Loja
+            </TooltipContent>
+          </Tooltip>
+        )}
         {account.role !== "CLIENT" && (
           <Tooltip>
             <TooltipTrigger asChild>

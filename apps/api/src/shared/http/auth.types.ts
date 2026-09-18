@@ -1,8 +1,8 @@
-import type { UserRole } from "@ecommerce/contracts/auth";
+import type { AreaAccess, UserRole } from "@ecommerce/contracts/auth";
 
 export type Principal = { userId: string; role: UserRole };
 
-export type AuthContext = Principal & { clientId: string };
+export type AuthContext = Principal & { clientId: string; access: AreaAccess };
 
 declare module "express-serve-static-core" {
   interface Request {

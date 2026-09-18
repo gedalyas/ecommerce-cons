@@ -23,19 +23,23 @@ do web, esbuild no da API.
 
 ## Como rodar
 
-Pré-requisitos: Docker (compose v2), Node.js ≥ 22 e GNU make.
+Pré-requisitos: Docker Desktop (compose v2), Node.js ≥ 22 e GNU make (no Windows, o make roda
+as receitas no bash do Git).
 
 ```sh
 make ecom
 ```
 
-Esse alvo faz tudo: cria o `.env`, instala dependências, sobe o Postgres em Docker, aplica as
-migrações, roda o seed e inicia os dois dev servers — API em <http://localhost:3001/api/v1> e
-web em <http://localhost:8080>. O seed cria só o administrador (`ADMIN_EMAIL` /
+Esse alvo faz tudo: cria o `.env`, instala dependências, abre o Docker Desktop se ele estiver
+parado, sobe o Postgres, aplica as migrações, roda o seed, inicia a API, o worker e o web em
+segundo plano (saída em `.makelogs/`, `make logs` acompanha) e abre o navegador quando o
+web responde — API em <http://localhost:3090/api/v1> e web em <http://localhost:8090>. O
+terminal volta na hora; `make stop` derruba tudo, `make kill` só os dev servers. O seed cria só o administrador (`ADMIN_EMAIL` /
 `ADMIN_PASSWORD` no `.env`, padrão `admin@ecommerce-insights.dev` / `admin2026`). Para uma
 loja de desenvolvimento com 18 meses de dados sintéticos, rode `npm run db:seed:dev` (loja
 "Loja Exemplo", usuários `cliente@lojaexemplo.dev` e `consultor@ecommerce-insights.dev`,
-senha `SEED_USER_PASSWORD`) e mantenha `DEMO_TODAY=2026-09-10` no `.env`.
+senha `SEED_USER_PASSWORD`; `marketing@lojaexemplo.dev` entra como membro da equipe com
+acesso só a Marketing e Dados) e mantenha `DEMO_TODAY=2026-09-10` no `.env`.
 
 `npm run dev` sobe a API, o **worker** (sincronizações dos conectores, pg-boss no próprio
 Postgres) e o web. Os conectores (Nuvemshop, Bling, Google Ads, GA4, Meta Ads, Shopify,
@@ -52,6 +56,9 @@ Outros alvos úteis (`make help` lista todos):
 
 | Comando                        | O que faz                                          |
 | ------------------------------ | -------------------------------------------------- |
+| `make dev`                     | api + worker + web em primeiro plano (Ctrl+C para) |
+| `make api` / `worker` / `web`  | Um dev server só, em primeiro plano                |
+| `make logs` / `make stop`      | Acompanha / derruba o que `make ecom` subiu        |
 | `make up`                      | Postgres + api + web buildados, tudo em Docker     |
 | `make down`                    | Derruba os containers (preserva o volume do banco) |
 | `make studio`                  | Abre o Prisma Studio                               |

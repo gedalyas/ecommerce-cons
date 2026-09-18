@@ -7,7 +7,9 @@ import {
   MoreHorizontal,
   Truck,
 } from "lucide-react";
+import type { AreaAccess } from "@ecommerce/contracts/auth";
 import { cn } from "@/shared/utils/cn";
+import { openableItems } from "./screenAccess";
 
 const items = [
   { label: "Dashboard", to: "/", icon: LayoutDashboard },
@@ -18,12 +20,12 @@ const items = [
   { label: "Mais", to: "/conexoes", icon: MoreHorizontal },
 ];
 
-export function BottomNav() {
+export function BottomNav({ access }: { access: AreaAccess }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-sidebar-border bg-sidebar md:hidden">
-      {items.map((item) => {
+    <nav className="fixed inset-x-0 bottom-0 z-40 grid auto-cols-fr grid-flow-col border-t border-sidebar-border bg-sidebar md:hidden">
+      {openableItems(items, access).map((item) => {
         const active = pathname === item.to;
         return (
           <Link

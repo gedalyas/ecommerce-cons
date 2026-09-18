@@ -16,18 +16,24 @@ import { invitationStatusOf } from "@ecommerce/contracts/admin";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
 import {
-  INVITATION_TOKEN_SECONDS,
-  hashToken,
-  invitationExpiry,
-  invitationLink,
-  invitationMail,
-  newOpaqueToken,
+  issueInvitation,
+  reissueInvitation,
+  type InvitationDelivery,
+  type IssueInvitationInput,
 } from "@/modules/auth/contract";
 import type { Principal } from "@/shared/http/auth.types";
 import { forbidden, HttpError, notFound } from "@/shared/http/httpError";
-import type { Mailer } from "@/shared/mail/mailer.types";
 
-export type InvitationDelivery = { now: () => Date; mailer: Mailer; appUrl: string };
+export type { InvitationDelivery };
+
+const staffInvitation = (): Pick<
+  IssueInvitationInput,
+  "membership" | "viewAreas" | "editAreas"
+> => ({
+  membership: "OWNER",
+  viewAreas: [],
+  editAreas: [],
+});
 
 const consultantSelect = { id: true, name: true, email: true } as const;
 
@@ -151,9 +157,12 @@ const invitationSelect = {
 async function invitationsFor(principal: Principal, now: Date): Promise<Invitation[]> {
   const visible = await visibleClientIds(principal);
   const rows = await prismaClient.invitation.findMany({
-    ...(visible
-      ? { where: { OR: [{ clientId: { in: visible } }, { invitedById: principal.userId }] } }
-      : {}),
+    where: {
+      membership: "OWNER",
+      ...(visible
+        ? { OR: [{ clientId: { in: visible } }, { invitedById: principal.userId }] }
+        : {}),
+    },
     orderBy: { createdAt: "desc" },
     select: invitationSelect,
   });
@@ -219,31 +228,6 @@ export async function adminScreen(principal: Principal, now: Date): Promise<Admi
   return { role: principal.role, stores, consultants, invitations, requests };
 }
 
-async function deliverInvitation(
-  row: InvitationRow,
-  token: string,
-  delivery: InvitationDelivery,
-): Promise<void> {
-  try {
-    await delivery.mailer.send(
-      invitationMail({
-        to: row.email,
-        inviterName: row.invitedBy?.name ?? "Sua consultoria",
-        role: row.role,
-        storeName: row.client?.name ?? null,
-        link: invitationLink(delivery.appUrl, token),
-        expiresInDays: INVITATION_TOKEN_SECONDS / 86_400,
-      }),
-    );
-  } catch (error) {
-    console.error(error);
-    throw new HttpError(
-      502,
-      "O convite foi registrado, mas o e-mail não pôde ser enviado. Tente reenviar.",
-    );
-  }
-}
-
 export async function createInvitation(
   principal: Principal,
   input: InvitationInput,
@@ -259,7 +243,7 @@ export async function createInvitation(
     select: { id: true },
   });
   if (taken) throw new HttpError(409, "Este e-mail já tem cadastro.");
-  const row = await issueInvitation(input, principal.userId, delivery);
+  const row = await issueInvitation({ ...input, ...staffInvitation() }, principal.userId, delivery);
   await recordActivity(principal, row.client ? input.clientId : null, {
     action: "INVITATION_CREATED",
     email: row.email,
@@ -267,30 +251,6 @@ export async function createInvitation(
     storeName: row.client?.name ?? null,
   });
   return toInvitation(row, delivery.now());
-}
-
-async function issueInvitation(
-  input: InvitationInput,
-  invitedById: string | null,
-  delivery: InvitationDelivery,
-): Promise<InvitationRow> {
-  const now = delivery.now();
-  const token = newOpaqueToken();
-  const stamp = { tokenHash: hashToken(token), expiresAt: invitationExpiry(now), acceptedAt: null };
-  const row = await prismaClient.invitation.upsert({
-    where: { email: input.email },
-    create: {
-      email: input.email,
-      role: input.role,
-      clientId: input.clientId,
-      invitedById,
-      ...stamp,
-    },
-    update: { role: input.role, clientId: input.clientId, invitedById, ...stamp },
-    select: invitationSelect,
-  });
-  await deliverInvitation(row, token, delivery);
-  return row;
 }
 
 export async function inviteFromSale(email: string, delivery: InvitationDelivery): Promise<void> {
@@ -301,7 +261,11 @@ export async function inviteFromSale(email: string, delivery: InvitationDelivery
   if (pending && !pending.acceptedAt && pending.expiresAt && pending.expiresAt > delivery.now()) {
     return;
   }
-  const row = await issueInvitation({ email, role: "CLIENT", clientId: null }, null, delivery);
+  const row = await issueInvitation(
+    { email, role: "CLIENT", clientId: null, ...staffInvitation() },
+    null,
+    delivery,
+  );
   await recordActivity({ system: "Guru" }, null, {
     action: "INVITATION_CREATED",
     email: row.email,
@@ -323,21 +287,14 @@ export async function resendInvitation(
   if (!existing) throw notFound("Convite não encontrado");
   if (existing.acceptedAt) throw new HttpError(409, "Este convite já foi usado.");
   if (existing.clientId) await assertVisible(principal, existing.clientId);
-  const now = delivery.now();
-  const token = newOpaqueToken();
-  const row = await prismaClient.invitation.update({
-    where: { id },
-    data: { tokenHash: hashToken(token), expiresAt: invitationExpiry(now) },
-    select: invitationSelect,
-  });
-  await deliverInvitation(row, token, delivery);
+  const row = await reissueInvitation(id, delivery);
   await recordActivity(principal, existing.clientId, {
     action: "INVITATION_RESENT",
     email: row.email,
     role: row.role,
     storeName: row.client?.name ?? null,
   });
-  return toInvitation(row, now);
+  return toInvitation(row, delivery.now());
 }
 
 export async function revokeInvitation(principal: Principal, id: string): Promise<void> {

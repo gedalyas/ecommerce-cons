@@ -46,7 +46,7 @@ export function AppShell({
         </div>
         {!isAssistant && assistant}
         {!isAssistant && assistantFab}
-        <BottomNav />
+        <BottomNav access={account.access} />
       </div>
     </TooltipProvider>
   );

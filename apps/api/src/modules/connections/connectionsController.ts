@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { connectionRequestInputSchema, connectorKeySchema } from "@ecommerce/contracts/connectors";
+import { assertConnectorEdit } from "@/modules/auth/contract";
 import { authOf } from "@/shared/http/authOf";
 import { parseOrThrow } from "@/shared/http/validate";
 import {
@@ -21,8 +22,10 @@ export function connectionsController(sources: ConnectionsDependencies) {
     },
     async request(req: Request, res: Response) {
       const { key } = parseOrThrow(connectorKeySchema, req.params);
+      const auth = authOf(req);
+      assertConnectorEdit(auth, key);
       const input = parseOrThrow(connectionRequestInputSchema, req.body ?? {});
-      res.status(201).json(await requestConnection(authOf(req), key, input));
+      res.status(201).json(await requestConnection(auth, key, input));
     },
   };
 }

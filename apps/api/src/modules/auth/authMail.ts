@@ -1,4 +1,4 @@
-import type { UserRole } from "@ecommerce/contracts/auth";
+import type { ClientMembership, UserRole } from "@ecommerce/contracts/auth";
 import { userRoleLabel } from "@ecommerce/contracts/auth";
 import type { MailMessage } from "@/shared/mail/mailer.types";
 
@@ -45,16 +45,24 @@ export type InvitationMailInput = {
   to: string;
   inviterName: string;
   role: UserRole;
+  membership?: ClientMembership;
   storeName: string | null;
   link: string;
   expiresInDays: number;
 };
 
-export function invitationMail(input: InvitationMailInput): MailMessage {
+function invitationIntro(input: InvitationMailInput): string {
+  if (input.membership === "MEMBER") {
+    return `${input.inviterName} convidou você para a equipe da loja ${input.storeName ?? ""} no ${PRODUCT}.`;
+  }
   const what = `${userRoleLabel[input.role].toLowerCase()}${
     input.storeName ? ` da loja ${input.storeName}` : ""
   }`;
-  const intro = `${input.inviterName} convidou você para o ${PRODUCT} como ${what}.`;
+  return `${input.inviterName} convidou você para o ${PRODUCT} como ${what}.`;
+}
+
+export function invitationMail(input: InvitationMailInput): MailMessage {
+  const intro = invitationIntro(input);
   const action = "Crie sua conta pelo link abaixo:";
   const expiry = `O link vale por ${input.expiresInDays} dias. Se você não esperava este convite, ignore este e-mail.`;
   return {

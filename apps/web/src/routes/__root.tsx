@@ -24,6 +24,7 @@ import {
   type PeriodSearch,
 } from "@ecommerce/contracts/shared/period";
 import { AppShell } from "@/shared/layout/AppShell";
+import { canOpenPath } from "@/shared/layout/screenAccess";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
 import { getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
 import {
@@ -32,6 +33,7 @@ import {
   getDataReadiness,
 } from "@/modules/connections/contract";
 import { getMilestoneSummary } from "@/modules/consulting/contract";
+import { areaAccessOf } from "@ecommerce/contracts/auth";
 
 const SHELL_STALE_MS = 5 * 60_000;
 
@@ -178,6 +180,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     if (!archivedClient && location.pathname === ARCHIVED_PATH) throw redirect({ to: "/" });
     if (location.pathname === ONBOARDING_PATH) throw redirect({ to: "/" });
     if (location.pathname === ADMIN_PATH && user.role === "CLIENT") throw redirect({ to: "/" });
+    if (!canOpenPath(location.pathname, areaAccessOf(user))) throw redirect({ to: "/" });
     return { session };
   },
   loaderDeps: () => ({}),
@@ -251,6 +254,7 @@ function RootComponent() {
         account={{
           name: user.name,
           role: user.role,
+          access: areaAccessOf(user),
           onSignOut: () => void signOut(),
           store: activeStore
             ? {

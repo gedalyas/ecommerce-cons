@@ -50,11 +50,15 @@ export function Register({ token, invitation }: { token: string; invitation: Inv
     );
   }
 
-  const { email, role, storeName } = invitation.invitation;
+  const { email, role, membership, storeName } = invitation.invitation;
   return (
     <AuthCard
       title="Criar conta"
-      description={`Convite de ${userRoleLabel[role].toLowerCase()}${storeName ? ` para ${storeName}` : ""}.`}
+      description={
+        membership === "MEMBER"
+          ? `Convite para a equipe${storeName ? ` de ${storeName}` : ""}.`
+          : `Convite de ${userRoleLabel[role].toLowerCase()}${storeName ? ` para ${storeName}` : ""}.`
+      }
       footer={signInFooter}
     >
       <form className="grid gap-4" onSubmit={(e) => void submit(e)} noValidate>

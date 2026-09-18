@@ -1,5 +1,7 @@
 import {
   IMPORT_MAX_ROWS,
+  areaOfImportKind,
+  editableImportKinds,
   importKindLabel,
   type ImportJob,
   type ImportKind,
@@ -11,6 +13,7 @@ import type { ConnectorKey } from "@ecommerce/contracts/connectors";
 import { prismaClient } from "@ecommerce/database/client";
 import type { ImportStatus } from "@ecommerce/database/enums";
 import { recordActivity } from "@/modules/audit/contract";
+import { assertAreaEdit } from "@/modules/auth/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
 import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
@@ -217,14 +220,18 @@ export async function runImport(
   return toJob(job, entries.length > 0);
 }
 
-export async function importsScreen(clientId: string): Promise<ImportsScreen> {
+export async function importsScreen(auth: AuthContext): Promise<ImportsScreen> {
   const rows = await prismaClient.importJob.findMany({
-    where: { clientId },
+    where: { clientId: auth.clientId },
     orderBy: { createdAt: "desc" },
     take: HISTORY_SIZE,
   });
-  const undoable = await undoableJobIds(clientId);
-  return { jobs: rows.map((row) => toJob(row, undoable.has(row.id))) };
+  const undoable = await undoableJobIds(auth.clientId);
+  const editableKinds = editableImportKinds(auth.access);
+  return {
+    jobs: rows.map((row) => toJob(row, undoable.has(row.id) && editableKinds.includes(row.kind))),
+    editableKinds,
+  };
 }
 
 export async function importJobOf(clientId: string, id: string): Promise<ImportJob> {
@@ -234,6 +241,8 @@ export async function importJobOf(clientId: string, id: string): Promise<ImportJ
 }
 
 export async function undoImportJob(auth: AuthContext, id: string, now: Date): Promise<ImportJob> {
+  const existing = await importJobOf(auth.clientId, id);
+  assertAreaEdit(auth, areaOfImportKind[existing.kind]);
   await undoImport(auth.clientId, id, now);
   const job = await importJobOf(auth.clientId, id);
   await recordActivity(auth, auth.clientId, {

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { storeProfileSchema } from "@ecommerce/contracts/store";
+import { assertOwner } from "@/modules/auth/contract";
 import { authOf, principalOf } from "@/shared/http/authOf";
 import { parseOrThrow } from "@/shared/http/validate";
 import { createStore, storeOf, updateStore } from "./storeService";
@@ -16,8 +17,10 @@ export function storeController({ now }: StoreDependencies) {
       res.json(await storeOf(authOf(req).clientId));
     },
     async update(req: Request, res: Response) {
+      const auth = authOf(req);
+      assertOwner(auth);
       const input = parseOrThrow(storeProfileSchema, req.body);
-      res.json(await updateStore(authOf(req), input));
+      res.json(await updateStore(auth, input));
     },
   };
 }
