@@ -29,7 +29,7 @@ ecommerce-cons/
 ├── packages/
 │   ├── contracts/               # what crosses the wire: *.types.ts, *Schema.ts, closed sets + labels, period, MetricValue; no DOM, no React, no Prisma
 │   └── database/                # prisma/ (schema, migrations, seed, fixtures), generated client, prismaClient factory
-├── scripts/                     # checkCycles.ts + cyclicFiles.ts (shared tooling), make-helpers, favicon
+├── scripts/                     # checkCycles.ts + cyclicFiles.ts (shared tooling), favicon
 ├── specs/, CLAUDE.md, Makefile, docker-compose.yml, .github/
 ```
 
@@ -144,7 +144,7 @@ drift silently. Recorded in `decisions/2026-09-13-workspaces-api-contracts.md`.
   `.dependency-cruiser.cjs`.
 - Docker: `apps/api/Dockerfile` (Node runtime, `prisma migrate deploy` on start) and
   `apps/web/Dockerfile` (Nitro output); compose services `postgres`, `api`, `web`.
-- Ports: web `8080`, api `3001`; `API_URL` in the web's env.
+- Ports: web `8090`, api `3090`; `API_URL` in the web's env.
 
 ## Stages
 

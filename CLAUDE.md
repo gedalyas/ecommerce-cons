@@ -36,7 +36,7 @@ architecture decisions in `specs/decisions/`; the rules below derive from the Ar
 
 ```sh
 make ecom             # full setup + dev servers (env, deps, postgres, migrate, seed, dev)
-npm run dev           # api on :3001 and web on :8080 (concurrently); one .env at the root
+npm run dev           # api on :3090 and web on :8090 (concurrently); one .env at the root
 npm run typecheck     # every workspace
 npm run lint          # root (scripts/) + every workspace; CI adds --max-warnings <cap>
 npm run check:cycles  # web, api and contracts; CI adds --max-files 0

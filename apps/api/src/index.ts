@@ -2,7 +2,7 @@ import { createApp } from "./app";
 import { readEnv } from "./shared/config/env";
 import { createJobs } from "./shared/jobs/createJobs";
 
-const DEFAULT_PORT = 3001;
+const DEFAULT_PORT = 3090;
 const env = readEnv();
 const jobs = createJobs(env.DATABASE_URL);
 await jobs.start();

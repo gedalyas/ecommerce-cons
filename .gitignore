@@ -40,3 +40,6 @@ dist-ssr
 
 # Development mail outbox (apps/api)
 outbox/
+
+# make ecom background server output
+.makelogs/

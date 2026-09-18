@@ -15,10 +15,10 @@ RUN npm run db:generate && npm run build -w apps/web
 
 FROM node:22-alpine AS runtime
 WORKDIR /app
-ENV NODE_ENV=production PORT=8080
+ENV NODE_ENV=production PORT=8090
 
 # The Nitro output is self-contained; no node_modules needed at runtime.
 COPY --from=build /repo/apps/web/.output ./.output
 
-EXPOSE 8080
+EXPOSE 8090
 CMD ["node", ".output/server/index.mjs"]

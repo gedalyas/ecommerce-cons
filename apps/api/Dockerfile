@@ -15,7 +15,7 @@ RUN npm run db:generate && npm run build -w apps/api
 
 FROM node:22-alpine AS runtime
 WORKDIR /repo
-ENV NODE_ENV=production API_PORT=3001
+ENV NODE_ENV=production API_PORT=3090
 
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
@@ -26,7 +26,7 @@ RUN npm ci --omit=dev --no-audit --no-fund
 COPY --from=build /repo/apps/api/dist apps/api/dist
 COPY --from=build /repo/packages/database packages/database
 
-EXPOSE 3001
+EXPOSE 3090
 # The API image runs the migrations and ensures the first admin (ADMIN_EMAIL / ADMIN_PASSWORD)
 # before listening; the worker service reuses the image with `node apps/api/dist/worker.mjs`.
 CMD ["sh", "-c", "npx prisma migrate deploy --config packages/database/prisma.config.ts && node apps/api/dist/seed.mjs && node apps/api/dist/index.mjs"]

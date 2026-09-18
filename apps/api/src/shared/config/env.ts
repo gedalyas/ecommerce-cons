@@ -15,8 +15,8 @@ const envSchema = z.object({
         .map((origin) => origin.trim())
         .filter(Boolean),
     ),
-  APP_URL: z.string().url().default("http://localhost:8080"),
-  API_PUBLIC_URL: z.string().url().default("http://localhost:3001"),
+  APP_URL: z.string().url().default("http://localhost:8090"),
+  API_PUBLIC_URL: z.string().url().default("http://localhost:3090"),
   CREDENTIALS_KEY: z.string().min(1),
   CONNECTOR_USER_AGENT: z.string().default("E-commerce Insights (contato@ecommerce-insights.dev)"),
   CONNECTOR_BACKFILL_MONTHS: z.coerce.number().int().min(1).max(60).default(18),

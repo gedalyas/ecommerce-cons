@@ -39,12 +39,12 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      API_PORT: 3001
+      API_PORT: 3090
       DATABASE_URL: postgresql://${POSTGRES_USER:-ecommerce}:${POSTGRES_PASSWORD:-ecommerce}@postgres:5432/${POSTGRES_DB:-ecommerce_insights}?schema=public
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8090}
     ports:
-      - "${API_PORT:-3001}:3001"
+      - "${API_PORT:-3090}:3090"
 
   web:
     profiles: ["app"]
@@ -58,13 +58,13 @@ services:
         condition: service_started
     environment:
       NODE_ENV: production
-      PORT: 8080
-      API_URL: http://api:3001
+      PORT: 8090
+      API_URL: http://api:3090
       SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
       # Inside the compose network the database answers at `postgres`, not localhost.
       DATABASE_URL: postgresql://${POSTGRES_USER:-ecommerce}:${POSTGRES_PASSWORD:-ecommerce}@postgres:5432/${POSTGRES_DB:-ecommerce_insights}?schema=public
     ports:
-      - "${PORT:-8080}:8080"
+      - "${PORT:-8090}:8090"
 
 volumes:
   postgres-data:

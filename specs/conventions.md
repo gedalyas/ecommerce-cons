@@ -51,7 +51,7 @@ apps/api/src/
   shared/              config/env.ts, http/ (errors, validate, coerceQuery, auth)
 packages/contracts/src/<domain>/ + shared/   types, schemas, closed sets, formatters
 packages/database/     prisma/ (schema, migrations, seed, fixtures), src/ (client)
-scripts/               checkCycles.ts, cyclicFiles.ts, generate-favicon.mjs, make-helpers.mjs
+scripts/               checkCycles.ts, cyclicFiles.ts, generate-favicon.mjs
 specs/                 these documents + decisions/ (ADRs)
 ```
 

@@ -22,8 +22,8 @@ export default defineConfig(({ command, mode }) => {
   loadRootEnv(mode);
   return {
     envDir: repoRoot,
-    server: { host: true, port: 8080 },
-    preview: { host: true, port: 8080 },
+    server: { host: true, port: 8090 },
+    preview: { host: true, port: 8090 },
     resolve: {
       // Keep a single copy of React and the TanStack runtime: duplicates break
       // hooks and the router context across the SSR/client boundary.

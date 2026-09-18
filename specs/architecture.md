@@ -73,7 +73,7 @@ src/
     ├── config/prototype.ts       #   PROTOTYPE_CLIENT_SLUG, PROTOTYPE_TODAY (the demo clock)
     └── styles/                   #   global.css (Tailwind @theme) + the token .ts files
 prisma/                           # schema, migrations, seed.ts, seedAnalytics.ts (imports modules only via contract)
-scripts/                          # checkCycles.ts, cyclicFiles.ts (+test), generate-favicon.mjs, make-helpers.mjs
+scripts/                          # checkCycles.ts, cyclicFiles.ts (+test), generate-favicon.mjs
 specs/                            # product specs + this file + decisions/ (ADRs)
 ```
 
