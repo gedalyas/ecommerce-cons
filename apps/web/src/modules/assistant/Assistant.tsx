@@ -9,7 +9,7 @@ type Attachment = { name: string; size: string };
 
 type Message =
   | { id: number; role: "user"; text?: string; file?: Attachment; audio?: string }
-  | { id: number; role: "ai"; context: string; parts: string[]; meeting?: boolean };
+  | { id: number; role: "ai"; context: string; parts: string[] };
 
 const suggestions = [
   { title: "Analisar minha margem", desc: "Por que caiu em agosto" },
@@ -49,7 +49,6 @@ const initialMessages: Message[] = [
       "R$ 2.680",
       " em agosto.",
     ],
-    meeting: true,
   },
 ];
 
@@ -280,15 +279,6 @@ export function Assistant() {
                   <div key={m.id} className="py-6">
                     <div className="t-label mb-2 text-muted-foreground">{m.context}</div>
                     <AiText parts={m.parts} />
-                    {m.meeting && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-4 h-auto min-h-11 whitespace-normal py-2 text-left"
-                      >
-                        Levar para a reunião com o consultor
-                      </Button>
-                    )}
                   </div>
                 ),
               )}

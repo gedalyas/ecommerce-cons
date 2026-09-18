@@ -3,10 +3,10 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowUp, PanelRightClose, PanelRightOpen, X } from "lucide-react";
 import { Button } from "@/shared/ui/Button";
 import { useScrollShadow } from "@/shared/hooks/useScrollShadow";
-import { contextBySection, suggestionsBySection } from "./assistantReplies";
+import { contextBySection } from "./assistantReplies";
 import { cn } from "@/shared/utils/cn";
 
-type Message = { role: "user" | "ai"; text: string; pillar?: string; meeting?: boolean };
+type Message = { role: "user" | "ai"; text: string; pillar?: string };
 
 const initialMessages: Message[] = [
   { role: "user", text: "Por que meu CAC subiu?" },
@@ -20,7 +20,6 @@ const initialMessages: Message[] = [
     role: "ai",
     text: "Sim. O critério pede CAC abaixo de 1/3 do LTV, ou seja, R$ 41 com o LTV atual de R$ 384. Com R$ 62 você está 51% acima da meta, e esse é um dos 2 critérios que faltam para liberar as áreas bloqueadas.",
     pillar: "Gestão · Blindagem",
-    meeting: true,
   },
 ];
 
@@ -32,7 +31,6 @@ function useAssistant() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [draft, setDraft] = useState("");
 
-  const suggestions = suggestionsBySection[pathname] ?? suggestionsBySection["/"]!;
   const context = contextBySection[pathname] ?? "Dashboard";
 
   const send = (text: string) => {
@@ -46,7 +44,7 @@ function useAssistant() {
     setDraft("");
   };
 
-  return { messages, draft, setDraft, suggestions, context, send };
+  return { messages, draft, setDraft, context, send };
 }
 
 function AssistantHeader({
@@ -61,7 +59,7 @@ function AssistantHeader({
   closeLabel: string;
 }) {
   return (
-    <div className="flex min-w-0 items-start justify-between gap-3 border-b border-border px-5 py-4">
+    <div className="flex min-w-0 items-start justify-between gap-3 border-b border-border px-4 py-3">
       <div className="min-w-0">
         <div className="t-card-title text-foreground">Assistente</div>
         <div className="t-meta mt-1 truncate text-muted-foreground">Vendo: {context}</div>
@@ -75,13 +73,11 @@ function AssistantHeader({
 
 function AssistantConversation({
   messages,
-  suggestions,
   send,
   draft,
   setDraft,
 }: {
   messages: Message[];
-  suggestions: string[];
   send: (t: string) => void;
   draft: string;
   setDraft: (v: string) => void;
@@ -91,21 +87,8 @@ function AssistantConversation({
   return (
     <>
       <div className="relative min-h-0 flex-1">
-        <div ref={ref} className="h-full space-y-6 overflow-y-auto px-5 py-4">
-          <div className="space-y-2">
-            <div className="t-label text-muted-foreground">Perguntas sugeridas</div>
-            {suggestions.map((s) => (
-              <button
-                key={s}
-                onClick={() => send(s)}
-                className="w-full rounded-md border border-border bg-card px-3 py-2 text-left t-meta text-foreground transition-colors duration-150 hover:border-border-strong hover:bg-muted"
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-
-          <div className="space-y-3 border-t border-border pt-4">
+        <div ref={ref} className="h-full overflow-y-auto px-4 py-4">
+          <div className="space-y-3">
             {messages.map((m, i) => (
               <div
                 key={i}
@@ -130,15 +113,6 @@ function AssistantConversation({
                     </div>
                   )}
                   <p className="break-words">{m.text}</p>
-                  {m.meeting && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-3 h-auto min-h-8 whitespace-normal py-2 text-left"
-                    >
-                      Levar para a reunião com o consultor
-                    </Button>
-                  )}
                 </div>
               </div>
             ))}
@@ -174,7 +148,7 @@ function AssistantConversation({
 
 /** Docked right-hand panel, only on screens >= 1280px. */
 export function AssistantPanel() {
-  const { messages, draft, setDraft, suggestions, context, send } = useAssistant();
+  const { messages, draft, setDraft, context, send } = useAssistant();
   const [collapsed, setCollapsed] = useState(false);
 
   if (collapsed) {
@@ -193,27 +167,21 @@ export function AssistantPanel() {
   }
 
   return (
-    <div className="sticky top-0 hidden h-dvh w-90 shrink-0 flex-col border-l border-border bg-background xl:flex">
+    <div className="sticky top-0 hidden h-dvh w-72 shrink-0 flex-col border-l border-border bg-background xl:flex">
       <AssistantHeader
         context={context}
         onClose={() => setCollapsed(true)}
         closeIcon={<PanelRightClose className="h-4 w-4" />}
         closeLabel="Recolher assistente"
       />
-      <AssistantConversation
-        messages={messages}
-        suggestions={suggestions}
-        send={send}
-        draft={draft}
-        setDraft={setDraft}
-      />
+      <AssistantConversation messages={messages} send={send} draft={draft} setDraft={setDraft} />
     </div>
   );
 }
 
 /** Floating button + drawer, for screens < 1280px. */
 export function AssistantFab() {
-  const { messages, draft, setDraft, suggestions, context, send } = useAssistant();
+  const { messages, draft, setDraft, context, send } = useAssistant();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -265,7 +233,6 @@ export function AssistantFab() {
             />
             <AssistantConversation
               messages={messages}
-              suggestions={suggestions}
               send={send}
               draft={draft}
               setDraft={setDraft}
