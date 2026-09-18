@@ -7,6 +7,7 @@ export {
   forgotPasswordFn,
   getInvitation,
   getSessionState,
+  leaveImpersonationFn,
   loginFn,
   logoutFn,
   refreshSessionFn,
@@ -15,3 +16,4 @@ export {
   selectStoreFn,
 } from "./authController";
 export type { SessionState } from "./authService";
+export { SessionBanner } from "./SessionBanner";

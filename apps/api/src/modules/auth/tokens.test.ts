@@ -15,6 +15,14 @@ describe("access tokens", () => {
     expect(verifyAccessToken(signAccessToken(auth, secret), secret)).toEqual(auth);
   });
 
+  it("carries who is behind an impersonated session", () => {
+    const impersonated = { ...auth, impersonatorId: "admin-1" };
+    expect(verifyAccessToken(signAccessToken(impersonated, secret), secret)).toEqual(impersonated);
+    expect(verifyAccessToken(signAccessToken(auth, secret), secret)).not.toHaveProperty(
+      "impersonatorId",
+    );
+  });
+
   it("rejects another secret or garbage", () => {
     const other = "another-secret-of-32-characters!!";
     expect(verifyAccessToken(signAccessToken(auth, secret), other)).toBeNull();

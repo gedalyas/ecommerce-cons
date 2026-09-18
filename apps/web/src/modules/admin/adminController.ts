@@ -5,10 +5,13 @@ import {
   type AdminConnectionRequest,
   type AdminScreen,
   type AdminStore,
+  type AdminUsersScreen,
   type ConsultantSummary,
   type Invitation,
 } from "@ecommerce/contracts/admin";
+import type { LoginResponse } from "@ecommerce/contracts/auth";
 import { connectionRequestResolveSchema } from "@ecommerce/contracts/connectors";
+import { enterImpersonation } from "@/modules/auth/contract.server";
 import { z } from "zod";
 import { ApiRequestError, apiFetch } from "@/shared/dependencies/apiClient";
 
@@ -31,6 +34,24 @@ const idSchema = z.object({ id: z.string().min(1) });
 export const getAdminScreen = createServerFn({ method: "GET" }).handler(async () =>
   apiFetch<AdminScreen>("/admin"),
 );
+
+export const getAdminUsers = createServerFn({ method: "GET" }).handler(async () =>
+  apiFetch<AdminUsersScreen>("/admin/users"),
+);
+
+const userIdSchema = z.object({ userId: z.string().min(1) });
+
+export const impersonateFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => userIdSchema.parse(input))
+  .handler(async ({ data }) =>
+    attempt(async () => {
+      const response = await apiFetch<LoginResponse>(
+        `/admin/users/${encodeURIComponent(data.userId)}/impersonate`,
+        { method: "POST" },
+      );
+      await enterImpersonation(response);
+    }, "Não foi possível acessar como este usuário."),
+  );
 
 export const inviteFn = createServerFn({ method: "POST" })
   .validator((input: unknown) => invitationInputSchema.parse(input))

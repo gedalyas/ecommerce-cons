@@ -10,6 +10,7 @@ import { z } from "zod";
 import {
   forgotPassword,
   invitationOf,
+  leaveImpersonation,
   refreshSessionUser,
   resetPassword,
   selectStore,
@@ -49,6 +50,10 @@ export const getSessionState = createServerFn({ method: "GET" }).handler(async (
 
 export const refreshSessionFn = createServerFn({ method: "POST" }).handler(async () =>
   refreshSessionUser(),
+);
+
+export const leaveImpersonationFn = createServerFn({ method: "POST" }).handler(async () =>
+  leaveImpersonation(),
 );
 
 export const selectStoreFn = createServerFn({ method: "POST" })

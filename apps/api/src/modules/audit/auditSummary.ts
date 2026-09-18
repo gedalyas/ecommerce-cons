@@ -35,6 +35,8 @@ export function auditSummary(detail: AuditDetail): string {
   switch (detail.action) {
     case "USER_REGISTERED":
       return `Criou a conta ${detail.email}`;
+    case "USER_IMPERSONATED":
+      return `Acessou o sistema como ${detail.name} (${detail.email})`;
     case "INVITATION_CREATED":
     case "INVITATION_RESENT":
     case "INVITATION_REVOKED": {

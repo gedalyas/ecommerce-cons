@@ -2,6 +2,8 @@ import type {
   AdminConnectionRequest,
   AdminScreen,
   AdminStore,
+  AdminUser,
+  AdminUsersScreen,
   ConsultantSummary,
   Invitation,
   InvitationInput,
@@ -226,6 +228,44 @@ export async function adminScreen(principal: Principal, now: Date): Promise<Admi
       : Promise.resolve([] as ConsultantSummary[]),
   ]);
   return { role: principal.role, stores, consultants, invitations, requests };
+}
+
+const adminUserSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  membership: true,
+  clientId: true,
+  createdAt: true,
+  client: { select: { name: true, consultants: { select: { consultantId: true } } } },
+} as const;
+
+type AdminUserRow = Prisma.UserGetPayload<{ select: typeof adminUserSelect }>;
+
+const toAdminUser = (r: AdminUserRow): AdminUser => ({
+  id: r.id,
+  name: r.name,
+  email: r.email,
+  role: r.role,
+  membership: r.role === "CLIENT" ? r.membership : null,
+  storeId: r.clientId,
+  storeName: r.client?.name ?? null,
+  consultantIds: r.client?.consultants.map((c) => c.consultantId) ?? [],
+  createdAt: r.createdAt.toISOString(),
+});
+
+export async function adminUsersScreen(principal: Principal): Promise<AdminUsersScreen> {
+  if (principal.role !== "ADMIN") throw forbidden("Só um administrador vê os usuários.");
+  const [users, consultants] = await Promise.all([
+    prismaClient.user.findMany({ orderBy: { name: "asc" }, select: adminUserSelect }),
+    prismaClient.user.findMany({
+      where: { role: "CONSULTANT" },
+      select: consultantSelect,
+      orderBy: { name: "asc" },
+    }),
+  ]);
+  return { users: users.map(toAdminUser), consultants };
 }
 
 export async function createInvitation(

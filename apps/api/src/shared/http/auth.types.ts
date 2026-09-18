@@ -1,6 +1,6 @@
 import type { AreaAccess, UserRole } from "@ecommerce/contracts/auth";
 
-export type Principal = { userId: string; role: UserRole };
+export type Principal = { userId: string; role: UserRole; impersonatorId?: string };
 
 export type AuthContext = Principal & { clientId: string; access: AreaAccess };
 

@@ -2,6 +2,7 @@ import type { UserRole } from "@ecommerce/contracts/auth";
 
 export type AuditDetail =
   | { action: "USER_REGISTERED"; email: string }
+  | { action: "USER_IMPERSONATED"; name: string; email: string }
   | {
       action: "INVITATION_CREATED" | "INVITATION_RESENT" | "INVITATION_REVOKED";
       email: string;

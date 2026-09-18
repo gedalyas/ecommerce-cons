@@ -2,6 +2,7 @@ import type { UserRole } from "../auth/auth.types";
 
 export const auditActions = [
   "USER_REGISTERED",
+  "USER_IMPERSONATED",
   "INVITATION_CREATED",
   "INVITATION_RESENT",
   "INVITATION_REVOKED",
@@ -44,6 +45,7 @@ export type AuditAction = (typeof auditActions)[number];
 
 export const auditActionLabel: Record<AuditAction, string> = {
   USER_REGISTERED: "Conta criada",
+  USER_IMPERSONATED: "Acesso como usuário",
   INVITATION_CREATED: "Convite enviado",
   INVITATION_RESENT: "Convite reenviado",
   INVITATION_REVOKED: "Convite revogado",

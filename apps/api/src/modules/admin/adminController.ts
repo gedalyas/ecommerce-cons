@@ -5,8 +5,10 @@ import { z } from "zod";
 import { principalOf } from "@/shared/http/authOf";
 import type { Mailer } from "@/shared/mail/mailer.types";
 import { parseOrThrow } from "@/shared/http/validate";
+import { impersonate } from "@/modules/auth/contract";
 import {
   adminScreen,
+  adminUsersScreen,
   assignConsultants,
   createInvitation,
   resendInvitation,
@@ -17,13 +19,25 @@ import {
 
 const idSchema = z.string().min(1);
 
-export type AdminDependencies = { now: () => Date; mailer: Mailer; appUrl: string };
+export type AdminDependencies = {
+  now: () => Date;
+  mailer: Mailer;
+  appUrl: string;
+  secret: string;
+};
 
 export function adminController(deps: AdminDependencies) {
   const { now } = deps;
   return {
     async screen(req: Request, res: Response) {
       res.json(await adminScreen(principalOf(req), now()));
+    },
+    async users(req: Request, res: Response) {
+      res.json(await adminUsersScreen(principalOf(req)));
+    },
+    async impersonate(req: Request, res: Response) {
+      const id = parseOrThrow(idSchema, req.params["id"]);
+      res.status(201).json(await impersonate(principalOf(req), id, deps.secret, now()));
     },
     async invite(req: Request, res: Response) {
       const input = parseOrThrow(invitationInputSchema, req.body);

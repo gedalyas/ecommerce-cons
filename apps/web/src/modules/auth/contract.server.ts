@@ -1,1 +1,1 @@
-export { refreshSessionUser, selectStore } from "./authService";
+export { enterImpersonation, refreshSessionUser, selectStore } from "./authService";

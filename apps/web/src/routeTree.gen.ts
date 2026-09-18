@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as dashboardRouteImport } from './routes/dashboard'
-import { Route as adminRouteImport } from './routes/admin'
+import { Route as adminLayoutRouteImport } from './routes/adminLayout'
 import { Route as assistantRouteImport } from './routes/assistant'
 import { Route as registerRouteImport } from './routes/register'
 import { Route as customersRouteImport } from './routes/customers'
@@ -30,13 +30,16 @@ import { Route as analysisRouteImport } from './routes/analysis'
 import { Route as ordersRouteImport } from './routes/orders'
 import { Route as productsRouteImport } from './routes/products'
 import { Route as resetPasswordRouteImport } from './routes/resetPassword'
+import { Route as adminRouteImport } from './routes/admin'
+import { Route as adminAccessRouteImport } from './routes/adminAccess'
+import { Route as adminUsersRouteImport } from './routes/adminUsers'
 
 const dashboardRoute = dashboardRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const adminRoute = adminRouteImport.update({
+const adminLayoutRoute = adminLayoutRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRouteImport,
@@ -136,10 +139,25 @@ const resetPasswordRoute = resetPasswordRouteImport.update({
   path: '/redefinir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
+const adminRoute = adminRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminAccessRoute = adminAccessRouteImport.update({
+  id: '/acesso',
+  path: '/acesso',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminUsersRoute = adminUsersRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
-  '/admin': typeof adminRoute
+  '/admin': typeof adminLayoutRouteWithChildren
   '/assistente': typeof assistantRoute
   '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
@@ -159,10 +177,12 @@ export interface FileRoutesByFullPath {
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
   '/redefinir-senha': typeof resetPasswordRoute
+  '/admin/': typeof adminRoute
+  '/admin/acesso': typeof adminAccessRoute
+  '/admin/usuarios': typeof adminUsersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
-  '/admin': typeof adminRoute
   '/assistente': typeof assistantRoute
   '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
@@ -182,11 +202,14 @@ export interface FileRoutesByTo {
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
   '/redefinir-senha': typeof resetPasswordRoute
+  '/admin': typeof adminRoute
+  '/admin/acesso': typeof adminAccessRoute
+  '/admin/usuarios': typeof adminUsersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof dashboardRoute
-  '/admin': typeof adminRoute
+  '/admin': typeof adminLayoutRouteWithChildren
   '/assistente': typeof assistantRoute
   '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
@@ -206,6 +229,9 @@ export interface FileRoutesById {
   '/pedidos': typeof ordersRoute
   '/produtos': typeof productsRoute
   '/redefinir-senha': typeof resetPasswordRoute
+  '/admin/': typeof adminRoute
+  '/admin/acesso': typeof adminAccessRoute
+  '/admin/usuarios': typeof adminUsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -231,10 +257,12 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/produtos'
     | '/redefinir-senha'
+    | '/admin/'
+    | '/admin/acesso'
+    | '/admin/usuarios'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/assistente'
     | '/cadastro'
     | '/clientes'
@@ -254,6 +282,9 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/produtos'
     | '/redefinir-senha'
+    | '/admin'
+    | '/admin/acesso'
+    | '/admin/usuarios'
   id:
     | '__root__'
     | '/'
@@ -277,11 +308,14 @@ export interface FileRouteTypes {
     | '/pedidos'
     | '/produtos'
     | '/redefinir-senha'
+    | '/admin/'
+    | '/admin/acesso'
+    | '/admin/usuarios'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   dashboardRoute: typeof dashboardRoute
-  adminRoute: typeof adminRoute
+  adminLayoutRoute: typeof adminLayoutRouteWithChildren
   assistantRoute: typeof assistantRoute
   registerRoute: typeof registerRoute
   customersRoute: typeof customersRoute
@@ -316,7 +350,7 @@ declare module '@tanstack/react-router' {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
-      preLoaderRoute: typeof adminRouteImport
+      preLoaderRoute: typeof adminLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assistente': {
@@ -452,12 +486,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof resetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof adminRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/admin/acesso': {
+      id: '/admin/acesso'
+      path: '/acesso'
+      fullPath: '/admin/acesso'
+      preLoaderRoute: typeof adminAccessRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof adminUsersRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
   }
 }
 
+interface adminLayoutRouteChildren {
+  adminRoute: typeof adminRoute
+  adminAccessRoute: typeof adminAccessRoute
+  adminUsersRoute: typeof adminUsersRoute
+}
+
+const adminLayoutRouteChildren: adminLayoutRouteChildren = {
+  adminRoute: adminRoute,
+  adminAccessRoute: adminAccessRoute,
+  adminUsersRoute: adminUsersRoute,
+}
+
+const adminLayoutRouteWithChildren = adminLayoutRoute._addFileChildren(
+  adminLayoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   dashboardRoute: dashboardRoute,
-  adminRoute: adminRoute,
+  adminLayoutRoute: adminLayoutRouteWithChildren,
   assistantRoute: assistantRoute,
   registerRoute: registerRoute,
   customersRoute: customersRoute,

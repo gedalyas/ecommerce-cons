@@ -9,13 +9,21 @@ import type {
   StoreSummary,
 } from "@ecommerce/contracts/auth";
 import { ApiRequestError, apiFetch } from "@/shared/dependencies/apiClient";
-import { appSession, type SessionData } from "@/shared/dependencies/session";
+import {
+  appSession,
+  type SessionCredentials,
+  type SessionData,
+} from "@/shared/dependencies/session";
 import { activeStoreOf } from "./activeStore";
 
 export type AuthResult = { ok: true; user: AuthUser } | { ok: false; message: string };
 
 const USER_STALE_MS = 5 * 60_000;
-export type SessionState = { user: AuthUser; activeStore: StoreSummary | null };
+export type SessionState = {
+  user: AuthUser;
+  activeStore: StoreSummary | null;
+  impersonatedBy: string | null;
+};
 
 function failure(error: unknown, fallback: string): AuthResult {
   if (error instanceof ApiRequestError && error.status < 500) {
@@ -25,17 +33,56 @@ function failure(error: unknown, fallback: string): AuthResult {
   return { ok: false, message: fallback };
 }
 
+const credentialsOf = (response: LoginResponse): SessionCredentials => ({
+  accessToken: response.tokens.accessToken,
+  refreshToken: response.tokens.refreshToken,
+  user: response.user,
+  userRefreshedAt: Date.now(),
+  activeClientId: activeStoreOf(response.user.stores, null)?.id ?? null,
+});
+
 async function storeSession(response: LoginResponse): Promise<AuthUser> {
   const session = await appSession();
-  const data: SessionData = {
-    accessToken: response.tokens.accessToken,
-    refreshToken: response.tokens.refreshToken,
-    user: response.user,
-    userRefreshedAt: Date.now(),
-    activeClientId: activeStoreOf(response.user.stores, null)?.id ?? null,
-  };
+  const data: SessionData = { ...credentialsOf(response), impersonator: null };
   await session.update(data);
   return response.user;
+}
+
+const credentialsIn = (data: Partial<SessionData>): SessionCredentials | null =>
+  data.accessToken && data.refreshToken && data.user
+    ? {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        user: data.user,
+        userRefreshedAt: data.userRefreshedAt ?? 0,
+        activeClientId: data.activeClientId ?? null,
+      }
+    : null;
+
+async function revokeTokens(refreshToken: string | undefined): Promise<void> {
+  if (!refreshToken) return;
+  await apiFetch("/auth/logout", { method: "POST", body: { refreshToken }, auth: false }).catch(
+    () => undefined,
+  );
+}
+
+export async function enterImpersonation(response: LoginResponse): Promise<AuthUser> {
+  const session = await appSession();
+  const admin = session.data.impersonator ? null : credentialsIn(session.data);
+  if (!admin) throw new Error("Only a signed-in administrator can enter a user's session");
+  const data: SessionData = { ...credentialsOf(response), impersonator: admin };
+  await session.update(data);
+  return response.user;
+}
+
+export async function leaveImpersonation(): Promise<boolean> {
+  const session = await appSession();
+  const admin = session.data.impersonator;
+  if (!admin) return false;
+  await revokeTokens(session.data.refreshToken);
+  const data: SessionData = { ...admin, impersonator: null };
+  await session.update(data);
+  return true;
 }
 
 export async function signIn(input: LoginInput): Promise<AuthResult> {
@@ -84,12 +131,8 @@ export async function invitationOf(token: string): Promise<InvitationLookup> {
 
 export async function signOut(): Promise<void> {
   const session = await appSession();
-  const refreshToken = session.data.refreshToken;
-  if (refreshToken) {
-    await apiFetch("/auth/logout", { method: "POST", body: { refreshToken }, auth: false }).catch(
-      () => undefined,
-    );
-  }
+  await revokeTokens(session.data.refreshToken);
+  await revokeTokens(session.data.impersonator?.refreshToken);
   await session.clear();
 }
 
@@ -128,7 +171,11 @@ export async function sessionState(): Promise<SessionState | null> {
   if ((active?.id ?? null) !== (session.data.activeClientId ?? null)) {
     await session.update({ activeClientId: active?.id ?? null });
   }
-  return { user, activeStore: active };
+  return {
+    user,
+    activeStore: active,
+    impersonatedBy: session.data.impersonator?.user.name ?? null,
+  };
 }
 
 export async function selectStore(clientId: string): Promise<StoreSummary | null> {

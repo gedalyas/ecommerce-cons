@@ -5,6 +5,7 @@ import {
   type AuthUser,
   type InvitationCheck,
   type LoginInput,
+  type LoginResponse,
   type RegisterInput,
   type ResetPasswordInput,
   type StoreSummary,
@@ -13,7 +14,7 @@ import { prismaClient } from "@ecommerce/database/client";
 import { hashPassword, verifyPassword } from "@ecommerce/database/passwordHash";
 import type { AccessArea, ClientMembership } from "@ecommerce/database/enums";
 import type { Principal } from "@/shared/http/auth.types";
-import { HttpError, unauthorized } from "@/shared/http/httpError";
+import { forbidden, HttpError, notFound, unauthorized } from "@/shared/http/httpError";
 import type { Mailer } from "@/shared/mail/mailer.types";
 import { recordActivity } from "@/modules/audit/contract";
 import { passwordResetLink, passwordResetMail } from "./authMail";
@@ -144,17 +145,25 @@ async function toAuthUser(u: UserRow): Promise<AuthUser> {
   };
 }
 
-async function issueTokens(user: UserRow, secret: string, now: Date): Promise<AuthTokens> {
+async function issueTokens(
+  user: UserRow,
+  secret: string,
+  now: Date,
+  impersonatorId: string | null = null,
+): Promise<AuthTokens> {
   const refreshToken = newOpaqueToken();
   await prismaClient.refreshToken.create({
     data: {
       userId: user.id,
+      impersonatorId,
       tokenHash: hashToken(refreshToken),
       expiresAt: refreshExpiry(now),
     },
   });
+  const principal: Principal = { userId: user.id, role: user.role };
+  if (impersonatorId) principal.impersonatorId = impersonatorId;
   return {
-    accessToken: signAccessToken({ userId: user.id, role: user.role }, secret),
+    accessToken: signAccessToken(principal, secret),
     accessExpiresIn: ACCESS_TOKEN_SECONDS,
     refreshToken,
     refreshExpiresIn: REFRESH_TOKEN_SECONDS,
@@ -258,11 +267,41 @@ export async function refresh(refreshToken: string, secret: string, now: Date) {
   const tokenHash = hashToken(refreshToken);
   const stored = await prismaClient.refreshToken.findUnique({
     where: { tokenHash },
-    select: { id: true, expiresAt: true, revokedAt: true, user: { select: userSelect } },
+    select: {
+      id: true,
+      expiresAt: true,
+      revokedAt: true,
+      impersonatorId: true,
+      user: { select: userSelect },
+    },
   });
   if (!stored || stored.revokedAt || stored.expiresAt <= now) throw unauthorized();
   await prismaClient.refreshToken.update({ where: { id: stored.id }, data: { revokedAt: now } });
-  return { tokens: await issueTokens(stored.user, secret, now) };
+  return { tokens: await issueTokens(stored.user, secret, now, stored.impersonatorId) };
+}
+
+export async function impersonate(
+  admin: Principal,
+  userId: string,
+  secret: string,
+  now: Date,
+): Promise<LoginResponse> {
+  if (admin.role !== "ADMIN" || admin.impersonatorId) {
+    throw forbidden("Só um administrador acessa como outro usuário.");
+  }
+  if (admin.userId === userId) throw new HttpError(409, "Você já está na sua própria conta.");
+  const user = await prismaClient.user.findUnique({ where: { id: userId }, select: userSelect });
+  if (!user) throw notFound("Usuário não encontrado");
+  const response = {
+    user: await toAuthUser(user),
+    tokens: await issueTokens(user, secret, now, admin.userId),
+  };
+  await recordActivity(admin, user.clientId, {
+    action: "USER_IMPERSONATED",
+    name: user.name,
+    email: user.email,
+  });
+  return response;
 }
 
 export async function logout(refreshToken: string, now: Date) {

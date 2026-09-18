@@ -15,7 +15,6 @@ import {
   Truck,
   Building2,
   Settings,
-  ShieldCheck,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
@@ -167,19 +166,6 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
             </TooltipTrigger>
             <TooltipContent side="right" className="xl:hidden">
               Loja
-            </TooltipContent>
-          </Tooltip>
-        )}
-        {account.role !== "CLIENT" && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link to="/admin" className={linkClass(pathname === "/admin")}>
-                <ShieldCheck className="h-4 w-4 shrink-0" />
-                <span className="hidden flex-1 truncate xl:inline">Administração</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="xl:hidden">
-              Administração
             </TooltipContent>
           </Tooltip>
         )}

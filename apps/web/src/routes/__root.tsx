@@ -7,6 +7,7 @@ import {
   retainSearchParams,
   useNavigate,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type SearchMiddleware,
@@ -26,7 +27,7 @@ import {
 import { AppShell } from "@/shared/layout/AppShell";
 import { canOpenPath } from "@/shared/layout/screenAccess";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
-import { getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
+import { SessionBanner, getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
 import {
   DataReadinessBanner,
   getConnectionsHealth,
@@ -50,7 +51,8 @@ const LOGIN_PATH = "/entrar";
 const PUBLIC_PATHS = ["/entrar", "/cadastro", "/esqueci-senha", "/redefinir-senha"];
 const ONBOARDING_PATH = "/configurar-loja";
 const ADMIN_PATH = "/admin";
-const NO_STORE_PATHS = ["/configurar-loja", "/admin"];
+const isAdminPath = (pathname: string) =>
+  pathname === ADMIN_PATH || pathname.startsWith(`${ADMIN_PATH}/`);
 const ARCHIVED_PATH = "/loja-arquivada";
 const emptyStatus = {
   maturity: { achieved: 0, total: 0 },
@@ -167,9 +169,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     }
     const { user, activeStore } = session;
     if (!activeStore) {
-      const allowed = NO_STORE_PATHS.includes(location.pathname);
+      const allowed = isAdminPath(location.pathname) || location.pathname === ONBOARDING_PATH;
       if (!allowed) {
-        throw redirect({ to: user.role === "CLIENT" ? ONBOARDING_PATH : "/admin" });
+        throw redirect({ to: user.role === "CLIENT" ? ONBOARDING_PATH : ADMIN_PATH });
       }
       return { session };
     }
@@ -179,7 +181,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     }
     if (!archivedClient && location.pathname === ARCHIVED_PATH) throw redirect({ to: "/" });
     if (location.pathname === ONBOARDING_PATH) throw redirect({ to: "/" });
-    if (location.pathname === ADMIN_PATH && user.role === "CLIENT") throw redirect({ to: "/" });
+    if (isAdminPath(location.pathname) && user.role === "CLIENT") throw redirect({ to: "/" });
     if (!canOpenPath(location.pathname, areaAccessOf(user))) throw redirect({ to: "/" });
     return { session };
   },
@@ -225,13 +227,27 @@ function RootComponent() {
   const { status } = Route.useLoaderData();
   const user = session?.user ?? null;
   const activeStore = session?.activeStore ?? null;
+  const impersonatedBy = session?.impersonatedBy ?? null;
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
   const navigate = useNavigate();
   const logout = useServerFn(logoutFn);
   const select = useServerFn(selectStoreFn);
 
   if (!user) return <Outlet />;
-  if (user.role === "CLIENT" && (!activeStore || activeStore.archivedAt)) return <Outlet />;
+  const sessionBanner =
+    user.role !== "CLIENT" || impersonatedBy ? (
+      <SessionBanner userName={user.name} impersonatedBy={impersonatedBy} />
+    ) : null;
+  if (isAdminPath(pathname)) return <Outlet />;
+  if (user.role === "CLIENT" && (!activeStore || activeStore.archivedAt)) {
+    return (
+      <>
+        {sessionBanner}
+        <Outlet />
+      </>
+    );
+  }
 
   const signOut = async () => {
     await logout();
@@ -249,11 +265,15 @@ function RootComponent() {
       <AppShell
         assistant={<AssistantPanel />}
         assistantFab={<AssistantFab />}
-        banner={status.hasSource ? null : <DataReadinessBanner />}
+        banner={
+          <>
+            {sessionBanner}
+            {status.hasSource ? null : <DataReadinessBanner />}
+          </>
+        }
         status={status}
         account={{
           name: user.name,
-          role: user.role,
           access: areaAccessOf(user),
           onSignOut: () => void signOut(),
           store: activeStore

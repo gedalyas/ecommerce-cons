@@ -145,7 +145,7 @@ export function createApp(env: Env, jobs: Jobs, now: () => Date = () => new Date
   app.use(
     API_PREFIX,
     requireAuth,
-    createAdminRouter(shared),
+    createAdminRouter({ ...shared, secret: env.JWT_SECRET }),
     createStaffActivityRouter({ visibleStoresOf: visibleClientIds }),
     createStoreOnboardingRouter({ now }),
   );

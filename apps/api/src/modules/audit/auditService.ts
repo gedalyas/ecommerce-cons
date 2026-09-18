@@ -6,6 +6,7 @@ import { auditSummary } from "./auditSummary";
 
 const PAGE_SIZE = 50;
 const REMOVED_ACTOR = "Usuário removido";
+const IMPERSONATED_SUFFIX = " (via administrador)";
 
 export type AuditActor = Principal | { system: string };
 
@@ -15,9 +16,10 @@ async function actorFields(actor: AuditActor) {
     where: { id: actor.userId },
     select: { name: true },
   });
+  const name = user?.name ?? REMOVED_ACTOR;
   return {
     actorId: user ? actor.userId : null,
-    actorName: user?.name ?? REMOVED_ACTOR,
+    actorName: actor.impersonatorId ? `${name}${IMPERSONATED_SUFFIX}` : name,
     actorRole: actor.role,
   };
 }

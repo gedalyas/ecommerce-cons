@@ -5,10 +5,11 @@ import type { Principal } from "@/shared/http/auth.types";
 export const ACCESS_TOKEN_SECONDS = 15 * 60;
 export const REFRESH_TOKEN_SECONDS = 30 * 24 * 60 * 60;
 
-type AccessClaims = { sub: string; role: Principal["role"] };
+type AccessClaims = { sub: string; role: Principal["role"]; act?: string };
 
 export function signAccessToken(principal: Principal, secret: string): string {
   const claims: AccessClaims = { sub: principal.userId, role: principal.role };
+  if (principal.impersonatorId) claims.act = principal.impersonatorId;
   return jwt.sign(claims, secret, { algorithm: "HS256", expiresIn: ACCESS_TOKEN_SECONDS });
 }
 
@@ -16,9 +17,11 @@ export function verifyAccessToken(token: string, secret: string): Principal | nu
   try {
     const payload = jwt.verify(token, secret, { algorithms: ["HS256"] });
     if (typeof payload === "string") return null;
-    const { sub, role } = payload as jwt.JwtPayload & Partial<AccessClaims>;
+    const { sub, role, act } = payload as jwt.JwtPayload & Partial<AccessClaims>;
     if (typeof sub !== "string" || typeof role !== "string") return null;
-    return { userId: sub, role };
+    return typeof act === "string"
+      ? { userId: sub, role, impersonatorId: act }
+      : { userId: sub, role };
   } catch {
     return null;
   }

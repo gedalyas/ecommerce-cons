@@ -1,3 +1,4 @@
+import type { ClientMembership } from "../auth/accessAreas";
 import type { UserRole } from "../auth/auth.types";
 import type { ConnectionRequest } from "../connectors/connectors.types";
 
@@ -37,6 +38,23 @@ export type Invitation = {
 };
 
 export type AdminConnectionRequest = ConnectionRequest & { storeId: string; storeName: string };
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  membership: ClientMembership | null;
+  storeId: string | null;
+  storeName: string | null;
+  consultantIds: string[];
+  createdAt: string;
+};
+
+export type AdminUsersScreen = {
+  users: AdminUser[];
+  consultants: ConsultantSummary[];
+};
 
 export type AdminScreen = {
   role: UserRole;

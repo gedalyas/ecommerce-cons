@@ -10,7 +10,7 @@ const searchSchema = z.object({
   pagina: z.coerce.number().int().min(1).catch(1),
 });
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/admin/")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [

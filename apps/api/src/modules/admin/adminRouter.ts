@@ -6,6 +6,8 @@ export function createAdminRouter(deps: AdminDependencies): Router {
   const router = Router();
   const controller = adminController(deps);
   router.get("/admin", asyncHandler(controller.screen));
+  router.get("/admin/users", asyncHandler(controller.users));
+  router.post("/admin/users/:id/impersonate", asyncHandler(controller.impersonate));
   router.post("/admin/invitations", asyncHandler(controller.invite));
   router.post("/admin/invitations/:id/resend", asyncHandler(controller.resend));
   router.delete("/admin/invitations/:id", asyncHandler(controller.revoke));

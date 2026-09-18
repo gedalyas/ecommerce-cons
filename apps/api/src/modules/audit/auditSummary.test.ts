@@ -32,6 +32,9 @@ describe("auditSummary", () => {
     expect(auditSummary({ action: "TEAM_MEMBER_REMOVED", name: "Bia" })).toBe(
       "Removeu Bia da equipe",
     );
+    expect(auditSummary({ action: "USER_IMPERSONATED", name: "Bia", email: "bia@loja.dev" })).toBe(
+      "Acessou o sistema como Bia (bia@loja.dev)",
+    );
     expect(
       auditSummary({
         action: "IMPORT_RUN",

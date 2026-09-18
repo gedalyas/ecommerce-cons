@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,8 +14,6 @@ import { loginFn } from "./authController";
 
 export function Login() {
   const login = useServerFn(loginFn);
-  const router = useRouter();
-  const navigate = useNavigate();
   const [message, setMessage] = useState<string | null>(null);
   const { register, handleSubmit, formState } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -29,8 +27,7 @@ export function Login() {
       setMessage(result.message);
       return;
     }
-    await router.invalidate();
-    await navigate({ to: "/" });
+    window.location.assign(result.user.role === "CLIENT" ? "/" : "/admin");
   });
 
   return (

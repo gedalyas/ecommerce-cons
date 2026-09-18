@@ -49,6 +49,37 @@ per area, one of **Sem acesso · Ver · Editar**. The areas
   attribute once billing knows plans) caps members plus pending invitations. The form shows
   "n de N assentos" and refuses with 422 past the limit.
 
+## The administration area
+
+Staff never see the store panel by default: `/entrar` sends `ADMIN` and `CONSULTANT` users to
+`/admin`, an area with its own shell (no store sidebar, no period). Its sections:
+
+- **Visão geral** (`/admin`): stores, invitations, connection requests and the activity log —
+  what a consultant sees for their stores and an admin for all.
+- **Usuários** (`/admin/usuarios`, admin only): every account with role, store, consultants
+  and creation date; search by name or e-mail (accent-insensitive) and filter by consultant,
+  both in the URL (`busca`, `consultor`).
+- **Acesso a usuários** (`/admin/acesso`, admin only): the same accounts as cards grouped by
+  consultant ("Consultor: X", then "Sem consultor", then "Equipe"). Clicking a card opens the
+  system as that person.
+- **Abrir o painel**: the store panel, where the staff switch stores from the sidebar. A thin
+  bar on top of the panel ("Painel da loja visto pela consultoria · Voltar à administração")
+  is the way back; the panel's sidebar has no admin link.
+
+### Opening the system as a user
+
+`POST /admin/users/:id/impersonate` (admin only, never while already impersonating, never
+oneself) answers the target's `{ user, tokens }` like a login. The access token carries
+`act = <admin id>` and the refresh token row keeps `impersonatorId`, so a refresh keeps the
+mark. The web stores the target's credentials in the session and keeps the admin's under
+`impersonator`; every screen shows "Você está acessando como X — Voltar à administração",
+which revokes the target's tokens and restores the admin session (landing on
+`/admin/acesso`). Signing out while impersonating revokes both.
+
+What the admin does in the target's name is recorded as the target, with " (via
+administrador)" appended to the actor name in the activity log; the impersonation itself is
+a `USER_IMPERSONATED` event on the target's store (or global when they have none).
+
 ## Access by invitation
 
 1. A staff user invites an e-mail on `/admin` › Convites (role, and for clients the store —
@@ -63,7 +94,7 @@ per area, one of **Sem acesso · Ver · Editar**. The areas
 3. A client without a store lands on `/configurar-loja` (name, segmento, plataforma, faixa de
    faturamento → `POST /stores`), which provisions the store: the four areas' pillars, the
    four milestone criteria and one data-source row per connector of the catalog. A
-   consultant without stores lands on `/admin` until an admin assigns one.
+   consultant without stores stays on `/admin` until an admin assigns one.
 
 ## Password reset
 

@@ -8,6 +8,12 @@ export const invitationInputSchema = z.object({
 });
 export type InvitationInput = z.infer<typeof invitationInputSchema>;
 
+export const adminUsersSearchSchema = z.object({
+  busca: z.string().catch(""),
+  consultor: z.string().catch(""),
+});
+export type AdminUsersSearch = z.infer<typeof adminUsersSearchSchema>;
+
 export const assignConsultantsSchema = z.object({
   consultantIds: z.array(z.string().min(1)).max(20),
 });
