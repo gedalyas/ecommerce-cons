@@ -39,21 +39,26 @@ shadows (top/bottom gradients) indicate clipped content.
 - Divider, then group "Infraestrutura": **Conexões** with a small orange square
   dot signalling a problem (Meta Ads sync error).
 - Footer: "Maturidade" progress bar, "2 de 4 critérios", bar at 50%.
+- Every tab is listed for everyone who may see its area. A tab whose screen the store has
+  not released to the client (`specs/saas.md` › Released screens per store) is rendered
+  muted with a lock and links to `/em-desenvolvimento?tela=<slug>`; for staff the same tab
+  opens normally and carries an eye-off mark ("Não liberada para o cliente").
 
 ## Routes
 
 Route **files** are English; **URLs** are Portuguese. The mapping is defined in
 `src/routes.ts` (TanStack virtual file routes):
 
-| URL           | File                     | Screen                          |
-| ------------- | ------------------------ | ------------------------------- |
-| `/`           | `routes/dashboard.tsx`   | Dashboard                       |
-| `/dinheiro`   | `routes/money.tsx`       | Dinheiro                        |
-| `/marketing`  | `routes/marketing.tsx`   | Marketing                       |
-| `/logistica`  | `routes/logistics.tsx`   | Logística                       |
-| `/gestao`     | `routes/management.tsx`  | Gestão                          |
-| `/conexoes`   | `routes/connections.tsx` | Conexões                        |
-| `/assistente` | `routes/assistant.tsx`   | Assistente (mobile full-screen) |
+| URL                         | File                          | Screen                                               |
+| --------------------------- | ----------------------------- | ---------------------------------------------------- |
+| `/`                         | `routes/dashboard.tsx`        | Dashboard                                            |
+| `/dinheiro`                 | `routes/money.tsx`            | Dinheiro                                             |
+| `/marketing`                | `routes/marketing.tsx`        | Marketing                                            |
+| `/logistica`                | `routes/logistics.tsx`        | Logística                                            |
+| `/gestao`                   | `routes/management.tsx`       | Gestão                                               |
+| `/conexoes`                 | `routes/connections.tsx`      | Conexões                                             |
+| `/assistente`               | `routes/assistant.tsx`        | Assistente (mobile full-screen)                      |
+| `/em-desenvolvimento?tela=` | `routes/underDevelopment.tsx` | "Em desenvolvimento" placeholder for a locked screen |
 
 Route files stay thin: `head()` meta (Portuguese titles/descriptions) plus the
 component import from the module contract. Screens live in

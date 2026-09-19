@@ -9,6 +9,7 @@ export {
   assertOwner,
   createAreaGuards,
 } from "./areaGuard";
+export { createScreenGuards } from "./screenGuard";
 export { impersonate } from "./authService";
 export { slugify } from "./storeAccess";
 export { invitationLink, invitationMail } from "./authMail";

@@ -77,6 +77,22 @@ enum AccessArea {
   @@map("access_area")
 }
 
+enum StoreScreen {
+  ASSISTANT
+  MONEY
+  MARKETING
+  LOGISTICS
+  MANAGEMENT
+  ORDERS
+  PRODUCTS
+  CUSTOMERS
+  GOALS
+  METRICS
+  INFLUENCERS
+
+  @@map("store_screen")
+}
+
 enum ConnectionRequestStatus {
   REQUESTED
   IN_PROGRESS
@@ -712,22 +728,24 @@ model CostExpense {
 
 /// A store: the tenant. Every fact table hangs from it.
 model Client {
-  id                 String    @id @default(cuid())
+  id                 String        @id @default(cuid())
   /// URL-safe identifier, e.g. "loja-exemplo".
-  slug               String    @unique
+  slug               String        @unique
   name               String
   segment            String?
   /// Connector key of the storefront/ERP the store runs on.
   platform           String?
-  monthlyRevenueBand String?   @map("monthly_revenue_band")
-  timezone           String    @default("America/Sao_Paulo")
-  onboardedAt        DateTime? @map("onboarded_at")
+  monthlyRevenueBand String?       @map("monthly_revenue_band")
+  timezone           String        @default("America/Sao_Paulo")
+  onboardedAt        DateTime?     @map("onboarded_at")
   /// Set by an admin when the engagement ends; clients are blocked, data stays.
-  archivedAt         DateTime? @map("archived_at")
+  archivedAt         DateTime?     @map("archived_at")
   /// How many team members (beyond the owner) the store may have; adjusted by an admin.
-  teamSeatLimit      Int       @default(5) @map("team_seat_limit")
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @updatedAt @map("updated_at")
+  teamSeatLimit      Int           @default(5) @map("team_seat_limit")
+  /// Screens the store's client may open; the rest shows "Em desenvolvimento". Staff sees everything.
+  releasedScreens    StoreScreen[] @default([MARKETING, ORDERS]) @map("released_screens")
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
 
   users              User[]
   consultants        ConsultantAssignment[]

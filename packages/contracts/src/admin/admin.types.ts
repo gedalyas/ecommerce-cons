@@ -1,5 +1,6 @@
 import type { ClientMembership } from "../auth/accessAreas";
 import type { UserRole } from "../auth/auth.types";
+import type { StoreScreen } from "../auth/storeScreens";
 import type { ConnectionRequest } from "../connectors/connectors.types";
 
 export type ConsultantSummary = { id: string; name: string; email: string };
@@ -14,6 +15,7 @@ export type AdminStore = {
   users: number;
   consultants: ConsultantSummary[];
   pendingRequests: number;
+  releasedScreens: StoreScreen[];
 };
 
 export const invitationStatuses = ["PENDING", "EXPIRED", "ACCEPTED"] as const;

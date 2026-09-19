@@ -1,5 +1,9 @@
 import type { Request, Response } from "express";
-import { assignConsultantsSchema, invitationInputSchema } from "@ecommerce/contracts/admin";
+import {
+  assignConsultantsSchema,
+  invitationInputSchema,
+  releaseScreensSchema,
+} from "@ecommerce/contracts/admin";
 import { connectionRequestResolveSchema } from "@ecommerce/contracts/connectors";
 import { z } from "zod";
 import { principalOf } from "@/shared/http/authOf";
@@ -14,6 +18,7 @@ import {
   resendInvitation,
   resolveRequest,
   revokeInvitation,
+  setReleasedScreens,
   setStoreArchived,
 } from "./adminService";
 
@@ -63,6 +68,11 @@ export function adminController(deps: AdminDependencies) {
       const clientId = parseOrThrow(idSchema, req.params["id"]);
       const { consultantIds } = parseOrThrow(assignConsultantsSchema, req.body);
       res.json(await assignConsultants(principalOf(req), clientId, consultantIds));
+    },
+    async releaseScreens(req: Request, res: Response) {
+      const clientId = parseOrThrow(idSchema, req.params["id"]);
+      const { screens } = parseOrThrow(releaseScreensSchema, req.body);
+      res.json(await setReleasedScreens(principalOf(req), clientId, screens));
     },
     async resolve(req: Request, res: Response) {
       const id = parseOrThrow(idSchema, req.params["id"]);

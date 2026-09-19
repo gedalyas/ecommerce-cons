@@ -19,7 +19,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
 import { cn } from "@/shared/utils/cn";
-import { openableItems } from "./screenAccess";
+import { SidebarNavList } from "./SidebarNavList";
+import { navItems } from "./screenAccess";
 import type { ShellAccount, ShellStatus } from "./shellStatus.types";
 
 const mainItems = [
@@ -43,8 +44,9 @@ const dataItems = [
 export function Sidebar({ status, account }: { status: ShellStatus; account: ShellAccount }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { maturity } = status;
-  const areaItems = openableItems(mainItems, account.access);
-  const dataLinks = openableItems(dataItems, account.access);
+  const releasedScreens = account.store?.releasedScreens ?? [];
+  const areaItems = navItems(mainItems, account.access, account.release, releasedScreens);
+  const dataLinks = navItems(dataItems, account.access, account.release, releasedScreens);
   const isOwner = account.access === null;
   const maturityPercent = maturity.total > 0 ? (maturity.achieved / maturity.total) * 100 : 0;
 
@@ -93,46 +95,14 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
 
       <nav className="relative min-h-0 flex-1 overflow-y-auto py-2">
         <div className="t-label hidden px-3 pb-2 pt-2 text-muted-foreground xl:block">Áreas</div>
-        <ul>
-          {areaItems.map((item) => (
-            <li key={item.to}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link to={item.to} className={linkClass(pathname === item.to)}>
-                    <item.icon className="h-4 w-4 shrink-0" />
-                    <span className="hidden truncate xl:inline">{item.label}</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="xl:hidden">
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            </li>
-          ))}
-        </ul>
+        <SidebarNavList items={areaItems} linkClass={linkClass} />
 
         {dataLinks.length > 0 && <div className="my-3 border-t border-sidebar-border" />}
 
         {dataLinks.length > 0 && (
           <div className="t-label hidden px-3 pb-2 text-muted-foreground xl:block">Dados</div>
         )}
-        <ul>
-          {dataLinks.map((item) => (
-            <li key={item.to}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link to={item.to} className={linkClass(pathname === item.to)}>
-                    <item.icon className="h-4 w-4 shrink-0" />
-                    <span className="hidden truncate xl:inline">{item.label}</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="xl:hidden">
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            </li>
-          ))}
-        </ul>
+        <SidebarNavList items={dataLinks} linkClass={linkClass} />
 
         <div className="my-3 border-t border-sidebar-border" />
 

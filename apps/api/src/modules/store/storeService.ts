@@ -20,6 +20,7 @@ const storeSelect = {
   timezone: true,
   createdAt: true,
   onboardedAt: true,
+  releasedScreens: true,
 } as const;
 
 type StoreRow = {
@@ -110,6 +111,7 @@ export async function createStore(
     name: store.name,
     onboardedAt: now.toISOString(),
     archivedAt: null,
+    releasedScreens: store.releasedScreens,
   };
 }
 

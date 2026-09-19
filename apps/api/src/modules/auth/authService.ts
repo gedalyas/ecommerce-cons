@@ -1,6 +1,7 @@
 import {
   areaAccessOf,
   grantsOf,
+  screenReleaseOf,
   type AuthTokens,
   type AuthUser,
   type InvitationCheck,
@@ -12,7 +13,7 @@ import {
 } from "@ecommerce/contracts/auth";
 import { prismaClient } from "@ecommerce/database/client";
 import { hashPassword, verifyPassword } from "@ecommerce/database/passwordHash";
-import type { AccessArea, ClientMembership } from "@ecommerce/database/enums";
+import type { AccessArea, ClientMembership, StoreScreen } from "@ecommerce/database/enums";
 import type { Principal } from "@/shared/http/auth.types";
 import { forbidden, HttpError, notFound, unauthorized } from "@/shared/http/httpError";
 import type { Mailer } from "@/shared/mail/mailer.types";
@@ -38,6 +39,7 @@ const storeSelect = {
   name: true,
   onboardedAt: true,
   archivedAt: true,
+  releasedScreens: true,
 } as const;
 
 const userSelect = {
@@ -72,12 +74,14 @@ const toStore = (s: {
   name: string;
   onboardedAt: Date | null;
   archivedAt: Date | null;
+  releasedScreens: StoreScreen[];
 }): StoreSummary => ({
   id: s.id,
   slug: s.slug,
   name: s.name,
   onboardedAt: s.onboardedAt?.toISOString() ?? null,
   archivedAt: s.archivedAt?.toISOString() ?? null,
+  releasedScreens: s.releasedScreens,
 });
 
 export async function storesOf(
@@ -112,7 +116,7 @@ export async function storeAccessOf(principal: Principal): Promise<StoreAccess> 
     select: {
       role: true,
       clientId: true,
-      client: { select: { archivedAt: true } },
+      client: { select: { archivedAt: true, releasedScreens: true } },
       assignments: { select: { clientId: true } },
       membership: true,
       viewAreas: true,
@@ -124,12 +128,14 @@ export async function storeAccessOf(principal: Principal): Promise<StoreAccess> 
     role: user.role,
     ownClientId: user.clientId,
     ownClientArchived: Boolean(user.client?.archivedAt),
+    ownReleasedScreens: user.client?.releasedScreens ?? [],
     assignedClientIds: user.assignments.map((a) => a.clientId),
     areaAccess: areaAccessOf({
       role: user.role,
       membership: membershipOf(user),
       grants: grantsOf(user.viewAreas, user.editAreas),
     }),
+    release: screenReleaseOf(user, { releasedScreens: user.client?.releasedScreens ?? [] }),
   };
 }
 

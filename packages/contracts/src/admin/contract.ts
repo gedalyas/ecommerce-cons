@@ -14,8 +14,14 @@ export {
   adminUsersSearchSchema,
   assignConsultantsSchema,
   invitationInputSchema,
+  releaseScreensSchema,
 } from "./adminSchema";
-export type { AdminUsersSearch, AssignConsultantsInput, InvitationInput } from "./adminSchema";
+export type {
+  AdminUsersSearch,
+  AssignConsultantsInput,
+  InvitationInput,
+  ReleaseScreensInput,
+} from "./adminSchema";
 export {
   STAFF_GROUP_TITLE,
   UNASSIGNED_GROUP_TITLE,

@@ -1,11 +1,13 @@
-import type { AreaAccess, UserRole } from "@ecommerce/contracts/auth";
+import type { AreaAccess, ScreenRelease, StoreScreen, UserRole } from "@ecommerce/contracts/auth";
 
 export type StoreAccess = {
   role: UserRole;
   ownClientId: string | null;
   ownClientArchived: boolean;
+  ownReleasedScreens: readonly StoreScreen[];
   assignedClientIds: readonly string[];
   areaAccess: AreaAccess;
+  release: ScreenRelease;
 };
 
 export const ARCHIVED_STORE_MESSAGE =

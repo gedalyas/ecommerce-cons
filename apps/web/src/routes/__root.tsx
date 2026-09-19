@@ -25,7 +25,12 @@ import {
   type PeriodSearch,
 } from "@ecommerce/contracts/shared/period";
 import { AppShell } from "@/shared/layout/AppShell";
-import { canOpenPath } from "@/shared/layout/screenAccess";
+import {
+  UNDER_DEVELOPMENT_PATH,
+  canOpenPath,
+  isPathReleased,
+  underDevelopmentSlugOf,
+} from "@/shared/layout/screenAccess";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
 import { SessionBanner, getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
 import {
@@ -34,7 +39,7 @@ import {
   getDataReadiness,
 } from "@/modules/connections/contract";
 import { getMilestoneSummary } from "@/modules/consulting/contract";
-import { areaAccessOf } from "@ecommerce/contracts/auth";
+import { areaAccessOf, screenReleaseOf } from "@ecommerce/contracts/auth";
 
 const SHELL_STALE_MS = 5 * 60_000;
 
@@ -183,6 +188,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     if (location.pathname === ONBOARDING_PATH) throw redirect({ to: "/" });
     if (isAdminPath(location.pathname) && user.role === "CLIENT") throw redirect({ to: "/" });
     if (!canOpenPath(location.pathname, areaAccessOf(user))) throw redirect({ to: "/" });
+    if (!isPathReleased(location.pathname, screenReleaseOf(user, activeStore))) {
+      throw redirect({
+        to: UNDER_DEVELOPMENT_PATH,
+        search: { tela: underDevelopmentSlugOf(location.pathname) },
+      });
+    }
     return { session };
   },
   loaderDeps: () => ({}),
@@ -231,6 +242,8 @@ function RootComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
   const navigate = useNavigate();
+  const release = user ? screenReleaseOf(user, activeStore) : null;
+  const assistantReleased = isPathReleased("/assistente", release);
   const logout = useServerFn(logoutFn);
   const select = useServerFn(selectStoreFn);
 
@@ -263,8 +276,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppShell
-        assistant={<AssistantPanel />}
-        assistantFab={<AssistantFab />}
+        assistant={assistantReleased ? <AssistantPanel /> : null}
+        assistantFab={assistantReleased ? <AssistantFab /> : null}
         banner={
           <>
             {sessionBanner}
@@ -275,18 +288,21 @@ function RootComponent() {
         account={{
           name: user.name,
           access: areaAccessOf(user),
+          release,
           onSignOut: () => void signOut(),
           store: activeStore
             ? {
                 id: activeStore.id,
                 name: activeStore.name,
                 isArchived: Boolean(activeStore.archivedAt),
+                releasedScreens: activeStore.releasedScreens,
               }
             : null,
           stores: user.stores.map((s) => ({
             id: s.id,
             name: s.name,
             isArchived: Boolean(s.archivedAt),
+            releasedScreens: s.releasedScreens,
           })),
           onSelectStore: (id) => void switchStore(id),
         }}

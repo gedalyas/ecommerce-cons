@@ -9,7 +9,7 @@ How the product serves many stores. Plan and decisions: `saas-plan.md`,
 | ------------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ADMIN`      | every store                 | everything below plus inviting consultants and assigning them to stores                                                                                              |
 | `CONSULTANT` | the stores assigned to them | invite clients into their stores, resolve connection requests, edit the engagement (pillar status, pendências, manual KPIs, recommendations, milestone), import CSVs |
-| `CLIENT`     | their own store             | read every screen, configure the store (`/loja`), request connectors, import CSVs, manage the team                                                                   |
+| `CLIENT`     | their own store             | read the screens the store has released (the rest shows "Em desenvolvimento"), configure the store (`/loja`), request connectors, import CSVs, manage the team       |
 
 The first `ADMIN` is created by `npm run db:seed` from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. A
 fresh install has one user and no store.
@@ -48,6 +48,34 @@ per area, one of **Sem acesso · Ver · Editar**. The areas
 - **Seats.** `Client.teamSeatLimit` (default 5, an admin adjusts it per store; a plan
   attribute once billing knows plans) caps members plus pending invitations. The form shows
   "n de N assentos" and refuses with 422 past the limit.
+
+### Released screens per store
+
+The MVP ships Marketing and Comercial first; every other screen exists in the code but is
+shown to the client as **"Em desenvolvimento"** until the consultancy releases it. The rule
+is per store and staff-controlled, and it is not a permission: the sidebar shows **every
+tab** to the client, the unreleased ones with a lock, and opening one lands on
+`/em-desenvolvimento?tela=<slug>` (a page with the screen's name, the message and a way
+back to the dashboard) instead of the screen.
+
+- **The set** (`contracts/auth/storeScreens.ts`, Prisma enum `StoreScreen`): Assistente,
+  Dinheiro, Marketing, Logística, Gestão, Pedidos, Produtos, Clientes, Metas, Métricas,
+  Influenciadores. Dashboard, Conexões and `/loja` are always open. Stored as
+  `Client.releasedScreens`, default `[MARKETING, ORDERS]` for every new store.
+- **Who sees what.** `screenReleaseOf(user, store)`: `null` (everything) for `ADMIN` and
+  `CONSULTANT`, the store's list for any `CLIENT` — owner or member. A member sees the
+  intersection: what the grant lets in, then what the store released. Staff browsing the
+  store see every screen normally, with an eye-off mark on the tabs the client does not see
+  yet.
+- **Control.** `/admin` › Lojas › column "Telas liberadas" (`PUT /admin/stores/:id/screens`,
+  admin or an assigned consultant), recorded as `STORE_SCREENS_RELEASED` in the activity
+  log. It applies on the next request.
+- **Enforcement.** `resolveClient` puts the release on `req.auth.release`;
+  `createScreenGuards()` mounts `requireScreen` on each screen's API prefix
+  (`auth/screenRoutes.ts`) and answers 403 with the "Em desenvolvimento" message. The web's
+  root guard redirects a locked path to the placeholder before any loader runs
+  (`shared/layout/screenAccess.ts`); the assistant's docked panel and button disappear when
+  `ASSISTANT` is locked (it has no API behind it, so the web is its only guard).
 
 ## The administration area
 

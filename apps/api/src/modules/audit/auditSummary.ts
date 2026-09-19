@@ -48,6 +48,10 @@ export function auditSummary(detail: AuditDetail): string {
       return detail.names.length > 0
         ? `Definiu os consultores: ${detail.names.join(", ")}`
         : "Removeu todos os consultores da loja";
+    case "STORE_SCREENS_RELEASED":
+      return detail.screens.length > 0
+        ? `Liberou para o cliente as telas: ${detail.screens.join(", ")}`
+        : "Deixou todas as telas em desenvolvimento para o cliente";
     case "TEAM_MEMBER_INVITED":
       return `Convidou ${detail.email} para a equipe (${detail.areas.join(", ")})`;
     case "TEAM_INVITATION_REVOKED":

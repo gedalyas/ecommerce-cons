@@ -23,6 +23,12 @@ describe("auditSummary", () => {
       "Removeu todos os consultores da loja",
     );
     expect(
+      auditSummary({ action: "STORE_SCREENS_RELEASED", screens: ["Marketing", "Pedidos"] }),
+    ).toBe("Liberou para o cliente as telas: Marketing, Pedidos");
+    expect(auditSummary({ action: "STORE_SCREENS_RELEASED", screens: [] })).toBe(
+      "Deixou todas as telas em desenvolvimento para o cliente",
+    );
+    expect(
       auditSummary({
         action: "TEAM_MEMBER_INVITED",
         email: "m@loja.dev",

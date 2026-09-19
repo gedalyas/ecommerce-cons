@@ -12,6 +12,7 @@ export function createAdminRouter(deps: AdminDependencies): Router {
   router.post("/admin/invitations/:id/resend", asyncHandler(controller.resend));
   router.delete("/admin/invitations/:id", asyncHandler(controller.revoke));
   router.put("/admin/stores/:id/consultants", asyncHandler(controller.assign));
+  router.put("/admin/stores/:id/screens", asyncHandler(controller.releaseScreens));
   router.put("/admin/stores/:id/archive", asyncHandler(controller.archive));
   router.put("/admin/stores/:id/restore", asyncHandler(controller.restore));
   router.put("/admin/connection-requests/:id", asyncHandler(controller.resolve));

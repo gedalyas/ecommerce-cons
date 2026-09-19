@@ -38,3 +38,6 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 
 export const resetPasswordSchema = z.object({ token: tokenSchema, password: passwordSchema });
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+
+export const underDevelopmentSearchSchema = z.object({ tela: z.string().catch("") });
+export type UnderDevelopmentSearch = z.infer<typeof underDevelopmentSearchSchema>;

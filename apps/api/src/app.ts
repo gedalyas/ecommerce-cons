@@ -11,6 +11,7 @@ import {
 } from "@/modules/billing/contract";
 import {
   createAreaGuards,
+  createScreenGuards,
   createAuthRouter,
   createRequireAuth,
   resolveClient,
@@ -96,6 +97,7 @@ function storeRouters(
   const { now, rateLimited } = shared;
   return [
     createAreaGuards(),
+    createScreenGuards(),
     createStoreRouter({ now }),
     createTeamRouter(shared),
     createDashboardRouter(),

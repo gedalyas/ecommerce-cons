@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   assignConsultantsSchema,
   invitationInputSchema,
+  releaseScreensSchema,
   type AdminConnectionRequest,
   type AdminScreen,
   type AdminStore,
@@ -97,6 +98,19 @@ export const restoreStoreFn = createServerFn({ method: "POST" })
   .validator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data }) =>
     attempt(() => archiveCall(data.id, "restore"), "Não foi possível reativar a loja."),
+  );
+
+export const releaseScreensFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => idSchema.merge(releaseScreensSchema).parse(input))
+  .handler(async ({ data }) =>
+    attempt(
+      () =>
+        apiFetch<AdminStore>(`/admin/stores/${encodeURIComponent(data.id)}/screens`, {
+          method: "PUT",
+          body: { screens: data.screens },
+        }),
+      "Não foi possível atualizar as telas liberadas.",
+    ),
   );
 
 export const assignConsultantsFn = createServerFn({ method: "POST" })

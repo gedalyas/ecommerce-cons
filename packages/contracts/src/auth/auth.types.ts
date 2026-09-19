@@ -1,4 +1,5 @@
 import type { AreaGrant, ClientMembership } from "./accessAreas";
+import type { StoreScreen } from "./storeScreens";
 
 export const userRoles = ["ADMIN", "CONSULTANT", "CLIENT"] as const;
 export type UserRole = (typeof userRoles)[number];
@@ -15,6 +16,7 @@ export type StoreSummary = {
   name: string;
   onboardedAt: string | null;
   archivedAt: string | null;
+  releasedScreens: StoreScreen[];
 };
 
 export type AuthUser = {

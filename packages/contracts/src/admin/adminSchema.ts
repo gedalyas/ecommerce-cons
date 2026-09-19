@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { emailSchema } from "../auth/authSchema";
+import { storeScreens } from "../auth/storeScreens";
 
 export const invitationInputSchema = z.object({
   email: emailSchema,
@@ -18,3 +19,8 @@ export const assignConsultantsSchema = z.object({
   consultantIds: z.array(z.string().min(1)).max(20),
 });
 export type AssignConsultantsInput = z.infer<typeof assignConsultantsSchema>;
+
+export const releaseScreensSchema = z.object({
+  screens: z.array(z.enum(storeScreens)).max(storeScreens.length),
+});
+export type ReleaseScreensInput = z.infer<typeof releaseScreensSchema>;

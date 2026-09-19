@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { activeStoreOf } from "./activeStore";
 
 const stores = [
-  { id: "a", slug: "a", name: "A", onboardedAt: null, archivedAt: null },
-  { id: "b", slug: "b", name: "B", onboardedAt: null, archivedAt: null },
+  { id: "a", slug: "a", name: "A", onboardedAt: null, archivedAt: null, releasedScreens: [] },
+  { id: "b", slug: "b", name: "B", onboardedAt: null, archivedAt: null, releasedScreens: [] },
 ];
 
 describe("activeStoreOf", () => {

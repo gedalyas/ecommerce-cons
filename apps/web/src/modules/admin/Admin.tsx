@@ -33,6 +33,7 @@ import {
 } from "./adminController";
 import { AdminActivity } from "./AdminActivity";
 import { StoreArchiveButton } from "./StoreArchiveButton";
+import { StoreScreensSelect } from "./StoreScreensSelect";
 import { InviteForm } from "./InviteForm";
 
 const invitationTone: Record<InvitationStatus, "accent" | "muted" | "warning"> = {
@@ -138,6 +139,11 @@ export function Admin({
                   ) : (
                     r.consultants.map((c) => c.name).join(", ") || "—"
                   ),
+              },
+              {
+                key: "screens",
+                header: "Telas liberadas",
+                render: (r) => <StoreScreensSelect store={r} onError={setError} />,
               },
               { key: "users", header: "Usuários", align: "right", render: (r) => String(r.users) },
               {

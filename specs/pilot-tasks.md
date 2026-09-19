@@ -2,7 +2,7 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0–P3 and C1–C5 done (2026-09-13), P4 waits for Davi's apps** (2026-09-13). Davi's side is tracked in the Trello card "MVP para o
+Status: **P0–P3, C1–C5 done (2026-09-13), M1–M3 done (2026-09-19), P4 waits for Davi's apps**. Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
@@ -92,6 +92,22 @@ Decided: web on **Vercel**, API + worker + Postgres on **Railway** (2026-09-13).
       previous sync enqueues a sync, not a backfill) + e-mail to the store's users on the
       first ERROR (`connectionMail.ts`, tested; mailer injected into the connector deps and
       the worker)
+
+## M — MVP scope: Marketing + Comercial, the rest "Em desenvolvimento"
+
+Decision `decisions/2026-09-19-screens-released-per-store.md`; behaviour in `saas.md` ›
+Released screens per store.
+
+- [x] M1 Schema: enum `StoreScreen` + `Client.releasedScreens` (default `MARKETING, ORDERS`),
+      parity test; `/me` and `/admin` carry the list (2026-09-19)
+- [x] M2 API: `req.auth.release` from `resolveClient`, `createScreenGuards()` answering 403
+      "Em desenvolvimento" on each screen's prefix; `PUT /admin/stores/:id/screens` for admin
+      or the assigned consultant, audited as `STORE_SCREENS_RELEASED` (2026-09-19)
+- [x] M3 Web: every tab visible to the client, the unreleased ones with a lock leading to
+      `/em-desenvolvimento?tela=`; root guard redirects a locked path; assistant panel and
+      FAB hidden when locked; staff sees everything with an eye-off mark; "Telas liberadas"
+      column on `/admin` › Lojas (2026-09-19)
+- [ ] M4 Release Dinheiro / Logística / Gestão per pilot store as each screen matures
 
 ## P4 — First real connections (needs Davi's apps)
 

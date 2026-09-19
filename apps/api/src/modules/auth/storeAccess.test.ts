@@ -10,7 +10,9 @@ describe("canAccessStore", () => {
           ownClientId: null,
           ownClientArchived: false,
           assignedClientIds: [],
+          ownReleasedScreens: [],
           areaAccess: null,
+          release: null,
         },
         "x",
       ),
@@ -20,7 +22,9 @@ describe("canAccessStore", () => {
       ownClientId: null,
       ownClientArchived: false,
       assignedClientIds: ["a", "b"],
+      ownReleasedScreens: [],
       areaAccess: null,
+      release: null,
     };
     expect(canAccessStore(consultant, "a")).toBe(true);
     expect(canAccessStore(consultant, "c")).toBe(false);
@@ -29,7 +33,9 @@ describe("canAccessStore", () => {
       ownClientId: "a",
       ownClientArchived: false,
       assignedClientIds: [],
+      ownReleasedScreens: [],
       areaAccess: null,
+      release: null,
     };
     expect(canAccessStore(client, "a")).toBe(true);
     expect(canAccessStore(client, "b")).toBe(false);
@@ -44,7 +50,9 @@ describe("defaultStoreOf", () => {
         ownClientId: "a",
         ownClientArchived: false,
         assignedClientIds: [],
+        ownReleasedScreens: [],
         areaAccess: null,
+        release: null,
       }),
     ).toBe("a");
     expect(
@@ -53,7 +61,9 @@ describe("defaultStoreOf", () => {
         ownClientId: null,
         ownClientArchived: false,
         assignedClientIds: ["a"],
+        ownReleasedScreens: [],
         areaAccess: null,
+        release: null,
       }),
     ).toBe("a");
     expect(
@@ -62,7 +72,9 @@ describe("defaultStoreOf", () => {
         ownClientId: null,
         ownClientArchived: false,
         assignedClientIds: ["a", "b"],
+        ownReleasedScreens: [],
         areaAccess: null,
+        release: null,
       }),
     ).toBeNull();
     expect(
@@ -71,7 +83,9 @@ describe("defaultStoreOf", () => {
         ownClientId: null,
         ownClientArchived: false,
         assignedClientIds: [],
+        ownReleasedScreens: [],
         areaAccess: null,
+        release: null,
       }),
     ).toBeNull();
   });
@@ -91,7 +105,9 @@ describe("isBlockedByArchive", () => {
       ownClientId: "a",
       ownClientArchived: true,
       assignedClientIds: [],
+      ownReleasedScreens: [],
       areaAccess: null,
+      release: null,
     };
     expect(isBlockedByArchive(archived, "a")).toBe(true);
     expect(isBlockedByArchive({ ...archived, ownClientArchived: false }, "a")).toBe(false);

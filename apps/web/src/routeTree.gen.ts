@@ -17,6 +17,7 @@ import { Route as customersRouteImport } from './routes/customers'
 import { Route as connectionsRouteImport } from './routes/connections'
 import { Route as storeOnboardingRouteImport } from './routes/storeOnboarding'
 import { Route as moneyRouteImport } from './routes/money'
+import { Route as underDevelopmentRouteImport } from './routes/underDevelopment'
 import { Route as loginRouteImport } from './routes/login'
 import { Route as forgotPasswordRouteImport } from './routes/forgotPassword'
 import { Route as managementRouteImport } from './routes/management'
@@ -72,6 +73,11 @@ const storeOnboardingRoute = storeOnboardingRouteImport.update({
 const moneyRoute = moneyRouteImport.update({
   id: '/dinheiro',
   path: '/dinheiro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const underDevelopmentRoute = underDevelopmentRouteImport.update({
+  id: '/em-desenvolvimento',
+  path: '/em-desenvolvimento',
   getParentRoute: () => rootRouteImport,
 } as any)
 const loginRoute = loginRouteImport.update({
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/conexoes': typeof connectionsRoute
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
+  '/em-desenvolvimento': typeof underDevelopmentRoute
   '/entrar': typeof loginRoute
   '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/conexoes': typeof connectionsRoute
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
+  '/em-desenvolvimento': typeof underDevelopmentRoute
   '/entrar': typeof loginRoute
   '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/conexoes': typeof connectionsRoute
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
+  '/em-desenvolvimento': typeof underDevelopmentRoute
   '/entrar': typeof loginRoute
   '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/conexoes'
     | '/configurar-loja'
     | '/dinheiro'
+    | '/em-desenvolvimento'
     | '/entrar'
     | '/esqueci-senha'
     | '/gestao'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/conexoes'
     | '/configurar-loja'
     | '/dinheiro'
+    | '/em-desenvolvimento'
     | '/entrar'
     | '/esqueci-senha'
     | '/gestao'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/conexoes'
     | '/configurar-loja'
     | '/dinheiro'
+    | '/em-desenvolvimento'
     | '/entrar'
     | '/esqueci-senha'
     | '/gestao'
@@ -322,6 +334,7 @@ export interface RootRouteChildren {
   connectionsRoute: typeof connectionsRoute
   storeOnboardingRoute: typeof storeOnboardingRoute
   moneyRoute: typeof moneyRoute
+  underDevelopmentRoute: typeof underDevelopmentRoute
   loginRoute: typeof loginRoute
   forgotPasswordRoute: typeof forgotPasswordRoute
   managementRoute: typeof managementRoute
@@ -393,6 +406,13 @@ declare module '@tanstack/react-router' {
       path: '/dinheiro'
       fullPath: '/dinheiro'
       preLoaderRoute: typeof moneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/em-desenvolvimento': {
+      id: '/em-desenvolvimento'
+      path: '/em-desenvolvimento'
+      fullPath: '/em-desenvolvimento'
+      preLoaderRoute: typeof underDevelopmentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/entrar': {
@@ -535,6 +555,7 @@ const rootRouteChildren: RootRouteChildren = {
   connectionsRoute: connectionsRoute,
   storeOnboardingRoute: storeOnboardingRoute,
   moneyRoute: moneyRoute,
+  underDevelopmentRoute: underDevelopmentRoute,
   loginRoute: loginRoute,
   forgotPasswordRoute: forgotPasswordRoute,
   managementRoute: managementRoute,

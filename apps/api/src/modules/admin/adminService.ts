@@ -15,6 +15,7 @@ import {
   type ConnectorKey,
 } from "@ecommerce/contracts/connectors";
 import { invitationStatusOf } from "@ecommerce/contracts/admin";
+import { orderedScreens, storeScreenLabel, type StoreScreen } from "@ecommerce/contracts/auth";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
 import {
@@ -69,6 +70,7 @@ async function storesFor(principal: Principal): Promise<AdminStore[]> {
       createdAt: true,
       onboardedAt: true,
       archivedAt: true,
+      releasedScreens: true,
       _count: { select: { users: true, connectionRequests: { where: { status: "REQUESTED" } } } },
       consultants: { select: { consultant: { select: consultantSelect } } },
     },
@@ -83,6 +85,7 @@ const adminStoreSelect = {
   createdAt: true,
   onboardedAt: true,
   archivedAt: true,
+  releasedScreens: true,
   _count: { select: { users: true, connectionRequests: { where: { status: "REQUESTED" } } } },
   consultants: { select: { consultant: { select: consultantSelect } } },
 } as const;
@@ -99,7 +102,28 @@ const toAdminStore = (r: AdminStoreRow): AdminStore => ({
   users: r._count.users,
   consultants: r.consultants.map((c) => c.consultant),
   pendingRequests: r._count.connectionRequests,
+  releasedScreens: r.releasedScreens,
 });
+
+export async function setReleasedScreens(
+  principal: Principal,
+  clientId: string,
+  screens: readonly StoreScreen[],
+): Promise<AdminStore> {
+  requireStaff(principal);
+  await assertVisible(principal, clientId);
+  const released = orderedScreens(screens);
+  const row = await prismaClient.client.update({
+    where: { id: clientId },
+    data: { releasedScreens: released },
+    select: adminStoreSelect,
+  });
+  await recordActivity(principal, clientId, {
+    action: "STORE_SCREENS_RELEASED",
+    screens: released.map((screen) => storeScreenLabel[screen]),
+  });
+  return toAdminStore(row);
+}
 
 export async function setStoreArchived(
   principal: Principal,

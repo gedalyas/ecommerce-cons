@@ -10,6 +10,7 @@ export type AuditDetail =
       storeName: string | null;
     }
   | { action: "CONSULTANTS_ASSIGNED"; names: string[] }
+  | { action: "STORE_SCREENS_RELEASED"; screens: string[] }
   | { action: "TEAM_MEMBER_INVITED" | "TEAM_INVITATION_REVOKED"; email: string; areas: string[] }
   | { action: "TEAM_MEMBER_UPDATED"; name: string; areas: string[] }
   | { action: "TEAM_MEMBER_REMOVED"; name: string }
