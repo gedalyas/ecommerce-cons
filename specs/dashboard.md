@@ -13,9 +13,10 @@ the screen has no controls row of its own.
 
 ## Blocks are widgets the user arranges
 
-The dashboard is a grid of widgets (two columns from `md`; a widget is
-"Linha inteira" or "Meia linha"). Which widgets show, in which order and at
-which width is a per-user, per-store layout (`dashboard_layout`, one row per
+The dashboard is a single column of full-width widgets (the "Meia linha"
+option was dropped on 2026-09-19: every block reads better at full width and
+the layout stays the same on every screen size). Which widgets show and in
+which order is a per-user, per-store layout (`dashboard_layout`, one row per
 `user_id` × `client_id`) returned inside `GET /dashboard` as `layout` and
 saved through `PUT /dashboard/layout` (`dashboardLayoutSchema`). A layout that
 is missing, empty or only made of unknown kinds falls back to
@@ -40,14 +41,14 @@ The catalog (`contracts/dashboard/dashboardWidgets.ts`), each kind at most once:
 | `milestone`           | Marco de maturidade          | §5b                                                                    |
 | `recommendations`     | Recomendações em aberto      | §5b                                                                    |
 
-The default layout: headline, indicator (full), then revenue × investment,
-channel split, by source, top products, customer mix and funnel (half), then
-alerts, milestone and recommendations (full). `paidMedia` and `matrix` start
+The default layout: headline, indicator, then revenue × investment,
+channel split, by source, top products, customer mix and funnel, then
+alerts, milestone and recommendations. A stored layout that still carries a
+`size` per widget is read fine: `normalizeDashboardLayout` ignores it. `paidMedia` and `matrix` start
 out of the board.
 
 "Personalizar" opens the dialog "Personalizar dashboard": the chosen widgets
-as a sortable list (drag handle, icon, name and description, Linha inteira /
-Meia linha, remove), "Adicionar bloco" chips for the kinds not on the board,
+as a sortable list (drag handle, icon, name and description, remove), "Adicionar bloco" chips for the kinds not on the board,
 Cancelar / Salvar. Salvar is enabled only when something changed and at least
 one widget remains; it PUTs the whole layout and invalidates the router.
 

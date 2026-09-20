@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { dashboardWidgetKinds, dashboardWidgetSizes } from "./dashboardWidgets";
+import { dashboardWidgetKinds } from "./dashboardWidgets";
 
 export const dashboardWidgetSchema = z.object({
   kind: z.enum(dashboardWidgetKinds),
-  size: z.enum(dashboardWidgetSizes),
 });
 
 export const dashboardLayoutSchema = z.object({

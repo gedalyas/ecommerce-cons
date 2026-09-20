@@ -5,7 +5,6 @@ import {
   moveWidget,
   normalizeDashboardLayout,
   removeWidget,
-  resizeWidget,
   sameLayout,
 } from "./dashboardLayoutRules";
 import {
@@ -15,11 +14,7 @@ import {
 } from "./dashboardWidgets";
 
 const layout: DashboardLayout = {
-  widgets: [
-    { kind: "headline", size: "full" },
-    { kind: "bySource", size: "half" },
-    { kind: "alerts", size: "full" },
-  ],
+  widgets: [{ kind: "headline" }, { kind: "bySource" }, { kind: "alerts" }],
 };
 
 describe("normalizeDashboardLayout", () => {
@@ -31,7 +26,7 @@ describe("normalizeDashboardLayout", () => {
     );
   });
 
-  it("drops unknown kinds and duplicates, and repairs a missing size", () => {
+  it("drops unknown kinds and duplicates, and ignores the size older layouts stored", () => {
     const stored = {
       widgets: [
         { kind: "bySource", size: "full" },
@@ -41,10 +36,7 @@ describe("normalizeDashboardLayout", () => {
       ],
     };
     expect(normalizeDashboardLayout(stored)).toEqual({
-      widgets: [
-        { kind: "bySource", size: "full" },
-        { kind: "funnel", size: "half" },
-      ],
+      widgets: [{ kind: "bySource" }, { kind: "funnel" }],
     });
   });
 });
@@ -57,21 +49,17 @@ describe("layout edits", () => {
     expect(available.length).toBe(dashboardWidgetKinds.length - 3);
   });
 
-  it("adds at the end with the catalog's default size and never twice", () => {
+  it("adds at the end and never twice", () => {
     const next = addWidget(layout, "funnel");
-    expect(next.widgets.at(-1)).toEqual({ kind: "funnel", size: "half" });
+    expect(next.widgets.at(-1)).toEqual({ kind: "funnel" });
     expect(addWidget(next, "funnel")).toBe(next);
   });
 
-  it("removes and resizes by kind", () => {
+  it("removes by kind", () => {
     expect(removeWidget(layout, "bySource").widgets.map((w) => w.kind)).toEqual([
       "headline",
       "alerts",
     ]);
-    expect(resizeWidget(layout, "bySource", "full").widgets[1]).toEqual({
-      kind: "bySource",
-      size: "full",
-    });
   });
 
   it("moves a widget onto another one's slot", () => {
@@ -88,9 +76,9 @@ describe("layout edits", () => {
     expect(moveWidget(layout, "headline", "headline")).toBe(layout);
   });
 
-  it("compares layouts by order and size", () => {
+  it("compares layouts by order", () => {
     expect(sameLayout(layout, { widgets: [...layout.widgets] })).toBe(true);
-    expect(sameLayout(layout, resizeWidget(layout, "bySource", "full"))).toBe(false);
+    expect(sameLayout(layout, moveWidget(layout, "alerts", "headline"))).toBe(false);
     expect(sameLayout(layout, removeWidget(layout, "alerts"))).toBe(false);
   });
 });

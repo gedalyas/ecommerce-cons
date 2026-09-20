@@ -14,14 +14,11 @@ export type {
 } from "./dashboard.types";
 export {
   dashboardWidgetKinds,
-  dashboardWidgetSizes,
-  dashboardWidgetSizeLabel,
   dashboardWidgetCatalog,
   defaultDashboardLayout,
 } from "./dashboardWidgets";
 export type {
   DashboardWidgetKind,
-  DashboardWidgetSize,
   DashboardWidgetDefinition,
   DashboardWidget,
   DashboardLayout,
@@ -33,7 +30,6 @@ export {
   availableWidgets,
   addWidget,
   removeWidget,
-  resizeWidget,
   moveWidget,
   sameLayout,
 } from "./dashboardLayoutRules";

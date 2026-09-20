@@ -39,18 +39,14 @@ import {
 import { useState } from "react";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
-import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import {
   dashboardWidgetCatalog,
-  dashboardWidgetSizeLabel,
-  dashboardWidgetSizes,
   type DashboardLayout,
   type DashboardWidget,
   type DashboardWidgetKind,
-  type DashboardWidgetSize,
 } from "@ecommerce/contracts/dashboard";
 import { saveDashboardLayoutFn } from "./dashboardController";
 import { useDashboardLayoutDraft } from "./useDashboardLayoutDraft";
@@ -71,20 +67,7 @@ const widgetIcon: Record<DashboardWidgetKind, LucideIcon> = {
   recommendations: ListChecks,
 };
 
-const sizeOptions = dashboardWidgetSizes.map((key) => ({
-  key,
-  label: dashboardWidgetSizeLabel[key],
-}));
-
-function WidgetRow({
-  widget,
-  onResize,
-  onRemove,
-}: {
-  widget: DashboardWidget;
-  onResize: (size: DashboardWidgetSize) => void;
-  onRemove: () => void;
-}) {
+function WidgetRow({ widget, onRemove }: { widget: DashboardWidget; onRemove: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: widget.kind,
   });
@@ -126,13 +109,6 @@ function WidgetRow({
         </div>
         <div className={cn(textClass.meta, "text-muted-foreground")}>{definition.description}</div>
       </div>
-      <SegmentedControl
-        options={sizeOptions}
-        value={widget.size}
-        onChange={onResize}
-        label={`Largura de ${definition.label}`}
-        className="max-sm:hidden"
-      />
       <Button
         variant="ghost"
         size="icon"
@@ -188,7 +164,6 @@ function CustomizerForm({ layout, onClose }: { layout: DashboardLayout; onClose:
               <WidgetRow
                 key={widget.kind}
                 widget={widget}
-                onResize={(size) => draft.resize(widget.kind, size)}
                 onRemove={() => draft.remove(widget.kind)}
               />
             ))}

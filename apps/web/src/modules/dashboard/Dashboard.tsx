@@ -85,12 +85,9 @@ export function Dashboard({ data }: { data: DashboardOverview }) {
         action={<DashboardCustomizer layout={data.layout} />}
       />
 
-      <div className={cn(layout.headerGap, "grid gap-6 md:grid-cols-2 sm:gap-8")}>
+      <div className={cn(layout.headerGap, "grid gap-6 sm:gap-8")}>
         {data.layout.widgets.map((widget) => (
-          <div
-            key={widget.kind}
-            className={cn("min-w-0", widget.size === "full" && "md:col-span-2")}
-          >
+          <div key={widget.kind} className="min-w-0">
             <DashboardWidgetView
               widget={widget}
               data={data}
