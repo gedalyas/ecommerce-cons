@@ -43,6 +43,15 @@ when the types are consumed outside the file. Tokens live in
 | Lists and tables                | stack into a card below `md`                |
 | Floating button                 | 16px from the edges on mobile, 24px from md |
 
+## Phones
+
+Desktop is the reference; `max-sm:` / `max-md:` classes adapt it. `DataTable` renders
+cards below `md` by itself: the first column is the card title, the first right-aligned
+column the lead value, the rest label/value pairs — set `mobile: "title" | "lead" |
+"hidden"` on a column when the default picks wrong, or `mobileLayout="scroll"` for a
+grid that must stay a grid (the first column is pinned and capped). `TabBar` fades the
+edge that still hides tabs; `SegmentedControl` wraps; `MetricTile` labels take two lines.
+
 ## Language
 
 Component names, props, types, comments and file names are in English. Only the

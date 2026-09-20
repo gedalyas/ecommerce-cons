@@ -67,19 +67,17 @@ const emptyStatus = {
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-svh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="t-section-title text-foreground">404</h1>
-        <h2 className="t-card-title mt-4 text-foreground">Page not found</h2>
-        <p className="t-meta mt-2 text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
+        <h2 className="t-card-title mt-4 text-foreground">Página não encontrada</h2>
+        <p className="t-meta mt-2 text-muted-foreground">O endereço não existe ou foi movido.</p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-[13px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90"
           >
-            Go home
+            Ir para o início
           </Link>
         </div>
       </div>
@@ -95,7 +93,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-svh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="t-card-title text-foreground">This page didn't load</h1>
         <p className="t-meta mt-2 text-muted-foreground">

@@ -118,6 +118,32 @@ Released screens per store.
       values; CSV template examples no longer name "Aurora". The assistant's canned
       conversation stays (screen locked in the MVP) (2026-09-20)
 
+## R — Every screen usable on a phone
+
+Davi (2026-09-20): the pilot's users will use the product mostly on mobile, so every screen
+must be responsive — desktop stays the reference, `max-sm:` / `max-md:` classes adapt it.
+Audit tool: `mobile_audit.mjs` in the scratchpad (Playwright, 390 × 844, full-page shots
+of every screen and tab + horizontal-overflow report).
+
+- [x] R1 Tables: `DataTable` renders cards below `md` (title = first column, lead = first
+      numeric column, the rest as label/value pairs; `mobile: "title" | "lead" | "hidden"`
+      per column overrides it), a "Ordenar por" select + direction button replaces the
+      header sort, the CSV export is icon-only on phones; `mobileLayout="scroll"` keeps
+      the grid with a pinned, capped first column (the DRE); pure `dataTableRules` +
+      test. Also: TabBar fades the edge that hides tabs (`useScrollFadeX`,
+      `scroll-fade-*`), `SegmentedControl` wraps on phones (the RFM treemap toggle now
+      uses it instead of a copy), pillar headers keep their actions top-right, tile
+      labels take two lines instead of truncating, an odd last tile spans the row, RFM
+      range filters stack, the goals plan actions fill the width, 404 in Portuguese
+      (2026-09-20)
+- [ ] R2 Dialogs and forms on phones: `PillarEditor`, `MilestoneEditor`, `ConnectDialog`,
+      `CostForm`, `InfluencerForm`, `StoreForm`, invite form — full-width controls,
+      buttons that fit, 16px inputs
+- [ ] R3 Charts on phones: axis ticks, legends and tooltips of the chart family at 358px;
+      `BrazilTileMap` and `TreemapChart` labels
+- [ ] R4 Admin panel and assistant on phones (`AdminShell` tabs, the chat composer above
+      the bottom nav)
+
 ## P4 — First real connections (needs Davi's apps)
 
 - [ ] Shopify, Bling, Google Ads + GA4, Meta Ads, Instagram, Mercado Livre, Amazon: connect

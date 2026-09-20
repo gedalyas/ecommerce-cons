@@ -184,6 +184,25 @@
   );
 }
 
+/* Horizontal scrollers fade the edge that still hides content */
+@utility scroll-fade-end {
+  mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+}
+
+@utility scroll-fade-start {
+  mask-image: linear-gradient(to left, black calc(100% - 40px), transparent);
+}
+
+@utility scroll-fade-both {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 40px,
+    black calc(100% - 40px),
+    transparent
+  );
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

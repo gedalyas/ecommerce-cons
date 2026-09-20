@@ -112,6 +112,7 @@ export function MoneyDre({
           initialPageSize={20}
           pageSizeOptions={[20]}
           csvFileName={`dre-${period.inicio}-${period.fim}`}
+          mobileLayout="scroll"
         />
       </SectionBlock>
     </>

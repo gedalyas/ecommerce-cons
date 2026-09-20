@@ -166,7 +166,7 @@ export function GoalsPlan({
                     scope="row"
                     className={cn(
                       textClass.body,
-                      "sticky left-0 whitespace-nowrap bg-card px-5 py-2 text-left font-semibold",
+                      "sticky left-0 whitespace-nowrap bg-card px-5 py-2 text-left font-semibold max-md:max-w-52 max-md:truncate",
                     )}
                   >
                     {goalInputLabel[key].label}
@@ -198,7 +198,7 @@ export function GoalsPlan({
                       scope="row"
                       className={cn(
                         textClass.body,
-                        "sticky left-0 whitespace-nowrap bg-muted px-5 py-2 text-left text-muted-foreground",
+                        "sticky left-0 whitespace-nowrap bg-muted px-5 py-2 text-left text-muted-foreground max-md:max-w-52 max-md:truncate",
                       )}
                     >
                       {d.label}
@@ -225,11 +225,20 @@ export function GoalsPlan({
           <div className={cn(textClass.meta, "text-muted-foreground")}>
             {error ?? (dirty ? "Alterações não salvas." : "Tudo salvo.")}
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => void onSuggest()} disabled={busy}>
+          <div className="flex flex-wrap gap-2 max-sm:w-full">
+            <Button
+              variant="outline"
+              className="max-sm:flex-1"
+              onClick={() => void onSuggest()}
+              disabled={busy}
+            >
               Preencher com o histórico (+10%)
             </Button>
-            <Button onClick={() => void onSave()} disabled={busy || !dirty}>
+            <Button
+              className="max-sm:flex-1"
+              onClick={() => void onSave()}
+              disabled={busy || !dirty}
+            >
               {busy ? "Salvando…" : "Salvar plano"}
             </Button>
           </div>

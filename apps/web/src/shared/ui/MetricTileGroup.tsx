@@ -6,10 +6,6 @@ import type { MetricTileGroupProps } from "./metricTileGroup.types";
 
 export type { MetricTileGroupProps } from "./metricTileGroup.types";
 
-/**
- * Metric group: a single bordered container with tiles separated by
- * dividers. 2 columns up to lg, 4 (or 3) from lg on.
- */
 export function MetricTileGroup({
   metrics,
   className,
@@ -41,6 +37,7 @@ export function MetricTileGroup({
             className={cn(
               "border-t border-border [&:nth-child(-n+2)]:border-t-0",
               "border-l [&:nth-child(2n+1)]:border-l-0",
+              "max-lg:[&:nth-child(odd):last-child]:col-span-2",
               cols === 4 &&
                 "lg:[&:nth-child(2n+1)]:border-l lg:[&:nth-child(4n+1)]:border-l-0 lg:[&:nth-child(n+3)]:border-t-0",
               cols === 3 &&

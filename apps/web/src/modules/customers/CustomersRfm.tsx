@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Button } from "@/shared/ui/Button";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
+import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { TreemapChart } from "@/shared/ui/TreemapChart";
 import { layout } from "@/shared/styles/spacing";
-import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatCurrency, formatDate, formatNumber } from "@ecommerce/contracts/shared/format";
@@ -22,6 +22,13 @@ import {
   type CustomersSortField,
 } from "@ecommerce/contracts/customers";
 import { RfmFilters } from "./RfmFilters";
+
+type TreemapMeasure = "customers" | "revenue";
+
+const measureOptions = [
+  { key: "customers", label: "Clientes" },
+  { key: "revenue", label: "Total vendido" },
+] as const satisfies readonly { key: TreemapMeasure; label: string }[];
 
 const columns: DataTableColumn<RfmCustomerRow>[] = [
   {
@@ -100,7 +107,7 @@ export function CustomersRfm({
   const router = useRouter();
   const exportCustomers = useServerFn(getCustomersExport);
   const refresh = useServerFn(refreshCustomerSegments);
-  const [measure, setMeasure] = useState<"customers" | "revenue">("customers");
+  const [measure, setMeasure] = useState<TreemapMeasure>("customers");
   const [refreshing, setRefreshing] = useState(false);
 
   const items = data.segments.map((s) => {
@@ -130,34 +137,14 @@ export function CustomersRfm({
         title="Distribuição por segmento"
         description="O tamanho de cada área representa a base filtrada; alterne entre clientes e receita acumulada."
         meta={
-          <div className="flex items-center gap-2">
-            <div
-              role="radiogroup"
-              aria-label="Medida do treemap"
-              className={cn(
-                "inline-flex h-8 items-center gap-1 border border-border bg-card p-0.5",
-                radiusClass.control,
-              )}
-            >
-              {(["customers", "revenue"] as const).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  role="radio"
-                  aria-checked={measure === m}
-                  onClick={() => setMeasure(m)}
-                  className={cn(
-                    "h-7 px-3 text-[13px] leading-[18px]",
-                    radiusClass.badge,
-                    measure === m
-                      ? "bg-primary font-semibold text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {m === "customers" ? "Clientes" : "Total vendido"}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <SegmentedControl
+              label="Medida do treemap"
+              options={measureOptions}
+              value={measure}
+              onChange={setMeasure}
+              className="h-8 p-0.5"
+            />
             <Button
               variant="outline"
               size="sm"

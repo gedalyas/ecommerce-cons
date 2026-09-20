@@ -18,19 +18,17 @@ export function PillarCard({ pillar, actionSlot }: PillarCardProps) {
 
   return (
     <Card tone={blocked ? "muted" : "default"}>
-      <header
-        className={cn("flex flex-wrap items-center justify-between gap-3", layout.cardHeader)}
-      >
+      <header className={cn("flex items-start justify-between gap-3", layout.cardHeader)}>
         <h2
           className={cn(
             textClass.cardTitle,
-            "min-w-0",
+            "min-w-0 flex-1",
             done || blocked ? "text-muted-foreground" : "text-foreground",
           )}
         >
           {pillar.title}
         </h2>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {actionSlot}
           <StatusBadge status={pillar.status} />
         </div>

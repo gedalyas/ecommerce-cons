@@ -34,12 +34,14 @@ function DateRange({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className={cn(textClass.meta, "w-36 text-muted-foreground")}>{label}</span>
+      <span className={cn(textClass.meta, "text-muted-foreground max-sm:w-full sm:w-36")}>
+        {label}
+      </span>
       <Input
         type="date"
         value={from ?? ""}
         onChange={(e) => onChange(e.target.value || null, to)}
-        className="h-9 w-40 shadow-none"
+        className="h-9 min-w-0 shadow-none max-sm:flex-1 sm:w-40"
         aria-label={`${label} — de`}
       />
       <span className={cn(textClass.meta, "text-muted-foreground")}>até</span>
@@ -47,7 +49,7 @@ function DateRange({
         type="date"
         value={to ?? ""}
         onChange={(e) => onChange(from, e.target.value || null)}
-        className="h-9 w-40 shadow-none"
+        className="h-9 min-w-0 shadow-none max-sm:flex-1 sm:w-40"
         aria-label={`${label} — até`}
       />
     </div>
@@ -75,7 +77,9 @@ function NumberRange({
     onCommit(draftMin === "" ? null : Number(draftMin), draftMax === "" ? null : Number(draftMax));
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className={cn(textClass.meta, "w-36 text-muted-foreground")}>{label}</span>
+      <span className={cn(textClass.meta, "text-muted-foreground max-sm:w-full sm:w-36")}>
+        {label}
+      </span>
       <Input
         type="number"
         inputMode="decimal"
@@ -83,7 +87,7 @@ function NumberRange({
         onChange={(e) => setDraftMin(e.target.value)}
         onBlur={commit}
         placeholder="mín."
-        className="h-9 w-28 shadow-none"
+        className="h-9 min-w-0 shadow-none max-sm:flex-1 sm:w-28"
         aria-label={`${label} mínimo`}
       />
       <span className={cn(textClass.meta, "text-muted-foreground")}>a</span>
@@ -94,7 +98,7 @@ function NumberRange({
         onChange={(e) => setDraftMax(e.target.value)}
         onBlur={commit}
         placeholder="máx."
-        className="h-9 w-28 shadow-none"
+        className="h-9 min-w-0 shadow-none max-sm:flex-1 sm:w-28"
         aria-label={`${label} máximo`}
       />
       <span className={cn(textClass.meta, textClass.numeric, "text-muted-foreground")}>{hint}</span>

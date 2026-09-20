@@ -1,10 +1,10 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, Download } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { isValidElement, useMemo, useState, type ReactNode } from "react";
-import { Button } from "./Button";
+import { DataTableCards } from "./DataTableCards";
+import { DataTablePagination } from "./DataTablePagination";
+import { nextSortOf, sortRows } from "./dataTableRules";
 import { cn } from "@/shared/utils/cn";
 import { downloadCsv, type CsvCell } from "@/shared/utils/csv";
-import { formatNumber } from "@ecommerce/contracts/shared/format";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { textClass } from "@/shared/styles/typography";
 import type { DataTableColumn, DataTableProps, DataTableSort } from "./dataTable.types";
 
@@ -20,18 +20,61 @@ function textOf(node: ReactNode): string {
   return "";
 }
 
-function compare(a: number | string | null, b: number | string | null) {
-  if (a == null && b == null) return 0;
-  if (a == null) return 1;
-  if (b == null) return -1;
-  if (typeof a === "number" && typeof b === "number") return a - b;
-  return String(a).localeCompare(String(b), "pt-BR");
+function cellClass<T>(column: DataTableColumn<T>, nowrap: boolean, pinned = false) {
+  return cn(
+    "px-4 py-3 align-middle",
+    nowrap && "whitespace-nowrap",
+    pinned && "sticky left-0 z-10 bg-inherit max-md:max-w-52 max-md:truncate",
+    column.align === "right" && cn(textClass.numeric, "text-right"),
+    column.className,
+  );
 }
 
-/**
- * Analytics table: sortable columns, client-side pagination, a pinned TOTAL
- * row and CSV export. Rows are plain objects; columns decide how to show them.
- */
+function HeaderCell<T>({
+  column,
+  sort,
+  nowrap,
+  pinned,
+  onSort,
+}: {
+  column: DataTableColumn<T>;
+  sort: DataTableSort | null;
+  nowrap: boolean;
+  pinned: boolean;
+  onSort: (column: DataTableColumn<T>) => void;
+}) {
+  const active = sort?.key === column.key;
+  const Icon = !active ? ArrowUpDown : sort.direction === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <th
+      scope="col"
+      aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : undefined}
+      className={cn(
+        cellClass(column, nowrap, pinned),
+        textClass.label,
+        "py-2 whitespace-nowrap text-muted-foreground",
+      )}
+    >
+      {column.sortValue ? (
+        <button
+          type="button"
+          onClick={() => onSort(column)}
+          className={cn(
+            "inline-flex items-center gap-1 hover:text-foreground",
+            column.align === "right" && "flex-row-reverse",
+            active && "text-foreground",
+          )}
+        >
+          {column.header}
+          <Icon className="h-3 w-3" aria-hidden />
+        </button>
+      ) : (
+        column.header
+      )}
+    </th>
+  );
+}
+
 export function DataTable<T>({
   columns,
   rows,
@@ -43,6 +86,7 @@ export function DataTable<T>({
   csvFileName,
   remote,
   emptyMessage = "Não há dados disponíveis para os filtros selecionados.",
+  mobileLayout = "cards",
   className,
 }: DataTableProps<T>) {
   const [localSort, setLocalSort] = useState<DataTableSort | null>(initialSort ?? null);
@@ -53,33 +97,24 @@ export function DataTable<T>({
   const pageSize = remote ? remote.pageSize : localPageSize;
   const page = remote ? remote.page : localPage;
 
-  const sorted = useMemo(() => {
-    if (remote || !sort) return rows;
-    const column = columns.find((c) => c.key === sort.key);
-    if (!column?.sortValue) return rows;
-    const getter = column.sortValue;
-    const factor = sort.direction === "asc" ? 1 : -1;
-    return [...rows].sort((a, b) => compare(getter(a), getter(b)) * factor);
-  }, [rows, columns, sort, remote]);
+  const sorted = useMemo(
+    () => (remote ? rows : sortRows(rows, columns, sort)),
+    [rows, columns, sort, remote],
+  );
 
   const total = remote ? remote.total : sorted.length;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
   const safePage = Math.min(page, pageCount);
   const pageRows = remote ? rows : sorted.slice((safePage - 1) * pageSize, safePage * pageSize);
 
-  const nextSort = (column: DataTableColumn<T>, prev: DataTableSort | null): DataTableSort =>
-    prev?.key === column.key
-      ? { key: column.key, direction: prev.direction === "asc" ? "desc" : "asc" }
-      : { key: column.key, direction: "desc" };
-
   const toggleSort = (column: DataTableColumn<T>) => {
     if (!column.sortValue) return;
     if (remote) {
-      remote.onChange({ page: 1, pageSize, sort: nextSort(column, remote.sort) });
+      remote.onChange({ page: 1, pageSize, sort: nextSortOf(column.key, remote.sort) });
       return;
     }
     setLocalPage(1);
-    setLocalSort((prev) => nextSort(column, prev));
+    setLocalSort((prev) => nextSortOf(column.key, prev));
   };
 
   const goToPage = (next: number) => {
@@ -110,54 +145,38 @@ export function DataTable<T>({
     }
   };
 
-  const cellClass = (column: DataTableColumn<T>) =>
-    cn(
-      "px-4 py-3 align-middle",
-      column.align === "right" && cn(textClass.numeric, "text-right"),
-      column.className,
-    );
+  const cards = mobileLayout === "cards";
+  const nowrap = !cards;
+  const pinnedAt = (index: number) => nowrap && index === 0;
 
   return (
     <div className={cn("min-w-0", className)}>
-      <div className="overflow-x-auto">
+      {cards && (
+        <DataTableCards
+          className="md:hidden"
+          columns={columns}
+          rows={pageRows}
+          rowKey={rowKey}
+          totalRow={totalRow}
+          sort={sort}
+          onSort={toggleSort}
+          emptyMessage={emptyMessage}
+        />
+      )}
+      <div className={cn("overflow-x-auto", cards && "max-md:hidden")}>
         <table className="w-full border-collapse text-[15px] leading-6">
           <thead>
-            <tr className="border-b border-border">
-              {columns.map((column) => {
-                const active = sort?.key === column.key;
-                const Icon = !active ? ArrowUpDown : sort.direction === "asc" ? ArrowUp : ArrowDown;
-                return (
-                  <th
-                    key={column.key}
-                    scope="col"
-                    aria-sort={
-                      active ? (sort.direction === "asc" ? "ascending" : "descending") : undefined
-                    }
-                    className={cn(
-                      cellClass(column),
-                      textClass.label,
-                      "py-2 whitespace-nowrap text-muted-foreground",
-                    )}
-                  >
-                    {column.sortValue ? (
-                      <button
-                        type="button"
-                        onClick={() => toggleSort(column)}
-                        className={cn(
-                          "inline-flex items-center gap-1 hover:text-foreground",
-                          column.align === "right" && "flex-row-reverse",
-                          active && "text-foreground",
-                        )}
-                      >
-                        {column.header}
-                        <Icon className="h-3 w-3" aria-hidden />
-                      </button>
-                    ) : (
-                      column.header
-                    )}
-                  </th>
-                );
-              })}
+            <tr className="border-b border-border bg-card">
+              {columns.map((column, index) => (
+                <HeaderCell
+                  key={column.key}
+                  column={column}
+                  sort={sort}
+                  nowrap={nowrap}
+                  pinned={pinnedAt(index)}
+                  onSort={toggleSort}
+                />
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -172,9 +191,12 @@ export function DataTable<T>({
               </tr>
             )}
             {pageRows.map((row) => (
-              <tr key={rowKey(row)} className="transition-colors duration-150 hover:bg-muted/40">
-                {columns.map((column) => (
-                  <td key={column.key} className={cellClass(column)}>
+              <tr
+                key={rowKey(row)}
+                className="bg-card transition-colors duration-150 hover:bg-muted"
+              >
+                {columns.map((column, index) => (
+                  <td key={column.key} className={cellClass(column, nowrap, pinnedAt(index))}>
                     {column.render(row)}
                   </td>
                 ))}
@@ -183,9 +205,9 @@ export function DataTable<T>({
           </tbody>
           {totalRow && pageRows.length > 0 && (
             <tfoot>
-              <tr className="border-t border-border bg-muted/40 font-semibold">
-                {columns.map((column) => (
-                  <td key={column.key} className={cellClass(column)}>
+              <tr className="border-t border-border bg-muted font-semibold">
+                {columns.map((column, index) => (
+                  <td key={column.key} className={cellClass(column, nowrap, pinnedAt(index))}>
                     {(column.renderTotal ?? column.render)(totalRow)}
                   </td>
                 ))}
@@ -195,64 +217,17 @@ export function DataTable<T>({
         </table>
       </div>
 
-      <div
-        className={cn(
-          textClass.meta,
-          "flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3 text-muted-foreground",
-        )}
-      >
-        <div className="flex items-center gap-2">
-          <span>Por página</span>
-          <Select value={String(pageSize)} onValueChange={(v) => changePageSize(Number(v))}>
-            <SelectTrigger className="h-8 w-[72px] shadow-none" aria-label="Linhas por página">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {pageSizeOptions.map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {n}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <span className={textClass.numeric}>
-            {formatNumber(total)} {total === 1 ? "linha" : "linhas"}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {csvFileName && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void exportCsv()}
-              disabled={total === 0 || exporting}
-            >
-              <Download className="h-4 w-4" aria-hidden />
-              {exporting ? "Exportando…" : "Exportar CSV"}
-            </Button>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => goToPage(safePage - 1)}
-            disabled={safePage <= 1}
-          >
-            Anterior
-          </Button>
-          <span className={cn(textClass.numeric, "whitespace-nowrap")}>
-            Página {safePage} de {pageCount}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => goToPage(safePage + 1)}
-            disabled={safePage >= pageCount}
-          >
-            Próximo
-          </Button>
-        </div>
-      </div>
+      <DataTablePagination
+        total={total}
+        page={safePage}
+        pageCount={pageCount}
+        pageSize={pageSize}
+        pageSizeOptions={pageSizeOptions}
+        onPage={goToPage}
+        onPageSize={changePageSize}
+        onExport={csvFileName ? () => void exportCsv() : undefined}
+        exporting={exporting}
+      />
     </div>
   );
 }

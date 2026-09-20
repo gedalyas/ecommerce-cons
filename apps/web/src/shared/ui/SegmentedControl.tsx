@@ -22,7 +22,7 @@ export function SegmentedControl<K extends string>({
       role="radiogroup"
       aria-label={label}
       className={cn(
-        "inline-flex h-9 max-w-full items-center gap-1 overflow-x-auto border border-border bg-card p-1",
+        "inline-flex max-w-full flex-wrap items-center gap-1 border border-border bg-card p-1 sm:h-9 sm:flex-nowrap sm:overflow-x-auto",
         radiusClass.control,
         className,
       )}

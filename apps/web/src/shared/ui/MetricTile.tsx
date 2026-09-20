@@ -6,7 +6,6 @@ import type { MetricTileProps } from "./metricTile.types";
 
 export type { Metric, MetricTileAction, MetricTileProps } from "./metricTile.types";
 
-/** Metric tile group cell: value on top, label, delta. No border of its own. */
 export function MetricTile({ metric, className, action }: MetricTileProps) {
   return (
     <div
@@ -25,7 +24,7 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
       </div>
 
       <div className="mt-1 flex items-center justify-between gap-2 sm:mt-2 sm:gap-3">
-        <span className="min-w-0 truncate text-[12px] leading-[16px] text-muted-foreground sm:text-[13px] sm:leading-[18px]">
+        <span className="min-w-0 text-[12px] leading-[16px] text-muted-foreground max-sm:line-clamp-2 sm:truncate sm:text-[13px] sm:leading-[18px]">
           {metric.label}
         </span>
         {action && (
@@ -70,7 +69,7 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
         <div
           className={cn(
             textClass.numeric,
-            "mt-1 truncate text-[12px] leading-[16px] text-muted-foreground sm:text-[13px] sm:leading-[18px]",
+            "mt-1 text-[12px] leading-[16px] text-muted-foreground max-sm:line-clamp-2 sm:truncate sm:text-[13px] sm:leading-[18px]",
           )}
         >
           {formatPtNumbers(metric.subNote)}
