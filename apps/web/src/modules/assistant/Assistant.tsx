@@ -132,7 +132,7 @@ export function Assistant() {
   const fileInput = useRef<HTMLInputElement | null>(null);
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const nextId = useRef(100);
-  const { ref: scrollRef, top, bottom } = useScrollShadow<HTMLDivElement>();
+  const { ref: scrollRef, bottom } = useScrollShadow<HTMLDivElement>();
 
   useEffect(() => {
     if (!recording) return;
@@ -218,7 +218,6 @@ export function Assistant() {
       )}
 
       <div className="relative min-h-0 flex-1">
-        <ScrollShadows top={top} bottom={bottom} />
         <div ref={scrollRef} className="h-full overflow-y-auto px-4 py-6 sm:px-6 xl:px-8">
           <div className="mx-auto w-full min-w-0 max-w-[760px]">
             <div className="mb-8">
@@ -296,6 +295,7 @@ export function Assistant() {
               )}
             </div>
           </div>
+          <ScrollShadows bottom={bottom} />
         </div>
       </div>
 

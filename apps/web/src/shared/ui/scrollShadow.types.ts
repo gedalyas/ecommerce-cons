@@ -1,1 +1,1 @@
-export type ScrollShadowsProps = { top: boolean; bottom: boolean };
+export type ScrollShadowsProps = { bottom: boolean };

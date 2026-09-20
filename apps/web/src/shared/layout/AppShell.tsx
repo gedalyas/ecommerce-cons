@@ -22,7 +22,7 @@ export function AppShell({
   banner?: ReactNode;
   account: ShellAccount;
 }) {
-  const { ref, top, bottom } = useScrollShadow<HTMLElement>();
+  const { ref, bottom } = useScrollShadow<HTMLElement>();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isAssistant = pathname === "/assistente";
 
@@ -35,7 +35,6 @@ export function AppShell({
             <TopBar storeName={account.store?.name ?? ""} showPeriod={showsPeriod(pathname)} />
           )}
           <div className="relative min-h-0 min-w-0 flex-1">
-            <ScrollShadows top={top} bottom={bottom} />
             <main
               ref={ref}
               id="app-scroll"
@@ -47,6 +46,7 @@ export function AppShell({
             >
               {banner}
               <Outlet />
+              <ScrollShadows bottom={bottom} />
             </main>
           </div>
         </div>
