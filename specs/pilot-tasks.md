@@ -2,8 +2,11 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0–P3, C1–C5 done (2026-09-13), M1–M3 done (2026-09-19), M5 done (2026-09-20), P4 waits for Davi's apps**. Davi's side is tracked in the Trello card "MVP para o
-cliente parceiro testar".
+Status: **P0–P3, C1–C5 done (2026-09-13), M1–M3 done (2026-09-19), M5 done (2026-09-20)**.
+**On hold since 2026-09-20: deploy and P4 (real connections) wait for the company's own
+domain, so the platform apps are registered once with the final callback URL; meanwhile the
+work continues on improvements inside the product.** Davi's side is tracked in the Trello card
+"MVP para o cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
 
