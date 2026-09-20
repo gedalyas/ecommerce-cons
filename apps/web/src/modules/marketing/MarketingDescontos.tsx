@@ -42,6 +42,7 @@ const codeColumns: DataTableColumn<DiscountCodeRow>[] = [
   {
     key: "revenue",
     header: "Receita",
+    mobile: "lead",
     align: "right",
     render: (r) => money(r.revenue),
     csv: (r) => round2(r.revenue),

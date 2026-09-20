@@ -120,6 +120,7 @@ export function MoneyCosts({ rules }: { rules: CostRuleRow[] }) {
     {
       key: "value",
       header: "Valor",
+      mobile: "lead",
       align: "right",
       render: (r) => valueOf(r),
       csv: (r) => r.value,

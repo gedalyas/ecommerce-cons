@@ -48,6 +48,7 @@ const channelColumns: DataTableColumn<ChannelPerformanceRow>[] = [
   {
     key: "revenue",
     header: "Receita",
+    mobile: "lead",
     align: "right",
     render: (r) => money(r.revenue),
     csv: (r) => Math.round(r.revenue * 100) / 100,
@@ -124,6 +125,7 @@ const utmColumns: DataTableColumn<UtmSalesRow>[] = [
   {
     key: "revenue",
     header: "Receita",
+    mobile: "lead",
     align: "right",
     render: (r) => money(r.revenue),
     csv: (r) => Math.round(r.revenue * 100) / 100,

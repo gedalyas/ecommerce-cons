@@ -83,6 +83,7 @@ const columns: DataTableColumn<RegionPerformanceRow>[] = [
   {
     key: "revenue",
     header: "Total vendido",
+    mobile: "lead",
     align: "right",
     render: (r) => money(r.revenue),
     csv: (r) => round2(r.revenue),

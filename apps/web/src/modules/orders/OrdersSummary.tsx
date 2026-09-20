@@ -38,6 +38,7 @@ const sourceColumns: DataTableColumn<OrdersSourceRow>[] = [
   {
     key: "paid",
     header: "Total pago",
+    mobile: "lead",
     align: "right",
     render: (r) => money(r.paid),
     csv: (r) => round2(r.paid),

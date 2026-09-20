@@ -48,6 +48,15 @@ describe("mobileColumnsOf", () => {
     expect(mobile.details.map((c) => c.key)).toEqual(["email"]);
   });
 
+  it("keeps unlabelled columns as actions, never as title or lead", () => {
+    const actions = column("items", { header: "", align: "right" });
+    const mobile = mobileColumnsOf([actions, column("name"), column("total", { align: "right" })]);
+    expect(mobile.title?.key).toBe("name");
+    expect(mobile.lead?.key).toBe("total");
+    expect(mobile.actions).toEqual([actions]);
+    expect(mobile.details).toEqual([]);
+  });
+
   it("never uses the title column as the lead", () => {
     const mobile = mobileColumnsOf([column("total", { align: "right" }), column("name")]);
     expect(mobile.title?.key).toBe("total");

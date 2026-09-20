@@ -42,6 +42,7 @@ const accountColumns: DataTableColumn<SocialAccountRow>[] = [
   {
     key: "reach",
     header: "Alcance",
+    mobile: "lead",
     align: "right",
     render: (r) => formatNumber(r.reach),
     csv: (r) => r.reach,
@@ -105,6 +106,7 @@ const postColumns: DataTableColumn<SocialPostRow>[] = [
   {
     key: "reach",
     header: "Alcance",
+    mobile: "lead",
     align: "right",
     render: (r) => formatNumber(r.reach),
     csv: (r) => r.reach,

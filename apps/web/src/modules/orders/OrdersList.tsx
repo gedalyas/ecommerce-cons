@@ -56,7 +56,7 @@ const columns: DataTableColumn<OrdersListRow>[] = [
     render: (r) => r.customerName,
     className: "whitespace-nowrap",
   },
-  { key: "email", header: "E-mail", render: (r) => r.email },
+  { key: "email", header: "E-mail", mobile: "hidden", render: (r) => r.email },
   {
     key: "phone",
     header: "Telefone",

@@ -40,7 +40,7 @@ export function AppShell({
               id="app-scroll"
               className={
                 isAssistant
-                  ? "h-full min-w-0 overflow-hidden pb-16 md:pb-0"
+                  ? "flex h-full min-w-0 flex-col overflow-hidden pb-16 md:pb-0"
                   : "h-full min-w-0 overflow-y-auto pb-20 md:pb-0"
               }
             >

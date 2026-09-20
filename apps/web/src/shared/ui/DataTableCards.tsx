@@ -60,6 +60,13 @@ function CardRow<T>({
           ))}
         </dl>
       )}
+      {mobile.actions.length > 0 && (
+        <div className="flex flex-wrap justify-end gap-2">
+          {mobile.actions.map((column) => (
+            <div key={column.key}>{cell(column)}</div>
+          ))}
+        </div>
+      )}
     </li>
   );
 }

@@ -4,17 +4,20 @@ export type MobileColumns<T> = {
   title: DataTableColumn<T> | null;
   lead: DataTableColumn<T> | null;
   details: DataTableColumn<T>[];
+  actions: DataTableColumn<T>[];
 };
 
 export function mobileColumnsOf<T>(columns: DataTableColumn<T>[]): MobileColumns<T> {
   const visible = columns.filter((column) => column.mobile !== "hidden");
-  const title = visible.find((column) => column.mobile === "title") ?? visible[0] ?? null;
+  const actions = visible.filter((column) => column.header === "");
+  const labelled = visible.filter((column) => column.header !== "");
+  const title = labelled.find((column) => column.mobile === "title") ?? labelled[0] ?? null;
   const lead =
-    visible.find((column) => column.mobile === "lead") ??
-    visible.find((column) => column !== title && column.align === "right") ??
+    labelled.find((column) => column.mobile === "lead") ??
+    labelled.find((column) => column !== title && column.align === "right") ??
     null;
-  const details = visible.filter((column) => column !== title && column !== lead);
-  return { title, lead, details };
+  const details = labelled.filter((column) => column !== title && column !== lead);
+  return { title, lead, details, actions };
 }
 
 export function nextSortOf(key: string, previous: DataTableSort | null): DataTableSort {

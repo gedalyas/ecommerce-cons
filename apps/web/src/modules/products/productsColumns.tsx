@@ -63,6 +63,7 @@ export const productColumns: DataTableColumn<ProductRow>[] = [
   {
     key: "revenue",
     header: "Total vendido",
+    mobile: "lead",
     align: "right",
     render: (r) => money(r.revenue),
     csv: (r) => round2(r.revenue),
@@ -124,6 +125,7 @@ export const volumeColumns: DataTableColumn<ProductRow>[] = [
   {
     key: "revenue",
     header: "Total vendido",
+    mobile: "lead",
     align: "right",
     render: (r) => money(r.revenue),
     csv: (r) => round2(r.revenue),

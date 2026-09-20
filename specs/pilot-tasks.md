@@ -145,10 +145,16 @@ of every screen and tab + horizontal-overflow report).
       three selects. Dialogs and forms (`PillarEditor`, `MilestoneEditor`,
       `ConnectDialog`, `CostForm`, `InfluencerForm`, `DashboardCustomizer`) were
       checked open at 390px and already fit (2026-09-20)
-- [ ] R3 Charts on phones: axis ticks, legends and tooltips of the chart family at 358px;
-      `BrazilTileMap` and `TreemapChart` labels
-- [ ] R4 Admin panel and assistant on phones (`AdminShell` tabs, the chat composer above
-      the bottom nav)
+- [x] R3 Cards pick the right lead: `mobile: "lead"` on Total vendido / Receita / Total
+      pago / Valor / Alcance where the first numeric column was an investment or a
+      class; the order's e-mail is hidden on cards; unlabelled action columns (edit,
+      delete) render as the card's footer instead of a blank label. Charts checked at
+      358px: time series, combo, donut, treemap and the Brazil tile map already fit
+      (2026-09-20)
+- [x] R4 Assistant and admin on phones: the assistant is a flex child under the session
+      banner, so the composer no longer slides behind the bottom bar (the banner also
+      cut it on desktop for staff); the "Telas liberadas" picker fills its card on
+      phones (2026-09-20)
 
 ## P4 — First real connections (needs Davi's apps)
 
