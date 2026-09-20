@@ -41,15 +41,15 @@ function QuickPeriods({
       <div className={cn(textClass.meta, "mb-1 font-semibold text-foreground")}>
         Períodos rápidos
       </div>
-      <ul className="flex gap-1 overflow-x-auto sm:flex-col sm:overflow-visible">
+      <ul className="flex flex-wrap gap-1 sm:flex-col">
         {periodPresets.map((preset) => (
-          <li key={preset.key} className="shrink-0">
+          <li key={preset.key}>
             <button
               type="button"
               onClick={() => onPick(preset.key)}
               className={cn(
                 textClass.meta,
-                "w-full whitespace-nowrap rounded-md px-3 py-1.5 text-left transition-colors duration-150 hover:bg-muted",
+                "w-full whitespace-nowrap rounded-md px-3 py-1.5 text-left transition-colors duration-150 hover:bg-muted max-sm:border max-sm:border-border",
                 preset.key === activeKey && "bg-success-soft font-semibold text-primary",
               )}
             >
@@ -76,7 +76,7 @@ function DraftOptions({
     </label>
   );
   return (
-    <div className="flex flex-wrap gap-3 border-t border-border p-3">
+    <div className="grid gap-3 border-t border-border p-3 sm:flex sm:flex-wrap">
       {field(
         "Agrupar por",
         <Select
@@ -194,9 +194,13 @@ export function PeriodSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto max-w-[calc(100vw-32px)] p-0">
+      <PopoverContent
+        align="start"
+        collisionPadding={16}
+        className="max-h-(--radix-popover-content-available-height) w-auto max-w-[calc(100vw-32px)] overflow-y-auto p-0"
+      >
         <div className="flex flex-col sm:flex-row">
-          <div className="p-2">
+          <div className="p-2 max-sm:mx-auto">
             <Calendar
               mode="range"
               locale={ptBR}
@@ -211,7 +215,7 @@ export function PeriodSelector({
           <QuickPeriods activeKey={draftPreset} onPick={pickPreset} />
         </div>
         <DraftOptions draft={draft} onChange={patchDraft} />
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border p-3">
+        <div className="sticky bottom-0 flex flex-wrap items-center justify-between gap-2 border-t border-border bg-popover p-3">
           <span className={cn(textClass.meta, textClass.numeric, "text-muted-foreground")}>
             {formatPeriodLabel(draft.inicio, draft.fim, true)}
             {comparison

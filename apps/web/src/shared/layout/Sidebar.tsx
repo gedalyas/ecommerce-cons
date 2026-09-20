@@ -1,51 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  Activity,
-  Banknote,
-  LayoutDashboard,
-  LogOut,
-  Megaphone,
-  MessageSquare,
-  Package,
-  Plug,
-  Users,
-  ShoppingBag,
-  Sparkles,
-  Target,
-  Truck,
-  Building2,
-  Settings,
-} from "lucide-react";
+import { LogOut, Plug, Settings } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/Tooltip";
 import { cn } from "@/shared/utils/cn";
 import { SidebarNavList } from "./SidebarNavList";
+import { areaItems, dataItems } from "./navigation";
 import { navItems } from "./screenAccess";
 import type { ShellAccount, ShellStatus } from "./shellStatus.types";
-
-const mainItems = [
-  { label: "Assistente", to: "/assistente", icon: MessageSquare },
-  { label: "Dashboard", to: "/", icon: LayoutDashboard },
-  { label: "Dinheiro", to: "/dinheiro", icon: Banknote },
-  { label: "Marketing", to: "/marketing", icon: Megaphone },
-  { label: "Logística", to: "/logistica", icon: Truck },
-  { label: "Gestão", to: "/gestao", icon: Building2 },
-];
-
-const dataItems = [
-  { label: "Pedidos", to: "/pedidos", icon: ShoppingBag },
-  { label: "Produtos", to: "/produtos", icon: Package },
-  { label: "Clientes", to: "/clientes", icon: Users },
-  { label: "Metas", to: "/metas", icon: Target },
-  { label: "Métricas", to: "/metricas", icon: Activity },
-  { label: "Influenciadores", to: "/influenciadores", icon: Sparkles },
-];
 
 export function Sidebar({ status, account }: { status: ShellStatus; account: ShellAccount }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { maturity } = status;
   const releasedScreens = account.store?.releasedScreens ?? [];
-  const areaItems = navItems(mainItems, account.access, account.release, releasedScreens);
+  const areaLinks = navItems(areaItems, account.access, account.release, releasedScreens);
   const dataLinks = navItems(dataItems, account.access, account.release, releasedScreens);
   const isOwner = account.access === null;
   const maturityPercent = maturity.total > 0 ? (maturity.achieved / maturity.total) * 100 : 0;
@@ -95,7 +62,7 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
 
       <nav className="relative min-h-0 flex-1 overflow-y-auto py-2">
         <div className="t-label hidden px-3 pb-2 pt-2 text-muted-foreground xl:block">Áreas</div>
-        <SidebarNavList items={areaItems} linkClass={linkClass} />
+        <SidebarNavList items={areaLinks} linkClass={linkClass} />
 
         {dataLinks.length > 0 && <div className="my-3 border-t border-sidebar-border" />}
 

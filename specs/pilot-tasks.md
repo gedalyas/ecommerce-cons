@@ -136,9 +136,15 @@ of every screen and tab + horizontal-overflow report).
       labels take two lines instead of truncating, an odd last tile spans the row, RFM
       range filters stack, the goals plan actions fill the width, 404 in Portuguese
       (2026-09-20)
-- [ ] R2 Dialogs and forms on phones: `PillarEditor`, `MilestoneEditor`, `ConnectDialog`,
-      `CostForm`, `InfluencerForm`, `StoreForm`, invite form — full-width controls,
-      buttons that fit, 16px inputs
+- [x] R2 Navigation on phones: the bottom bar shows Dashboard · Marketing · Pedidos ·
+      Dinheiro · Mais, and "Mais" opens a bottom `Sheet` (new primitive) with every
+      screen the sidebar has — store switcher, Áreas, Dados, Infraestrutura, Sair — with
+      the same lock / eye-off marks; the three nav lists live once in
+      `shared/layout/navigation.ts`. The period popover keeps 16px from the edges, caps
+      its height with a pinned footer, wraps the quick periods as chips and stacks the
+      three selects. Dialogs and forms (`PillarEditor`, `MilestoneEditor`,
+      `ConnectDialog`, `CostForm`, `InfluencerForm`, `DashboardCustomizer`) were
+      checked open at 390px and already fit (2026-09-20)
 - [ ] R3 Charts on phones: axis ticks, legends and tooltips of the chart family at 358px;
       `BrazilTileMap` and `TreemapChart` labels
 - [ ] R4 Admin panel and assistant on phones (`AdminShell` tabs, the chat composer above
