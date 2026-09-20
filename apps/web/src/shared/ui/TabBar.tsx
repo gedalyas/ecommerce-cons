@@ -2,7 +2,6 @@ import { cn } from "@/shared/utils/cn";
 
 export type TabItem<K extends string> = { key: K; label: string };
 
-/** Underlined tab strip for the sub-screens of a section (Resumo · Aprovação · Lista). */
 export function TabBar<K extends string>({
   tabs,
   value,
@@ -17,7 +16,10 @@ export function TabBar<K extends string>({
   return (
     <div
       role="tablist"
-      className={cn("flex gap-1 overflow-x-auto border-b border-border", className)}
+      className={cn(
+        "flex gap-1 overflow-x-auto overflow-y-hidden border-b border-border",
+        className,
+      )}
     >
       {tabs.map((tab) => {
         const active = tab.key === value;
