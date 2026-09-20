@@ -110,8 +110,10 @@ a `USER_IMPERSONATED` event on the target's store (or global when they have none
 
 ## Access by invitation
 
-1. A staff user invites an e-mail on `/admin` › Convites (role, and for clients the store —
-   or "Nova loja", meaning the invitee creates one). The API issues a random token (sha256
+1. A staff user invites an e-mail on `/admin` › Convites (e-mail and role only: a client
+   always creates their own store in the onboarding, a consultant is assigned stores later
+   in the Lojas › Consultores column; the API still accepts an optional `clientId` for the
+   sale flow). The API issues a random token (sha256
    stored, 7 days) and sends the link `/cadastro?convite=<token>` through the mailer; the
    table shows Pendente · Expirado · Aceito, "Reenviar" rotates the token and sends again.
 2. The invitee opens the link: `/cadastro` resolves the token (`GET /auth/invitation`),

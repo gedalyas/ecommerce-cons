@@ -179,10 +179,10 @@ export function Admin({
 
         <SectionBlock
           title="Convites"
-          description="O convidado recebe por e-mail um link para criar a conta, válido por 7 dias."
+          description="O convidado recebe por e-mail um link para criar a conta, válido por 7 dias. Um cliente cadastra a própria loja no primeiro acesso; um consultor recebe lojas na coluna Consultores."
           bodyClassName={layout.cardPadding}
         >
-          <InviteForm stores={data.stores} canInviteConsultant={isAdmin} />
+          <InviteForm canInviteConsultant={isAdmin} />
           <div className="mt-6">
             <DataTable
               columns={[
