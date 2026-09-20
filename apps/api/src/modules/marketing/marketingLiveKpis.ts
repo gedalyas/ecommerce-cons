@@ -1,5 +1,10 @@
 import type { LiveKpiValues } from "@ecommerce/contracts/consulting";
-import type { MarketingOverview, MarketingRetention } from "@ecommerce/contracts/marketing";
+import type {
+  MarketingOverview,
+  MarketingRetention,
+  MarketingSocial,
+} from "@ecommerce/contracts/marketing";
+import type { MetricValue } from "@ecommerce/contracts/shared/metric.types";
 import { metricValue } from "@ecommerce/contracts/shared/metricValue";
 
 function retentionKpis(retention: MarketingRetention): LiveKpiValues {
@@ -51,13 +56,42 @@ function acquisitionKpis(overview: MarketingOverview): LiveKpiValues {
   };
 }
 
+function presenceKpis(social: MarketingSocial): LiveKpiValues {
+  const connected = social.accounts.length > 0;
+  const whenConnected = (metric: MetricValue) =>
+    connected ? metric : metricValue(metric.unit, null, null);
+  return {
+    followers: {
+      metric: whenConnected(social.followers),
+      goodWhen: "up",
+      fidelity: "A",
+      fidelityNote: "Nível A — seguidores dos perfis conectados no último dia do período.",
+      subNote: "Instagram + Facebook",
+    },
+    socialReach: {
+      metric: whenConnected(social.reach),
+      goodWhen: "up",
+      fidelity: "A",
+      fidelityNote: "Nível A — contas alcançadas por dia, somadas no período.",
+    },
+    socialEngagementRate: {
+      metric: whenConnected(social.engagementRate),
+      goodWhen: "up",
+      fidelity: "B",
+      fidelityNote: "Nível B — interações das publicações sobre o alcance do período.",
+    },
+  };
+}
+
 export function marketingLiveKpis(
   overview: MarketingOverview,
   retention: MarketingRetention,
+  social: MarketingSocial,
 ): LiveKpiValues {
   return {
     ...retentionKpis(retention),
     ...acquisitionKpis(overview),
+    ...presenceKpis(social),
     conversionRate: {
       metric: overview.conversionRate,
       goodWhen: "up",

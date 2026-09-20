@@ -57,7 +57,6 @@ export function pillarOf(pillar: ConsultingPillar, comparisonLabel: string): Pil
     kpis: pillar.kpis.map((kpi) => metricTileOf(kpi, comparisonLabel)),
     recommendations: pillar.recommendations.map(recommendationOf),
     ...(pillar.dataPending ? { dataPending: pillar.dataPending } : {}),
-    ...(pillar.extra ? { extra: pillar.extra } : {}),
   };
 }
 

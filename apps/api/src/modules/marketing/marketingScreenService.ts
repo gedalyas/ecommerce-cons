@@ -403,14 +403,15 @@ export async function marketingVisao(
   retention: MarketingRetention,
   canEdit: boolean,
 ): Promise<MarketingVisao> {
-  const [overview, sources] = await Promise.all([
+  const [overview, sources, social] = await Promise.all([
     marketingOverview(clientId, input),
     dataSourcesFor(clientId),
+    marketingSocial(clientId, input),
   ]);
   const section = await sectionFor(
     clientId,
     "marketing",
-    marketingLiveKpis(overview, retention),
+    marketingLiveKpis(overview, retention, social),
     canEdit,
   );
   const staleSources = sources

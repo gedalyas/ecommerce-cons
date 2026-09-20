@@ -51,7 +51,6 @@ export type ConsultingPillar = {
   kpis: ConsultingMetric[];
   recommendations: ConsultingRecommendation[];
   dataPending?: string;
-  extra?: string;
 };
 
 export type ConsultingSection = {

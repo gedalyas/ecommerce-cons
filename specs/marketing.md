@@ -59,8 +59,14 @@ data module already covers replaced by live values
 | Aquisição | Investimento em mídia       | investment (media + fee + cost lines)                              |
 | Aquisição | Participação do maior canal | revenue share of the largest origem / meio (the label is the note) |
 | Retenção  | Recompra 90 dias, LTV 12 m  | injected from customers                                            |
+| Presença  | Seguidores                  | `social_daily` followers on the last synced day of the period      |
+| Presença  | Alcance                     | `social_daily` reach summed over the period (Instagram + Facebook) |
+| Presença  | Taxa de engajamento         | engagement ÷ reach of the period (the Social tab's rate)           |
 
-Presença e criativos and Canais paralelos stay on the seeded values. The
+The presence KPIs come from the Instagram/Facebook connector (P3); a store
+without it shows "—". Canais paralelos stays on manual values. There is no
+feature block inside a pillar any more (the mocked `CreativePresence` was
+removed on 2026-09-20 — nothing fed it). The
 orange banner names the first data source in `ERROR` with its sync label
 ("Meta Ads não sincroniza há 6 dias"); no banner when every source is fine.
 

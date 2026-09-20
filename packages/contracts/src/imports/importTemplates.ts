@@ -65,7 +65,7 @@ export const importTemplates: Record<ImportKind, ImportTemplate> = {
         example: "ecommerce",
         options: salesPlatformOptions,
       },
-      { key: "channel", header: "canal", required: false, type: "text", example: "Loja Aurora" },
+      { key: "channel", header: "canal", required: false, type: "text", example: "Loja virtual" },
       { key: "gateway", header: "gateway", required: false, type: "text", example: "Pagar.me" },
       {
         key: "processingMethod",
@@ -99,7 +99,7 @@ export const importTemplates: Record<ImportKind, ImportTemplate> = {
         header: "produto",
         required: true,
         type: "text",
-        example: "Manta Aurora",
+        example: "Manta de tricô",
       },
       { key: "category", header: "categoria", required: false, type: "text", example: "Decoração" },
       { key: "quantity", header: "quantidade", required: true, type: "integer", example: "2" },

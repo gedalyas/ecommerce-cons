@@ -115,7 +115,6 @@ export function buildSection(key: SectionKey, inputs: SectionInputs): Consulting
         .filter((r) => r.pillarKey === template.key && !r.doneAt)
         .map(toRecommendation),
       ...(row?.dataPending ? { dataPending: row.dataPending } : {}),
-      ...(template.extra ? { extra: template.extra } : {}),
     };
   });
   return { key, title: area.title, subtitle: area.subtitle, pillars, canEdit: inputs.canEdit };

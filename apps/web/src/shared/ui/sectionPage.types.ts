@@ -7,8 +7,6 @@ export type SectionPageProps = {
   section: Section;
   /** Faixa de aviso exibida acima dos pilares. */
   banner?: ReactNode;
-  /** A pillar's extra content, resolved by the feature. */
-  renderExtra?: (pillar: Pillar) => ReactNode;
   /** A pillar's header control, resolved by the feature. */
   renderAction?: (pillar: Pillar) => ReactNode;
 };

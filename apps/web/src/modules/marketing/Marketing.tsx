@@ -3,13 +3,11 @@ import { AlertBanner } from "@/shared/ui/AlertBanner";
 import { PageHeader } from "@/shared/ui/PageHeader";
 import { SectionPage } from "@/shared/ui/SectionPage";
 import { TabBar } from "@/shared/ui/TabBar";
-import type { Pillar } from "@/shared/ui/PillarCard";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
-import { CreativePresence } from "./CreativePresence";
 import type { MarketingScreen, MarketingVisao, StaleSource } from "@ecommerce/contracts/marketing";
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingDescontos } from "./MarketingDescontos";
@@ -58,9 +56,6 @@ function MarketingVisaoTab({
       section={sectionOf(data.section, comparisonLabel)}
       renderAction={pillarActionOf(data.section)}
       banner={staleSource ? <StaleSourceBanner source={staleSource} /> : undefined}
-      renderExtra={(pillar: Pillar) =>
-        pillar.extra === "creative-presence" ? <CreativePresence /> : null
-      }
     />
   );
 }

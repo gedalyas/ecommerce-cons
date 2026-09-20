@@ -13,6 +13,9 @@ export const liveKpiKeys = [
   "roas",
   "adSpend",
   "topChannelShare",
+  "followers",
+  "socialReach",
+  "socialEngagementRate",
   "repurchaseRate90",
   "ltv12Months",
   "stockOutRate",
@@ -28,7 +31,6 @@ export type PillarTemplate = {
   key: string;
   title: string;
   kpis: PillarKpiTemplate[];
-  extra?: string;
   blockedByMilestone?: boolean;
 };
 
@@ -116,12 +118,10 @@ export const engagementTemplate: AreaTemplate[] = [
       {
         key: "presence",
         title: "Presença e criativos",
-        extra: "creative-presence",
         kpis: [
-          manual("followers", "Seguidores", "Soma dos perfis sociais da marca"),
-          manual("monthlyReach", "Alcance mensal", "Contas alcançadas no mês"),
-          manual("engagement", "Engajamento", "Interações sobre alcance"),
-          manual("activeCreatives", "Criativos ativos", "Anúncios em veiculação"),
+          live("followers", "Seguidores", "up"),
+          live("socialReach", "Alcance", "up"),
+          live("socialEngagementRate", "Taxa de engajamento", "up"),
         ],
       },
       {

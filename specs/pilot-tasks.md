@@ -2,7 +2,7 @@
 
 Board for `pilot-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **P0–P3, C1–C5 done (2026-09-13), M1–M3 done (2026-09-19), P4 waits for Davi's apps**. Davi's side is tracked in the Trello card "MVP para o
+Status: **P0–P3, C1–C5 done (2026-09-13), M1–M3 done (2026-09-19), M5 done (2026-09-20), P4 waits for Davi's apps**. Davi's side is tracked in the Trello card "MVP para o
 cliente parceiro testar".
 
 ## P0 — Deploy on a provider's URLs
@@ -108,6 +108,12 @@ Released screens per store.
       FAB hidden when locked; staff sees everything with an eye-off mark; "Telas liberadas"
       column on `/admin` › Lojas (2026-09-19)
 - [ ] M4 Release Dinheiro / Logística / Gestão per pilot store as each screen matures
+- [x] M5 No mock reaches the pilot client: the hardcoded `CreativePresence` block (fake
+      Instagram feed, creatives, landing pages, "consistência 68%") and its `extra` plumbing
+      removed; the "Presença e criativos" pillar reads Seguidores / Alcance / Taxa de
+      engajamento live from `social_daily` (`marketingLiveKpis` + test) instead of manual
+      values; CSV template examples no longer name "Aurora". The assistant's canned
+      conversation stays (screen locked in the MVP) (2026-09-20)
 
 ## P4 — First real connections (needs Davi's apps)
 

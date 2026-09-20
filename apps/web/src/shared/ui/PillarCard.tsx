@@ -12,7 +12,7 @@ import type { PillarCardProps } from "./pillarCard.types";
 export type { Pillar, PillarCardProps } from "./pillarCard.types";
 
 /** Pillar card: the single container carrying border, radius and shadow. */
-export function PillarCard({ pillar, extraSlot, actionSlot }: PillarCardProps) {
+export function PillarCard({ pillar, actionSlot }: PillarCardProps) {
   const blocked = pillar.status === "blocked";
   const done = pillar.status === "done";
 
@@ -49,9 +49,7 @@ export function PillarCard({ pillar, extraSlot, actionSlot }: PillarCardProps) {
             <MetricTileGroup metrics={pillar.kpis} bare />
           </div>
 
-          {extraSlot && <div className="border-t border-border pt-8">{extraSlot}</div>}
-
-          <div className={extraSlot ? "border-t border-border pt-8" : undefined}>
+          <div>
             <div className={cn(textClass.label, "mb-3 text-muted-foreground")}>
               Recomendações em aberto
             </div>
