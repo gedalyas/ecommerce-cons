@@ -156,6 +156,12 @@ of every screen and tab + horizontal-overflow report).
       cut it on desktop for staff); the "Telas liberadas" picker fills its card on
       phones (2026-09-20)
 
+- [x] R5 KPIs as cards on phones (Davi: the divided grid "não segue o padrão de mercado",
+      and the web should already look like the React Native model): `MetricTileGroup`
+      renders `MetricCard`s below `sm` — 2-column grid of rounded cards, label above the
+      value, delta as a soft chip (`destructive-soft` token added), muted background when
+      nested in a pillar or section card; desktop keeps the tile group (2026-09-20)
+
 ## P4 — First real connections (needs Davi's apps)
 
 - [ ] Shopify, Bling, Google Ads + GA4, Meta Ads, Instagram, Mercado Livre, Amazon: connect

@@ -50,7 +50,10 @@ cards below `md` by itself: the first column is the card title, the first right-
 column the lead value, the rest label/value pairs — set `mobile: "title" | "lead" |
 "hidden"` on a column when the default picks wrong, or `mobileLayout="scroll"` for a
 grid that must stay a grid (the first column is pinned and capped). `TabBar` fades the
-edge that still hides tabs; `SegmentedControl` wraps; `MetricTile` labels take two lines.
+edge that still hides tabs; `SegmentedControl` wraps. `MetricTileGroup` renders
+`MetricCard`s below `sm` — separate rounded cards in a 2-column grid, label on top, value,
+delta as a soft chip (arrow from the sign, colour from `deltaDirection`), muted when
+nested in another card — the same shape the React Native app will use.
 
 ## Language
 
