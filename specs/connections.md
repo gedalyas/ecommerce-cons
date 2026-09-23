@@ -79,8 +79,25 @@ records its `source`. A sync that finds a kind it provides owned by another sour
 finishes, then flags the connection `ERROR` with `ownerConflictMessage` ("A fonte de vendas desta
 loja é Planilha…") so Conexões explains why nothing arrives. The spreadsheet claims only the
 kind it imported, after at least one row was written; undoing its last active import of that
-kind releases it. Disconnecting releases a connector's kinds. Choosing another owner is the G2
-source picker (`growth-plan.md`); until then the first source keeps the kind.
+kind releases it. Disconnecting releases a connector's kinds. **Choosing another owner** (`PUT /data-sources` { kind, source | null }, area edit of the
+kind; from "O que puxa" in the drawer: "Usar esta integração" / "Deixar de usar" with a
+confirmation — `switchNotice`) **cuts by date** (Davi, 2026-09-23): the new owner counts from
+today (`store_data_source.since`), the previous one keeps the days before; for sales the
+previous source's orders from today on are deleted and the sync/import of the new owner skips
+orders placed before `since` (`ordersSince`). Products and customers without an owner are
+"Gerado no sistema, a partir dos pedidos"; releasing them returns to that. Every change records
+`DATA_SOURCE_CHANGED` ("Vendas passam a vir de Bling a partir de 23/09/2026", or "com todo o histórico"
+when nobody held the kind). Only a healthy connection (importing or ready) or the spreadsheet can be
+chosen; choosing the current owner is a no-op; 10 switches / 15 min. The cut applies to sales
+(orders) and site traffic (days). Releasing a kind that has a cut (disconnect, last import undone,
+"Deixar de usar") keeps the row as `system` so the cut survives and nobody writes it until the store
+chooses again; without a cut the row is deleted and the next source claims it as before.
+
+Known limits (2026-09-23): a sync already running when the owner switches may still write one
+chunk of the previous source's orders (the owner is re-checked per write, not per row); undoing an
+older CSV import after a switch can restore orders the switch removed; a new sales provider must
+fetch from the start of the day when its cursor is empty (Bling does), because the switch nulls the
+new owner's cursor to re-fetch today.
 
 ## Connecting a platform
 

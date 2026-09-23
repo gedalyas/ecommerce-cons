@@ -992,12 +992,14 @@ model DataSource {
 /// The one source that owns an exclusive data kind of a store (sales, products, stock,
 /// customers, traffic). Kinds and sources are closed sets in contracts/connectors.
 model StoreDataSource {
-  id        String   @id @default(cuid())
-  clientId  String   @map("client_id")
+  id        String    @id @default(cuid())
+  clientId  String    @map("client_id")
   kind      String
   source    String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  /// First day this source counts; the previous owner keeps the days before (G2 date cut).
+  since     DateTime? @db.Date
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 

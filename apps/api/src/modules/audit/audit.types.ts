@@ -46,4 +46,5 @@ export type AuditDetail =
     }
   | { action: "CONNECTION_AUTHORIZED" | "CONNECTION_REMOVED"; connector: string; account: string }
   | { action: "CONNECTION_SYNCED"; connector: string; rows: number }
-  | { action: "CONNECTION_FAILED"; connector: string; message: string };
+  | { action: "CONNECTION_FAILED"; connector: string; message: string }
+  | { action: "DATA_SOURCE_CHANGED"; kind: string; source: string | null; since: string | null };

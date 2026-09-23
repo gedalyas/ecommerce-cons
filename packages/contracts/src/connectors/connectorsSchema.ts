@@ -1,8 +1,19 @@
 import { z } from "zod";
 import { connectorKeys } from "./connectorCatalog";
+import { exclusiveDataKinds } from "./dataSourceRules";
 import { connectionRequestStatuses, statusMappingTargets } from "./connectors.types";
 
 export const connectorKeySchema = z.object({ key: z.enum(connectorKeys) });
+
+export const dataSourceChoiceSchema = z.object({
+  kind: z.enum(exclusiveDataKinds, {
+    errorMap: () => ({ message: "Este tipo de dado não tem fonte única." }),
+  }),
+  source: z
+    .enum(connectorKeys, { errorMap: () => ({ message: "Integração desconhecida." }) })
+    .nullable(),
+});
+export type DataSourceChoice = z.infer<typeof dataSourceChoiceSchema>;
 
 export const connectionRequestInputSchema = z.object({
   note: z.string().trim().max(500, "No máximo 500 caracteres").default(""),

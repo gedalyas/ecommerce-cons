@@ -82,4 +82,31 @@ describe("commercial actions", () => {
       "Contrato assinado por a@b.c",
     );
   });
+
+  it("describes a data source change", () => {
+    expect(
+      auditSummary({
+        action: "DATA_SOURCE_CHANGED",
+        kind: "Vendas",
+        source: "Bling",
+        since: "23/09/2026",
+      }),
+    ).toBe("Vendas passam a vir de Bling a partir de 23/09/2026");
+    expect(
+      auditSummary({
+        action: "DATA_SOURCE_CHANGED",
+        kind: "Produtos",
+        source: null,
+        since: "23/09/2026",
+      }),
+    ).toBe("Produtos deixam de ter fonte própria a partir de 23/09/2026");
+    expect(
+      auditSummary({
+        action: "DATA_SOURCE_CHANGED",
+        kind: "Vendas",
+        source: "Planilha",
+        since: null,
+      }),
+    ).toBe("Vendas passam a vir de Planilha com todo o histórico");
+  });
 });

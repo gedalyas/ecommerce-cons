@@ -12,6 +12,7 @@ import { TabBar } from "@/shared/ui/TabBar";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { ConnectorLogo } from "./ConnectorLogo";
+import { DataSourceSwitch } from "./DataSourceSwitch";
 
 type Tab = "connect" | "data" | "help";
 
@@ -31,9 +32,12 @@ function DataTab({ connector, owners }: { connector: StoreConnector; owners: Dat
       </p>
       <ul className="divide-y divide-border">
         {rows.map((row) => (
-          <li key={row.kind} className="flex items-center justify-between gap-3 py-3">
+          <li key={row.kind} className="flex flex-wrap items-center justify-between gap-3 py-3">
             <span className={cn(textClass.body, "text-foreground")}>{row.label}</span>
-            <Badge tone={row.owner === "other" ? "warning" : "outline"}>{row.text}</Badge>
+            <span className="flex items-center gap-2">
+              <Badge tone={row.owner === "other" ? "warning" : "outline"}>{row.text}</Badge>
+              <DataSourceSwitch connector={connector} row={row} />
+            </span>
           </li>
         ))}
       </ul>

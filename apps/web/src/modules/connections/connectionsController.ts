@@ -5,6 +5,7 @@ import {
   connectorKeySchema,
   connectorSettingsSchema,
   connectorStartSchema,
+  dataSourceChoiceSchema,
   type ConnectionRequest,
   type ConnectorSettings,
   type DataReadiness,
@@ -96,6 +97,15 @@ export const disconnectConnectorFn = createServerFn({ method: "POST" })
     plain(
       () => apiFetch<void>(`/connectors/${encodeURIComponent(data.key)}`, { method: "DELETE" }),
       "Não foi possível desconectar agora.",
+    ),
+  );
+
+export const chooseDataSourceFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => dataSourceChoiceSchema.parse(input))
+  .handler(({ data }) =>
+    plain(
+      () => apiFetch<void>("/data-sources", { method: "PUT", body: data }),
+      "Não foi possível trocar a fonte agora.",
     ),
   );
 

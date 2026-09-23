@@ -5,8 +5,11 @@ import {
   connectorKeySchema,
   connectorSettingsSchema,
   connectorStartSchema,
+  areaOfDataKind,
+  dataSourceChoiceSchema,
 } from "@ecommerce/contracts/connectors";
-import { assertConnectorEdit } from "@/modules/auth/contract";
+import { assertAreaEdit, assertConnectorEdit } from "@/modules/auth/contract";
+import { currentDay } from "@/shared/config/clock";
 import { authOf } from "@/shared/http/authOf";
 import { parseOrThrow } from "@/shared/http/validate";
 import {
@@ -20,6 +23,7 @@ import {
   triggerSync,
   type ConnectorsDependencies,
 } from "./connectorsService";
+import { chooseDataSource } from "./dataSourceChoiceService";
 
 function managing(req: Request) {
   const { key } = parseOrThrow(connectorKeySchema, req.params);
@@ -28,8 +32,17 @@ function managing(req: Request) {
   return { auth, key };
 }
 
+async function chooseSource(req: Request, res: Response) {
+  const auth = authOf(req);
+  const choice = parseOrThrow(dataSourceChoiceSchema, req.body ?? {});
+  assertAreaEdit(auth, areaOfDataKind[choice.kind]);
+  await chooseDataSource(auth, choice, currentDay());
+  res.status(204).end();
+}
+
 export function connectorsController(deps: ConnectorsDependencies) {
   return {
+    chooseSource,
     async authorize(req: Request, res: Response) {
       const { auth, key } = managing(req);
       const input = parseOrThrow(connectorStartSchema, req.body ?? {});

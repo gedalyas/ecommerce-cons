@@ -119,7 +119,7 @@ function storeRouters(
     createImportsRouter({ now, rateLimited }),
     createStoreActivityRouter({ visibleStoresOf: visibleClientIds }),
     createBillingRouter(billing),
-    createConnectorsRouter(connectors),
+    createConnectorsRouter(connectors, { rateLimited }),
   ];
 }
 

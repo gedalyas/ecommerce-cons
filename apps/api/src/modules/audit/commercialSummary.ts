@@ -16,7 +16,8 @@ export type CommercialDetail = Extract<
       | "CONNECTION_AUTHORIZED"
       | "CONNECTION_REMOVED"
       | "CONNECTION_SYNCED"
-      | "CONNECTION_FAILED";
+      | "CONNECTION_FAILED"
+      | "DATA_SOURCE_CHANGED";
   }
 >;
 
@@ -48,5 +49,9 @@ export function commercialSummary(detail: CommercialDetail): string {
       return `${detail.connector}: sincronização concluída, ${detail.rows} registros`;
     case "CONNECTION_FAILED":
       return `${detail.connector}: sincronização falhou — ${detail.message}`;
+    case "DATA_SOURCE_CHANGED":
+      return detail.source
+        ? `${detail.kind} passam a vir de ${detail.source} ${detail.since ? `a partir de ${detail.since}` : "com todo o histórico"}`
+        : `${detail.kind} deixam de ter fonte própria${detail.since ? ` a partir de ${detail.since}` : ""}`;
   }
 }

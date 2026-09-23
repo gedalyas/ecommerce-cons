@@ -12,6 +12,8 @@ import {
 } from "@ecommerce/contracts/imports";
 import {
   conflictingOwner,
+  daysSince,
+  ordersSince,
   ownerConflictMessage,
   type ConnectorKey,
 } from "@ecommerce/contracts/connectors";
@@ -19,7 +21,7 @@ import { prismaClient } from "@ecommerce/database/client";
 import type { ImportStatus } from "@ecommerce/database/enums";
 import { recordActivity } from "@/modules/audit/contract";
 import { assertAreaEdit } from "@/modules/auth/contract";
-import { claimDataKinds, releaseDataKinds } from "@/modules/connections/contract";
+import { claimDataKinds, releaseDataKinds, sinceOf } from "@/modules/connections/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
 import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
@@ -88,10 +90,9 @@ async function process({ clientId, kind, file, undo }: ProcessInput): Promise<Pr
   const rejected = mapped.errors.length;
   switch (mapped.kind) {
     case "ORDERS": {
-      const written = await persistOrders(clientId, mapped.orders, undo, "manual_csv");
-      const imported = mapped.orders
-        .filter((_, i) => i < written)
-        .reduce((s, o) => s + o.rows.length, 0);
+      const orders = ordersSince(mapped.orders, await sinceOf(clientId, "sales"));
+      const written = await persistOrders(clientId, orders, undo, "manual_csv");
+      const imported = orders.filter((_, i) => i < written).reduce((s, o) => s + o.rows.length, 0);
       return {
         counts: { total, imported, rejected },
         errors: mapped.errors,
@@ -110,7 +111,8 @@ async function process({ clientId, kind, file, undo }: ProcessInput): Promise<Pr
       };
     }
     case "TRAFFIC": {
-      const imported = await persistTraffic(clientId, mapped.rows, undo);
+      const rows = daysSince(mapped.rows, await sinceOf(clientId, "traffic"));
+      const imported = await persistTraffic(clientId, rows, undo);
       return {
         counts: { total, imported, rejected },
         errors: mapped.errors,

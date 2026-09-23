@@ -2,13 +2,15 @@ import {
   blockedKinds,
   conflictingOwner,
   connectorOf,
+  daysSince,
+  ordersSince,
   ownerConflictMessage,
   providesKind,
   type ConnectorKey,
   type DataKind,
   type DataOwners,
 } from "@ecommerce/contracts/connectors";
-import { claimDataKinds } from "@/modules/connections/contract";
+import { claimDataKinds, ownerOf, sinceOf } from "@/modules/connections/contract";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
@@ -96,7 +98,7 @@ function contextOf(
   credentials: Credentials,
   deps: ConnectorsDependencies,
   reprocess: boolean,
-  owners: DataOwners,
+  { owners, cuts }: { owners: DataOwners; cuts: { sales: string | null; traffic: string | null } },
 ): SyncContext {
   const now = deps.now();
   const key = row.connectorKey as ConnectorKey;
@@ -114,12 +116,16 @@ function contextOf(
     saveRaw: (kind, rows) => saveRaw(row.id, now, kind, rows),
     readRaw: (kind, externalId) => readRaw(row.id, kind, externalId),
     listRaw: (kind, skip, take) => listRaw(row.id, kind, skip, take),
-    writeOrders: (orders) =>
-      provides("sales") ? writeSyncedOrders(row.clientId, orders, key) : Promise.resolve(0),
+    writeOrders: async (orders) =>
+      provides("sales") && (await ownerOf(row.clientId, "sales")) === key
+        ? writeSyncedOrders(row.clientId, ordersSince(orders, cuts.sales), key)
+        : 0,
     writeAdSpend: (rows) =>
       provides("ad_spend") ? writeSyncedAdSpend(row.clientId, rows) : Promise.resolve(0),
     writeTraffic: (rows) =>
-      provides("traffic") ? writeSyncedTraffic(row.clientId, rows) : Promise.resolve(0),
+      provides("traffic")
+        ? writeSyncedTraffic(row.clientId, daysSince(rows, cuts.traffic))
+        : Promise.resolve(0),
     writeSocial: (input) =>
       provides("social") ? writeSyncedSocial(row.clientId, input) : Promise.resolve(0),
   };
@@ -204,7 +210,7 @@ async function notifyFailure(
 async function flagBlocked(row: ConnectionRow, blocked: readonly DataKind[], owners: DataOwners) {
   const kind = blocked[0];
   const owner = kind ? owners[kind] : undefined;
-  if (!kind || !owner) return;
+  if (!kind || !owner || owner === "system") return;
   await prismaClient.connection.update({
     where: { id: row.id },
     data: { stage: "ERROR", lastError: ownerConflictMessage(kind, owner) },
@@ -257,7 +263,11 @@ async function run(data: JobData, mode: "backfill" | "sync", deps: ConnectorsDep
     const provides = connectorOf(key).provides;
     if ((await prismaClient.connection.count({ where: { id: row.id } })) === 0) return;
     const owners = await claimDataKinds(row.clientId, key, provides);
-    const context = contextOf(row, credentials, deps, data.reprocess === true, owners);
+    const cuts = {
+      sales: await sinceOf(row.clientId, "sales"),
+      traffic: await sinceOf(row.clientId, "traffic"),
+    };
+    const context = contextOf(row, credentials, deps, data.reprocess === true, { owners, cuts });
     const result =
       mode === "backfill" ? await provider.backfill(context) : await provider.sync(context);
     await finish(row, result.cursor, result.written, deps);

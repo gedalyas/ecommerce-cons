@@ -52,6 +52,7 @@ export {
   connectorCallbackSchema,
   connectorCredentialsSchema,
   connectorKeySchema,
+  dataSourceChoiceSchema,
   connectorSettingsSchema,
   connectorStartSchema,
 } from "./connectorsSchema";
@@ -59,19 +60,27 @@ export type {
   ConnectionRequestInput,
   ConnectionRequestResolveInput,
   ConnectorCredentialsInput,
+  DataSourceChoice,
   ConnectorSettingsInput,
   ConnectorStartInput,
 } from "./connectorsSchema";
-export { areasOfConnector, canManageConnector } from "./connectorAccess";
+export { areaOfDataKind, areasOfConnector, canManageConnector } from "./connectorAccess";
 export { dataKindLabel } from "./dataKinds";
 export {
   blockedKinds,
+  choiceProblem,
+  choiceSince,
+  daysSince,
+  isExclusiveKind,
+  keepsCutOnRelease,
   conflictingOwner,
+  ordersSince,
+  switchNotice,
   kindOwnership,
   ownerConflictMessage,
   ownersFromRows,
   unclaimedKinds,
 } from "./dataSourceRules";
-export type { DataOwners, KindOwnership } from "./dataSourceRules";
+export type { DataOwner, DataOwners, KindOwnership } from "./dataSourceRules";
 export { connectorGuides, guideSteps } from "./connectorGuides";
 export type { DataKind } from "./dataKinds";

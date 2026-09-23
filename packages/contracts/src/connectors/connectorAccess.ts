@@ -3,7 +3,7 @@ import { canEditEveryArea, type AreaAccess } from "../auth/accessRules";
 import type { Connector } from "./connectorCatalog";
 import type { DataKind } from "./dataKinds";
 
-const areaOfKind: Record<DataKind, AccessArea> = {
+export const areaOfDataKind: Record<DataKind, AccessArea> = {
   sales: "DATA",
   products: "DATA",
   stock: "DATA",
@@ -14,7 +14,7 @@ const areaOfKind: Record<DataKind, AccessArea> = {
 };
 
 export function areasOfConnector(connector: Pick<Connector, "provides">): AccessArea[] {
-  return [...new Set(connector.provides.map((kind) => areaOfKind[kind]))];
+  return [...new Set(connector.provides.map((kind) => areaOfDataKind[kind]))];
 }
 
 export function canManageConnector(

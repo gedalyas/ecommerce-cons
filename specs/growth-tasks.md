@@ -23,7 +23,8 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
       spreadsheet); ERP first in the guided order; access and fidelity read the kinds; sync writes only the
       kinds the connector provides (`providesKind`), so Shopify, Nuvemshop, Mercado Livre and
       Amazon no longer write orders — their products/stock sync is future work (G2)
-- [ ] `system` as a source for the kinds the product derives itself (with the source picker, G0-C)
+- [x] `system` source: products and customers without an owner are generated from the orders
+      (shown as "Gerado no sistema" in the picker)
 - [x] `StoreDataSource` + `Order.source` (the G0 migration); first source claims the exclusive
       kinds (sales, products, stock, customers, traffic), sync and imports write only what they
       own (409 on a conflicting import), disconnect releases; pure `dataSourceRules.ts` + test.
@@ -49,8 +50,11 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
 - [x] Connector drawer: Conectar · O que puxa (owner per kind) · Ajuda (`connectorGuides.ts`,
       marketplace modalities explained)
 - [ ] `POST /connectors/:key/test` + `testCredentials?` per provider
-- [ ] "Dados a puxar" checkboxes per connection with the current owner of each kind
-- [ ] Pure `sourceConflicts.ts` + test; enforced on connect and on kind changes
+- [x] Source picker in "O que puxa": "Usar esta integração" / "Deixar de usar", date cut
+      (`since`, migration `store_data_source_since`), "Gerado no sistema" for products/customers
+      without an owner, `DATA_SOURCE_CHANGED` activity
+- [x] Conflicts as pure rules (`conflictingOwner`, `choiceProblem`, `blockedKinds`) + tests; enforced
+      on import (409), on sync (ERROR note) and on the source choice (422)
 
 ## G3 — Spreadsheet read by AI
 
