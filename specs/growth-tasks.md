@@ -2,7 +2,7 @@
 
 Board for `growth-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, which ships with the G2 picker); G2 next.**
+Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, which ships with the G2 picker); G2 in progress.**
 
 ## G1 — ROAS highlight, CAC%, metric tooltips
 
@@ -42,7 +42,9 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
 
 ## G2 — Connections the Bling way
 
-- [ ] Catalog: niche, logo, `credentialFields`, modalidade per marketplace (Amazon MFN / FBA Classic / FBA
+- [x] Catalog: Bling niche names (+ Social commerce), logos (Simple Icons + monogram), new
+      entries Tiny, Omie, Shopee, Magalu, TikTok Shop, Mercado Ads, Amazon Ads, Shopee Ads
+- [ ] Catalog: `credentialFields` and modalidade per marketplace (Amazon MFN / FBA Classic / FBA
       Onsite; ML próprio / Full); sales channel groups modalities
 - [ ] Connector drawer: Conectar · O que puxa · Ajuda (`connectorGuides.ts`)
 - [ ] `POST /connectors/:key/test` + `testCredentials?` per provider

@@ -13,6 +13,7 @@ describe("connectorGroups", () => {
       "erp",
       "storefront",
       "marketplace",
+      "social_commerce",
       "paid_media",
       "social",
       "analytics",
@@ -36,11 +37,11 @@ describe("connectorGroups", () => {
 });
 
 describe("providesKind", () => {
-  it("lets only the ERP and the spreadsheet provide sales", () => {
+  it("lets only the ERPs and the spreadsheet provide sales", () => {
     const salesSources = connectorCatalog
       .filter((c) => providesKind(c.key, "sales"))
       .map((c) => c.key);
-    expect(salesSources.sort()).toEqual(["bling", "manual_csv"]);
+    expect(salesSources.sort()).toEqual(["bling", "manual_csv", "omie", "tiny"]);
   });
 
   it("keeps ad platforms to investment and storefronts to store data", () => {

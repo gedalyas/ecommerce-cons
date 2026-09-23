@@ -28,6 +28,7 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { ConnectDialog } from "./ConnectDialog";
+import { ConnectorLogo } from "./ConnectorLogo";
 import { ConnectionStepper } from "./ConnectionStepper";
 import { StatusMappingDialog } from "./StatusMappingDialog";
 import {
@@ -242,7 +243,10 @@ function ConnectorRow({
   return (
     <li className="flex flex-col gap-3 px-5 py-4 md:flex-row md:flex-wrap md:items-center md:gap-4">
       <div className="min-w-0 md:w-full 2xl:w-auto 2xl:flex-1">
-        <div className="text-[15px] font-semibold text-foreground">{c.label}</div>
+        <div className="flex items-center gap-3">
+          <ConnectorLogo connectorKey={c.key} label={c.label} />
+          <div className="text-[15px] font-semibold text-foreground">{c.label}</div>
+        </div>
         <div className={cn(textClass.meta, "text-muted-foreground")}>
           {c.description} Fornece: {c.provides.map((k) => dataKindLabel[k]).join(", ")}.
         </div>

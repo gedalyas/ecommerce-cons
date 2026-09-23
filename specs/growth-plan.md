@@ -144,6 +144,20 @@ the investment that serves that channel:
   from a non-ERP, two variants of the same marketplace feeding the same channel — answers the
   warning shown in the drawer; the API enforces it on connect and on kind changes.
 
+**G2 decisions (Davi, 2026-09-23):**
+
+- **Switching a kind's owner cuts by date**: the old source's orders stay valid up to the day
+  before the new source starts; from that day on only the new source counts — history kept, no
+  double counting.
+- **Logos**: the open Simple Icons set (CC0) where the brand is there — Shopify, Meta, Google
+  Ads, TikTok (also TikTok Shop), Google Analytics, Shopee, VTEX, Instagram — copied as paths into
+  the connections module (no dependency) and drawn in one colour (`currentColor`, the design
+  system has one accent); a monogram for the rest (Bling, Nuvemshop, Mercado Livre, Amazon,
+  Magalu, Tiny, Omie, the marketplace ad platforms) until the team sends official files.
+- **New catalog entries**, shown as "Solicitar conexão" until built: ERPs **Tiny (Olist)** and
+  **Omie** (sales sources); marketplaces **Shopee**, **Magalu**, **TikTok Shop**; marketplace ads
+  **Mercado Ads**, **Amazon Ads**, **Shopee Ads** (investment pointed at their marketplace).
+
 ### G3 — Spreadsheet read by AI (revenue without an ERP)
 
 - Upload on Conexões › Planilha: CSV and `.xlsx` (and `.xls` if cheap), any column layout.

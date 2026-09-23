@@ -14,8 +14,13 @@ active; the detail agrees in number and disappears when nothing is wrong).
 ## Source list
 
 The catalog is rendered as numbered groups in the order a new store should follow
-(`connectorKindGuide`: 1. ERP → 2. Plataforma → 3. Marketplace → 4. Mídia paga → 5. Redes
-sociais → 6. Analytics → 7. Planilha), each with a one-line hint; empty groups are
+(`connectorKindGuide`, Bling's niche names: 1. ERP → 2. Plataforma de e-commerce → 3.
+Marketplace → 4. Social commerce → 5. Anúncios → 6. Redes sociais → 7. Analytics → 8. Planilha).
+Each row carries the platform logo (`ConnectorLogo`: Simple Icons paths drawn in `currentColor`,
+a monogram when the brand is not in the open set). Catalog since 2026-09-23: Bling, Tiny (Olist),
+Omie · Shopify, Nuvemshop, VTEX · Mercado Livre, Amazon, Shopee, Magalu · TikTok Shop · Meta Ads,
+Google Ads, TikTok Ads, Mercado Ads, Amazon Ads, Shopee Ads · Instagram e Facebook · Google
+Analytics 4 · Planilha, each with a one-line hint; empty groups are
 hidden. Each connector declares the **data kinds it can provide** (`provides`, closed set
 `dataKinds` in `contracts/connectors`: Vendas · Produtos · Estoque · Clientes · Investimento em
 anúncios · Tráfego do site · Redes sociais). **Vendas only from an ERP or the spreadsheet**
