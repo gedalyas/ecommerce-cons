@@ -58,7 +58,12 @@ export async function undoableJobIds(clientId: string): Promise<Set<string>> {
 
 async function restoreOrder(tx: Tx, clientId: string, number: string, snapshot: OrderSnapshot) {
   const { items, placedAt, paidAt, ...rest } = snapshot;
-  const data = { ...rest, placedAt: new Date(placedAt), paidAt: paidAt ? new Date(paidAt) : null };
+  const data = {
+    ...rest,
+    source: rest.source ?? null,
+    placedAt: new Date(placedAt),
+    paidAt: paidAt ? new Date(paidAt) : null,
+  };
   const saved = await tx.order.upsert({
     where: { clientId_number: { clientId, number } },
     create: { clientId, number, ...data },

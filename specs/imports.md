@@ -35,6 +35,13 @@ Defaults when an optional column is empty: `plataforma` ecommerce, `canal` "Loja
 6. nothing is unzipped;
 7. every failure is `{ message }` in Portuguese.
 
+Before any row is read, an orders or traffic import is refused with **409** when another
+source owns that data kind (`StoreDataSource`, see `connections.md`); after at least one row is
+written the spreadsheet claims the kind if nobody owns it, and undoing its last active import of
+the kind releases it ("A fonte de vendas desta loja é Bling.
+Para usar outra fonte, troque em Conexões."). Ad spend is never exclusive. Every order written
+records `source = "manual_csv"`.
+
 Rows that fail validation are rejected individually (`Linha N: coluna "x" …`) and the rest is
 written in chunks of 200 inside transactions. The response (201) is the `ImportJob`:
 `DONE` (every row in), `PARTIAL` (some rejected), `FAILED` (none in), with counts and the first

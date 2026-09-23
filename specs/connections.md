@@ -53,6 +53,20 @@ the sidebar's Conexões item, the Marketing banner, the "Aquisição" pillar's
 data pendency and the assistant's caveat about estimated numbers all stem from
 it.
 
+## Data owners
+
+The exclusive kinds — vendas, produtos, estoque, clientes, tráfego do site — have **one owner
+per store** (`store_data_source`, unique per client and kind); investment and social are shared
+by every platform. A source claims the kinds nobody owns when it first syncs or imports
+(`claimDataKinds`, pure `unclaimedKinds`); a sync writes a kind only when the connector
+provides it and no other source owns it (`providesKind` + `conflictingOwner`), and every order
+records its `source`. A sync that finds a kind it provides owned by another source still
+finishes, then flags the connection `ERROR` with `ownerConflictMessage` ("A fonte de vendas desta
+loja é Planilha…") so Conexões explains why nothing arrives. The spreadsheet claims only the
+kind it imported, after at least one row was written; undoing its last active import of that
+kind releases it. Disconnecting releases a connector's kinds. Choosing another owner is the G2
+source picker (`growth-plan.md`); until then the first source keeps the kind.
+
 ## Connecting a platform
 
 "Conectar" opens a dialog (with the store domain when the pattern is domain + OAuth —

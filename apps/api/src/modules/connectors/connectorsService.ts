@@ -11,6 +11,7 @@ import {
   type StatusMappingTarget,
 } from "@ecommerce/contracts/connectors";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
+import { releaseDataKinds } from "@/modules/connections/contract";
 import type { ConnectionAuthPattern } from "@ecommerce/database/enums";
 import { recordActivity } from "@/modules/audit/contract";
 import type { AuthContext } from "@/shared/http/auth.types";
@@ -215,6 +216,7 @@ export async function disconnect(auth: AuthContext, key: ConnectorKey): Promise<
   });
   if (!existing) throw notFound("Conexão não encontrada");
   await prismaClient.connection.delete({ where: { id: existing.id } });
+  await releaseDataKinds(auth.clientId, key);
   await prismaClient.dataSource.updateMany({
     where: { clientId: auth.clientId, connectorKey: key },
     data: { status: "NOT_CONNECTED" },

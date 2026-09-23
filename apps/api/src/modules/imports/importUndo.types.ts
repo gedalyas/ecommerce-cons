@@ -39,6 +39,7 @@ export type OrderSnapshot = {
   city: string;
   orderNumberForCustomer: number;
   itemsCount: number;
+  source?: string | null;
   items: OrderItemSnapshot[];
 };
 

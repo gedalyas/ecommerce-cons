@@ -64,4 +64,12 @@ export type {
 } from "./connectorsSchema";
 export { areasOfConnector, canManageConnector } from "./connectorAccess";
 export { dataKindLabel } from "./dataKinds";
+export {
+  blockedKinds,
+  conflictingOwner,
+  ownerConflictMessage,
+  ownersFromRows,
+  unclaimedKinds,
+} from "./dataSourceRules";
+export type { DataOwners } from "./dataSourceRules";
 export type { DataKind } from "./dataKinds";

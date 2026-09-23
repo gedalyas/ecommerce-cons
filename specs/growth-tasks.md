@@ -24,8 +24,14 @@ Status: **approved 2026-09-23 — G1 done, G0 in progress.**
       kinds the connector provides (`providesKind`), so Shopify, Nuvemshop, Mercado Livre and
       Amazon no longer write orders — their products/stock sync is future work (G2)
 - [ ] `system` as a source for the kinds the product derives itself (with the source picker, G0-C)
-- [ ] `StoreDataSource` + `Order.source` (migration; backfill in the service); sync writes
-      only the kinds a connection owns; pure `dataSourceRules.ts` + test
+- [x] `StoreDataSource` + `Order.source` (the G0 migration); first source claims the exclusive
+      kinds (sales, products, stock, customers, traffic), sync and imports write only what they
+      own (409 on a conflicting import), disconnect releases; pure `dataSourceRules.ts` + test.
+      Orders written before 2026-09-23 keep `source = null` and existing stores have no owner
+      until their first sync or import claims one (the first to run wins; the G2 picker lets the
+      store choose). Claims of disconnected connectors are dropped on the next claim.
+      Follow-ups: audit entries for claim/release; a blocked sync records CONNECTION_SYNCED
+      before its ERROR note
 - [x] `attributedRevenue` out of every ROAS / vendido; campaign tables show efficiency only
       (best/worst by cost per conversion; dashboard paid media = spend × store revenue)
 - [ ] Investment → channel map (ad account, campaign override) + pure `channelRoas.ts` + test;

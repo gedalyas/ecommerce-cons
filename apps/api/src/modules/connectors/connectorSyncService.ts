@@ -1,9 +1,14 @@
 import {
+  blockedKinds,
+  conflictingOwner,
   connectorOf,
+  ownerConflictMessage,
   providesKind,
   type ConnectorKey,
   type DataKind,
+  type DataOwners,
 } from "@ecommerce/contracts/connectors";
+import { claimDataKinds } from "@/modules/connections/contract";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
@@ -91,9 +96,12 @@ function contextOf(
   credentials: Credentials,
   deps: ConnectorsDependencies,
   reprocess: boolean,
+  owners: DataOwners,
 ): SyncContext {
   const now = deps.now();
-  const provides = (kind: DataKind) => providesKind(row.connectorKey as ConnectorKey, kind);
+  const key = row.connectorKey as ConnectorKey;
+  const provides = (kind: DataKind) =>
+    providesKind(key, kind) && conflictingOwner(kind, key, owners) == null;
   return {
     connectionId: row.id,
     clientId: row.clientId,
@@ -107,7 +115,7 @@ function contextOf(
     readRaw: (kind, externalId) => readRaw(row.id, kind, externalId),
     listRaw: (kind, skip, take) => listRaw(row.id, kind, skip, take),
     writeOrders: (orders) =>
-      provides("sales") ? writeSyncedOrders(row.clientId, orders) : Promise.resolve(0),
+      provides("sales") ? writeSyncedOrders(row.clientId, orders, key) : Promise.resolve(0),
     writeAdSpend: (rows) =>
       provides("ad_spend") ? writeSyncedAdSpend(row.clientId, rows) : Promise.resolve(0),
     writeTraffic: (rows) =>
@@ -193,6 +201,20 @@ async function notifyFailure(
   }
 }
 
+async function flagBlocked(row: ConnectionRow, blocked: readonly DataKind[], owners: DataOwners) {
+  const kind = blocked[0];
+  const owner = kind ? owners[kind] : undefined;
+  if (!kind || !owner) return;
+  await prismaClient.connection.update({
+    where: { id: row.id },
+    data: { stage: "ERROR", lastError: ownerConflictMessage(kind, owner) },
+  });
+  await prismaClient.dataSource.updateMany({
+    where: { clientId: row.clientId, connectorKey: row.connectorKey },
+    data: { status: "ERROR" },
+  });
+}
+
 async function fail(row: ConnectionRow, error: unknown, deps: ConnectorsDependencies) {
   const message = (error instanceof Error ? error.message : String(error)).slice(0, ERROR_LIMIT);
   console.error(error);
@@ -231,10 +253,15 @@ async function run(data: JobData, mode: "backfill" | "sync", deps: ConnectorsDep
   try {
     await prismaClient.connection.update({ where: { id: row.id }, data: { stage: "IMPORTING" } });
     const credentials = await credentialsOf(row, provider, deps);
-    const context = contextOf(row, credentials, deps, data.reprocess === true);
+    const key = row.connectorKey as ConnectorKey;
+    const provides = connectorOf(key).provides;
+    if ((await prismaClient.connection.count({ where: { id: row.id } })) === 0) return;
+    const owners = await claimDataKinds(row.clientId, key, provides);
+    const context = contextOf(row, credentials, deps, data.reprocess === true, owners);
     const result =
       mode === "backfill" ? await provider.backfill(context) : await provider.sync(context);
     await finish(row, result.cursor, result.written, deps);
+    await flagBlocked(row, blockedKinds(provides, key, owners), owners);
   } catch (error) {
     await fail(row, error, deps);
     throw error;

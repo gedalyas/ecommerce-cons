@@ -1,3 +1,4 @@
+import type { ConnectorKey } from "@ecommerce/contracts/connectors";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
 import type { AdSpendSnapshot, OrderSnapshot, TrafficSnapshot } from "./importUndo.types";
@@ -19,6 +20,7 @@ function chunks<T>(items: T[]): T[][] {
 type Tx = Prisma.TransactionClient;
 
 const orderSnapshotSelect = {
+  source: true,
   customerId: true,
   placedAt: true,
   paidAt: true,
@@ -131,6 +133,7 @@ async function writeOrder(
   clientId: string,
   order: OrderInput,
   undo: UndoRecorder,
+  source: ConnectorKey,
 ): Promise<void> {
   const before = await tx.order.findUnique({
     where: { clientId_number: { clientId, number: order.number } },
@@ -152,7 +155,7 @@ async function writeOrder(
       unitCost: item.unitCost,
     });
   }
-  const data = orderRowOf(order, customerId, previousPaid + 1);
+  const data = { ...orderRowOf(order, customerId, previousPaid + 1), source };
   const saved = await tx.order.upsert({
     where: { clientId_number: { clientId, number: order.number } },
     create: { clientId, number: order.number, ...data },
@@ -167,11 +170,12 @@ export async function persistOrders(
   clientId: string,
   orders: OrderInput[],
   undo: UndoRecorder,
+  source: ConnectorKey,
 ): Promise<number> {
   let written = 0;
   for (const group of chunks(orders)) {
     await prismaClient.$transaction(async (tx) => {
-      for (const order of group) await writeOrder(tx, clientId, order, undo);
+      for (const order of group) await writeOrder(tx, clientId, order, undo, source);
     });
     written += group.length;
   }

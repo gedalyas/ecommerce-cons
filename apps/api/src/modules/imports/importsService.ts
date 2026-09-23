@@ -1,6 +1,7 @@
 import {
   IMPORT_MAX_ROWS,
   areaOfImportKind,
+  dataKindOfImport,
   editableImportKinds,
   importKindLabel,
   type ImportJob,
@@ -9,11 +10,16 @@ import {
   type ImportRowError,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
-import type { ConnectorKey } from "@ecommerce/contracts/connectors";
+import {
+  conflictingOwner,
+  ownerConflictMessage,
+  type ConnectorKey,
+} from "@ecommerce/contracts/connectors";
 import { prismaClient } from "@ecommerce/database/client";
 import type { ImportStatus } from "@ecommerce/database/enums";
 import { recordActivity } from "@/modules/audit/contract";
 import { assertAreaEdit } from "@/modules/auth/contract";
+import { claimDataKinds, releaseDataKinds } from "@/modules/connections/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
 import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
@@ -82,7 +88,7 @@ async function process({ clientId, kind, file, undo }: ProcessInput): Promise<Pr
   const rejected = mapped.errors.length;
   switch (mapped.kind) {
     case "ORDERS": {
-      const written = await persistOrders(clientId, mapped.orders, undo);
+      const written = await persistOrders(clientId, mapped.orders, undo, "manual_csv");
       const imported = mapped.orders
         .filter((_, i) => i < written)
         .reduce((s, o) => s + o.rows.length, 0);
@@ -179,6 +185,20 @@ const toJob = (row: JobRow, canUndo: boolean): ImportJob => ({
   canUndo,
 });
 
+async function claimForSpreadsheet(clientId: string, kind: ImportKind): Promise<void> {
+  const dataKind = dataKindOfImport[kind];
+  const owners = await claimDataKinds(clientId, "manual_csv", [dataKind]);
+  const owner = conflictingOwner(dataKind, "manual_csv", owners);
+  if (owner) throw new HttpError(409, ownerConflictMessage(dataKind, owner));
+}
+
+async function releaseIfNoImportLeft(clientId: string, kind: ImportKind): Promise<void> {
+  const active = await prismaClient.importJob.count({
+    where: { clientId, kind, undoneAt: null, rowsImported: { gt: 0 } },
+  });
+  if (active === 0) await releaseDataKinds(clientId, "manual_csv", [dataKindOfImport[kind]]);
+}
+
 export async function runImport(
   auth: AuthContext,
   kind: ImportKind,
@@ -186,9 +206,11 @@ export async function runImport(
   now: Date,
 ): Promise<ImportJob> {
   const { clientId, userId } = auth;
+  await claimForSpreadsheet(clientId, kind);
   const undo = undoRecorder();
   const { counts, errors, sources } = await process({ clientId, kind, file, undo });
   const status = importOutcome(counts);
+  if (counts.imported === 0) await releaseIfNoImportLeft(clientId, kind);
   if (counts.imported > 0) {
     await stampDataSources(clientId, sources, now);
     if (kind === "ORDERS") await refreshCustomers(clientId);
@@ -244,6 +266,7 @@ export async function undoImportJob(auth: AuthContext, id: string, now: Date): P
   const existing = await importJobOf(auth.clientId, id);
   assertAreaEdit(auth, areaOfImportKind[existing.kind]);
   await undoImport(auth.clientId, id, now);
+  await releaseIfNoImportLeft(auth.clientId, existing.kind);
   const job = await importJobOf(auth.clientId, id);
   await recordActivity(auth, auth.clientId, {
     action: "IMPORT_UNDONE",

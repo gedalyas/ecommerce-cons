@@ -462,6 +462,8 @@ model Order {
   /// 1 for the customer's first order, 2 for the second, and so on.
   orderNumberForCustomer Int              @map("order_number_for_customer")
   itemsCount             Int              @map("items_count")
+  /// Who wrote the order: a connector key ("bling") or "manual_csv"; null before 2026-09-23.
+  source                 String?
 
   client   Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
   customer Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -755,6 +757,7 @@ model Client {
   milestoneCriteria  MilestoneCriterion[]
   manualKpiValues    ManualKpiValue[]
   dataSources        DataSource[]
+  dataOwners         StoreDataSource[]
   connectionRequests ConnectionRequest[]
   importJobs         ImportJob[]
   products           Product[]
@@ -984,6 +987,22 @@ model DataSource {
 
   @@unique([clientId, connectorKey])
   @@map("data_source")
+}
+
+/// The one source that owns an exclusive data kind of a store (sales, products, stock,
+/// customers, traffic). Kinds and sources are closed sets in contracts/connectors.
+model StoreDataSource {
+  id        String   @id @default(cuid())
+  clientId  String   @map("client_id")
+  kind      String
+  source    String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, kind])
+  @@map("store_data_source")
 }
 
 enum ConnectionAuthPattern {
