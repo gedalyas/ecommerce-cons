@@ -32,6 +32,16 @@ export type TrafficAggregate = {
 
 export type TrafficBucket = TrafficAggregate & { bucket: string };
 
+export type ChannelSales = { marketplace: boolean; channel: string; revenue: number };
+
+export type ChannelRoas = {
+  key: string;
+  label: string;
+  revenue: number;
+  investment: number;
+  roas: number | null;
+};
+
 export type AdSpendAggregate = {
   spend: number;
   platformFee: number;

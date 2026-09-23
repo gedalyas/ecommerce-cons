@@ -7,6 +7,7 @@ export type DashboardFacts = {
   revenue: number;
   orders: number;
   ecommerceOrders: number;
+  ecommerceRevenue: number;
   cogs: number;
   repeatOrders: number;
   customers: number;
@@ -35,7 +36,10 @@ export function computeDashboardMetrics(facts: DashboardFacts, channel: Channel)
     conversionRate: paidMediaApplies ? percent(facts.ecommerceOrders, facts.sessions) : null,
     marketingInvestment: investment,
     roi: paidMediaApplies ? ratio(facts.revenue - investment, investment) : null,
-    roas: paidMediaApplies ? ratio(facts.revenue, investment) : null,
+    roas: paidMediaApplies
+      ? ratio(facts.ecommerceRevenue, facts.adSpend + facts.adPlatformFee)
+      : null,
+    mer: paidMediaApplies ? ratio(facts.revenue, investment) : null,
     cac: paidMediaApplies ? cacPercent(investment, facts.revenue) : null,
     cpa: paidMediaApplies ? ratio(investment, facts.orders) : null,
     netProfit: contribution - facts.costs.operational,

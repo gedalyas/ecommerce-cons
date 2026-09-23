@@ -17,6 +17,7 @@ import {
   type DashboardOverview,
 } from "@ecommerce/contracts/dashboard";
 import { explanationOf } from "@ecommerce/contracts/glossary";
+import { channelRoasSummary } from "@ecommerce/contracts/marketing";
 import { bucketHeader } from "./bucketHeader";
 
 type BlockProps = { data: DashboardOverview; period: PeriodSearch; comparisonLabel: string };
@@ -24,26 +25,35 @@ type BlockProps = { data: DashboardOverview; period: PeriodSearch; comparisonLab
 const catalog = dashboardWidgetCatalog;
 
 const headlineKeys: DashboardMetricKey[] = ["totalSold", "roas", "cac", "repurchaseRate"];
-const headlineLabel: Partial<Record<DashboardMetricKey, string>> = {
-  totalSold: "Faturamento",
-  roas: "ROAS geral",
-};
+const headlineLabel: Partial<Record<DashboardMetricKey, string>> = { totalSold: "Faturamento" };
+
+function roasHint(data: DashboardOverview) {
+  const base = explanationOf("roas");
+  if (!base || data.roasByChannel.length === 0) return base;
+  return {
+    ...base,
+    definition: `${base.definition} Por canal: ${channelRoasSummary(data.roasByChannel)}.`,
+  };
+}
 
 export function HeadlineWidget({ data, comparisonLabel }: BlockProps) {
   const byKey = new Map(data.metrics.map((m) => [m.key, m]));
+  const mer = byKey.get("mer")?.metric.value ?? null;
   const tiles = headlineKeys.flatMap((key) => {
     const m = byKey.get(key);
-    return m
-      ? [
-          metricToTile({
-            label: headlineLabel[key] ?? m.label,
-            metric: m.metric,
-            comparisonLabel,
-            goodWhen: m.goodWhen,
-            hint: explanationOf(key),
-          }),
-        ]
-      : [];
+    if (!m) return [];
+    const tile = metricToTile({
+      label: headlineLabel[key] ?? m.label,
+      metric: m.metric,
+      comparisonLabel,
+      goodWhen: m.goodWhen,
+      hint: key === "roas" ? roasHint(data) : explanationOf(key),
+    });
+    return [
+      key === "roas" && mer != null
+        ? { ...tile, subNote: `MER ${formatMetric(mer, "multiplier")}` }
+        : tile,
+    ];
   });
   return <MetricTileGroup metrics={tiles} />;
 }

@@ -6,6 +6,7 @@ const glossaryTerms = [
   "marketingInvestment",
   "adSpend",
   "roas",
+  "mer",
   "roi",
   "cac",
   "cpa",
@@ -50,8 +51,13 @@ const metricGlossary: Record<GlossaryTerm, MetricExplanation> = {
   },
   roas: {
     definition:
-      "Quanto voltou em vendas para cada R$ 1 investido. 5x = R$ 5 vendidos para cada R$ 1 investido.",
-    formula: "Faturamento ÷ investimento",
+      "Quanto o site vendeu para cada R$ 1 investido nos anúncios que levam ao site. 5x = R$ 5 vendidos para cada R$ 1 investido.",
+    formula: "Vendas do site ÷ investimento em anúncios do site",
+  },
+  mer: {
+    definition:
+      "Retorno geral: todas as vendas da loja, de todos os canais, sobre todo o investimento em marketing. Inclui vendas que não vieram de anúncio.",
+    formula: "Faturamento total ÷ investimento total em marketing",
   },
   roi: {
     definition:

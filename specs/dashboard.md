@@ -58,23 +58,26 @@ Sections below describe each widget's data.
 
 `MetricTileGroup` with four tiles built from the live metrics:
 
-| Tile        | Metric key       | Direction                         |
-| ----------- | ---------------- | --------------------------------- |
-| Faturamento | `totalSold`      | up is good                        |
-| ROAS geral  | `roas`           | up is good                        |
-| CAC         | `cac`            | down is good (an increase is red) |
-| Recompra    | `repurchaseRate` | up is good                        |
+| Tile         | Metric key       | Direction                         |
+| ------------ | ---------------- | --------------------------------- |
+| Faturamento  | `totalSold`      | up is good                        |
+| ROAS do site | `roas`           | up is good; MER below it          |
+| CAC          | `cac`            | down is good (an increase is red) |
+| Recompra     | `repurchaseRate` | up is good                        |
 
 Each tile shows the variation against the comparison window ("vs 13/07 –
 11/08") and an ⓘ that explains the metric (definition + formula from
 `packages/contracts/src/glossary`): hover opens it, a click or a tap pins it. ROAS
-replaced Margem de contribuição on 2026-09-22 (`growth-plan.md`); until G0 it is the
-store-wide figure, hence "ROAS geral".
+replaced Margem de contribuição on 2026-09-22 (`growth-plan.md`). Since G0 it is the **ROAS do
+site** (site sales ÷ ad spend + platform fee, the investment that points at the site by default);
+the tile shows **MER** below it and its ⓘ lists the ROAS of every sales channel
+(`roasByChannel`, pure `channelRoas` in `contracts/marketing`: "Site 4,20x · Mercado Livre sem
+investimento"). Decision: `decisions/2026-09-23-sales-from-erp-and-roas-per-channel.md`.
 
 ## 2. "Resumo do período"
 
-`IndicatorCarousel` with the eleven indicators — Total vendido · Pedidos ·
-Ticket médio · Taxa de conversão · Investimento em marketing · ROI · ROAS ·
+`IndicatorCarousel` with the twelve indicators — Total vendido · Pedidos ·
+Ticket médio · Taxa de conversão · Investimento em marketing · ROI · ROAS do site · MER ·
 CAC · CPA · Lucro líquido · Clientes. The selected chip drives the big number, its
 fidelity note and a `TimeSeriesChart` (solid = current period, dashed =
 comparison) bucketed by `por`.
@@ -86,8 +89,8 @@ Formulas (`dashboardMetrics.ts`, unit-tested):
 - Taxa de conversão = store orders ÷ sessions (null for the marketplace channel).
 - Investimento em marketing = ad spend + platform fee + `SALES_MARKETING`
   cost rules (cost engine, `money` module).
-- ROI = (revenue − investment) ÷ investment (multiplier); ROAS = revenue ÷
-  investment (multiplier); CAC = investment ÷ revenue × 100
+- ROI = (revenue − investment) ÷ investment (multiplier); ROAS do site = site revenue ÷
+  (ad spend + platform fee); MER = revenue ÷ investment (both multipliers); CAC = investment ÷ revenue × 100
   (percent, `cacPercent` in `contracts/marketing`, since 2026-09-23); CPA = investment ÷ orders — all null for the marketplace
   channel, which has no paid media.
 - Margem de contribuição = (revenue − COGS − COGS-category rules −

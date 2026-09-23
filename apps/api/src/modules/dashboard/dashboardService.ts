@@ -1,5 +1,6 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { alertsFor } from "@/modules/alerts/contract";
+import { channelRoas, channelsFromSales, siteChannel } from "@ecommerce/contracts/marketing";
 import { dataSourcesFor } from "@/modules/connections/contract";
 import { milestoneCriteriaFor, openRecommendationsFor } from "@/modules/consulting/contract";
 import { customersAggregate, customersByBucket } from "@/modules/customers/contract";
@@ -13,7 +14,12 @@ import { type CostActivity, type CostRule } from "@ecommerce/contracts/money";
 import { expandCosts, costRulesFor } from "@/modules/money/contract";
 import type { OrdersAggregate, OrdersBucket } from "@ecommerce/contracts/orders";
 import type { AdSpendBucket, TrafficAggregate } from "@ecommerce/contracts/marketing";
-import { ordersAggregate, ordersByBucket, revenueBySource } from "@/modules/orders/contract";
+import {
+  ordersAggregate,
+  ordersByBucket,
+  revenueBySource,
+  salesByChannel,
+} from "@/modules/orders/contract";
 import { productSales } from "@/modules/products/contract";
 import type { AuthContext } from "@/shared/http/auth.types";
 import type { Series } from "@ecommerce/contracts/shared/metric.types";
@@ -79,6 +85,7 @@ async function windowFacts(
       revenue: orders.revenue,
       orders: orders.orders,
       ecommerceOrders: orders.ecommerce.orders,
+      ecommerceRevenue: orders.ecommerce.revenue,
       cogs: orders.cogs,
       repeatOrders: orders.repeatOrders,
       customers: customers.customers,
@@ -144,6 +151,7 @@ async function bucketFacts(
         revenue: o.revenue,
         orders: o.orders,
         ecommerceOrders: o.ecommerce.orders,
+        ecommerceRevenue: o.ecommerce.revenue,
         cogs: o.cogs,
         repeatOrders: o.repeatOrders,
         customers: c?.customers ?? 0,
@@ -267,10 +275,12 @@ export async function dashboardOverview(
     openRecommendationsFor(clientId),
     dashboardLayoutFor(auth.userId, clientId),
   ]);
-  const [facts, bySource, products] = await Promise.all([
+  const [facts, bySource, products, channelSales, storeAds] = await Promise.all([
     overviewFacts(clientId, search, period, rules),
     revenueBySource(clientId, period.current, platform),
     productSales(clientId, period.current, platform, null),
+    salesByChannel(clientId, period.current),
+    adSpendAggregate(clientId, period.current),
   ]);
   const { current, previous, currentByBucket, previousByBucket } = facts;
 
@@ -294,5 +304,8 @@ export async function dashboardOverview(
     customerMix: customerMixOf(current.facts),
     funnel: funnelOf(current.traffic, current.facts.orders),
     paidMedia: paidMediaOf(currentRows, currentByBucket.ads),
+    roasByChannel: channelRoas(channelsFromSales(channelSales), {
+      [siteChannel]: storeAds.spend + storeAds.platformFee,
+    }),
   };
 }

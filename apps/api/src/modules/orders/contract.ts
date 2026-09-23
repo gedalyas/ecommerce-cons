@@ -1,2 +1,2 @@
 export { createOrdersRouter } from "./ordersRouter";
-export { ordersAggregate, ordersByBucket, revenueBySource } from "./ordersService";
+export { ordersAggregate, ordersByBucket, revenueBySource, salesByChannel } from "./ordersService";

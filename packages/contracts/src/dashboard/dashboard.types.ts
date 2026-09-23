@@ -1,5 +1,6 @@
 import type { AlertItem } from "../alerts/contract";
 import type { ConsultingRecommendation, MilestoneCriterion } from "../consulting/contract";
+import type { ChannelRoas } from "../marketing/contract";
 import type { Fidelity } from "../shared/fidelity";
 import type { BreakdownSlice, MetricUnit, MetricValue, Series } from "../shared/metric.types";
 import type { DashboardLayout } from "./dashboardWidgets";
@@ -12,6 +13,7 @@ export const dashboardMetricKeys = [
   "marketingInvestment",
   "roi",
   "roas",
+  "mer",
   "cac",
   "cpa",
   "netProfit",
@@ -49,7 +51,8 @@ export const dashboardMetricDefinitions: readonly DashboardMetricDefinition[] = 
     carousel: true,
   },
   { key: "roi", label: "ROI", unit: "multiplier", goodWhen: "up", carousel: true },
-  { key: "roas", label: "ROAS", unit: "multiplier", goodWhen: "up", carousel: true },
+  { key: "roas", label: "ROAS do site", unit: "multiplier", goodWhen: "up", carousel: true },
+  { key: "mer", label: "MER", unit: "multiplier", goodWhen: "up", carousel: true },
   { key: "cac", label: "CAC", unit: "percent", goodWhen: "down", carousel: true },
   { key: "cpa", label: "CPA", unit: "currency", goodWhen: "down", carousel: true },
   { key: "netProfit", label: "Lucro líquido", unit: "currency", goodWhen: "up", carousel: true },
@@ -99,6 +102,7 @@ export type DashboardFunnelStep = { key: string; label: string; value: number };
 export type DashboardPaidMediaPoint = { bucket: string; spend: number; revenue: number };
 
 export type DashboardOverview = {
+  roasByChannel: ChannelRoas[];
   layout: DashboardLayout;
   alerts: AlertItem[];
   milestone: DashboardMilestone;

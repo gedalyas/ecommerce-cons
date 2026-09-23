@@ -1,14 +1,13 @@
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
+import type { ChannelSales } from "@ecommerce/contracts/marketing";
 import type { BreakdownSlice } from "@ecommerce/contracts/shared/metric.types";
 import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
 import type { OrdersAggregate, OrdersBucket, OrdersFilters } from "@ecommerce/contracts/orders";
 
-/** SQL condition for the store/marketplace split, or nothing for all. */
 export const platformFilter = (platform: SalesPlatform | null) =>
   platform ? Prisma.sql`and o.sales_platform = ${platform}::sales_platform` : Prisma.empty;
 
-/** The traffic source of an order as the screens label it. */
 export const sourceExpression = Prisma.sql`
   case when o.sales_platform = 'MARKETPLACE' then o.channel
        else coalesce(o.utm_source, '(direct)') || ' / ' || coalesce(o.utm_medium, '(none)') end`;
@@ -16,7 +15,6 @@ export const sourceExpression = Prisma.sql`
 const inList = (column: Prisma.Sql, values: string[]) =>
   values.length ? Prisma.sql`and ${column} = any(${values}::text[])` : Prisma.empty;
 
-/** Row filters of the Pedidos screens; `busca` needs the customer join, so it is separate. */
 export const rowFilters = (filters: OrdersFilters | null) => {
   if (!filters) return Prisma.empty;
   return Prisma.sql`
@@ -30,7 +28,6 @@ export const rowFilters = (filters: OrdersFilters | null) => {
   `;
 };
 
-/** Everything an aggregate query filters on: client, window, platform, row filters. */
 export const ordersWhere = (
   clientId: string,
   w: Window,
@@ -142,7 +139,19 @@ export async function ordersByBucket(
   });
 }
 
-/** Paid revenue by traffic source: UTM source/medium for the store, channel name for marketplaces. */
+export async function salesByChannel(clientId: string, w: Window): Promise<ChannelSales[]> {
+  const rows = await prismaClient.$queryRaw<
+    { marketplace: boolean; channel: string; revenue: number }[]
+  >`
+    select o.sales_platform = 'MARKETPLACE' as marketplace, o.channel,
+      coalesce(sum(o.total_price), 0)::float8 as revenue
+    from sales_order o
+    where ${ordersWhere(clientId, w, null, null)} and o.financial_status = 'PAID'
+    group by 1, 2
+  `;
+  return rows;
+}
+
 export async function revenueBySource(
   clientId: string,
   w: Window,

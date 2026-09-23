@@ -6,6 +6,8 @@ export {
   socialPlatforms,
 } from "./marketing.types";
 export type {
+  ChannelRoas,
+  ChannelSales,
   AdPlatform,
   TrafficAggregate,
   TrafficBucket,
@@ -63,6 +65,7 @@ export type {
   FunnelCounts,
   BenchmarkVerdict,
 } from "./marketingRules";
+export { channelRoas, channelRoasSummary, channelsFromSales, siteChannel } from "./channelRoas";
 export {
   marketingTabs,
   investmentMetrics,

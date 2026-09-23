@@ -2,7 +2,7 @@
 
 Board for `growth-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **approved 2026-09-23 — G1 done, G0 in progress.**
+Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, which ships with the G2 picker); G2 next.**
 
 ## G1 — ROAS highlight, CAC%, metric tooltips
 
@@ -34,9 +34,11 @@ Status: **approved 2026-09-23 — G1 done, G0 in progress.**
       before its ERROR note
 - [x] `attributedRevenue` out of every ROAS / vendido; campaign tables show efficiency only
       (best/worst by cost per conversion; dashboard paid media = spend × store revenue)
-- [ ] Investment → channel map (ad account, campaign override) + pure `channelRoas.ts` + test;
-      dashboard ROAS = most-invested channel, MER as secondary
-- [ ] Decision `2026-09-23-sales-from-erp-and-roas-per-channel.md`
+- [x] ROAS per sales channel: pure `channelRoas.ts` + test (`salesByChannel` from the ERP orders;
+      ad investment points at the site by default); dashboard "ROAS do site" with MER below and
+      the per-channel ROAS in its ⓘ. Editable map (ad account / campaign → channel) comes with
+      the staff "Campanhas" list in G4
+- [x] Decision `2026-09-23-sales-from-erp-and-roas-per-channel.md`
 
 ## G2 — Connections the Bling way
 

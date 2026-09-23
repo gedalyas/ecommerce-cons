@@ -5,6 +5,7 @@ const facts: DashboardFacts = {
   revenue: 100_000,
   orders: 400,
   ecommerceOrders: 320,
+  ecommerceRevenue: 80_000,
   cogs: 48_000,
   repeatOrders: 60,
   customers: 380,
@@ -31,7 +32,8 @@ describe("computeDashboardMetrics", () => {
     expect(m.cac).toBe(20);
     expect(m.cpa).toBe(50);
     expect(m.roi).toBe(4);
-    expect(m.roas).toBe(5);
+    expect(m.roas).toBeCloseTo(4.37, 2);
+    expect(m.mer).toBe(5);
   });
 
   it("converts store orders over sessions", () => {
@@ -51,6 +53,7 @@ describe("computeDashboardMetrics", () => {
     expect(mp.conversionRate).toBeNull();
     expect(mp.roi).toBeNull();
     expect(mp.roas).toBeNull();
+    expect(mp.mer).toBeNull();
     expect(mp.cac).toBeNull();
     expect(mp.cpa).toBeNull();
     expect(mp.totalSold).toBe(100_000);

@@ -16,6 +16,7 @@ const kindsByMetric: Record<DashboardMetricKey, readonly DataKind[]> = {
   marketingInvestment: media,
   roi: [...sales, ...media],
   roas: [...sales, ...media],
+  mer: [...sales, ...media],
   cac: [...sales, ...media],
   cpa: [...sales, ...media],
   netProfit: [...sales, ...media],
@@ -28,6 +29,7 @@ const usesInformedCosts = new Set<DashboardMetricKey>([
   "marketingInvestment",
   "roi",
   "roas",
+  "mer",
   "cac",
   "cpa",
 ]);
