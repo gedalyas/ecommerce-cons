@@ -44,6 +44,33 @@ export const blockedKinds = (
   owners: DataOwners,
 ): DataKind[] => provides.filter((kind) => conflictingOwner(kind, source, owners) != null);
 
+export type KindOwnership = {
+  kind: DataKind;
+  label: string;
+  owner: "this" | "other" | "none";
+  ownerLabel: string | null;
+  text: string;
+};
+
+export function kindOwnership(
+  provides: readonly DataKind[],
+  source: ConnectorKey,
+  owners: DataOwners,
+): KindOwnership[] {
+  return provides.map((kind) => {
+    const owner = owners[kind] ?? null;
+    const ownerLabel = owner == null ? null : connectorOf(owner).label;
+    const holder = owner == null ? "none" : owner === source ? "this" : "other";
+    const text =
+      holder === "this"
+        ? "Vem desta integração"
+        : holder === "other"
+          ? `Hoje vem de ${ownerLabel}`
+          : "Ainda sem fonte";
+    return { kind, label: dataKindLabel[kind], owner: holder, ownerLabel, text };
+  });
+}
+
 export function ownerConflictMessage(kind: DataKind, owner: ConnectorKey): string {
   const label = dataKindLabel[kind].toLowerCase();
   return `A fonte de ${label} desta loja é ${connectorOf(owner).label}. Para usar outra fonte, troque em Conexões.`;

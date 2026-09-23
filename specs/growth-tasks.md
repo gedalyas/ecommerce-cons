@@ -46,7 +46,8 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
       entries Tiny, Omie, Shopee, Magalu, TikTok Shop, Mercado Ads, Amazon Ads, Shopee Ads
 - [ ] Catalog: `credentialFields` and modalidade per marketplace (Amazon MFN / FBA Classic / FBA
       Onsite; ML próprio / Full); sales channel groups modalities
-- [ ] Connector drawer: Conectar · O que puxa · Ajuda (`connectorGuides.ts`)
+- [x] Connector drawer: Conectar · O que puxa (owner per kind) · Ajuda (`connectorGuides.ts`,
+      marketplace modalities explained)
 - [ ] `POST /connectors/:key/test` + `testCredentials?` per provider
 - [ ] "Dados a puxar" checkboxes per connection with the current owner of each kind
 - [ ] Pure `sourceConflicts.ts` + test; enforced on connect and on kind changes

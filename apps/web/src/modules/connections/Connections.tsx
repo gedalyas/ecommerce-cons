@@ -28,6 +28,7 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { ConnectDialog } from "./ConnectDialog";
+import { ConnectorDrawer } from "./ConnectorDrawer";
 import { ConnectorLogo } from "./ConnectorLogo";
 import { ConnectionStepper } from "./ConnectionStepper";
 import { StatusMappingDialog } from "./StatusMappingDialog";
@@ -232,11 +233,13 @@ function ConnectorRow({
   onRequest,
   onConnect,
   onSettings,
+  onDetails,
 }: {
   connector: StoreConnector;
   onRequest: (c: StoreConnector) => void;
   onConnect: (c: StoreConnector) => void;
   onSettings: (c: StoreConnector) => void;
+  onDetails: (c: StoreConnector) => void;
 }) {
   const meta = statusMeta[c.status];
   const Icon = meta.icon;
@@ -246,6 +249,14 @@ function ConnectorRow({
         <div className="flex items-center gap-3">
           <ConnectorLogo connectorKey={c.key} label={c.label} />
           <div className="text-[15px] font-semibold text-foreground">{c.label}</div>
+          <button
+            type="button"
+            onClick={() => onDetails(c)}
+            aria-label={`Detalhes de ${c.label}`}
+            className={cn(textClass.meta, "ml-auto font-semibold text-primary md:ml-0")}
+          >
+            Detalhes
+          </button>
         </div>
         <div className={cn(textClass.meta, "text-muted-foreground")}>
           {c.description} Fornece: {c.provides.map((k) => dataKindLabel[k]).join(", ")}.
@@ -304,6 +315,8 @@ export function Connections({
   const detail = summaryDetail(data.summary);
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
   const [connecting, setConnecting] = useState<StoreConnector | null>(null);
+  const [detailsKey, setDetailsKey] = useState<StoreConnector["key"] | null>(null);
+  const details = data.connectors.find((c) => c.key === detailsKey) ?? null;
   const [mapping, setMapping] = useState<StoreConnector | null>(() =>
     chooseAccount && connected?.connection?.needsAccount ? connected : null,
   );
@@ -361,6 +374,7 @@ export function Connections({
                   onRequest={setRequesting}
                   onConnect={setConnecting}
                   onSettings={setMapping}
+                  onDetails={(c) => setDetailsKey(c.key)}
                 />
               ))}
             </ul>
@@ -374,6 +388,22 @@ export function Connections({
 
       <RequestDialog connector={requesting} onClose={() => setRequesting(null)} />
       <ConnectDialog connector={connecting} onClose={() => setConnecting(null)} />
+      <ConnectorDrawer
+        key={detailsKey ?? "none"}
+        connector={details}
+        owners={data.owners}
+        onClose={() => setDetailsKey(null)}
+        action={
+          details && (
+            <ConnectorAction
+              connector={details}
+              onRequest={setRequesting}
+              onConnect={setConnecting}
+              onSettings={setMapping}
+            />
+          )
+        }
+      />
       <StatusMappingDialog connector={mapping} onClose={() => setMapping(null)} />
     </div>
   );

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   blockedKinds,
   conflictingOwner,
+  kindOwnership,
   ownerConflictMessage,
   ownersFromRows,
   unclaimedKinds,
@@ -61,5 +62,32 @@ describe("blockedKinds", () => {
       }),
     ).toEqual(["sales"]);
     expect(blockedKinds(["ad_spend"], "meta_ads", {})).toEqual([]);
+  });
+});
+
+describe("kindOwnership", () => {
+  it("says, per kind a source provides, who holds it today", () => {
+    expect(
+      kindOwnership(["sales", "products", "stock"], "bling", {
+        sales: "manual_csv",
+        products: "bling",
+      }),
+    ).toEqual([
+      {
+        kind: "sales",
+        label: "Vendas",
+        owner: "other",
+        ownerLabel: "Planilha",
+        text: "Hoje vem de Planilha",
+      },
+      {
+        kind: "products",
+        label: "Produtos",
+        owner: "this",
+        ownerLabel: "Bling",
+        text: "Vem desta integração",
+      },
+      { kind: "stock", label: "Estoque", owner: "none", ownerLabel: null, text: "Ainda sem fonte" },
+    ]);
   });
 });

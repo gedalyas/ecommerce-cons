@@ -58,6 +58,16 @@ the sidebar's Conexões item, the Marketing banner, the "Aquisição" pillar's
 data pendency and the assistant's caveat about estimated numbers all stem from
 it.
 
+## Connector drawer
+
+"Detalhes" on each row opens a sheet (`ConnectorDrawer`) with three tabs: **Conectar** (description,
+requirements and the same action as the row), **O que puxa** (each data kind the platform
+provides and who holds it in this store — "Vem desta integração", "Hoje vem de Planilha", "Ainda
+sem fonte", from `kindOwnership` over `ConnectionsScreen.owners`) and **Ajuda** (the step-by-step
+guide in `contracts/connectors/connectorGuides.ts`, pt-BR, and the marketplace modalities:
+Amazon MFN / FBA Classic / FBA Onsite, Mercado Livre envio próprio / Full). Platforms not built
+yet say so and point to "Solicitar conexão".
+
 ## Data owners
 
 The exclusive kinds — vendas, produtos, estoque, clientes, tráfego do site — have **one owner

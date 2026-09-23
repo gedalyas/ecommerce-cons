@@ -67,9 +67,11 @@ export { dataKindLabel } from "./dataKinds";
 export {
   blockedKinds,
   conflictingOwner,
+  kindOwnership,
   ownerConflictMessage,
   ownersFromRows,
   unclaimedKinds,
 } from "./dataSourceRules";
-export type { DataOwners } from "./dataSourceRules";
+export type { DataOwners, KindOwnership } from "./dataSourceRules";
+export { connectorGuides, guideSteps } from "./connectorGuides";
 export type { DataKind } from "./dataKinds";

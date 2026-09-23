@@ -4,6 +4,7 @@ import type {
   DataSourceState,
 } from "@ecommerce/contracts/connections";
 import { connectionsSummaryOf, hasErrorSource } from "@ecommerce/contracts/connections";
+import { dataOwnersOf } from "./dataOwnersService";
 import type { AreaAccess } from "@ecommerce/contracts/auth";
 import {
   canManageConnector,
@@ -105,8 +106,11 @@ export async function connectionsScreen(
   auth: AuthContext,
   sources: ConnectorSources,
 ): Promise<ConnectionsScreen> {
-  const connectors = await storeConnectorsFor(auth.clientId, sources, auth.access);
-  return { connectors, summary: connectionsSummaryOf(connectors), canRequest: true };
+  const [connectors, owners] = await Promise.all([
+    storeConnectorsFor(auth.clientId, sources, auth.access),
+    dataOwnersOf(auth.clientId),
+  ]);
+  return { connectors, summary: connectionsSummaryOf(connectors), canRequest: true, owners };
 }
 
 export async function connectionsHealth(clientId: string): Promise<ConnectionsHealth> {
