@@ -43,3 +43,5 @@ outbox/
 
 # make ecom background server output
 .makelogs/
+
+.claude/settings.local.json

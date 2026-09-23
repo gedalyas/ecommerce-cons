@@ -422,6 +422,15 @@ when the change is confined to one workspace. The body explains the why and the 
 justified a choice. One commit per finished task, checks green before each. Never mix a file
 move with a logic change in the same commit. `main` is the working branch; no force-push.
 
+**Workflow (`.claude/`).** Work arrives through `/auto-dev` (a description, a board item such
+as `G1`, or a Trello card): plan gate → one slice → `/code-review` → `/pre-commit` (≤ 3 rounds)
+→ smoke on the dev servers → `dod-checker` (+ `db-reviewer`, `security-auditor`,
+`/check-design-system` when the slice touches their ground) → `commit-writer`. **The dev runs
+every git command**; Claude hands over the `git add` file list and the commit message — except
+in a loop the dev asked for, where Claude commits each slice locally and never pushes. Hooks
+guard each write (`pre-write-guard.sh`) and run Prettier + ESLint + typecheck after it
+(`post-write-check.sh`).
+
 ## Decision log
 
 `specs/decisions/YYYY-MM-DD-short-title.md` with **Contexto / Decisão / Por quê / Alternativas

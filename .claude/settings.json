@@ -1,0 +1,31 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(cygpath -u \"$CLAUDE_PROJECT_DIR\")/.claude/hooks/pre-write-guard.sh\"",
+            "timeout": 20,
+            "statusMessage": "Checando regras do CLAUDE.md (console.log, any, migrations)"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(cygpath -u \"$CLAUDE_PROJECT_DIR\")/.claude/hooks/post-write-check.sh\"",
+            "timeout": 240,
+            "asyncRewake": true,
+            "statusMessage": "Prettier + ESLint + typecheck em background"
+          }
+        ]
+      }
+    ]
+  }
+}
