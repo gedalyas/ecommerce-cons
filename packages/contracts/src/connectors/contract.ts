@@ -2,14 +2,13 @@ export {
   authPatterns,
   connectorAvailabilities,
   connectorCatalog,
-  connectorFeedLabel,
-  connectorFeeds,
   connectorKeys,
   connectorKindLabel,
   connectorKindGuide,
   connectorGroups,
   connectorKinds,
   connectorOf,
+  providesKind,
   storefrontConnectorKeys,
 } from "./connectorCatalog";
 export type {
@@ -17,7 +16,6 @@ export type {
   Connector,
   DomainHint,
   ConnectorAvailability,
-  ConnectorFeed,
   ConnectorKey,
   ConnectorKind,
 } from "./connectorCatalog";
@@ -64,4 +62,6 @@ export type {
   ConnectorSettingsInput,
   ConnectorStartInput,
 } from "./connectorsSchema";
-export { areaOfFeed, areasOfConnector, canManageConnector } from "./connectorAccess";
+export { areasOfConnector, canManageConnector } from "./connectorAccess";
+export { dataKindLabel } from "./dataKinds";
+export type { DataKind } from "./dataKinds";

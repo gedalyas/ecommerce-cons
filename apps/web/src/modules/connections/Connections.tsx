@@ -8,7 +8,7 @@ import type { DataSourceStatus } from "@ecommerce/contracts/connectors";
 import {
   connectionRequestStatusLabel,
   connectorErrorReasonLabel,
-  connectorFeedLabel,
+  dataKindLabel,
   connectorGroups,
   connectorKindGuide,
   connectorKindLabel,
@@ -244,7 +244,7 @@ function ConnectorRow({
       <div className="min-w-0 md:w-full 2xl:w-auto 2xl:flex-1">
         <div className="text-[15px] font-semibold text-foreground">{c.label}</div>
         <div className={cn(textClass.meta, "text-muted-foreground")}>
-          {c.description} · {c.feeds.map((f) => connectorFeedLabel[f]).join(", ")}
+          {c.description} Fornece: {c.provides.map((k) => dataKindLabel[k]).join(", ")}.
         </div>
       </div>
       <div

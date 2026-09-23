@@ -1,3 +1,5 @@
+import type { DataKind } from "./dataKinds";
+
 export const connectorKeys = [
   "bling",
   "shopify",
@@ -32,20 +34,32 @@ export const connectorKindLabel: Record<ConnectorKind, string> = {
   paid_media: "Mídia paga",
   social: "Redes sociais",
   analytics: "Analytics",
-  manual: "Importação manual",
+  manual: "Planilha",
 };
 
 export const connectorKindGuide: Record<ConnectorKind, { order: number; hint: string }> = {
-  storefront: { order: 1, hint: "Comece pela sua loja: é de onde vêm os pedidos e os clientes." },
-  marketplace: { order: 2, hint: "Vendas fora do site entram por aqui." },
-  erp: { order: 3, hint: "Se você emite pedidos pelo ERP, conecte-o para completar as vendas." },
+  erp: {
+    order: 1,
+    hint: "Comece pelo ERP: é de onde vêm as vendas de todos os canais (site e marketplaces).",
+  },
+  storefront: {
+    order: 2,
+    hint: "Produtos, estoque e clientes da loja virtual, quando o ERP não traz. Vendas vêm do ERP ou da planilha.",
+  },
+  marketplace: {
+    order: 3,
+    hint: "Produtos e estoque do marketplace, quando o ERP não traz. Vendas vêm do ERP ou da planilha.",
+  },
   paid_media: {
     order: 4,
     hint: "Cada conta de anúncios conectada aparece nas campanhas e no ROAS.",
   },
   social: { order: 5, hint: "Seguidores, alcance e engajamento das suas redes." },
   analytics: { order: 6, hint: "Sessões e funil do site para calcular conversão." },
-  manual: { order: 7, hint: "Quando uma fonte não tem conexão, importe a planilha exportada." },
+  manual: {
+    order: 7,
+    hint: "Sem ERP? Envie a planilha de vendas; ela também serve para mídia e tráfego.",
+  },
 };
 
 export function connectorGroups<T extends { kind: ConnectorKind }>(
@@ -60,16 +74,6 @@ export function connectorGroups<T extends { kind: ConnectorKind }>(
 export const connectorAvailabilities = ["manual", "request", "oauth"] as const;
 export type ConnectorAvailability = (typeof connectorAvailabilities)[number];
 
-export const connectorFeeds = ["orders", "ad_spend", "traffic", "social"] as const;
-export type ConnectorFeed = (typeof connectorFeeds)[number];
-
-export const connectorFeedLabel: Record<ConnectorFeed, string> = {
-  orders: "Pedidos",
-  ad_spend: "Mídia paga",
-  traffic: "Tráfego",
-  social: "Redes sociais",
-};
-
 export const authPatterns = ["oauth", "domain_oauth", "credentials"] as const;
 export type AuthPattern = (typeof authPatterns)[number];
 
@@ -77,7 +81,7 @@ export type Connector = {
   key: ConnectorKey;
   label: string;
   kind: ConnectorKind;
-  feeds: ConnectorFeed[];
+  provides: DataKind[];
   availability: ConnectorAvailability;
   authPattern: AuthPattern | null;
   description: string;
@@ -90,12 +94,12 @@ export type DomainHint = { placeholder: string; help: string };
 export const connectorCatalog: Connector[] = [
   {
     key: "manual_csv",
-    label: "Importação manual (CSV)",
+    label: "Planilha",
     kind: "manual",
-    feeds: ["orders", "ad_spend", "traffic"],
+    provides: ["sales", "ad_spend", "traffic"],
     availability: "manual",
     authPattern: null,
-    description: "Planilhas exportadas da sua plataforma ou das contas de mídia.",
+    description: "Quando não há ERP ou conexão.",
     requirements: [],
     domainHint: null,
   },
@@ -103,10 +107,10 @@ export const connectorCatalog: Connector[] = [
     key: "bling",
     label: "Bling",
     kind: "erp",
-    feeds: ["orders"],
+    provides: ["sales", "products", "stock", "customers"],
     availability: "request",
     authPattern: "oauth",
-    description: "Pedidos, produtos e estoque do ERP.",
+    description: "ERP que concentra as vendas do site e dos marketplaces.",
     requirements: [
       "Ser o usuário administrador da conta Bling (ou ter permissão para autorizar aplicativos).",
       "Ter pedidos de venda cadastrados no Bling — é de lá que vêm os dados.",
@@ -117,10 +121,10 @@ export const connectorCatalog: Connector[] = [
     key: "shopify",
     label: "Shopify",
     kind: "storefront",
-    feeds: ["orders"],
+    provides: ["products", "stock", "customers"],
     availability: "request",
     authPattern: "domain_oauth",
-    description: "Pedidos e clientes da loja.",
+    description: "Loja virtual.",
     requirements: [
       "Ser o proprietário da loja ou colaborador com permissão de instalar aplicativos.",
       "Ter o endereço interno da loja em mãos (termina em .myshopify.com).",
@@ -134,10 +138,10 @@ export const connectorCatalog: Connector[] = [
     key: "nuvemshop",
     label: "Nuvemshop",
     kind: "storefront",
-    feeds: ["orders"],
+    provides: ["products", "stock", "customers"],
     availability: "request",
     authPattern: "domain_oauth",
-    description: "Pedidos e clientes da loja.",
+    description: "Loja virtual.",
     requirements: [
       "Ser o dono da conta Nuvemshop ou administrador com acesso a aplicativos.",
       "Ter o endereço da loja em mãos.",
@@ -151,10 +155,10 @@ export const connectorCatalog: Connector[] = [
     key: "mercado_livre",
     label: "Mercado Livre",
     kind: "marketplace",
-    feeds: ["orders"],
+    provides: ["products", "stock"],
     availability: "request",
     authPattern: "oauth",
-    description: "Vendas e compradores do marketplace.",
+    description: "Marketplace, incluindo o Full.",
     requirements: [
       "Entrar com a conta vendedora do Mercado Livre (a mesma que administra as vendas).",
     ],
@@ -164,10 +168,10 @@ export const connectorCatalog: Connector[] = [
     key: "amazon",
     label: "Amazon",
     kind: "marketplace",
-    feeds: ["orders"],
+    provides: ["products", "stock"],
     availability: "request",
     authPattern: "oauth",
-    description: "Vendas do marketplace (Selling Partner API).",
+    description: "Marketplace (Selling Partner API).",
     requirements: [
       "Ser administrador da conta no Seller Central (a autorização é concluída lá dentro).",
       "Vender no marketplace Brasil (Amazon.com.br).",
@@ -178,10 +182,10 @@ export const connectorCatalog: Connector[] = [
     key: "vtex",
     label: "VTEX",
     kind: "storefront",
-    feeds: ["orders"],
+    provides: ["products", "stock", "customers"],
     availability: "request",
     authPattern: "credentials",
-    description: "Pedidos e clientes da loja.",
+    description: "Loja virtual.",
     requirements: [],
     domainHint: null,
   },
@@ -189,7 +193,7 @@ export const connectorCatalog: Connector[] = [
     key: "meta_ads",
     label: "Meta Ads",
     kind: "paid_media",
-    feeds: ["ad_spend"],
+    provides: ["ad_spend"],
     availability: "request",
     authPattern: "oauth",
     description: "Investimento, campanhas e resultados do Facebook e Instagram.",
@@ -203,7 +207,7 @@ export const connectorCatalog: Connector[] = [
     key: "instagram",
     label: "Instagram e Facebook",
     kind: "social",
-    feeds: ["social"],
+    provides: ["social"],
     availability: "request",
     authPattern: "oauth",
     description: "Seguidores, alcance e engajamento das publicações orgânicas.",
@@ -218,7 +222,7 @@ export const connectorCatalog: Connector[] = [
     key: "google_ads",
     label: "Google Ads",
     kind: "paid_media",
-    feeds: ["ad_spend"],
+    provides: ["ad_spend"],
     availability: "request",
     authPattern: "oauth",
     description: "Investimento, campanhas e resultados do Google.",
@@ -232,7 +236,7 @@ export const connectorCatalog: Connector[] = [
     key: "tiktok_ads",
     label: "TikTok Ads",
     kind: "paid_media",
-    feeds: ["ad_spend"],
+    provides: ["ad_spend"],
     availability: "request",
     authPattern: "oauth",
     description: "Investimento, campanhas e resultados do TikTok.",
@@ -243,7 +247,7 @@ export const connectorCatalog: Connector[] = [
     key: "ga4",
     label: "Google Analytics 4",
     kind: "analytics",
-    feeds: ["traffic"],
+    provides: ["traffic"],
     availability: "request",
     authPattern: "oauth",
     description: "Sessões, usuários e eventos do funil do site.",
@@ -258,6 +262,9 @@ export const connectorCatalog: Connector[] = [
 export function connectorOf(key: ConnectorKey): Connector {
   return connectorCatalog.find((c) => c.key === key)!;
 }
+
+export const providesKind = (key: ConnectorKey, kind: DataKind): boolean =>
+  connectorOf(key).provides.includes(kind);
 
 export const storefrontConnectorKeys = connectorCatalog
   .filter((c) => c.kind === "storefront" || c.kind === "erp")

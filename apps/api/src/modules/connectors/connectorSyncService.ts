@@ -1,4 +1,9 @@
-import { connectorOf, type ConnectorKey } from "@ecommerce/contracts/connectors";
+import {
+  connectorOf,
+  providesKind,
+  type ConnectorKey,
+  type DataKind,
+} from "@ecommerce/contracts/connectors";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
@@ -88,6 +93,7 @@ function contextOf(
   reprocess: boolean,
 ): SyncContext {
   const now = deps.now();
+  const provides = (kind: DataKind) => providesKind(row.connectorKey as ConnectorKey, kind);
   return {
     connectionId: row.id,
     clientId: row.clientId,
@@ -100,10 +106,14 @@ function contextOf(
     saveRaw: (kind, rows) => saveRaw(row.id, now, kind, rows),
     readRaw: (kind, externalId) => readRaw(row.id, kind, externalId),
     listRaw: (kind, skip, take) => listRaw(row.id, kind, skip, take),
-    writeOrders: (orders) => writeSyncedOrders(row.clientId, orders),
-    writeAdSpend: (rows) => writeSyncedAdSpend(row.clientId, rows),
-    writeTraffic: (rows) => writeSyncedTraffic(row.clientId, rows),
-    writeSocial: (input) => writeSyncedSocial(row.clientId, input),
+    writeOrders: (orders) =>
+      provides("sales") ? writeSyncedOrders(row.clientId, orders) : Promise.resolve(0),
+    writeAdSpend: (rows) =>
+      provides("ad_spend") ? writeSyncedAdSpend(row.clientId, rows) : Promise.resolve(0),
+    writeTraffic: (rows) =>
+      provides("traffic") ? writeSyncedTraffic(row.clientId, rows) : Promise.resolve(0),
+    writeSocial: (input) =>
+      provides("social") ? writeSyncedSocial(row.clientId, input) : Promise.resolve(0),
   };
 }
 

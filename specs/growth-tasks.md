@@ -19,8 +19,11 @@ Status: **approved 2026-09-23 — G1 done, G0 in progress.**
 
 ## G0 — One source per data kind; ROAS per channel
 
-- [ ] Contracts `dataKinds` + labels; catalog lists the kinds each platform can provide;
-      `system` as a source for the kinds the product derives itself
+- [x] Contracts `dataKinds` + labels; catalog `provides` replaces `feeds` (sales only on ERP and
+      spreadsheet); ERP first in the guided order; access and fidelity read the kinds; sync writes only the
+      kinds the connector provides (`providesKind`), so Shopify, Nuvemshop, Mercado Livre and
+      Amazon no longer write orders — their products/stock sync is future work (G2)
+- [ ] `system` as a source for the kinds the product derives itself (with the source picker, G0-C)
 - [ ] `StoreDataSource` + `Order.source` (migration; backfill in the service); sync writes
       only the kinds a connection owns; pure `dataSourceRules.ts` + test
 - [x] `attributedRevenue` out of every ROAS / vendido; campaign tables show efficiency only

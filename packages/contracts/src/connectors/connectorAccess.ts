@@ -1,21 +1,25 @@
 import type { AccessArea } from "../auth/accessAreas";
 import { canEditEveryArea, type AreaAccess } from "../auth/accessRules";
-import type { Connector, ConnectorFeed } from "./connectorCatalog";
+import type { Connector } from "./connectorCatalog";
+import type { DataKind } from "./dataKinds";
 
-export const areaOfFeed: Record<ConnectorFeed, AccessArea> = {
-  orders: "DATA",
+const areaOfKind: Record<DataKind, AccessArea> = {
+  sales: "DATA",
+  products: "DATA",
+  stock: "DATA",
+  customers: "DATA",
   ad_spend: "MARKETING",
   traffic: "MARKETING",
   social: "MARKETING",
 };
 
-export function areasOfConnector(connector: Pick<Connector, "feeds">): AccessArea[] {
-  return [...new Set(connector.feeds.map((feed) => areaOfFeed[feed]))];
+export function areasOfConnector(connector: Pick<Connector, "provides">): AccessArea[] {
+  return [...new Set(connector.provides.map((kind) => areaOfKind[kind]))];
 }
 
 export function canManageConnector(
   access: AreaAccess,
-  connector: Pick<Connector, "feeds">,
+  connector: Pick<Connector, "provides">,
 ): boolean {
   return canEditEveryArea(access, areasOfConnector(connector));
 }

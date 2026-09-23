@@ -33,7 +33,8 @@ per area, one of **Sem acesso · Ver · Editar**. The areas
   `req.auth.access` (`null` = unrestricted: staff and owners); `createAreaGuards()` mounts
   `requireArea(area)` on each area's route prefixes (`auth/areaRoutes.ts`): a `GET` needs
   view, anything else needs edit, refused with 403 and a Portuguese message. Cross-cutting
-  writes check the connector's feeds (`canManageConnector`) or the import kind
+  writes check the data kinds the connector provides (`canManageConnector`: sales, products,
+  stock, customers → Dados; investment, traffic, social → Marketing) or the import kind
   (`areaOfImportKind`): a marketing editor imports ad spend and connects Meta Ads, not
   Shopify. The web hides what the member cannot open (`shared/layout/screenAccess.ts` for
   the sidebar, bottom nav and the root guard; `StoreConnector.canManage` and
@@ -153,9 +154,9 @@ or older than five minutes, so a new assignment shows up without re-login.
 
 ## Connectors
 
-`packages/contracts/src/connectors/connectorCatalog.ts` lists the nine connectors (Bling,
-Shopify, Nuvemshop, VTEX, Meta Ads, Google Ads, TikTok Ads, GA4, Importação manual) with
-kind, what they feed and availability. Conexões renders the catalog with the store's status:
+`packages/contracts/src/connectors/connectorCatalog.ts` lists the connectors (Bling,
+Shopify, Nuvemshop, VTEX, Mercado Livre, Amazon, Meta Ads, Instagram, Google Ads, TikTok Ads,
+GA4, Planilha) with kind, the data kinds each can provide (`provides`) and availability. Conexões renders the catalog with the store's status:
 the manual CSV works today (see `imports.md`); the others show "Solicitar conexão", which
 records a `ConnectionRequest` the staff sees on `/admin` (Solicitada · Em andamento ·
 Concluída · Recusada). A successful CSV import stamps the matching sources and turns

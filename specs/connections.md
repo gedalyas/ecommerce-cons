@@ -14,9 +14,14 @@ active; the detail agrees in number and disappears when nothing is wrong).
 ## Source list
 
 The catalog is rendered as numbered groups in the order a new store should follow
-(`connectorKindGuide`: 1. Plataforma → 2. Marketplace → 3. ERP → 4. Mídia paga → 5. Redes
-sociais → 6. Analytics → 7. Importação manual), each with a one-line hint; empty groups are
-hidden. Columns (stacked cards below `md`, two bands below `2xl`): Fonte (name + description),
+(`connectorKindGuide`: 1. ERP → 2. Plataforma → 3. Marketplace → 4. Mídia paga → 5. Redes
+sociais → 6. Analytics → 7. Planilha), each with a one-line hint; empty groups are
+hidden. Each connector declares the **data kinds it can provide** (`provides`, closed set
+`dataKinds` in `contracts/connectors`: Vendas · Produtos · Estoque · Clientes · Investimento em
+anúncios · Tráfego do site · Redes sociais). **Vendas only from an ERP or the spreadsheet**
+(`growth-plan.md`, 2026-09-22): storefronts and marketplaces provide products, stock and
+customers; ad platforms provide investment, never sales. Columns (stacked cards below `md`,
+two bands below `2xl`): Fonte (name + description + "Fornece: …"),
 Status, última sincronização, and an action. The action depends on the connector: **"Conectar"** when the
 API has a provider registered for it (`availability` flipped to `oauth` — the app
 credentials are in the env), **"Solicitar conexão"** otherwise, "Importar CSV" for the manual

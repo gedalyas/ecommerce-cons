@@ -1,22 +1,18 @@
 import type { DataSourceState } from "@ecommerce/contracts/connections";
-import {
-  connectorFeedLabel,
-  connectorOf,
-  type ConnectorFeed,
-} from "@ecommerce/contracts/connectors";
+import { connectorOf, dataKindLabel, type DataKind } from "@ecommerce/contracts/connectors";
 import type { DashboardMetricKey } from "@ecommerce/contracts/dashboard";
 import type { Fidelity } from "@ecommerce/database/enums";
 
-const sales: ConnectorFeed[] = ["orders"];
-const media: ConnectorFeed[] = ["ad_spend"];
+const sales: DataKind[] = ["sales"];
+const media: DataKind[] = ["ad_spend"];
 
-const feedsByMetric: Record<DashboardMetricKey, readonly ConnectorFeed[]> = {
+const kindsByMetric: Record<DashboardMetricKey, readonly DataKind[]> = {
   totalSold: sales,
   orders: sales,
   averageTicket: sales,
   customers: sales,
   repurchaseRate: sales,
-  conversionRate: ["orders", "traffic"],
+  conversionRate: ["sales", "traffic"],
   marketingInvestment: media,
   roi: [...sales, ...media],
   roas: [...sales, ...media],
@@ -56,14 +52,13 @@ function sourceFidelity(source: DataSourceState): { fidelity: Fidelity; reason: 
   }
 }
 
-export function feedFidelity(
-  feed: ConnectorFeed,
+export function kindFidelity(
+  kind: DataKind,
   sources: readonly DataSourceState[],
 ): { fidelity: Fidelity; reason: string | null } {
-  const providers = sources.filter((s) => connectorOf(s.connectorKey).feeds.includes(feed));
+  const providers = sources.filter((s) => connectorOf(s.connectorKey).provides.includes(kind));
   let fidelity: Fidelity = "C";
-  let reason: string | null =
-    `nenhuma fonte de ${connectorFeedLabel[feed].toLowerCase()} conectada`;
+  let reason: string | null = `nenhuma fonte de ${dataKindLabel[kind].toLowerCase()} conectada`;
   for (const source of providers) {
     const result = sourceFidelity(source);
     if (fidelityRank[result.fidelity] < fidelityRank[fidelity]) {
@@ -80,8 +75,8 @@ export function fidelityFor(
 ): { fidelity: Fidelity; note: string } {
   let fidelity: Fidelity = "A";
   const reasons: string[] = [];
-  for (const feed of feedsByMetric[key]) {
-    const result = feedFidelity(feed, sources);
+  for (const kind of kindsByMetric[key]) {
+    const result = kindFidelity(kind, sources);
     fidelity = worst(fidelity, result.fidelity);
     if (result.reason) reasons.push(result.reason);
   }
@@ -89,7 +84,7 @@ export function fidelityFor(
     fidelity = worst(fidelity, "B");
     reasons.push("custos e taxas informados pelo cliente");
   }
-  const feeds = feedsByMetric[key].map((f) => connectorFeedLabel[f].toLowerCase()).join(", ");
-  const base = `Nível ${fidelity} — calculado sobre ${feeds}`;
+  const kinds = kindsByMetric[key].map((k) => dataKindLabel[k].toLowerCase()).join(", ");
+  const base = `Nível ${fidelity} — calculado sobre ${kinds}`;
   return { fidelity, note: reasons.length ? `${base}; ${reasons.join("; ")}.` : `${base}.` };
 }
