@@ -7,7 +7,6 @@ import { layout } from "@/shared/styles/spacing";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type { CustomersLtvCac as CustomersLtvCacData } from "@ecommerce/contracts/customers";
 
-/** Unit economics of acquisition; needs the paid-media connection for CAC. */
 export function CustomersLtvCac({
   data,
   period,
@@ -30,36 +29,36 @@ export function CustomersLtvCac({
       <MetricTileGroup metrics={tiles} />
 
       <SectionBlock
-        title="LTV × CAC no tempo"
-        description="LTV = ticket médio × frequência de compra; CAC = investimento em marketing ÷ novos clientes."
+        title="LTV × CAC por cliente no tempo"
+        description="LTV = ticket médio × frequência de compra; CAC por cliente = investimento em marketing ÷ novos clientes."
         bodyClassName={layout.cardPadding}
       >
         <DualSeriesChart
           left={{ label: "LTV", unit: "currency", points: data.ltvSeries }}
-          right={{ label: "CAC", unit: "currency", points: data.cacSeries }}
+          right={{ label: "CAC por cliente", unit: "currency", points: data.cacSeries }}
           granularity={period.por}
         />
       </SectionBlock>
 
       <SectionBlock
-        title="CAC × número de novos clientes no tempo"
-        description="Mostra se escalar a aquisição encarece o CAC."
+        title="CAC por cliente × novos clientes no tempo"
+        description="Mostra se escalar a aquisição encarece cada cliente novo."
         bodyClassName={layout.cardPadding}
       >
         <DualSeriesChart
-          left={{ label: "CAC", unit: "currency", points: data.cacSeries }}
+          left={{ label: "CAC por cliente", unit: "currency", points: data.cacSeries }}
           right={{ label: "Novos clientes", unit: "count", points: data.newCustomersSeries }}
           granularity={period.por}
         />
       </SectionBlock>
 
       <SectionBlock
-        title="CAC × CPA no tempo"
+        title="CAC por cliente × CPA no tempo"
         description="Custo por cliente novo contra custo por conversão."
         bodyClassName={layout.cardPadding}
       >
         <DualSeriesChart
-          left={{ label: "CAC", unit: "currency", points: data.cacSeries }}
+          left={{ label: "CAC por cliente", unit: "currency", points: data.cacSeries }}
           right={{ label: "CPA", unit: "currency", points: data.cpaSeries }}
           granularity={period.por}
         />

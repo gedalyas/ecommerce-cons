@@ -32,7 +32,7 @@ describe("computeValues", () => {
     expect(v.cancellationRate).toBe(20);
     expect(v.roas).toBeCloseTo(4.93, 2);
     expect(v.totalMarketing).toBe(24_300);
-    expect(v.cac).toBeCloseTo(71.47, 2);
+    expect(v.cac).toBeCloseTo(24.3, 2);
     expect(v.newUsersShare).toBe(70);
     expect(v.itemsPerOrder).toBe(2);
     expect(v.cpc).toBe(2.03);

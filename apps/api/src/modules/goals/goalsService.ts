@@ -1,3 +1,4 @@
+import { cacPercent } from "@ecommerce/contracts/marketing";
 import { prismaClient } from "@ecommerce/database/client";
 import { currentDay } from "@/shared/config/clock";
 import { customersAggregate } from "@/modules/customers/contract";
@@ -49,10 +50,6 @@ const toMonth = (r: {
   repurchaseRate: Number(r.repurchaseRate),
 });
 
-// ---------------------------------------------------------------------------
-// Plan
-// ---------------------------------------------------------------------------
-
 async function planOf(clientId: string, year: number): Promise<GoalMonth[]> {
   const rows = await prismaClient.goal.findMany({
     where: { clientId, year },
@@ -61,7 +58,6 @@ async function planOf(clientId: string, year: number): Promise<GoalMonth[]> {
   return rows.map(toMonth);
 }
 
-/** Replaces the whole year: months left out of the input are deleted. */
 export async function savePlan(clientId: string, input: GoalPlanInput): Promise<GoalMonth[]> {
   await prismaClient.$transaction([
     prismaClient.goal.deleteMany({ where: { clientId, year: input.year } }),
@@ -76,10 +72,6 @@ export async function savePlan(clientId: string, input: GoalPlanInput): Promise<
   return planOf(clientId, input.year);
 }
 
-// ---------------------------------------------------------------------------
-// Actuals
-// ---------------------------------------------------------------------------
-
 type Actuals = GoalQuantities & { sessionsOrders: number; salesMarketing: number };
 
 const actualValues = (a: Actuals): GoalValues => {
@@ -93,7 +85,7 @@ const actualValues = (a: Actuals): GoalValues => {
     cpa: orders > 0 ? totalMarketing / orders : null,
     conversionRate: a.sessions > 0 ? (a.sessionsOrders / a.sessions) * 100 : null,
     costPerSession: a.sessions > 0 ? totalMarketing / a.sessions : null,
-    cac: a.newCustomers > 0 ? totalMarketing / a.newCustomers : null,
+    cac: cacPercent(totalMarketing, a.totalSold),
   };
 };
 
@@ -127,10 +119,6 @@ async function windowActuals(
     repeatOrders: orders.repeatOrders,
   };
 }
-
-// ---------------------------------------------------------------------------
-// Screen
-// ---------------------------------------------------------------------------
 
 const resumoWindow = (search: PeriodSearch & GoalsSearch) =>
   search.acumulado ? { inicio: `${search.fim.slice(0, 4)}-01-01`, fim: search.fim } : search;
@@ -188,10 +176,6 @@ export async function goalsScreen(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Suggestion from history
-// ---------------------------------------------------------------------------
-
 const GROWTH = 1.1;
 const round = (v: number, decimals = 0) => {
   const f = 10 ** decimals;
@@ -229,10 +213,6 @@ const averageMonth = (months: GoalMonth[]): Omit<GoalMonth, "month"> => {
   };
 };
 
-/**
- * A plan for `year` from the previous year's monthly actuals plus 10%.
- * Months without history take the average of the months that have it.
- */
 export async function suggestPlan(clientId: string, year: number): Promise<GoalMonth[]> {
   const previous = year - 1;
   const w = toWindow({ inicio: `${previous}-01-01`, fim: `${previous}-12-31` });

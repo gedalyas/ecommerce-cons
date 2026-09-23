@@ -53,6 +53,7 @@ export {
   funnelRatio,
   benchmarkVerdict,
   ltvCacReference,
+  cacPercent,
   channelOf,
 } from "./marketingRules";
 export type {

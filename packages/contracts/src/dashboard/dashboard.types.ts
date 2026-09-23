@@ -50,7 +50,7 @@ export const dashboardMetricDefinitions: readonly DashboardMetricDefinition[] = 
   },
   { key: "roi", label: "ROI", unit: "multiplier", goodWhen: "up", carousel: true },
   { key: "roas", label: "ROAS", unit: "multiplier", goodWhen: "up", carousel: true },
-  { key: "cac", label: "CAC", unit: "currency", goodWhen: "down", carousel: true },
+  { key: "cac", label: "CAC", unit: "percent", goodWhen: "down", carousel: true },
   { key: "cpa", label: "CPA", unit: "currency", goodWhen: "down", carousel: true },
   { key: "netProfit", label: "Lucro líquido", unit: "currency", goodWhen: "up", carousel: true },
   { key: "customers", label: "Clientes", unit: "count", goodWhen: "up", carousel: true },

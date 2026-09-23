@@ -54,7 +54,7 @@ data module already covers replaced by live values
 | Conversão | Taxa de conversão           | paid store orders ÷ sessions                                       |
 | Conversão | Ticket médio                | paid revenue ÷ paid orders (respects the channel toggle)           |
 | Conversão | Abandono de carrinho        | (add to cart − paid store orders) ÷ add to cart                    |
-| Aquisição | CAC                         | investment ÷ customers whose first paid order is in the window     |
+| Aquisição | CAC                         | investment ÷ revenue × 100 (percent, `cacPercent`)                 |
 | Aquisição | ROAS geral                  | paid revenue ÷ investment                                          |
 | Aquisição | Investimento em mídia       | investment (media + fee + cost lines)                              |
 | Aquisição | Participação do maior canal | revenue share of the largest origem / meio (the label is the note) |
@@ -82,7 +82,7 @@ orange banner names the first data source in `ERROR` with its sync label
    (Agência, E-mail marketing…), largest first.
 3. **Investimento × métrica** — `ComboChart`: bars of media investment per
    bucket, line of `metricaInvest` (Total vendido · Investimento · ROAS ·
-   ROI · CPA · CAC). CAC per bucket uses the new buyers of that bucket.
+   ROI · CPA · CAC). CAC per bucket is that bucket's investment ÷ its revenue (percent).
 4. **Sessões × métrica** — bars of sessions or users (`base`), line of
    `metricaSessoes` (Total vendido · Taxa de conversão · Receita por sessão ·
    Custo por sessão).
@@ -136,7 +136,7 @@ are the paid store orders by delivery UF, with buyers, new buyers and repeat ord
 
 1. **Big numbers** — Gasto total · ROAS geral (with the quality band) · Melhor ROAS · Pior
    ROAS (among states with spend).
-2. **Mapa** — `BrazilTileMap` coloured by `mapa` (ROAS · Total vendido · Gasto total · CAC);
+2. **Mapa** — `BrazilTileMap` coloured by `mapa` (ROAS · Total vendido · Gasto total · CAC %);
    the "Incluir taxa da plataforma" checkbox is shared with the other tabs.
 3. **Desempenho regional** — Estado · Investimento Meta · Google · TikTok · Gasto total ·
    Total vendido · ROAS · CPM · CPC · CPA · CAC · Clientes · Ticket médio · Taxa de recompra,

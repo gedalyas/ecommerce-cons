@@ -1,3 +1,4 @@
+import { cacPercent } from "@ecommerce/contracts/marketing";
 import type { CostTotals } from "@ecommerce/contracts/money";
 import type { Channel } from "@ecommerce/contracts/shared/period";
 import type { DashboardMetricKey } from "@ecommerce/contracts/dashboard";
@@ -35,7 +36,7 @@ export function computeDashboardMetrics(facts: DashboardFacts, channel: Channel)
     marketingInvestment: investment,
     roi: paidMediaApplies ? ratio(facts.revenue - investment, investment) : null,
     roas: paidMediaApplies ? ratio(facts.revenue, investment) : null,
-    cac: paidMediaApplies ? ratio(investment, facts.newCustomers) : null,
+    cac: paidMediaApplies ? cacPercent(investment, facts.revenue) : null,
     cpa: paidMediaApplies ? ratio(investment, facts.orders) : null,
     netProfit: contribution - facts.costs.operational,
     customers: facts.customers,

@@ -32,7 +32,7 @@ function acquisitionKpis(overview: MarketingOverview): LiveKpiValues {
       metric: overview.cac,
       goodWhen: "down",
       fidelity: "B",
-      fidelityNote: "Nível B — investimento em marketing dividido por novos clientes.",
+      fidelityNote: "Nível B — investimento em marketing dividido pelo faturamento do período.",
     },
     roas: {
       metric: overview.roas,

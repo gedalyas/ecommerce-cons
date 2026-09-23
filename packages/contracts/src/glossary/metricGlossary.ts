@@ -59,8 +59,9 @@ const metricGlossary: Record<GlossaryTerm, MetricExplanation> = {
     formula: "(Faturamento − investimento) ÷ investimento",
   },
   cac: {
-    definition: "Quanto custou, em média, trazer cada cliente novo.",
-    formula: "Investimento ÷ clientes novos",
+    definition:
+      "Quanto do faturamento foi gasto em marketing para vender. 10% = R$ 10 de marketing a cada R$ 100 vendidos.",
+    formula: "Investimento em marketing ÷ faturamento × 100",
   },
   cpa: {
     definition: "Quanto custou, em média, cada pedido.",

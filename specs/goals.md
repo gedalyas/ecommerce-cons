@@ -20,7 +20,7 @@ derived by `goalDerivations.ts` (tested):
 | ROI                             | (Total vendido − Investimento total) ÷ Investimento total |
 | CPA                             | Investimento total ÷ Pedidos                              |
 | Novos clientes                  | Pedidos × (1 − % Recompra)                                |
-| CAC                             | Investimento total ÷ Novos clientes                       |
+| CAC                             | Investimento total ÷ Total vendido × 100 (%)              |
 | Custo / Receita por sessão      | Investimento total ÷ Sessões · Total vendido ÷ Sessões    |
 
 The seed loads Loja Aurora's 2026 plan (`goalsFixture.ts`).

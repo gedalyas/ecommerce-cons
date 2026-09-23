@@ -34,7 +34,6 @@ const platformFor = (channel: Channel): SalesPlatform | null =>
 const platformFilter = (platform: SalesPlatform | null) =>
   platform ? Prisma.sql`and o.sales_platform = ${platform}::sales_platform` : Prisma.empty;
 
-/** Paid orders with their rank in the customer's history and the customer's first paid order date. */
 const rankedOrders = (clientId: string) => Prisma.sql`
   select o.id, o.customer_id, o.placed_at, o.total_price, o.sales_platform,
     row_number() over (partition by o.customer_id order by o.placed_at) as n,
@@ -196,10 +195,6 @@ export async function customersRepurchase(
   };
 }
 
-// ---------------------------------------------------------------------------
-// LTV e CAC
-// ---------------------------------------------------------------------------
-
 const investmentOf = (
   adSpend: number,
   platformFee: number,
@@ -323,7 +318,7 @@ export async function customersLtvCac(
       },
       {
         key: "cac",
-        label: "CAC",
+        label: "CAC por cliente",
         unit: "currency",
         goodWhen: "down",
         metric: metricValue("currency", cur.cac, prev?.cac ?? null),

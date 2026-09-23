@@ -1,7 +1,3 @@
-/**
- * Business rules that move with the market, not with each screen: ROAS
- * quality bands, funnel benchmarks and the LTV/CAC reference.
- */
 export type RoasQuality = "alto" | "medio" | "baixo";
 
 export const roasBands = { high: 5, low: 2 } as const;
@@ -43,11 +39,9 @@ export type FunnelRatio = {
   label: string;
   from: FunnelStep;
   to: FunnelStep;
-  /** Market benchmark range in percent. */
   benchmark: { min: number; max: number };
 };
 
-/** The eight conversion ratios the funnel table shows, with market benchmarks. */
 export const funnelRatios: readonly FunnelRatio[] = [
   {
     key: "sessionsToView",
@@ -122,10 +116,11 @@ export function benchmarkVerdict(
   return value < range.min ? "abaixo" : value > range.max ? "acima" : "dentro";
 }
 
-/** Market reference for a healthy LTV/CAC. */
 export const ltvCacReference = 3;
 
-/** How the UTM medium maps to a channel bucket. */
+export const cacPercent = (investment: number, revenue: number): number | null =>
+  revenue > 0 ? (investment / revenue) * 100 : null;
+
 export function channelOf(medium: string | null, marketplace: boolean): string {
   if (marketplace) return "Marketplace";
   switch (medium) {

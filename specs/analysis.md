@@ -34,7 +34,7 @@ periods, and the text is written from it. The section title follows the nature o
 | ROAS             | Investimento em anúncios · Total vendido · Conversão · Ticket      |
 | ROI              | Investimento total · Total vendido · CPA                           |
 | CPA              | Investimento total · Pedidos · Conversão · CPC                     |
-| CAC              | Investimento total · Novos clientes · CPA · Taxa de recompra       |
+| CAC (%)          | Investimento total · Total vendido · ROAS · CPA                    |
 | CPS              | Investimento total · Sessões · CPC                                 |
 | CPC              | Investimento em anúncios · Cliques · CTR                           |
 

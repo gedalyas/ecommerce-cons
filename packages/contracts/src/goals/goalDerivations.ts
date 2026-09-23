@@ -1,14 +1,9 @@
-/**
- * The goals engine: six typed drivers become the fifteen KPIs, monthly goals
- * are prorated over any window, and pacing says where the store should be.
- * Pure; tested.
- */
+import { cacPercent } from "../marketing/contract";
 import type { GoalInput, GoalMonth, GoalValues } from "./goals.types";
 
 const ratio = (numerator: number, denominator: number) =>
   denominator > 0 ? numerator / denominator : null;
 
-/** Additive quantities of a month, from which every ratio can be rebuilt. */
 export type GoalQuantities = {
   totalSold: number;
   orders: number;
@@ -34,7 +29,6 @@ export function quantitiesOf(input: GoalInput): GoalQuantities {
   };
 }
 
-/** Pedidos, Sessões, ROAS, ROI, CPA, Novos clientes, CAC... from the quantities. */
 export function valuesOf(q: GoalQuantities): GoalValues {
   const totalMarketing = q.paidTraffic + q.otherMarketing;
   return {
@@ -52,11 +46,10 @@ export function valuesOf(q: GoalQuantities): GoalValues {
     revenuePerSession: ratio(q.totalSold, q.sessions),
     repurchaseRate: q.orders > 0 ? (q.repeatOrders / q.orders) * 100 : null,
     newCustomers: q.newCustomers,
-    cac: ratio(totalMarketing, q.newCustomers),
+    cac: cacPercent(totalMarketing, q.totalSold),
   };
 }
 
-/** The six inputs of one month as the fifteen KPIs (the planning grid's derived rows). */
 export const deriveGoal = (input: GoalInput): GoalValues => valuesOf(quantitiesOf(input));
 
 export const emptyQuantities: GoalQuantities = {
@@ -89,7 +82,6 @@ const daysInMonth = (year: number, month: number) =>
   new Date(Date.UTC(year, month, 0)).getUTCDate();
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Calendar months touched by an inclusive ISO window, with the share of each month inside it. */
 export function monthShares(
   inicio: string,
   fim: string,
@@ -117,7 +109,6 @@ export function monthShares(
   return shares;
 }
 
-/** Goals of the months a window covers, prorated by days, as the fifteen KPIs. Null when no month has a goal. */
 export function prorateGoals(
   plans: ReadonlyMap<string, GoalMonth>,
   inicio: string,
@@ -134,14 +125,9 @@ export function prorateGoals(
   return found ? valuesOf(total) : null;
 }
 
-/**
- * Share of the goal the store should have reached by now: elapsed days for
- * additive metrics, the whole goal for ratios (a rate is not accumulated).
- */
 export const pacingOf = (additive: boolean, elapsedPercent: number) =>
   additive ? Math.min(100, Math.max(0, elapsedPercent)) : 100;
 
-/** Days of the window elapsed at `today`, percent (0 before it starts, 100 once it ends). */
 export function elapsedPercent(inicio: string, fim: string, today: string) {
   const length = dayIndex(fim) - dayIndex(inicio) + 1;
   const elapsed = dayIndex(today) - dayIndex(inicio) + 1;

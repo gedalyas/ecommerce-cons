@@ -218,7 +218,11 @@ export type MilestoneTemplate = { key: string; name: string; hint: string };
 
 export const milestoneTemplate: MilestoneTemplate[] = [
   { key: "predictableMargin", name: "Margem previsível", hint: "3 meses seguidos acima da meta" },
-  { key: "cacBelowLtv", name: "CAC menor que 1/3 do LTV", hint: "CAC ÷ LTV abaixo de 33%" },
+  {
+    key: "cacBelowLtv",
+    name: "CAC por cliente menor que 1/3 do LTV",
+    hint: "CAC por cliente ÷ LTV abaixo de 33%",
+  },
   { key: "cashRunway", name: "Caixa de 90 dias", hint: "Caixa livre para 90 dias de operação" },
   {
     key: "ownerIndependent",

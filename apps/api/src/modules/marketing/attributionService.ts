@@ -1,6 +1,6 @@
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
+import type { Window } from "@ecommerce/contracts/shared/periodWindow";
 import type { UtmSalesRow, UtmDimension } from "@ecommerce/contracts/marketing";
 import { channelOf } from "@ecommerce/contracts/marketing";
 
@@ -43,7 +43,6 @@ const labelFor = (r: AttributionRow, dimension: UtmDimension) => {
   }
 };
 
-/** Paid orders and revenue grouped by the chosen UTM dimension, largest first. */
 export async function utmSales(
   clientId: string,
   w: Window,
@@ -72,7 +71,6 @@ export async function utmSales(
     .sort((a, b) => b.revenue - a.revenue);
 }
 
-/** Revenue share of the largest source/medium, for the "Participação do maior canal" KPI. */
 export async function topSourceShare(
   clientId: string,
   w: Window,
@@ -82,7 +80,6 @@ export async function topSourceShare(
   return top ? { label: top.label, share: top.share } : null;
 }
 
-/** Store orders captured and paid in the window - the tail of the funnel. */
 export async function storeOrders(
   clientId: string,
   w: Window,
@@ -95,37 +92,4 @@ export async function storeOrders(
       and o.placed_at >= ${w.start} and o.placed_at < ${w.end}
   `;
   return { orders: rows[0]?.orders ?? 0, paidOrders: rows[0]?.paid_orders ?? 0 };
-}
-
-/**
- * Customers whose first paid order falls in the window. Mirrors the customers
- * module's count; repeated here because customers already depends on
- * marketing (ad spend behind CAC) and the graph must stay acyclic.
- */
-export async function newBuyers(clientId: string, w: Window): Promise<number> {
-  const rows = await prismaClient.$queryRaw<{ new_customers: number }[]>`
-    select count(*)::int as new_customers
-    from customer c
-    join sales_order o on o.customer_id = c.id and o.placed_at = c.first_order_at
-    where c.client_id = ${clientId}
-      and c.first_order_at >= ${w.start} and c.first_order_at < ${w.end}
-  `;
-  return rows[0]?.new_customers ?? 0;
-}
-
-export async function newBuyersByBucket(
-  clientId: string,
-  w: Window,
-  unit: string,
-): Promise<{ bucket: string; value: number }[]> {
-  const rows = await prismaClient.$queryRaw<{ bucket: Date; new_customers: number }[]>`
-    select date_trunc(${unit}, c.first_order_at) as bucket, count(*)::int as new_customers
-    from customer c
-    join sales_order o on o.customer_id = c.id and o.placed_at = c.first_order_at
-    where c.client_id = ${clientId}
-      and c.first_order_at >= ${w.start} and c.first_order_at < ${w.end}
-    group by 1
-    order by 1
-  `;
-  return rows.map((r) => ({ bucket: isoDay(r.bucket), value: r.new_customers }));
 }

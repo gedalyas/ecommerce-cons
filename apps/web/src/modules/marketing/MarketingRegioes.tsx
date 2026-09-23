@@ -33,11 +33,11 @@ const mapMetrics = [
   { key: "cac", label: "CAC" },
 ] as const;
 type MapMetric = (typeof mapMetrics)[number]["key"];
-const mapUnit: Record<MapMetric, "multiplier" | "currency"> = {
+const mapUnit: Record<MapMetric, "multiplier" | "currency" | "percent"> = {
   roas: "multiplier",
   revenue: "currency",
   totalSpend: "currency",
-  cac: "currency",
+  cac: "percent",
 };
 
 const columns: DataTableColumn<RegionPerformanceRow>[] = [
@@ -125,7 +125,7 @@ const columns: DataTableColumn<RegionPerformanceRow>[] = [
     key: "cac",
     header: "CAC",
     align: "right",
-    render: (r) => money(r.cac),
+    render: (r) => (r.cac == null ? "—" : formatPercent(r.cac)),
     csv: (r) => round2(r.cac),
     sortValue: (r) => r.cac,
   },

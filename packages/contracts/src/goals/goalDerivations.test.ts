@@ -28,7 +28,7 @@ describe("deriveGoal", () => {
     expect(v.roi).toBeCloseTo(376.19, 2);
     expect(v.cpa).toBe(52.5);
     expect(v.newCustomers).toBe(1_600);
-    expect(v.cac).toBeCloseTo(65.63, 2);
+    expect(v.cac).toBeCloseTo(21, 2);
     expect(v.costPerSession).toBe(1.05);
     expect(v.revenuePerSession).toBe(5);
   });

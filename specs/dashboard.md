@@ -87,8 +87,8 @@ Formulas (`dashboardMetrics.ts`, unit-tested):
 - Investimento em marketing = ad spend + platform fee + `SALES_MARKETING`
   cost rules (cost engine, `money` module).
 - ROI = (revenue − investment) ÷ investment (multiplier); ROAS = revenue ÷
-  investment (multiplier); CAC = investment ÷
-  new customers; CPA = investment ÷ orders — all null for the marketplace
+  investment (multiplier); CAC = investment ÷ revenue × 100
+  (percent, `cacPercent` in `contracts/marketing`, since 2026-09-23); CPA = investment ÷ orders — all null for the marketplace
   channel, which has no paid media.
 - Margem de contribuição = (revenue − COGS − COGS-category rules −
   investment) ÷ revenue; Lucro líquido = that contribution − operational rules.

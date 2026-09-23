@@ -57,12 +57,13 @@ customer's paid orders across the whole history, capped at 7 in the screens.
 
 ## LTV e CAC (`?aba=ltv-cac`)
 
-- **KPIs** — Lifetime value (ticket médio × frequência de compra), CAC
-  (investimento em marketing ÷ novos clientes; investment = ad spend +
+- **KPIs** — Lifetime value (ticket médio × frequência de compra), CAC por
+  cliente (investimento em marketing ÷ novos clientes, in R$ — the one place the per-customer
+  figure stays, because LTV/CAC needs it; everywhere else CAC is a percentage of revenue; investment = ad spend +
   platform fee + `SALES_MARKETING` cost rules), LTV/CAC with the market
   reference "saudável ≥ 3", Frequência de compra, Novos clientes.
-- **Charts** — LTV × CAC no tempo, CAC × número de novos clientes (dual
-  axis), CAC × CPA, and **Taxa de retenção por número de pedidos** (share of
+- **Charts** — LTV × CAC por cliente no tempo, CAC por cliente × novos clientes
+  (dual axis), CAC por cliente × CPA, and **Taxa de retenção por número de pedidos** (share of
   customers who reach the n+1th order).
 - CAC and LTV/CAC carry fidelity B (Meta Ads out of sync + informed costs).
 

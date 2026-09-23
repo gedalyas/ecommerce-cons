@@ -13,8 +13,8 @@ Status: **approved 2026-09-23 — G1 in progress.**
       or tap pins); `metricToTile` takes the hint
 - [ ] `DataTable` header hint; hints on the Marketing tiles
 - [x] Dashboard: `roas` metric key; headline Faturamento · ROAS geral · CAC · Recompra
-- [ ] CAC as percent (investment ÷ revenue) on dashboard, Marketing, Metas, Análise; LTV/CAC
-      milestone rewritten; specs updated
+- [x] CAC as percent (investment ÷ revenue, `cacPercent`) on dashboard, Marketing, Metas,
+      Análise; Clientes keeps "CAC por cliente" in R$ for LTV/CAC; milestone renamed; specs updated
 
 ## G0 — One source per data kind; ROAS per channel
 

@@ -1,3 +1,4 @@
+import { cacPercent } from "../marketing/contract";
 import type {
   AnalysisFacts,
   AnalysisMetricKey,
@@ -27,7 +28,7 @@ export function computeValues(f: AnalysisFacts): AnalysisValues {
     roas: ratio(f.revenue, adSpend),
     roi: totalMarketing > 0 ? ((f.revenue - totalMarketing) / totalMarketing) * 100 : null,
     cpa: ratio(totalMarketing, f.orders),
-    cac: ratio(totalMarketing, f.newCustomers),
+    cac: cacPercent(totalMarketing, f.revenue),
     costPerSession: ratio(totalMarketing, f.sessions),
     cpc: ratio(adSpend, f.clicks),
     adSpend,
@@ -60,7 +61,7 @@ export const driverDefinitions: Record<DriverKey, Omit<DriverDefinition, "key">>
   roas: { label: "ROAS", unit: "multiplier", goodWhen: "up" },
   roi: { label: "ROI", unit: "percent", goodWhen: "up" },
   cpa: { label: "CPA", unit: "currency", goodWhen: "down" },
-  cac: { label: "CAC", unit: "currency", goodWhen: "down" },
+  cac: { label: "CAC", unit: "percent", goodWhen: "down" },
   costPerSession: { label: "CPS (custo por sessão)", unit: "currency", goodWhen: "down" },
   cpc: { label: "CPC (custo por clique)", unit: "currency", goodWhen: "down" },
   adSpend: { label: "Investimento em anúncios", unit: "currency", goodWhen: "down" },
@@ -197,11 +198,11 @@ export const metricDefinitions: Record<AnalysisMetricKey, MetricDefinition> = {
   cac: tree(
     "cac",
     "signals",
-    ["totalMarketing", "newCustomers", "cpa", "repurchaseRate"],
+    ["totalMarketing", "totalSold", "roas", "cpa"],
     [
-      "comparar o CAC com o LTV antes de escalar a aquisição",
-      "atribuir a mídia por canal para saber onde o novo cliente custa menos",
-      "aumentar a recompra para diluir o custo de aquisição",
+      "comparar o CAC com a margem de contribuição antes de escalar o investimento",
+      "cortar as campanhas que investem sem trazer vendas no período",
+      "aumentar a recompra, que vende sem custo de aquisição",
     ],
   ),
   costPerSession: tree(

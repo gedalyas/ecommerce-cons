@@ -1,7 +1,6 @@
 import type { MetricUnit } from "../shared/metric.types";
 import type { GoalsTab } from "./goalsSchema";
 
-/** The six drivers the user types per month; everything else is derived. */
 export const goalInputKeys = [
   "totalSold",
   "averageTicket",
@@ -25,7 +24,6 @@ export const goalDerivedKeys = [
 ] as const;
 export type GoalDerivedKey = (typeof goalDerivedKeys)[number];
 
-/** The fifteen KPIs of the Resumo tab (the 14 of the plan plus the two per-session ratios). */
 export const goalKpiKeys = [
   "totalSold",
   "orders",
@@ -60,7 +58,6 @@ export type GoalDefinition = {
   label: string;
   unit: MetricUnit;
   group: GoalGroup;
-  /** Sums over time (revenue, orders) or is a ratio (ticket, rates). */
   additive: boolean;
   goodWhen: "up" | "down";
 };
@@ -181,7 +178,7 @@ export const goalDefinitions: readonly GoalDefinition[] = [
   {
     key: "cac",
     label: "CAC",
-    unit: "currency",
+    unit: "percent",
     group: "recompra",
     additive: false,
     goodWhen: "down",
@@ -197,7 +194,6 @@ export const goalInputLabel: Record<GoalInputKey, { label: string; unit: MetricU
   repurchaseRate: { label: "% Recompra", unit: "percent" },
 };
 
-/** One month of the plan, as stored. */
 export type GoalMonth = GoalInput & { month: number };
 
 export type GoalPlan = { year: number; months: GoalMonth[] };
@@ -210,21 +206,15 @@ export type GoalCard = {
   goodWhen: "up" | "down";
   actual: number | null;
   goal: number | null;
-  /** actual − goal, in the metric's unit. */
   difference: number | null;
-  /** actual ÷ goal, percent. */
   progress: number | null;
-  /** Where the store should be by now to hit the goal, percent of the goal. */
   pacing: number | null;
 };
 
 export type GoalsSummary = {
   cards: GoalCard[];
-  /** The window the actuals and the prorated goal cover. */
   window: { inicio: string; fim: string };
-  /** Days of the window already elapsed over its length, percent. */
   elapsed: number;
-  /** True when no month of the window has a goal. */
   empty: boolean;
 };
 

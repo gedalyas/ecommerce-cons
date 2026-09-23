@@ -5,6 +5,7 @@ import {
   funnelRatio,
   funnelRatios,
   roasQuality,
+  cacPercent,
 } from "./marketingRules";
 
 describe("roasQuality", () => {
@@ -55,5 +56,15 @@ describe("channelOf", () => {
     expect(channelOf("organic", false)).toBe("Orgânico");
     expect(channelOf(null, false)).toBe("Direto");
     expect(channelOf("cpc", true)).toBe("Marketplace");
+  });
+});
+
+describe("cacPercent", () => {
+  it("is the share of revenue spent on marketing", () => {
+    expect(cacPercent(20_000, 100_000)).toBe(20);
+  });
+
+  it("is null without revenue", () => {
+    expect(cacPercent(5_000, 0)).toBeNull();
   });
 });

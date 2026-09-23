@@ -14,7 +14,7 @@ export const investmentMetricLabel: Record<InvestmentMetric, { label: string; un
     roas: { label: "ROAS", unit: "multiplier" },
     roi: { label: "ROI", unit: "percent" },
     cpa: { label: "CPA", unit: "currency" },
-    cac: { label: "CAC", unit: "currency" },
+    cac: { label: "CAC", unit: "percent" },
   };
 
 export const sessionMetricLabel: Record<SessionMetric, { label: string; unit: MetricUnit }> = {

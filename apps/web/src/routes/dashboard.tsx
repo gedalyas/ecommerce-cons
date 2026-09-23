@@ -10,12 +10,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Painel de consultoria de e-commerce da loja: faturamento, margem, CAC, recompra, alertas e marco de maturidade.",
+          "Painel de consultoria de e-commerce da loja: faturamento, ROAS, CAC, recompra, alertas e marco de maturidade.",
       },
       { property: "og:title", content: "Dashboard · E-commerce Insights" },
       {
         property: "og:description",
-        content: "Faturamento, margem, CAC e recompra da loja em um só painel de consultoria.",
+        content: "Faturamento, ROAS, CAC e recompra da loja em um só painel de consultoria.",
       },
     ],
   }),

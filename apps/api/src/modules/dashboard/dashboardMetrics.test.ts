@@ -28,7 +28,7 @@ describe("computeDashboardMetrics", () => {
 
   it("counts investment as ad spend + platform fee + marketing cost rules", () => {
     expect(m.marketingInvestment).toBe(20_000);
-    expect(m.cac).toBeCloseTo(66.67, 2);
+    expect(m.cac).toBe(20);
     expect(m.cpa).toBe(50);
     expect(m.roi).toBe(4);
     expect(m.roas).toBe(5);

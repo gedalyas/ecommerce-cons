@@ -1,6 +1,6 @@
 import type { AdPlatform } from "@ecommerce/database/enums";
 import type { RegionPerformanceRow } from "@ecommerce/contracts/marketing";
-import { platformFeeRate } from "@ecommerce/contracts/marketing";
+import { cacPercent, platformFeeRate } from "@ecommerce/contracts/marketing";
 
 export type RegionSpendRow = {
   province: string;
@@ -86,7 +86,7 @@ export const withRatios = (r: Sums): RegionPerformanceRow => ({
   cpm: r.impressions > 0 ? (r.totalSpend / r.impressions) * 1000 : null,
   cpc: ratio(r.totalSpend, r.clicks),
   cpa: ratio(r.totalSpend, r.orders),
-  cac: ratio(r.totalSpend, r.newCustomers),
+  cac: cacPercent(r.totalSpend, r.revenue),
   averageTicket: ratio(r.revenue, r.orders),
   repurchaseRate: r.orders > 0 ? (r.repeatOrders / r.orders) * 100 : null,
 });

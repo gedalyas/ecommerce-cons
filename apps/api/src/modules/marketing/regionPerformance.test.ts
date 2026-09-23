@@ -50,7 +50,7 @@ describe("regionRows", () => {
     expect(sp.cpm).toBe(12.5);
     expect(sp.cpc).toBe(0.5);
     expect(sp.cpa).toBe(62.5);
-    expect(sp.cac).toBeCloseTo(83.33, 2);
+    expect(sp.cac).toBeCloseTo(25, 2);
     expect(sp.averageTicket).toBe(250);
     expect(sp.repurchaseRate).toBeCloseTo(16.67, 2);
   });

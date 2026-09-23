@@ -14,13 +14,7 @@ import {
   type Window,
 } from "@ecommerce/contracts/shared/periodWindow";
 import { adsByLevel, adsByPlatform, adsByPlatformBucket } from "./adsService";
-import {
-  newBuyers,
-  newBuyersByBucket,
-  storeOrders,
-  topSourceShare,
-  utmSales,
-} from "./attributionService";
+import { storeOrders, topSourceShare, utmSales } from "./attributionService";
 import { discountAggregate, discountCodes, discountsByBucket } from "./discountsService";
 import { regionPerformance } from "./regionsService";
 import { marketingSocial } from "./socialService";
@@ -39,7 +33,7 @@ import type {
   AdMetric,
   MarketingSearch,
 } from "@ecommerce/contracts/marketing";
-import { adPlatformLabel } from "@ecommerce/contracts/marketing";
+import { adPlatformLabel, cacPercent } from "@ecommerce/contracts/marketing";
 import {
   channelPerformance,
   deriveAdRow,
@@ -73,10 +67,6 @@ const lifetimeWindow = (): Window => ({
 const fill = (buckets: string[], points: Map<string, number>): SeriesPoint[] =>
   buckets.map((bucket) => ({ bucket, value: points.get(bucket) ?? 0 }));
 
-// ---------------------------------------------------------------------------
-// Visão
-// ---------------------------------------------------------------------------
-
 type OverviewFacts = {
   revenue: number;
   orders: number;
@@ -84,7 +74,6 @@ type OverviewFacts = {
   addToCart: number;
   paidStoreOrders: number;
   investment: number;
-  newCustomers: number;
   topShare: number | null;
   topLabel: string | null;
 };
@@ -96,12 +85,11 @@ async function overviewFacts(
   includeFee: boolean,
   costs: number,
 ): Promise<OverviewFacts> {
-  const [orders, traffic, store, ads, fresh, top] = await Promise.all([
+  const [orders, traffic, store, ads, top] = await Promise.all([
     ordersAggregate(clientId, w, platform),
     trafficAggregate(clientId, w),
     storeOrders(clientId, w),
     adSpendAggregate(clientId, w),
-    newBuyers(clientId, w),
     topSourceShare(clientId, w),
   ]);
   return {
@@ -111,7 +99,6 @@ async function overviewFacts(
     addToCart: traffic.addToCart,
     paidStoreOrders: store.paidOrders,
     investment: ads.spend + (includeFee ? ads.platformFee : 0) + costs,
-    newCustomers: fresh,
     topShare: top?.share ?? null,
     topLabel: top?.label ?? null,
   };
@@ -134,7 +121,7 @@ async function marketingOverview(
     conversionRate: percent(f.paidStoreOrders, f.sessions),
     aov: ratio(f.revenue, f.orders),
     cartAbandonment: percent(f.addToCart - f.paidStoreOrders, f.addToCart),
-    cac: ratio(f.investment, f.newCustomers),
+    cac: cacPercent(f.investment, f.revenue),
     roas: ratio(f.revenue, f.investment),
     adSpend: f.investment,
     topChannelShare: f.topShare,
@@ -145,17 +132,13 @@ async function marketingOverview(
     conversionRate: metricValue("percent", c.conversionRate, p?.conversionRate ?? null),
     aov: metricValue("currency", c.aov, p?.aov ?? null),
     cartAbandonment: metricValue("percent", c.cartAbandonment, p?.cartAbandonment ?? null),
-    cac: metricValue("currency", c.cac, p?.cac ?? null),
+    cac: metricValue("percent", c.cac, p?.cac ?? null),
     roas: metricValue("multiplier", c.roas, p?.roas ?? null),
     adSpend: metricValue("currency", c.adSpend, p?.adSpend ?? null),
     topChannelShare: metricValue("percent", c.topChannelShare, p?.topChannelShare ?? null),
     topChannel: cur.topLabel,
   };
 }
-
-// ---------------------------------------------------------------------------
-// Resumo
-// ---------------------------------------------------------------------------
 
 async function marketingSummary(
   clientId: string,
@@ -174,7 +157,6 @@ async function marketingSummary(
     ordersB,
     trafficB,
     adsB,
-    freshB,
     lifetimeTraffic,
     lifetimeStore,
     utm,
@@ -186,7 +168,6 @@ async function marketingSummary(
     ordersByBucket(clientId, period.current, unit, platform),
     trafficByBucket(clientId, period.current, unit),
     adSpendByBucket(clientId, period.current, unit),
-    newBuyersByBucket(clientId, period.current, unit),
     trafficAggregate(clientId, lifetime),
     storeOrders(clientId, lifetime),
     utmSales(clientId, period.current, platform, input.utm),
@@ -216,7 +197,6 @@ async function marketingSummary(
   const ordersMap = new Map(ordersB.map((o) => [o.bucket, o]));
   const adsMap = new Map(adsB.map((a) => [a.bucket, a]));
   const trafficMap = new Map(trafficB.map((t) => [t.bucket, t]));
-  const freshMap = new Map(freshB.map((f) => [f.bucket, f.value]));
   const investmentAt = (bucket: string) => {
     const a = adsMap.get(bucket);
     return a ? a.spend + (input.incluirTaxa ? a.platformFee : 0) : 0;
@@ -237,7 +217,7 @@ async function marketingSummary(
       case "cpa":
         return ratio(invest, o?.orders ?? 0) ?? 0;
       case "cac":
-        return ratio(invest, freshMap.get(bucket) ?? 0) ?? 0;
+        return cacPercent(invest, revenue) ?? 0;
     }
   };
   const sessionsAt = (bucket: string) => {
@@ -291,10 +271,6 @@ async function marketingSummary(
   };
 }
 
-// ---------------------------------------------------------------------------
-// Campanhas
-// ---------------------------------------------------------------------------
-
 const adMetricOf = (row: AdPerformanceRow, metric: AdMetric): number => row[metric] ?? 0;
 
 async function marketingCampaigns(
@@ -347,10 +323,6 @@ async function marketingCampaigns(
   return { platforms, total, platformSeries, rows, best, worst };
 }
 
-// ---------------------------------------------------------------------------
-// Descontos
-// ---------------------------------------------------------------------------
-
 async function marketingDiscounts(
   clientId: string,
   input: MarketingInput,
@@ -372,10 +344,6 @@ async function marketingDiscounts(
     couponRevenueSeries: fill(buckets, new Map(series.map((s) => [s.bucket, s.couponRevenue]))),
   };
 }
-
-// ---------------------------------------------------------------------------
-// Screen
-// ---------------------------------------------------------------------------
 
 export async function marketingScreen(
   clientId: string,
