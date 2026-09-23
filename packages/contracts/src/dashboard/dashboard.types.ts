@@ -96,7 +96,7 @@ export type DashboardCustomerMix = { newCustomers: number; returningCustomers: n
 
 export type DashboardFunnelStep = { key: string; label: string; value: number };
 
-export type DashboardPaidMediaPoint = { bucket: string; spend: number; attributedRevenue: number };
+export type DashboardPaidMediaPoint = { bucket: string; spend: number; revenue: number };
 
 export type DashboardOverview = {
   layout: DashboardLayout;

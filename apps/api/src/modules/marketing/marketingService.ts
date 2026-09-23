@@ -30,7 +30,6 @@ type AdRow = {
   platform_fee: number;
   impressions: number;
   clicks: number;
-  attributed_revenue: number;
 };
 
 const toAdSpend = (r: AdRow | undefined): AdSpendAggregate => ({
@@ -38,7 +37,6 @@ const toAdSpend = (r: AdRow | undefined): AdSpendAggregate => ({
   platformFee: r?.platform_fee ?? 0,
   impressions: r?.impressions ?? 0,
   clicks: r?.clicks ?? 0,
-  attributedRevenue: r?.attributed_revenue ?? 0,
 });
 
 export async function trafficAggregate(clientId: string, w: Window): Promise<TrafficAggregate> {
@@ -73,8 +71,7 @@ export async function trafficByBucket(
 export async function adSpendAggregate(clientId: string, w: Window): Promise<AdSpendAggregate> {
   const rows = await prismaClient.$queryRaw<AdRow[]>`
     select coalesce(sum(spend), 0)::float8 as spend, coalesce(sum(platform_fee), 0)::float8 as platform_fee,
-      coalesce(sum(impressions), 0)::int as impressions, coalesce(sum(clicks), 0)::int as clicks,
-      coalesce(sum(attributed_revenue), 0)::float8 as attributed_revenue
+      coalesce(sum(impressions), 0)::int as impressions, coalesce(sum(clicks), 0)::int as clicks
     from ad_spend_daily
     where client_id = ${clientId} and date >= ${w.start} and date < ${w.end}
   `;
@@ -89,8 +86,7 @@ export async function adSpendByBucket(
   const rows = await prismaClient.$queryRaw<(AdRow & { bucket: Date })[]>`
     select date_trunc(${unit}, date) as bucket,
       coalesce(sum(spend), 0)::float8 as spend, coalesce(sum(platform_fee), 0)::float8 as platform_fee,
-      coalesce(sum(impressions), 0)::int as impressions, coalesce(sum(clicks), 0)::int as clicks,
-      coalesce(sum(attributed_revenue), 0)::float8 as attributed_revenue
+      coalesce(sum(impressions), 0)::int as impressions, coalesce(sum(clicks), 0)::int as clicks
     from ad_spend_daily
     where client_id = ${clientId} and date >= ${w.start} and date < ${w.end}
     group by 1

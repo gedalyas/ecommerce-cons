@@ -14,7 +14,6 @@ import {
   funnelRatios,
   funnelStepLabel,
   funnelSteps,
-  roasQuality,
   type FunnelCounts,
 } from "@ecommerce/contracts/marketing";
 
@@ -23,7 +22,6 @@ export const ratio = (numerator: number, denominator: number) =>
 export const percent = (numerator: number, denominator: number) =>
   denominator > 0 ? (numerator / denominator) * 100 : null;
 
-/** Raw sums of a media row before the ratios are derived. */
 export type AdSums = {
   id: string;
   name: string;
@@ -32,26 +30,36 @@ export type AdSums = {
   adsetName: string | null;
   spend: number;
   platformFee: number;
-  revenue: number;
   orders: number;
   impressions: number;
   clicks: number;
 };
 
-/** ROAS, CPA, CPM, CPC and CTR from the sums; the fee joins the spend when asked. */
 export function deriveAdRow(sums: AdSums, includeFee: boolean): AdPerformanceRow {
   const spend = sums.spend + (includeFee ? sums.platformFee : 0);
-  const roas = ratio(sums.revenue, spend);
   return {
     ...sums,
     spend,
-    roas,
-    roasQuality: roasQuality(roas),
     cpa: ratio(spend, sums.orders),
     cpm: sums.impressions > 0 ? (spend / sums.impressions) * 1000 : null,
     cpc: ratio(spend, sums.clicks),
     ctr: percent(sums.clicks, sums.impressions),
   };
+}
+
+export function bestAndWorstByCost(
+  campaigns: readonly AdPerformanceRow[],
+  size = 3,
+): { best: AdPerformanceRow[]; worst: AdPerformanceRow[] } {
+  const converting = campaigns
+    .filter((c) => c.cpa != null)
+    .sort((a, b) => (a.cpa ?? 0) - (b.cpa ?? 0));
+  const wasted = campaigns.filter((c) => c.cpa == null).sort((a, b) => b.spend - a.spend);
+  const best = converting.slice(0, size);
+  const worst = [...wasted, ...[...converting].reverse()]
+    .filter((c) => !best.includes(c))
+    .slice(0, size);
+  return { best, worst };
 }
 
 export function sumAdRows(rows: readonly AdSums[], id: string, name: string): AdSums {
@@ -63,7 +71,6 @@ export function sumAdRows(rows: readonly AdSums[], id: string, name: string): Ad
     adsetName: null,
     spend: 0,
     platformFee: 0,
-    revenue: 0,
     orders: 0,
     impressions: 0,
     clicks: 0,
@@ -71,7 +78,6 @@ export function sumAdRows(rows: readonly AdSums[], id: string, name: string): Ad
   for (const r of rows) {
     total.spend += r.spend;
     total.platformFee += r.platformFee;
-    total.revenue += r.revenue;
     total.orders += r.orders;
     total.impressions += r.impressions;
     total.clicks += r.clicks;
@@ -108,7 +114,6 @@ const channelRow = (
   conversionRate: sessions == null ? null : percent(orders, sessions),
 });
 
-/** E-commerce, marketplace and total rows; costs shared by both units are split by revenue. */
 export function channelPerformance(facts: ChannelFacts): ChannelPerformanceRow[] {
   const both = costsOf(facts.costLines, "BOTH");
   const totalRevenue = facts.ecommerce.revenue + facts.marketplace.revenue;
@@ -146,7 +151,6 @@ export function channelPerformance(facts: ChannelFacts): ChannelPerformanceRow[]
   ];
 }
 
-/** Media by platform, the platform fee and every cost line, as shares of the whole. */
 export function investmentBreakdown(
   media: readonly { key: string; label: string; spend: number; platformFee: number }[],
   includeFee: boolean,

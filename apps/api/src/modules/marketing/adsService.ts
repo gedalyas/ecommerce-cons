@@ -14,7 +14,6 @@ const platformClause = (platform: AdPlatformFilter) =>
 const sums = Prisma.sql`
   coalesce(sum(a.spend), 0)::float8 as spend,
   coalesce(sum(a.platform_fee), 0)::float8 as platform_fee,
-  coalesce(sum(a.attributed_revenue), 0)::float8 as revenue,
   coalesce(sum(a.conversions), 0)::int as orders,
   coalesce(sum(a.impressions), 0)::int as impressions,
   coalesce(sum(a.clicks), 0)::int as clicks
@@ -23,7 +22,6 @@ const sums = Prisma.sql`
 type SumRow = {
   spend: number;
   platform_fee: number;
-  revenue: number;
   orders: number;
   impressions: number;
   clicks: number;
@@ -33,13 +31,11 @@ const toSums = (r: SumRow, head: Omit<AdSums, keyof SumRow | "platformFee">): Ad
   ...head,
   spend: r.spend,
   platformFee: r.platform_fee,
-  revenue: r.revenue,
   orders: r.orders,
   impressions: r.impressions,
   clicks: r.clicks,
 });
 
-/** One row per platform present in the window. */
 export async function adsByPlatform(clientId: string, w: Window): Promise<AdSums[]> {
   const rows = await prismaClient.$queryRaw<(SumRow & { platform: AdPlatform })[]>`
     select a.platform, ${sums}
@@ -59,7 +55,6 @@ export async function adsByPlatform(clientId: string, w: Window): Promise<AdSums
   );
 }
 
-/** The selected level of the hierarchy, optionally within one platform. */
 export async function adsByLevel(
   clientId: string,
   w: Window,
@@ -114,7 +109,6 @@ export async function adsByLevel(
 
 export type PlatformBucket = SumRow & { platform: AdPlatform; bucket: string };
 
-/** Sums per platform and bucket, for the platform lines of the campaigns chart. */
 export async function adsByPlatformBucket(
   clientId: string,
   w: Window,

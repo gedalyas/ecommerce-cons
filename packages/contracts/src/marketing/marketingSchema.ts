@@ -32,8 +32,6 @@ export type AdPlatformFilter = (typeof adPlatformFilters)[number];
 
 export const adMetrics = [
   "spend",
-  "revenue",
-  "roas",
   "orders",
   "cpa",
   "impressions",
@@ -44,7 +42,6 @@ export const adMetrics = [
 ] as const;
 export type AdMetric = (typeof adMetrics)[number];
 
-/** The `/marketing` route's own search params; the global period comes from the root. */
 export const marketingSearchSchema = z.object({
   aba: z.enum(marketingTabs).catch("visao"),
   incluirTaxa: z.boolean().catch(true),
@@ -54,7 +51,7 @@ export const marketingSearchSchema = z.object({
   utm: z.enum(utmDimensions).catch("origem-meio"),
   nivel: z.enum(adLevels).catch("campanha"),
   plataforma: z.enum(adPlatformFilters).catch("todas"),
-  metricaAds: z.enum(adMetrics).catch("revenue"),
+  metricaAds: z.enum(adMetrics).catch("spend"),
   mapa: z.enum(["roas", "revenue", "totalSpend", "cac"]).catch("roas"),
 });
 

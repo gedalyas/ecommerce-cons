@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  bestAndWorstByCost,
   channelPerformance,
   deriveAdRow,
   discountValues,
@@ -15,7 +16,6 @@ const sums = {
   adsetName: null,
   spend: 1000,
   platformFee: 100,
-  revenue: 3500,
   orders: 20,
   impressions: 200_000,
   clicks: 4_000,
@@ -24,8 +24,6 @@ const sums = {
 describe("deriveAdRow", () => {
   it("derives the media ratios from the sums", () => {
     const row = deriveAdRow(sums, false);
-    expect(row.roas).toBe(3.5);
-    expect(row.roasQuality).toBe("medio");
     expect(row.cpa).toBe(50);
     expect(row.cpm).toBe(5);
     expect(row.cpc).toBe(0.25);
@@ -35,7 +33,7 @@ describe("deriveAdRow", () => {
   it("folds the platform fee into the spend when asked", () => {
     const row = deriveAdRow(sums, true);
     expect(row.spend).toBe(1100);
-    expect(row.roas).toBeCloseTo(3.18, 2);
+    expect(row.cpa).toBe(55);
   });
 
   it("is null-safe on empty rows", () => {
@@ -43,8 +41,7 @@ describe("deriveAdRow", () => {
       { ...sums, spend: 0, platformFee: 0, orders: 0, impressions: 0, clicks: 0 },
       true,
     );
-    expect(row.roas).toBeNull();
-    expect(row.roasQuality).toBe("baixo");
+    expect(row.cpa).toBeNull();
     expect(row.cpm).toBeNull();
   });
 });
@@ -120,5 +117,35 @@ describe("discountValues", () => {
     expect(v.discountRate).toBe(20);
     expect(v.aovWithCoupon).toBe(200);
     expect(v.aovWithoutCoupon).toBe(262.5);
+  });
+});
+
+describe("bestAndWorstByCost", () => {
+  const row = (id: string, spend: number, orders: number) =>
+    deriveAdRow({ ...sums, id, spend, orders }, false);
+
+  it("ranks the cheapest conversions best and the biggest spend without conversions worst", () => {
+    const { best, worst } = bestAndWorstByCost([
+      row("cheap", 400, 20),
+      row("mid", 1000, 20),
+      row("dear", 2000, 20),
+      row("pricey", 3000, 20),
+      row("waste-small", 100, 0),
+      row("waste-big", 5000, 0),
+    ]);
+    expect(best.map((r) => r.id)).toEqual(["cheap", "mid", "dear"]);
+    expect(worst.map((r) => r.id)).toEqual(["waste-big", "waste-small", "pricey"]);
+  });
+
+  it("never lists a campaign without conversions as best", () => {
+    const { best, worst } = bestAndWorstByCost([row("a", 300, 0), row("b", 900, 0)]);
+    expect(best).toEqual([]);
+    expect(worst.map((r) => r.id)).toEqual(["b", "a"]);
+  });
+
+  it("does not repeat a best campaign among the worst", () => {
+    const { best, worst } = bestAndWorstByCost([row("x", 100, 10), row("y", 900, 10)]);
+    expect(best.map((r) => r.id)).toEqual(["x", "y"]);
+    expect(worst).toEqual([]);
   });
 });

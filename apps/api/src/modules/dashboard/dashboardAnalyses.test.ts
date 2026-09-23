@@ -78,7 +78,10 @@ describe("dashboard analyses", () => {
 
   it("zero-fills paid media per bucket", () => {
     const rows = paidMediaOf(
-      ["2026-09-01", "2026-09-02"],
+      [
+        { bucket: "2026-09-01", values: { totalSold: 450 } },
+        { bucket: "2026-09-02", values: { totalSold: null } },
+      ],
       [
         {
           bucket: "2026-09-01",
@@ -86,13 +89,12 @@ describe("dashboard analyses", () => {
           platformFee: 0,
           impressions: 0,
           clicks: 0,
-          attributedRevenue: 90,
         },
       ],
     );
     expect(rows).toEqual([
-      { bucket: "2026-09-01", spend: 30, attributedRevenue: 90 },
-      { bucket: "2026-09-02", spend: 0, attributedRevenue: 0 },
+      { bucket: "2026-09-01", spend: 30, revenue: 450 },
+      { bucket: "2026-09-02", spend: 0, revenue: 0 },
     ]);
   });
 });

@@ -25,21 +25,21 @@ is missing, empty or only made of unknown kinds falls back to
 
 The catalog (`contracts/dashboard/dashboardWidgets.ts`), each kind at most once:
 
-| Kind                  | Widget                       | Data                                                                   |
-| --------------------- | ---------------------------- | ---------------------------------------------------------------------- |
-| `headline`            | Indicadores em destaque      | §1                                                                     |
-| `indicator`           | Evolução do indicador        | §2                                                                     |
-| `revenueVsInvestment` | Receita × investimento       | `series.marketingInvestment` (bars) × `series.totalSold`               |
-| `channelSplit`        | Vendas por canal             | `channelSplit`: paid revenue per bucket, e-commerce × marketplace      |
-| `bySource`            | Vendas por origem            | §3                                                                     |
-| `topProducts`         | Produtos mais vendidos       | `topProducts`: ten best sellers by paid revenue (`productSales`)       |
-| `customerMix`         | Clientes novos × recorrentes | `customerMix`: buyers of the period split by first order               |
-| `funnel`              | Funil do e-commerce          | `funnel`: sessions → produto visto → carrinho → checkout → paid orders |
-| `paidMedia`           | Mídia paga                   | `paidMedia`: ad spend (bars) × attributed revenue per bucket           |
-| `matrix`              | Resumo financeiro            | §4                                                                     |
-| `alerts`              | Precisa da sua atenção       | §5                                                                     |
-| `milestone`           | Marco de maturidade          | §5b                                                                    |
-| `recommendations`     | Recomendações em aberto      | §5b                                                                    |
+| Kind                  | Widget                       | Data                                                                                 |
+| --------------------- | ---------------------------- | ------------------------------------------------------------------------------------ |
+| `headline`            | Indicadores em destaque      | §1                                                                                   |
+| `indicator`           | Evolução do indicador        | §2                                                                                   |
+| `revenueVsInvestment` | Receita × investimento       | `series.marketingInvestment` (bars) × `series.totalSold`                             |
+| `channelSplit`        | Vendas por canal             | `channelSplit`: paid revenue per bucket, e-commerce × marketplace                    |
+| `bySource`            | Vendas por origem            | §3                                                                                   |
+| `topProducts`         | Produtos mais vendidos       | `topProducts`: ten best sellers by paid revenue (`productSales`)                     |
+| `customerMix`         | Clientes novos × recorrentes | `customerMix`: buyers of the period split by first order                             |
+| `funnel`              | Funil do e-commerce          | `funnel`: sessions → produto visto → carrinho → checkout → paid orders               |
+| `paidMedia`           | Mídia paga                   | `paidMedia`: ad spend (bars) × store revenue per bucket (never the platforms' value) |
+| `matrix`              | Resumo financeiro            | §4                                                                                   |
+| `alerts`              | Precisa da sua atenção       | §5                                                                                   |
+| `milestone`           | Marco de maturidade          | §5b                                                                                  |
+| `recommendations`     | Recomendações em aberto      | §5b                                                                                  |
 
 The default layout: headline, indicator, then revenue × investment,
 channel split, by source, top products, customer mix and funnel, then

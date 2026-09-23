@@ -39,8 +39,6 @@ export const adLevelLabel: Record<AdLevel, string> = {
 
 export const adMetricLabel: Record<AdMetric, { label: string; unit: MetricUnit }> = {
   spend: { label: "Investimento", unit: "currency" },
-  revenue: { label: "Receita atribuída", unit: "currency" },
-  roas: { label: "ROAS", unit: "multiplier" },
   orders: { label: "Conversões", unit: "count" },
   cpa: { label: "CPA", unit: "currency" },
   impressions: { label: "Impressões", unit: "count" },

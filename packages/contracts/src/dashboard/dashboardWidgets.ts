@@ -66,7 +66,7 @@ export const dashboardWidgetCatalog: Record<DashboardWidgetKind, DashboardWidget
   paidMedia: {
     kind: "paidMedia",
     label: "Mídia paga",
-    description: "Investimento em anúncios e a receita atribuída, por período.",
+    description: "Investimento em anúncios e o faturamento da loja, por período.",
   },
   matrix: {
     kind: "matrix",

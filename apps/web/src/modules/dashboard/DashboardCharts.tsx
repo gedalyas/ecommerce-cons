@@ -209,9 +209,9 @@ export function PaidMediaWidget({ data, period }: ChartProps) {
           points: data.paidMedia.map((p) => ({ bucket: p.bucket, value: p.spend })),
         }}
         line={{
-          label: "Receita atribuída",
+          label: "Faturamento",
           unit: "currency",
-          points: data.paidMedia.map((p) => ({ bucket: p.bucket, value: p.attributedRevenue })),
+          points: data.paidMedia.map((p) => ({ bucket: p.bucket, value: p.revenue })),
         }}
         granularity={period.por}
       />

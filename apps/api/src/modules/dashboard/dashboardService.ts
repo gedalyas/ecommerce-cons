@@ -293,6 +293,6 @@ export async function dashboardOverview(
     topProducts: topProductsOf(products),
     customerMix: customerMixOf(current.facts),
     funnel: funnelOf(current.traffic, current.facts.orders),
-    paidMedia: paidMediaOf(buckets, currentByBucket.ads),
+    paidMedia: paidMediaOf(currentRows, currentByBucket.ads),
   };
 }

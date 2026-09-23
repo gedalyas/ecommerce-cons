@@ -99,17 +99,22 @@ orange banner names the first data source in `ERROR` with its sync label
 ## Campanhas (`?aba=campanhas`)
 
 Everything comes from `ad_spend_daily` (`adsService.ts`); the ratios are
-derived once in `deriveAdRow` (`marketingMetrics.ts`): ROAS = attributed
-revenue ÷ spend, CPA = spend ÷ conversions, CPM, CPC, CTR.
+derived once in `deriveAdRow` (`marketingMetrics.ts`): CPA = spend ÷ conversions, CPM,
+CPC, CTR. **No sales here** (decided 2026-09-22, `growth-plan.md`): the value an ad
+platform attributes to itself stays in `ad_spend_daily.attributed_revenue` as raw data and is
+never shown as revenue or used in a ROAS — sales and ROAS come only from the ERP or the
+spreadsheet. Conversions are the platform's own count.
 
 1. **Por plataforma** — one row per platform plus Total: Investimento ·
-   Receita atribuída · ROAS (with the quality badge) · Conversões · CPA ·
+   Conversões · CPA ·
    Impressões · CPM · Cliques · CPC · CTR. The fee checkbox is shared with
    Resumo. CSV.
 2. **Plataformas no tempo** — `MultiSeriesChart`, one line per platform of
-   `metricaAds` (the same ten metrics).
-3. **Melhores e piores campanhas** — top 3 and bottom 3 by ROAS among the
-   campaigns with spend in the period, each with ROAS and spend.
+   `metricaAds` (the same eight metrics; default Investimento).
+3. **Melhores e piores campanhas** — `bestAndWorstByCost`: Melhores = the 3 cheapest
+   costs per conversion among campaigns that converted; Piores = the campaigns that spent most
+   without converting, then the most expensive conversions, never repeating a Melhor. Each
+   line shows the cost per conversion (or "sem conversão") and the spend.
 4. **Campanhas / Conjuntos de anúncios / Anúncios** — `plataforma` (Todas ·
    Meta · Google · TikTok) and `nivel` pick the rows; child levels show the
    parent names. Paged locally (10 per page), sortable, CSV of every row.

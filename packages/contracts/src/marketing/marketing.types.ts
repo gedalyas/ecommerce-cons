@@ -18,10 +18,9 @@ export const adPlatformLabel: Record<AdPlatform, string> = {
 };
 import type { ConsultingSection } from "../consulting/contract";
 import type { BreakdownSlice, MetricValue, Series, SeriesPoint } from "../shared/metric.types";
-import type { BenchmarkVerdict, FunnelStep, RoasQuality } from "./marketingRules";
+import type { BenchmarkVerdict, FunnelStep } from "./marketingRules";
 import type { MarketingTab } from "./marketingSchema";
 
-/** Site traffic and funnel events over a window (store only; marketplaces have no sessions). */
 export type TrafficAggregate = {
   sessions: number;
   users: number;
@@ -33,26 +32,15 @@ export type TrafficAggregate = {
 
 export type TrafficBucket = TrafficAggregate & { bucket: string };
 
-/** Paid-media totals over a window. The platform fee is kept apart from spend on purpose. */
 export type AdSpendAggregate = {
   spend: number;
   platformFee: number;
   impressions: number;
   clicks: number;
-  attributedRevenue: number;
 };
 
 export type AdSpendBucket = AdSpendAggregate & { bucket: string };
 
-// ---------------------------------------------------------------------------
-// Marketing screen payloads
-// ---------------------------------------------------------------------------
-
-/**
- * A marketing cost line the money module accrues over the window (agency,
- * e-mail tool, ad taxes...). Marketing declares the shape and the route
- * feeds it, because money already depends on marketing for the ad spend.
- */
 export type MarketingCostLine = {
   key: string;
   label: string;
@@ -60,7 +48,6 @@ export type MarketingCostLine = {
   amount: number;
 };
 
-/** What the Retenção pillar needs from the customer base; filled by the route. */
 export type MarketingRetention = { repurchaseRate90: number | null; ltv12Months: number | null };
 
 export type MarketingOverview = {
@@ -91,9 +78,7 @@ export type FunnelStepValue = { key: FunnelStep; label: string; value: number };
 export type FunnelRatioRow = {
   key: string;
   label: string;
-  /** Percent over the period, null when the source step is empty. */
   value: number | null;
-  /** The store's own historical average, percent. */
   average: number | null;
   benchmark: { min: number; max: number };
   verdict: BenchmarkVerdict | null;
@@ -119,7 +104,6 @@ export type MarketingSummary = {
   utmSales: UtmSalesRow[];
 };
 
-/** One row of paid media at any level: platform, campaign, ad set or ad. */
 export type AdPerformanceRow = {
   id: string;
   name: string;
@@ -128,9 +112,6 @@ export type AdPerformanceRow = {
   adsetName: string | null;
   spend: number;
   platformFee: number;
-  revenue: number;
-  roas: number | null;
-  roasQuality: RoasQuality;
   orders: number;
   cpa: number | null;
   impressions: number;
@@ -143,7 +124,6 @@ export type AdPerformanceRow = {
 export type MarketingCampaigns = {
   platforms: AdPerformanceRow[];
   total: AdPerformanceRow;
-  /** The selected ad metric per bucket, one line per platform. */
   platformSeries: { key: string; label: string; points: SeriesPoint[] }[];
   rows: AdPerformanceRow[];
   best: AdPerformanceRow[];
@@ -155,7 +135,6 @@ export type DiscountCodeRow = {
   orders: number;
   revenue: number;
   discounts: number;
-  /** Discounts over gross (revenue + discounts), percent. */
   discountRate: number | null;
   aov: number;
   firstOrders: number;

@@ -2,7 +2,7 @@
 
 Board for `growth-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **approved 2026-09-23 — G1 in progress.**
+Status: **approved 2026-09-23 — G1 done, G0 in progress.**
 
 ## G1 — ROAS highlight, CAC%, metric tooltips
 
@@ -11,7 +11,8 @@ Status: **approved 2026-09-23 — G1 in progress.**
       — CPM, CPC, CTR… — join with the G4 tabs)
 - [x] `Metric.hint` + ⓘ in `MetricTile` / `MetricCard` (`MetricHintButton`: hover opens, click
       or tap pins); `metricToTile` takes the hint
-- [ ] `DataTable` header hint; hints on the Marketing tiles
+- [x] ~~`DataTable` header hint; hints on the Marketing tiles~~ → moved to G4 (the Marketing tabs
+      are rebuilt there)
 - [x] Dashboard: `roas` metric key; headline Faturamento · ROAS geral · CAC · Recompra
 - [x] CAC as percent (investment ÷ revenue, `cacPercent`) on dashboard, Marketing, Metas,
       Análise; Clientes keeps "CAC por cliente" in R$ for LTV/CAC; milestone renamed; specs updated
@@ -22,7 +23,8 @@ Status: **approved 2026-09-23 — G1 in progress.**
       `system` as a source for the kinds the product derives itself
 - [ ] `StoreDataSource` + `Order.source` (migration; backfill in the service); sync writes
       only the kinds a connection owns; pure `dataSourceRules.ts` + test
-- [ ] `attributedRevenue` out of every ROAS / vendido; campaign tables show efficiency only
+- [x] `attributedRevenue` out of every ROAS / vendido; campaign tables show efficiency only
+      (best/worst by cost per conversion; dashboard paid media = spend × store revenue)
 - [ ] Investment → channel map (ad account, campaign override) + pure `channelRoas.ts` + test;
       dashboard ROAS = most-invested channel, MER as secondary
 - [ ] Decision `2026-09-23-sales-from-erp-and-roas-per-channel.md`
@@ -50,7 +52,7 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       Meta (ad set/ad, thumbnails, reach, engagement, link clicks, carts, purchases, leads,
       messaging, several accounts), Google (ad group, keyword, impression share, campaign type);
       order UTM kept where the ERP/spreadsheet offers it
-- [ ] Shared: Δ% on every KPI, heat-shaded tables with totals, window toggle (7/14/30/90 dias,
+- [ ] Shared: glossary hints on every Marketing tile and `DataTable` header, Δ% on every KPI, heat-shaded tables with totals, window toggle (7/14/30/90 dias,
       3/6 meses, ano), platform filter, last-sync stamp
 - [ ] Visão geral (YTD, month-end projection, monthly/daily combos, site funnel, products, one
       card per platform)

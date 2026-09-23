@@ -36,6 +36,7 @@ import type {
 import { adPlatformLabel, cacPercent } from "@ecommerce/contracts/marketing";
 import {
   channelPerformance,
+  bestAndWorstByCost,
   deriveAdRow,
   discountMetrics,
   funnelTable,
@@ -291,12 +292,7 @@ async function marketingCampaigns(
   const total = derive(sumAdRows(platformSums, "total", "Total"));
   const rows = levelSums.map(derive);
   const campaigns = campaignSums.map(derive).filter((c) => c.spend > 0);
-  const byRoas = [...campaigns].sort((a, b) => (b.roas ?? 0) - (a.roas ?? 0));
-  const best = byRoas.slice(0, 3);
-  const worst = byRoas
-    .slice(-3)
-    .reverse()
-    .filter((c) => !best.includes(c));
+  const { best, worst } = bestAndWorstByCost(campaigns);
 
   const platformSeries = platformSums.map((p) => {
     const points = new Map<string, number>();
@@ -310,7 +306,6 @@ async function marketingCampaigns(
         adsetName: null,
         spend: b.spend,
         platformFee: b.platform_fee,
-        revenue: b.revenue,
         orders: b.orders,
         impressions: b.impressions,
         clicks: b.clicks,

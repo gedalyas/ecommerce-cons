@@ -56,12 +56,13 @@ export const funnelOf = (
 ];
 
 export function paidMediaOf(
-  buckets: readonly string[],
+  rows: readonly { bucket: string; values: { totalSold: number | null } }[],
   ads: readonly AdSpendBucket[],
 ): DashboardPaidMediaPoint[] {
   const byBucket = new Map(ads.map((a) => [a.bucket, a]));
-  return buckets.map((bucket) => {
-    const a = byBucket.get(bucket);
-    return { bucket, spend: a?.spend ?? 0, attributedRevenue: a?.attributedRevenue ?? 0 };
-  });
+  return rows.map(({ bucket, values }) => ({
+    bucket,
+    spend: byBucket.get(bucket)?.spend ?? 0,
+    revenue: values.totalSold ?? 0,
+  }));
 }

@@ -5,7 +5,7 @@ import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { formatCurrency, formatMultiplier } from "@ecommerce/contracts/shared/format";
+import { formatCurrency } from "@ecommerce/contracts/shared/format";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { levelColumns, platformColumns } from "./adsColumns";
 import type {
@@ -15,7 +15,6 @@ import type {
 import {
   adLevelLabel,
   adMetricLabel,
-  roasBands,
   adLevels,
   adMetrics,
   adPlatformFilters,
@@ -50,7 +49,8 @@ function CampaignList({
               <span
                 className={cn(textClass.body, textClass.numeric, "shrink-0 text-muted-foreground")}
               >
-                {r.roas == null ? "—" : formatMultiplier(r.roas)} · {formatCurrency(r.spend)}
+                {r.cpa == null ? "sem conversão" : `${formatCurrency(r.cpa, 2)} por conversão`} ·{" "}
+                {formatCurrency(r.spend)}
               </span>
             </li>
           ))}
@@ -78,7 +78,7 @@ export function MarketingCampanhas({
     <>
       <SectionBlock
         title="Por plataforma"
-        description="Investimento, receita atribuída e os indicadores de mídia de cada plataforma."
+        description="Investimento e os indicadores de mídia de cada plataforma. Conversões são as informadas pela plataforma; venda vem só do ERP ou da planilha."
         meta={
           <label className={cn(textClass.meta, "flex items-center gap-2 text-muted-foreground")}>
             <input
@@ -122,7 +122,7 @@ export function MarketingCampanhas({
 
       <SectionBlock
         title="Melhores e piores campanhas"
-        description={`Por ROAS, entre as campanhas com investimento no período. Alto acima de ${roasBands.high}x, baixo abaixo de ${roasBands.low}x.`}
+        description="Por custo por conversão informado pela plataforma, entre as campanhas com investimento no período. Venda e ROAS vêm só do ERP ou da planilha."
         bodyClassName={layout.cardPadding}
       >
         <div className="grid gap-6 sm:grid-cols-2">
