@@ -26,7 +26,7 @@ export const dashboardWidgetCatalog: Record<DashboardWidgetKind, DashboardWidget
   headline: {
     kind: "headline",
     label: "Indicadores em destaque",
-    description: "Faturamento, margem, CAC e recompra com a variação do período.",
+    description: "Faturamento, ROAS, CAC e recompra com a variação do período.",
   },
   indicator: {
     kind: "indicator",

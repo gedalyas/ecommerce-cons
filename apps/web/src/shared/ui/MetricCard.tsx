@@ -3,6 +3,7 @@ import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatPtNumbers } from "@ecommerce/contracts/shared/format";
+import { MetricHintButton } from "./MetricHintButton";
 import type { MetricTileProps } from "./metricTile.types";
 
 const deltaTone = {
@@ -31,7 +32,12 @@ export function MetricCard({
         className,
       )}
     >
-      <div className={cn(textClass.meta, "line-clamp-2 text-muted-foreground")}>{metric.label}</div>
+      <div className="flex min-w-0 items-start gap-1">
+        <div className={cn(textClass.meta, "line-clamp-2 min-w-0 text-muted-foreground")}>
+          {metric.label}
+        </div>
+        {metric.hint && <MetricHintButton label={metric.label} hint={metric.hint} />}
+      </div>
       <div
         className={cn(textClass.kpi, "min-w-0 truncate text-[24px] leading-[30px] text-foreground")}
       >

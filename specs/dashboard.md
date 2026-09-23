@@ -58,21 +58,24 @@ Sections below describe each widget's data.
 
 `MetricTileGroup` with four tiles built from the live metrics:
 
-| Tile                   | Metric key           | Direction                         |
-| ---------------------- | -------------------- | --------------------------------- |
-| Faturamento            | `totalSold`          | up is good                        |
-| Margem de contribuição | `contributionMargin` | up is good                        |
-| CAC                    | `cac`                | down is good (an increase is red) |
-| Recompra               | `repurchaseRate`     | up is good                        |
+| Tile        | Metric key       | Direction                         |
+| ----------- | ---------------- | --------------------------------- |
+| Faturamento | `totalSold`      | up is good                        |
+| ROAS geral  | `roas`           | up is good                        |
+| CAC         | `cac`            | down is good (an increase is red) |
+| Recompra    | `repurchaseRate` | up is good                        |
 
 Each tile shows the variation against the comparison window ("vs 13/07 –
-11/08") and the fidelity seal derived from the data sources (see §6).
+11/08") and an ⓘ that explains the metric (definition + formula from
+`packages/contracts/src/glossary`): hover opens it, a click or a tap pins it. ROAS
+replaced Margem de contribuição on 2026-09-22 (`growth-plan.md`); until G0 it is the
+store-wide figure, hence "ROAS geral".
 
 ## 2. "Resumo do período"
 
-`IndicatorCarousel` with the ten indicators — Total vendido · Pedidos ·
-Ticket médio · Taxa de conversão · Investimento em marketing · ROI · CAC ·
-CPA · Lucro líquido · Clientes. The selected chip drives the big number, its
+`IndicatorCarousel` with the eleven indicators — Total vendido · Pedidos ·
+Ticket médio · Taxa de conversão · Investimento em marketing · ROI · ROAS ·
+CAC · CPA · Lucro líquido · Clientes. The selected chip drives the big number, its
 fidelity note and a `TimeSeriesChart` (solid = current period, dashed =
 comparison) bucketed by `por`.
 
@@ -83,7 +86,8 @@ Formulas (`dashboardMetrics.ts`, unit-tested):
 - Taxa de conversão = store orders ÷ sessions (null for the marketplace channel).
 - Investimento em marketing = ad spend + platform fee + `SALES_MARKETING`
   cost rules (cost engine, `money` module).
-- ROI = (revenue − investment) ÷ investment (multiplier); CAC = investment ÷
+- ROI = (revenue − investment) ÷ investment (multiplier); ROAS = revenue ÷
+  investment (multiplier); CAC = investment ÷
   new customers; CPA = investment ÷ orders — all null for the marketplace
   channel, which has no paid media.
 - Margem de contribuição = (revenue − COGS − COGS-category rules −

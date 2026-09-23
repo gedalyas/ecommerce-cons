@@ -19,6 +19,7 @@ const feedsByMetric: Record<DashboardMetricKey, readonly ConnectorFeed[]> = {
   conversionRate: ["orders", "traffic"],
   marketingInvestment: media,
   roi: [...sales, ...media],
+  roas: [...sales, ...media],
   cac: [...sales, ...media],
   cpa: [...sales, ...media],
   netProfit: [...sales, ...media],
@@ -30,6 +31,7 @@ const usesInformedCosts = new Set<DashboardMetricKey>([
   "contributionMargin",
   "marketingInvestment",
   "roi",
+  "roas",
   "cac",
   "cpa",
 ]);

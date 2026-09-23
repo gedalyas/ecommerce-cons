@@ -31,6 +31,7 @@ describe("computeDashboardMetrics", () => {
     expect(m.cac).toBeCloseTo(66.67, 2);
     expect(m.cpa).toBe(50);
     expect(m.roi).toBe(4);
+    expect(m.roas).toBe(5);
   });
 
   it("converts store orders over sessions", () => {
@@ -49,6 +50,7 @@ describe("computeDashboardMetrics", () => {
     );
     expect(mp.conversionRate).toBeNull();
     expect(mp.roi).toBeNull();
+    expect(mp.roas).toBeNull();
     expect(mp.cac).toBeNull();
     expect(mp.cpa).toBeNull();
     expect(mp.totalSold).toBe(100_000);

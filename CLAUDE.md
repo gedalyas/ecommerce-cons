@@ -90,7 +90,8 @@ packages/*  → node_modules only; contracts has no React, no Prisma, no TanStac
 `marketing`, `products`, `logistics`, `goals`, `dashboard`, `connections`, `assistant`,
 `management`, `consulting`, `alerts` (API only), `analysis`, `influencers`, `auth`, `health`
 (API only), `imports` (CSV ingestion), `store` (onboarding and settings), `team` (the
-owner's team members and their area grants), `admin` (staff panel). If describing the module
+owner's team members and their area grants), `admin` (staff panel), `glossary` (contracts
+only: what each metric means, shown in the tiles' help). If describing the module
 needs an "and", it is two modules — a sibling top-level folder, never a subfolder
 (`MAX_MODULE_DEPTH = 0`). Which files go along is decided by the direction of the dependency,
 not by the name.

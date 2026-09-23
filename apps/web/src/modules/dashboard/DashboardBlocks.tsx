@@ -16,19 +16,18 @@ import {
   type DashboardMetricKey,
   type DashboardOverview,
 } from "@ecommerce/contracts/dashboard";
+import { explanationOf } from "@ecommerce/contracts/glossary";
 import { bucketHeader } from "./bucketHeader";
 
 type BlockProps = { data: DashboardOverview; period: PeriodSearch; comparisonLabel: string };
 
 const catalog = dashboardWidgetCatalog;
 
-const headlineKeys: DashboardMetricKey[] = [
-  "totalSold",
-  "contributionMargin",
-  "cac",
-  "repurchaseRate",
-];
-const headlineLabel: Partial<Record<DashboardMetricKey, string>> = { totalSold: "Faturamento" };
+const headlineKeys: DashboardMetricKey[] = ["totalSold", "roas", "cac", "repurchaseRate"];
+const headlineLabel: Partial<Record<DashboardMetricKey, string>> = {
+  totalSold: "Faturamento",
+  roas: "ROAS geral",
+};
 
 export function HeadlineWidget({ data, comparisonLabel }: BlockProps) {
   const byKey = new Map(data.metrics.map((m) => [m.key, m]));
@@ -41,6 +40,7 @@ export function HeadlineWidget({ data, comparisonLabel }: BlockProps) {
             metric: m.metric,
             comparisonLabel,
             goodWhen: m.goodWhen,
+            hint: explanationOf(key),
           }),
         ]
       : [];

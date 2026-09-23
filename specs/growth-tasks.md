@@ -2,15 +2,17 @@
 
 Board for `growth-plan.md`. Tick as work lands; one commit per task, checks green before each.
 
-Status: **approved 2026-09-23 — G1 next.**
+Status: **approved 2026-09-23 — G1 in progress.**
 
 ## G1 — ROAS highlight, CAC%, metric tooltips
 
-- [ ] Contracts `shared/metricGlossary.ts` (label, definition, formula per metric key) + test
-      covering every dashboard and marketing metric key
-- [ ] `Metric.hint` + info icon with `Tooltip` in `MetricTile` (tap on phones); `metricToTile`
-      fills it; `DataTable` header hint
-- [ ] Dashboard: `roas` metric key; headline Faturamento · ROAS · CAC · Recompra
+- [x] Contracts `glossary/metricGlossary.ts` (definition + formula per metric key) + test
+      covering every dashboard metric and the Marketing investment/session pickers (ad metrics
+      — CPM, CPC, CTR… — join with the G4 tabs)
+- [x] `Metric.hint` + ⓘ in `MetricTile` / `MetricCard` (`MetricHintButton`: hover opens, click
+      or tap pins); `metricToTile` takes the hint
+- [ ] `DataTable` header hint; hints on the Marketing tiles
+- [x] Dashboard: `roas` metric key; headline Faturamento · ROAS geral · CAC · Recompra
 - [ ] CAC as percent (investment ÷ revenue) on dashboard, Marketing, Metas, Análise; LTV/CAC
       milestone rewritten; specs updated
 
@@ -41,15 +43,27 @@ Status: **approved 2026-09-23 — G1 next.**
 
 ## G4 — Marketing at the Looker depth
 
+Acceptance: every row of the coverage table in `growth-plan.md` › G4, following the product's rules
+(sales never from a marketing channel). Meta Ads and Google Ads always observable separately.
+
 - [ ] Provider data: GA4 (funnel events, source/medium, pages, items, demographics, region),
-      Meta (ad set/ad, thumbnails, link clicks, carts, purchases, leads, messaging), Google
-      (ad group, keyword, impression share, campaign type)
-- [ ] Visão geral (YTD, month-end projection, monthly/daily combos, site funnel, canais,
-      produtos)
-- [ ] Meta Ads tab · Google Ads tab · Site (GA4) tab
+      Meta (ad set/ad, thumbnails, reach, engagement, link clicks, carts, purchases, leads,
+      messaging, several accounts), Google (ad group, keyword, impression share, campaign type);
+      order UTM kept where the ERP/spreadsheet offers it
+- [ ] Shared: Δ% on every KPI, heat-shaded tables with totals, window toggle (7/14/30/90 dias,
+      3/6 meses, ano), platform filter, last-sync stamp
+- [ ] Visão geral (YTD, month-end projection, monthly/daily combos, site funnel, products, one
+      card per platform)
+- [ ] Meta Ads tab (KPIs, charts, campanha → conjunto → anúncio, account filter, leads and
+      messages, creatives)
+- [ ] Google Ads tab (KPIs, charts, campanha → grupo → palavra-chave, comparison with Δ, campaign
+      type)
+- [ ] Site (GA4) tab (KPIs, charts, demographics, pages, regions)
+- [ ] Vendas por canal tab (window toggle; sessions from GA4, sales from the ERP)
 - [ ] Staff "Campanhas" list: funnel stage + destination channel tagged by hand
-- [ ] Funil de investimento (untagged spend as its own slice)
-- [ ] Δ% on every KPI, heat-shaded tables with totals, 7/14/30/90 toggles
+- [ ] Funil de investimento tab (stage KPIs, lines, CPA per platform, creatives by stage)
+- [ ] Per-platform vendido/ROAS by UTM on ERP/spreadsheet orders with coverage (when a source
+      brings UTM)
 
 ## G5 — Relatório
 

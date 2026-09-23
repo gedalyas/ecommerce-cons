@@ -157,38 +157,65 @@ the investment that serves that channel:
 
 ### G4 — Marketing at the Looker depth
 
-New Marketing structure (tabs; every KPI with Δ% vs the previous period, tables with heat
-shading and totals, fixed-window toggles 7/14/30/90 days where the Looker used them):
+**Rule (Davi, 2026-09-23): everything the Looker report shows is in the product, and Meta Ads
+and Google Ads are always observable separately** — each platform has its own tab with its
+own KPIs, charts and tables, and every cross-platform view offers a platform filter (Todas ·
+Meta Ads · Google Ads · TikTok Ads). **Coverage follows the product's rules**: sales never
+come from a marketing channel (see _Per-platform sales_). The coverage table below is the
+acceptance list for G4; a row not delivered keeps G4 open.
 
-- **Visão geral** — Vendido, Investido, ROAS por canal (+ MER), Pedidos, Ticket médio, Taxa de conversão; the
-  same for the year to date; **projection to month end** (run-rate of vendido and investido);
-  Vendido × Investido + ROAS line (monthly and daily); Sessões + Novos usuários × Taxa de
-  conversão (monthly and daily); **site funnel** Sessões → Visualizações de produto → Carrinho
-  → Checkout → Compras (GA4 events); canais by origem/mídia; produtos (vistos, carrinhos,
-  compras, taxas); investimento por plataforma (Meta/Google/TikTok) with share.
-- **Meta Ads** — KPIs (investido, impressões, alcance, CPM, cliques no link, CPC, CTR,
-  sessões, custo por sessão, carrinhos, compras, custo por compra, leads, conversas iniciadas,
-  custo por lead); campanha → conjunto → anúncio drill-down with filters; creatives with
-  thumbnail; several ad accounts per store (the Looker had e-commerce and physical-store
-  accounts).
-- **Google Ads** — KPIs (investido, impressões, parcela de impressões, cliques, CPC, CTR,
-  conversões, custo por conversão); campanha → grupo → palavra-chave; campaign type
-  (PMax, Search, Shopping, Display, YouTube).
-- **Site (GA4)** — sessões, sessões engajadas, usuários, novos usuários, visualizações de
-  página, duração média, taxa de engajamento, taxa de rejeição; páginas mais visitadas;
-  gênero e faixa etária (sessões and purchases); regiões.
-- **Funil de investimento** — investment by funnel stage (Topo / Meio / Fundo) per platform,
-  share per stage, daily/monthly lines, creatives per stage, CPA by platform. The stage is
-  **tagged by hand by the staff** (Davi, 2026-09-23) on a "Campanhas" settings list per store
-  — stage (Topo/Meio/Fundo) and destination channel per campaign, new campaigns flagged
-  "sem etapa" until tagged; untagged spend shows as its own slice.
-- Descontos, Regiões and Social stay.
-- Data work: GA4 provider pulls events funnel, source/medium, pages, items, demographics,
-  region; Meta provider pulls ad set / ad level, creative thumbnail, link clicks, landing page
-  views, add-to-cart and purchase counts, leads, messaging; Google provider pulls ad group,
-  keyword, impression share, campaign type. New daily tables per grain; providers verified
-  against their stubs.
-- "Reunião semanal" is not a tab: it is a report template in G5.
+Structure: tabs **Visão geral · Meta Ads · Google Ads · Site (GA4) · Vendas por canal · Funil
+de investimento** (+ Descontos, Regiões, Social, which stay). Every KPI shows Δ% vs the
+previous period; tables have heat shading per column, a "Total" row and sorting; the Looker's
+fixed windows become a window toggle (7 · 14 · 30 · 90 dias · 3 · 6 meses · ano) on the block
+that needs it. Several ad accounts per platform per store (the Looker had an e-commerce and a
+physical-store Meta account) — an account filter on the platform tab.
+
+| Looker page · item                                                                                                                                                      | Product                                                                                                                                          |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Visão Geral · Valor vendido, ROAS (período e ano), Compras, Valor investido, Ticket médio, Taxa de conversão                                                            | Visão geral · KPIs (vendido and ROAS from the ERP/spreadsheet; year-to-date row)                                                                 |
+| Visão Geral · Valor vendido projetado, Valor investido projetado                                                                                                        | Visão geral · month-end run-rate projection (pure rule + test)                                                                                   |
+| Visão Geral · Vendido × Investido + ROAS, mensal e diário                                                                                                               | Visão geral · combo chart with a Mensal/Diário toggle                                                                                            |
+| Visão Geral · Sessões + Novos usuários × Taxa de conversão, mensal e diário                                                                                             | Visão geral · combo chart (GA4)                                                                                                                  |
+| Visão Geral · Funil (Sessões → Visualizações de produto → Carrinho → Finalização → Compras) with Δ, and the monthly funnel table                                        | Visão geral · funnel + table by month (GA4 events — behaviour, not sales)                                                                        |
+| Visão Geral · Análise por canal (origem/mídia)                                                                                                                          | Vendas por canal (below)                                                                                                                         |
+| Visão Geral · Desempenho dos produtos (itens vistos, carrinhos, taxas, compras, receita, engajamento)                                                                   | Visão geral · product table: views/carts from GA4, units and revenue from the ERP                                                                |
+| Visão Geral · mini-blocos Métricas do Meta Ads e do Google Ads + Receita × Investimento por plataforma                                                                  | Visão geral · one card per platform (investment and efficiency; sales per _Per-platform sales_)                                                  |
+| Meta Ads · Vendido, Investido, ROAS, Conversão, Ticket, Sessões, Carrinhos, Compras, Custo por sessão, Custo por compra                                                 | Meta Ads tab · KPIs                                                                                                                              |
+| Meta Ads · Vendido × Investido + ROAS, Sessões × Taxa de conversão (mensal e diário)                                                                                    | Meta Ads tab · charts                                                                                                                            |
+| Meta Ads · filtros Campanha / Conjunto / Anúncio; tabelas com Investido, CPM, CTR, Cliques, CPC, Sessões, CPS, Carrinhos, Compras, CPA                                  | Meta Ads tab · drill-down campanha → conjunto → anúncio with the three filters                                                                   |
+| Meta Ads (Loja) · Investimento, Impressões, Alcance, Engajamentos, CPM, Cliques no link, CPC, Conversas iniciadas, Leads, Custo por lead; anúncio com imagem            | Meta Ads tab · second account via the account filter; lead and message KPIs; creative thumbnail                                                  |
+| Google Ads · Vendido, Investido, ROAS, Conversão, Ticket, Parcela de impressões, Cliques, CPC, Conversões, Custo por compra                                             | Google Ads tab · KPIs                                                                                                                            |
+| Google Ads · Vendido × Investido + ROAS, mensal (13 meses) e diário                                                                                                     | Google Ads tab · charts                                                                                                                          |
+| Google Ads · filtros Campanha / Grupo / Palavra-chave; tabelas com Investido, Impressões, CTR, Cliques, CPC, Compras, CPA, Vendido, ROAS; comparação com Δ por campanha | Google Ads tab · drill-down campanha → grupo → palavra-chave + comparison table with Δ; campaign type (PMax, Search, Shopping, Display, YouTube) |
+| Google Analytics · Sessões, Engajadas, Usuários, Novos, Visualizações, Duração média, Engajamento, Rejeição                                                             | Site (GA4) tab · KPIs                                                                                                                            |
+| Google Analytics · Sessões × Engajadas, Usuários × Novos (6 meses e diário)                                                                                             | Site (GA4) tab · charts                                                                                                                          |
+| Google Analytics · Sessões e Transações por gênero e faixa etária                                                                                                       | Site (GA4) tab · demographics (sessions; purchases as GA4 counts, never revenue)                                                                 |
+| Google Analytics · Páginas mais visitadas; Métricas por região                                                                                                          | Site (GA4) tab · pages table; region table                                                                                                       |
+| Venda por canal · 7 / 14 / 30 / 90 dias: Canal, Sessões, Vendido, Ticket, Conversão, each with Δ                                                                        | Vendas por canal tab · one table + window toggle; sessions from GA4, sales from the ERP                                                          |
+| Funil de investimento · Investimento total, por plataforma e %; por etapa Topo/Meio/Fundo por plataforma e %                                                            | Funil de investimento tab · KPIs (stage tagged by staff)                                                                                         |
+| Funil de investimento · Topo × Meio × Fundo diário e mensal; CPA Site × Meta × Google                                                                                   | Funil de investimento tab · charts (CPA = investment ÷ ERP orders or ÷ platform conversions, labelled)                                           |
+| Funil de investimento / Reunião semanal · criativos de topo, meio e fundo                                                                                               | Funil de investimento tab · creatives by stage                                                                                                   |
+| Reunião Semanal (page)                                                                                                                                                  | G5 report template "Reunião semanal"                                                                                                             |
+| Todas as páginas · "Data da última atualização"                                                                                                                         | Every tab · last sync of its sources                                                                                                             |
+
+**Per-platform sales ("Valor vendido" / "ROAS" per Meta and Google) — decided 2026-09-23.**
+Sales never come from a marketing channel: neither the value Meta/Google report nor GA4
+revenue is ever shown as "vendido". A platform's "Vendido" and "ROAS" exist only as **ERP or
+spreadsheet orders attributed to it by UTM** (`utm_source`/`utm_campaign` on the order), with
+the coverage shown ("62% dos pedidos com origem identificada"). Bling orders carry no UTM
+today (`blingOrders.ts` writes null), so until an order source brings UTM the platform tabs
+show investment and efficiency (investido, impressões, CPM, CTR, cliques, CPC, sessões, CPS,
+carrinhos, compras informadas, CPA) and the ROAS of the channel the platform serves, labelled
+as such. GA4 and platform purchase counts appear only as counts ("compras informadas"),
+never as revenue.
+
+Data work: GA4 provider pulls event funnel, source/medium, pages, items, demographics,
+region; Meta provider pulls ad set / ad level, creative thumbnail, reach, engagement, link
+clicks, landing page views, add-to-cart and purchase counts, leads, messaging, several
+accounts; Google provider pulls ad group, keyword, impression share, campaign type; order
+UTM kept wherever the ERP or spreadsheet offers it. New daily tables per grain; providers
+verified against their stubs. Split into several slices (data slices first, then one per tab).
 
 ### G5 — "Relatório": build, download, schedule
 

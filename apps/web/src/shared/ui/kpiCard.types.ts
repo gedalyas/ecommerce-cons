@@ -1,11 +1,11 @@
 import type { MetricValue } from "@ecommerce/contracts/shared/metric.types";
+import type { MetricHint } from "./metricTile.types";
 
 export type KpiCardProps = {
   label: string;
   metric: MetricValue;
-  /** Text after the variation, e.g. "vs período anterior". */
   comparisonLabel?: string;
-  /** Whether an increase is good news (default) or bad (CAC, CPA, cancelamentos). */
   goodWhen?: "up" | "down";
+  hint?: MetricHint | null;
   className?: string;
 };

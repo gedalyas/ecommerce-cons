@@ -3,15 +3,12 @@ import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import { formatVariation } from "@ecommerce/contracts/shared/format";
 import type { KpiCardProps } from "./kpiCard.types";
 
-/**
- * Turns a computed MetricValue into the display shape MetricTile renders, so
- * query results and fixtures share one tile. Also used with MetricTileGroup.
- */
 export function metricToTile({
   label,
   metric,
   comparisonLabel = "vs período anterior",
   goodWhen = "up",
+  hint = null,
 }: KpiCardProps): Metric {
   const variation = metric.variation;
   const direction =
@@ -25,5 +22,6 @@ export function metricToTile({
     value: formatMetric(metric.value, metric.unit),
     ...(variation != null ? { delta: formatVariation(variation), deltaDirection: direction } : {}),
     deltaLabel: comparisonLabel,
+    hint,
   };
 }

@@ -4,7 +4,6 @@ import type { Fidelity } from "../shared/fidelity";
 import type { BreakdownSlice, MetricUnit, MetricValue, Series } from "../shared/metric.types";
 import type { DashboardLayout } from "./dashboardWidgets";
 
-/** The metrics the Painel de Controle derives from the facts, in display order. */
 export const dashboardMetricKeys = [
   "totalSold",
   "orders",
@@ -12,6 +11,7 @@ export const dashboardMetricKeys = [
   "conversionRate",
   "marketingInvestment",
   "roi",
+  "roas",
   "cac",
   "cpa",
   "netProfit",
@@ -26,9 +26,7 @@ export type DashboardMetricDefinition = {
   key: DashboardMetricKey;
   label: string;
   unit: MetricUnit;
-  /** Whether an increase is good news (default) or bad (costs). */
   goodWhen: "up" | "down";
-  /** Shown in the indicator carousel; the rest only feed the headline row and the matrix. */
   carousel: boolean;
 };
 
@@ -51,6 +49,7 @@ export const dashboardMetricDefinitions: readonly DashboardMetricDefinition[] = 
     carousel: true,
   },
   { key: "roi", label: "ROI", unit: "multiplier", goodWhen: "up", carousel: true },
+  { key: "roas", label: "ROAS", unit: "multiplier", goodWhen: "up", carousel: true },
   { key: "cac", label: "CAC", unit: "currency", goodWhen: "down", carousel: true },
   { key: "cpa", label: "CPA", unit: "currency", goodWhen: "down", carousel: true },
   { key: "netProfit", label: "Lucro líquido", unit: "currency", goodWhen: "up", carousel: true },

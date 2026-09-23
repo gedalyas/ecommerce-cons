@@ -2,6 +2,7 @@ import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { formatPtNumbers } from "@ecommerce/contracts/shared/format";
+import { MetricHintButton } from "./MetricHintButton";
 import type { MetricTileProps } from "./metricTile.types";
 
 export type { Metric, MetricTileAction, MetricTileProps } from "./metricTile.types";
@@ -24,8 +25,11 @@ export function MetricTile({ metric, className, action }: MetricTileProps) {
       </div>
 
       <div className="mt-1 flex items-center justify-between gap-2 sm:mt-2 sm:gap-3">
-        <span className="min-w-0 text-[12px] leading-[16px] text-muted-foreground max-sm:line-clamp-2 sm:truncate sm:text-[13px] sm:leading-[18px]">
-          {metric.label}
+        <span className="flex min-w-0 items-center gap-1">
+          <span className="min-w-0 text-[12px] leading-[16px] text-muted-foreground max-sm:line-clamp-2 sm:truncate sm:text-[13px] sm:leading-[18px]">
+            {metric.label}
+          </span>
+          {metric.hint && <MetricHintButton label={metric.label} hint={metric.hint} />}
         </span>
         {action && (
           <button
