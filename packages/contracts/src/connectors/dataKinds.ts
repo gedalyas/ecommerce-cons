@@ -1,4 +1,4 @@
-const dataKinds = [
+export const dataKinds = [
   "sales",
   "products",
   "stock",
