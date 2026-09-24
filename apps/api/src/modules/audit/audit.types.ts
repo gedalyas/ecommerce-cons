@@ -14,6 +14,13 @@ export type AuditDetail =
   | { action: "TEAM_MEMBER_INVITED" | "TEAM_INVITATION_REVOKED"; email: string; areas: string[] }
   | { action: "TEAM_MEMBER_UPDATED"; name: string; areas: string[] }
   | { action: "TEAM_MEMBER_REMOVED"; name: string }
+  | {
+      action: "CAMPAIGN_TAGGED";
+      campaign: string;
+      platform: string;
+      stage: string;
+      channel: string;
+    }
   | { action: "CONNECTION_REQUESTED"; connector: string }
   | { action: "CONNECTION_REQUEST_RESOLVED"; connector: string; status: string }
   | {

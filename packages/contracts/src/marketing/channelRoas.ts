@@ -1,7 +1,13 @@
 import { formatMultiplier } from "../shared/format";
-import type { ChannelRoas, ChannelSales } from "./marketing.types";
+import type { ChannelRoas, ChannelSales, SalesChannelOption } from "./marketing.types";
 
 export const siteChannel = "site";
+const siteLabel = "Site";
+
+export const salesChannelOptions = (marketplaces: readonly string[]): SalesChannelOption[] => [
+  { key: siteChannel, label: siteLabel },
+  ...[...new Set(marketplaces)].sort().map((channel) => ({ key: channel, label: channel })),
+];
 
 export function channelsFromSales(rows: readonly ChannelSales[]): ChannelRoas[] {
   const own = rows.filter((r) => !r.marketplace);
@@ -19,7 +25,7 @@ export function channelsFromSales(rows: readonly ChannelSales[]): ChannelRoas[] 
     });
   }
   return [
-    { key: siteChannel, label: "Site", ...site, investment: 0, roas: null },
+    { key: siteChannel, label: siteLabel, ...site, investment: 0, roas: null },
     ...[...marketplaces].map(([channel, sums]) => ({
       key: channel,
       label: channel,

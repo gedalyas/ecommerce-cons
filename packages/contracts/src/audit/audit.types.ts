@@ -42,6 +42,7 @@ export const auditActions = [
   "TEAM_INVITATION_REVOKED",
   "TEAM_MEMBER_UPDATED",
   "TEAM_MEMBER_REMOVED",
+  "CAMPAIGN_TAGGED",
 ] as const;
 export type AuditAction = (typeof auditActions)[number];
 
@@ -87,6 +88,7 @@ export const auditActionLabel: Record<AuditAction, string> = {
   TEAM_INVITATION_REVOKED: "Convite de equipe revogado",
   TEAM_MEMBER_UPDATED: "Acesso do membro alterado",
   TEAM_MEMBER_REMOVED: "Membro removido",
+  CAMPAIGN_TAGGED: "Campanha marcada",
 };
 
 export type ActivityEntry = {

@@ -13,6 +13,9 @@ export {
 } from "./marketing.types";
 export type {
   AdDepthRow,
+  CampaignTagRow,
+  MarketingInvestmentFunnel,
+  SalesChannelOption,
   MarketingSalesChannels,
   SalesChannelRow,
   MarketingSiteTab,
@@ -63,6 +66,9 @@ export type {
   MarketingVisao,
   MarketingScreen,
 } from "./marketing.types";
+export { campaignTagSchema } from "./campaignTagSchema";
+export { untaggedSummary } from "./campaignTags";
+export type { CampaignTagInput } from "./campaignTagSchema";
 export {
   adsetNounOf,
   audienceValueLabelOf,
@@ -98,7 +104,13 @@ export type {
   FunnelCounts,
   BenchmarkVerdict,
 } from "./marketingRules";
-export { channelRoas, channelRoasSummary, channelsFromSales, siteChannel } from "./channelRoas";
+export {
+  channelRoas,
+  channelRoasSummary,
+  channelsFromSales,
+  salesChannelOptions,
+  siteChannel,
+} from "./channelRoas";
 export {
   marketingTabs,
   investmentMetrics,

@@ -93,7 +93,9 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 - [x] Vendas por canal tab (sessions from GA4, sales from the ERP) — the 7/14/30/90-day
       windows are the global period presets: a screen never renders its own period control
       (CLAUDE.md), so no tab toggle
-- [ ] Staff "Campanhas" list: funnel stage + destination channel tagged by hand
+- [x] Staff "Campanhas" list: funnel stage + destination channel tagged by hand — on the
+      Funil de investimento tab (`PUT /marketing/campaign-tags`, audited); the channel tag feeds the
+      channel ROAS in the funnel slice
 - [ ] Funil de investimento tab (stage KPIs, lines, CPA per platform, creatives by stage)
 - [ ] Per-platform vendido/ROAS by UTM on ERP/spreadsheet orders with coverage (when a source
       brings UTM)

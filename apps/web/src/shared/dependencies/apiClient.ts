@@ -1,4 +1,4 @@
-import { redirect } from "@tanstack/react-router";
+import { isRedirect, redirect } from "@tanstack/react-router";
 import type { AuthTokens } from "@ecommerce/contracts/auth";
 import type { ApiError } from "@ecommerce/contracts/shared/apiError";
 import { toQueryString, type QueryObject } from "@/shared/utils/queryString";
@@ -89,4 +89,24 @@ export async function apiFetch<T>(path: string, init: ApiRequest = {}): Promise<
     throw new ApiRequestError(result.status, body);
   }
   return result.body as T;
+}
+
+export type WriteResult = { ok: true } | { ok: false; message: string };
+
+export async function attemptWrite(
+  run: () => Promise<unknown>,
+  fallback: string,
+): Promise<WriteResult> {
+  try {
+    await run();
+    return { ok: true };
+  } catch (error) {
+    if (isRedirect(error)) throw error;
+    if (error instanceof ApiRequestError && error.status < 500) {
+      const message: unknown = error.body?.message;
+      return { ok: false, message: typeof message === "string" ? message : fallback };
+    }
+    console.error(error);
+    return { ok: false, message: fallback };
+  }
 }

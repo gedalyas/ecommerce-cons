@@ -150,6 +150,15 @@ export async function salesByChannel(clientId: string, w: Window): Promise<Chann
   return rows;
 }
 
+export async function marketplaceChannels(clientId: string, w: Window): Promise<string[]> {
+  const rows = await prismaClient.$queryRaw<{ channel: string }[]>`
+    select distinct o.channel
+    from sales_order o
+    where ${ordersWhere(clientId, w, "MARKETPLACE", null)}
+  `;
+  return rows.map((r) => r.channel);
+}
+
 export async function revenueBySource(
   clientId: string,
   w: Window,

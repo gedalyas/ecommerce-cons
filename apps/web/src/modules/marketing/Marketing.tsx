@@ -12,6 +12,7 @@ import type { MarketingScreen, MarketingVisao, StaleSource } from "@ecommerce/co
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingCanais } from "./MarketingCanais";
 import { MarketingDescontos } from "./MarketingDescontos";
+import { MarketingFunil } from "./MarketingFunil";
 import { MarketingGeral } from "./MarketingGeral";
 import { MarketingPlataforma } from "./MarketingPlataforma";
 import { MarketingRegioes } from "./MarketingRegioes";
@@ -26,6 +27,7 @@ const tabs = [
   { key: "google", label: "Google Ads" },
   { key: "site", label: "Site" },
   { key: "canais", label: "Vendas por canal" },
+  { key: "funil", label: "Funil de investimento" },
   { key: "visao", label: "Pilares" },
   { key: "resumo", label: "Resumo" },
   { key: "campanhas", label: "Campanhas" },
@@ -116,6 +118,7 @@ export function Marketing({ data }: { data: MarketingScreen }) {
           />
         )}
         {data.aba === "canais" && <MarketingCanais data={data.salesChannels} period={period} />}
+        {data.aba === "funil" && <MarketingFunil data={data.funnel} />}
         {data.aba === "visao" && (
           <MarketingVisaoTab data={data} comparisonLabel={comparisonLabel} />
         )}

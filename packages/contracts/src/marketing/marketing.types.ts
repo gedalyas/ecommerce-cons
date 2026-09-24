@@ -486,7 +486,25 @@ export type SalesChannelRow = {
 
 export type MarketingSalesChannels = { rows: SalesChannelRow[]; total: SalesChannelRow };
 
+export type CampaignTagRow = {
+  platform: AdPlatform;
+  campaignId: string;
+  campaignName: string;
+  spend: number;
+  stage: FunnelStage | null;
+  channel: string;
+};
+
+export type SalesChannelOption = { key: string; label: string };
+
+export type MarketingInvestmentFunnel = {
+  tags: CampaignTagRow[];
+  channels: SalesChannelOption[];
+  canEdit: boolean;
+};
+
 export type MarketingScreen =
+  | { aba: Extract<MarketingTab, "funil">; funnel: MarketingInvestmentFunnel }
   | { aba: Extract<MarketingTab, "canais">; salesChannels: MarketingSalesChannels }
   | { aba: Extract<MarketingTab, "site">; site: MarketingSiteTab }
   | { aba: Extract<MarketingTab, "meta" | "google">; platformTab: MarketingPlatformTab }

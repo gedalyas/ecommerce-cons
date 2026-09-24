@@ -6,6 +6,7 @@ export const marketingTabs = [
   "google",
   "site",
   "canais",
+  "funil",
   "visao",
   "resumo",
   "campanhas",

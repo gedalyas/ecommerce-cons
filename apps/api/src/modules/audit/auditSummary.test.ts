@@ -109,4 +109,16 @@ describe("commercial actions", () => {
       }),
     ).toBe("Vendas passam a vir de Planilha com todo o histórico");
   });
+
+  it("describes a campaign tagged by the staff", () => {
+    expect(
+      auditSummary({
+        action: "CAMPAIGN_TAGGED",
+        campaign: "Prospecção · interesses casa",
+        platform: "Meta Ads",
+        stage: "Topo",
+        channel: "Site",
+      }),
+    ).toBe('Marcou a campanha "Prospecção · interesses casa" (Meta Ads): topo, canal "Site"');
+  });
 });

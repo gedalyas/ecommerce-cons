@@ -18,6 +18,8 @@ import { marketingGeneral } from "./marketingGeneralService";
 import { platformTab } from "./platformTabService";
 import { siteTab } from "./siteTabService";
 import { salesChannels } from "./salesChannelsService";
+import { investmentFunnel } from "./campaignTagsService";
+import { lastMonthsWindow } from "./generalMetrics";
 import { storeOrders, topSourceShare, utmSales } from "./attributionService";
 import { discountAggregate, discountCodes, discountsByBucket } from "./discountsService";
 import { regionPerformance } from "./regionsService";
@@ -57,7 +59,8 @@ import {
   trafficByBucket,
 } from "./marketingService";
 
-export type MarketingInput = PeriodSearch & MarketingSearch & { custos: MarketingCostLine[] };
+export type MarketingInput = PeriodSearch &
+  MarketingSearch & { custos: MarketingCostLine[]; canEdit: boolean };
 
 const platformFor = (channel: Channel): SalesPlatform | null =>
   channel === "ecommerce" ? "ECOMMERCE" : channel === "marketplace" ? "MARKETPLACE" : null;
@@ -359,6 +362,16 @@ export async function marketingScreen(
       return { aba: "site", site: await siteTab(clientId, input) };
     case "canais":
       return { aba: "canais", salesChannels: await salesChannels(clientId, input) };
+    case "funil":
+      return {
+        aba: "funil",
+        funnel: await investmentFunnel(
+          clientId,
+          resolvePeriod(input).current,
+          lastMonthsWindow(currentDay(), 13),
+          input.canEdit,
+        ),
+      };
     case "visao":
       throw new Error("The visão tab is assembled by the controller (it needs the retention)");
     case "resumo":

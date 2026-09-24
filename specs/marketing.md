@@ -1,7 +1,7 @@
 # Marketing (`/marketing`)
 
 Module: `src/modules/marketing`. The route validates
-`?aba=geral|meta|google|site|canais|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
+`?aba=geral|meta|google|site|canais|funil|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
 (`marketingSchema.ts`: `incluirTaxa`, `metricaInvest`, `metricaSessoes`,
 `base`, `utm`, `nivel`, `plataforma`, `metricaAds`); defaults are stripped
 from the URL. `MarketingScreen` is a union on `aba`. The `TabBar` reads
@@ -135,6 +135,17 @@ ticket, Sessões and Conversão (orders ÷ GA4 sessions, site only — "—" for
 conversão, Investimento (Meta + Google + TikTok, fee with "Incluir taxa", pointed at the site) and
 ROAS do canal ("—" without investment). Total row: all channels, its ROAS is the overall return.
 The Looker's 7/14/30/90-day windows are the global period presets.
+
+## Funil de investimento (`?aba=funil`)
+
+First block: **Etapa e canal de cada campanha** — every campaign with investment in the period
+(all ad platforms, latest name), its investment, its funnel stage (Topo / Meio / Fundo / Sem
+etapa) and the sales channel it feeds (Site or a marketplace the store sold on in the last 13
+months; default Site). Staff edit both with a select per cell (`PUT /marketing/campaign-tags`
+`{ platform, campaignId, stage, channel }` → 204; 403 for a client, 404 for a campaign the
+store never ran, 422 for an unknown channel; audited as `CAMPAIGN_TAGGED`); the client sees
+the same list read-only. A banner counts the campaigns without a stage and their share of the
+investment (`untaggedSummary`).
 
 ## Pilares (`?aba=visao`)
 

@@ -60,6 +60,8 @@ export function auditSummary(detail: AuditDetail): string {
       return `Alterou o acesso de ${detail.name} (${detail.areas.join(", ")})`;
     case "TEAM_MEMBER_REMOVED":
       return `Removeu ${detail.name} da equipe`;
+    case "CAMPAIGN_TAGGED":
+      return `Marcou a campanha ${quote(detail.campaign)} (${detail.platform}): ${detail.stage.toLowerCase()}, canal ${quote(detail.channel)}`;
     case "CONNECTION_REQUESTED":
       return `Solicitou a conexão ${detail.connector}`;
     case "CONNECTION_REQUEST_RESOLVED":

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { channelRoas, channelRoasSummary, channelsFromSales } from "./channelRoas";
+import {
+  channelRoas,
+  channelRoasSummary,
+  channelsFromSales,
+  salesChannelOptions,
+} from "./channelRoas";
 
 const sales = [
   { marketplace: false, channel: "Loja virtual", revenue: 60_000, orders: 300 },
@@ -31,5 +36,15 @@ describe("channelRoas", () => {
     expect(channelRoasSummary(channelRoas(channelsFromSales(sales), { site: 16_000 }))).toBe(
       "Site 4,00x · Mercado Livre sem investimento",
     );
+  });
+});
+
+describe("salesChannelOptions", () => {
+  it("offers the site first and each marketplace once, in order", () => {
+    expect(salesChannelOptions(["Shopee", "Mercado Livre", "Shopee"])).toEqual([
+      { key: "site", label: "Site" },
+      { key: "Mercado Livre", label: "Mercado Livre" },
+      { key: "Shopee", label: "Shopee" },
+    ]);
   });
 });
