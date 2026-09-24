@@ -10,6 +10,7 @@ import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
 import type { MarketingScreen, MarketingVisao, StaleSource } from "@ecommerce/contracts/marketing";
 import { MarketingCampanhas } from "./MarketingCampanhas";
+import { MarketingCanais } from "./MarketingCanais";
 import { MarketingDescontos } from "./MarketingDescontos";
 import { MarketingGeral } from "./MarketingGeral";
 import { MarketingPlataforma } from "./MarketingPlataforma";
@@ -24,6 +25,7 @@ const tabs = [
   { key: "meta", label: "Meta Ads" },
   { key: "google", label: "Google Ads" },
   { key: "site", label: "Site" },
+  { key: "canais", label: "Vendas por canal" },
   { key: "visao", label: "Pilares" },
   { key: "resumo", label: "Resumo" },
   { key: "campanhas", label: "Campanhas" },
@@ -113,6 +115,7 @@ export function Marketing({ data }: { data: MarketingScreen }) {
             onPatch={patch}
           />
         )}
+        {data.aba === "canais" && <MarketingCanais data={data.salesChannels} period={period} />}
         {data.aba === "visao" && (
           <MarketingVisaoTab data={data} comparisonLabel={comparisonLabel} />
         )}

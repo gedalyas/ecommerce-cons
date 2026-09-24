@@ -1,7 +1,7 @@
 # Marketing (`/marketing`)
 
 Module: `src/modules/marketing`. The route validates
-`?aba=geral|meta|google|site|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
+`?aba=geral|meta|google|site|canais|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
 (`marketingSchema.ts`: `incluirTaxa`, `metricaInvest`, `metricaSessoes`,
 `base`, `utm`, `nivel`, `plataforma`, `metricaAds`); defaults are stripped
 from the URL. `MarketingScreen` is a union on `aba`. The `TabBar` reads
@@ -124,6 +124,17 @@ Purchases here are GA4 counts ("compras informadas"), never revenue.
 4. **Páginas mais visitadas** — top 50 by page views: views, sessions, engagement, average
    duration; CSV.
 5. **Regiões** — per state: sessions, views, engagement, compras informadas, compras por sessão; CSV.
+
+## Vendas por canal (`?aba=canais`)
+
+One table, one row per sales channel (`salesChannelRows.ts`, tested; channels from
+`channelsFromSales`: the store's own channels add up as **Site**, each marketplace apart). Sales
+and orders come from the ERP or the spreadsheet (paid orders); the global channel filter keeps
+the site or the marketplaces. Columns: Vendido, Δ vendido, Participação, Pedidos, Ticket médio, Δ
+ticket, Sessões and Conversão (orders ÷ GA4 sessions, site only — "—" for marketplaces), Δ
+conversão, Investimento (Meta + Google + TikTok, fee with "Incluir taxa", pointed at the site) and
+ROAS do canal ("—" without investment). Total row: all channels, its ROAS is the overall return.
+The Looker's 7/14/30/90-day windows are the global period presets.
 
 ## Pilares (`?aba=visao`)
 

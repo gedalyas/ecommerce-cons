@@ -13,6 +13,8 @@ export {
 } from "./marketing.types";
 export type {
   AdDepthRow,
+  MarketingSalesChannels,
+  SalesChannelRow,
   MarketingSiteTab,
   SiteAudienceRow,
   SiteKpi,

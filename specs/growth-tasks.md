@@ -90,7 +90,9 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 - [x] Google Ads tab (KPIs, charts, campanha → grupo → palavra-chave, comparison with Δ, campaign
       type)
 - [x] Site (GA4) tab (KPIs, charts, demographics, pages, regions)
-- [ ] Vendas por canal tab (window toggle; sessions from GA4, sales from the ERP)
+- [x] Vendas por canal tab (sessions from GA4, sales from the ERP) — the 7/14/30/90-day
+      windows are the global period presets: a screen never renders its own period control
+      (CLAUDE.md), so no tab toggle
 - [ ] Staff "Campanhas" list: funnel stage + destination channel tagged by hand
 - [ ] Funil de investimento tab (stage KPIs, lines, CPA per platform, creatives by stage)
 - [ ] Per-platform vendido/ROAS by UTM on ERP/spreadsheet orders with coverage (when a source

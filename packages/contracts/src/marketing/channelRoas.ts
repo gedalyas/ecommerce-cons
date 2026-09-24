@@ -4,17 +4,26 @@ import type { ChannelRoas, ChannelSales } from "./marketing.types";
 export const siteChannel = "site";
 
 export function channelsFromSales(rows: readonly ChannelSales[]): ChannelRoas[] {
-  const site = rows.filter((r) => !r.marketplace).reduce((sum, r) => sum + r.revenue, 0);
-  const marketplaces = new Map<string, number>();
+  const own = rows.filter((r) => !r.marketplace);
+  const site = {
+    revenue: own.reduce((sum, r) => sum + r.revenue, 0),
+    orders: own.reduce((sum, r) => sum + r.orders, 0),
+  };
+  const marketplaces = new Map<string, { revenue: number; orders: number }>();
   for (const r of rows) {
-    if (r.marketplace) marketplaces.set(r.channel, (marketplaces.get(r.channel) ?? 0) + r.revenue);
+    if (!r.marketplace) continue;
+    const acc = marketplaces.get(r.channel) ?? { revenue: 0, orders: 0 };
+    marketplaces.set(r.channel, {
+      revenue: acc.revenue + r.revenue,
+      orders: acc.orders + r.orders,
+    });
   }
   return [
-    { key: siteChannel, label: "Site", revenue: site, investment: 0, roas: null },
-    ...[...marketplaces].map(([channel, revenue]) => ({
+    { key: siteChannel, label: "Site", ...site, investment: 0, roas: null },
+    ...[...marketplaces].map(([channel, sums]) => ({
       key: channel,
       label: channel,
-      revenue,
+      ...sums,
       investment: 0,
       roas: null,
     })),

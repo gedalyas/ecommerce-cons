@@ -49,12 +49,18 @@ export type TrafficAggregate = {
 
 export type TrafficBucket = TrafficAggregate & { bucket: string };
 
-export type ChannelSales = { marketplace: boolean; channel: string; revenue: number };
+export type ChannelSales = {
+  marketplace: boolean;
+  channel: string;
+  revenue: number;
+  orders: number;
+};
 
 export type ChannelRoas = {
   key: string;
   label: string;
   revenue: number;
+  orders: number;
   investment: number;
   roas: number | null;
 };
@@ -462,7 +468,26 @@ export type MarketingSiteTab = {
   regions: SiteRegionRow[];
 };
 
+export type SalesChannelRow = {
+  key: string;
+  label: string;
+  revenue: number;
+  revenueVariation: number | null;
+  share: number | null;
+  orders: number;
+  aov: number | null;
+  aovVariation: number | null;
+  sessions: number | null;
+  conversionRate: number | null;
+  conversionVariation: number | null;
+  investment: number;
+  roas: number | null;
+};
+
+export type MarketingSalesChannels = { rows: SalesChannelRow[]; total: SalesChannelRow };
+
 export type MarketingScreen =
+  | { aba: Extract<MarketingTab, "canais">; salesChannels: MarketingSalesChannels }
   | { aba: Extract<MarketingTab, "site">; site: MarketingSiteTab }
   | { aba: Extract<MarketingTab, "meta" | "google">; platformTab: MarketingPlatformTab }
   | { aba: Extract<MarketingTab, "geral">; general: MarketingGeneral }

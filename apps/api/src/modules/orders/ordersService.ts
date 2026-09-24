@@ -140,11 +140,9 @@ export async function ordersByBucket(
 }
 
 export async function salesByChannel(clientId: string, w: Window): Promise<ChannelSales[]> {
-  const rows = await prismaClient.$queryRaw<
-    { marketplace: boolean; channel: string; revenue: number }[]
-  >`
+  const rows = await prismaClient.$queryRaw<ChannelSales[]>`
     select o.sales_platform = 'MARKETPLACE' as marketplace, o.channel,
-      coalesce(sum(o.total_price), 0)::float8 as revenue
+      coalesce(sum(o.total_price), 0)::float8 as revenue, count(*)::int as orders
     from sales_order o
     where ${ordersWhere(clientId, w, null, null)} and o.financial_status = 'PAID'
     group by 1, 2
