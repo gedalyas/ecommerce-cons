@@ -8,6 +8,23 @@ export const socialPlatformLabel: Record<SocialPlatform, string> = {
   FACEBOOK: "Facebook",
 };
 
+export const funnelStages = ["TOP", "MIDDLE", "BOTTOM"] as const;
+export type FunnelStage = (typeof funnelStages)[number];
+
+export const funnelStageLabel: Record<FunnelStage, string> = {
+  TOP: "Topo",
+  MIDDLE: "Meio",
+  BOTTOM: "Fundo",
+};
+
+export const audienceDimensions = ["GENDER", "AGE"] as const;
+export type AudienceDimension = (typeof audienceDimensions)[number];
+
+export const audienceDimensionLabel: Record<AudienceDimension, string> = {
+  GENDER: "Gênero",
+  AGE: "Faixa etária",
+};
+
 export const adPlatforms = ["META", "GOOGLE", "TIKTOK"] as const;
 export type AdPlatform = (typeof adPlatforms)[number];
 

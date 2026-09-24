@@ -8,6 +8,7 @@ import type {
   PrismaClient,
   SalesPlatform,
 } from "../src/generated/prisma/client.ts";
+import { buildMarketingDepth } from "./seedMarketing.ts";
 
 // ---------------------------------------------------------------------------
 // Random helpers (mulberry32 - small, fast, deterministic)
@@ -1967,9 +1968,31 @@ export function generateAnalytics(clientId: string, seed = 20260910) {
   sizeStock(rng, variants);
   const traffic = buildTraffic(rng, clientId, orders);
   const adSpend = buildAdSpend(rng, clientId, orders);
-  const adSpendRegions = buildAdSpendRegions(rng, clientId, adSpend);
   const costs = buildCosts(clientId);
-  return { products, variants, customers, orders, items, traffic, adSpend, adSpendRegions, costs };
+  const marketing = buildMarketingDepth(createRng(seed + 1), {
+    clientId,
+    traffic,
+    adSpend,
+    orders,
+    items,
+    products,
+    ufWeights: UF_WEIGHTS,
+    firstDay: FIRST_DAY,
+    lastDay: TODAY,
+  });
+  const adSpendRegions = buildAdSpendRegions(rng, clientId, marketing.adSpend);
+  return {
+    products,
+    variants,
+    customers,
+    orders,
+    items,
+    traffic: marketing.traffic,
+    adSpend: marketing.adSpend,
+    adSpendRegions,
+    costs,
+    marketing,
+  };
 }
 
 async function insertInChunks<T>(
@@ -2007,6 +2030,22 @@ export async function seedAnalytics(prisma: PrismaClient, clientId: string) {
     prisma.adSpendRegionDaily.createMany({ data: chunk }),
   );
   await prisma.costExpense.createMany({ data: data.costs });
+  await insertInChunks(data.marketing.keywords, 2000, (chunk) =>
+    prisma.adKeywordDaily.createMany({ data: chunk }),
+  );
+  await insertInChunks(data.marketing.pages, 2000, (chunk) =>
+    prisma.trafficPageDaily.createMany({ data: chunk }),
+  );
+  await insertInChunks(data.marketing.items, 2000, (chunk) =>
+    prisma.trafficItemDaily.createMany({ data: chunk }),
+  );
+  await insertInChunks(data.marketing.audience, 2000, (chunk) =>
+    prisma.trafficAudienceDaily.createMany({ data: chunk }),
+  );
+  await insertInChunks(data.marketing.regions, 2000, (chunk) =>
+    prisma.trafficRegionDaily.createMany({ data: chunk }),
+  );
+  await prisma.campaignTag.createMany({ data: data.marketing.tags });
 
   return {
     products: data.products.length,

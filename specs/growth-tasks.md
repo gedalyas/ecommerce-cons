@@ -66,9 +66,19 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
 Acceptance: every row of the coverage table in `growth-plan.md` › G4, following the product's rules
 (sales never from a marketing channel). Meta Ads and Google Ads always observable separately.
 
-- [ ] Provider data: GA4 (funnel events, source/medium, pages, items, demographics, region),
-      Meta (ad set/ad, thumbnails, reach, engagement, link clicks, carts, purchases, leads,
-      messaging, several accounts), Google (ad group, keyword, impression share, campaign type);
+- [x] Data model (migration `marketing_depth`): ad spend gains account, campaign type, reach, link
+      clicks, landing page views, add to cart, leads, messages, eligible impressions (share =
+      Σ impressions ÷ Σ eligible), thumbnail;
+      new ad_keyword_daily, traffic_page_daily, traffic_item_daily, traffic_audience_daily,
+      traffic_region_daily, campaign_tag (+ FunnelStage, AudienceDimension closed sets); traffic
+      gains engaged sessions, page views, duration, purchases (a count). Dev seed fills them
+      (`seedMarketing.ts`, second deterministic RNG so the existing data does not move)
+- [ ] Providers write the new fields: GA4 (funnel incl. purchase, engagement, pages, items,
+      demographics, region), Meta (account, reach, actions: link clicks, landing page views, carts,
+      leads, messaging; thumbnails), Google (campaign type incl. PMax, keywords, impression share);
+      ad spend replaced per (platform, account, date) — today the replace key ignores the account;
+      import undo snapshots carry the new ad spend and traffic fields; GA4 page paths normalised
+      (no query string, capped length) and items keyed by item id; keywords keyed with match type;
       order UTM kept where the ERP/spreadsheet offers it
 - [ ] Shared: glossary hints on every Marketing tile and `DataTable` header, Δ% on every KPI, heat-shaded tables with totals, window toggle (7/14/30/90 dias,
       3/6 meses, ano), platform filter, last-sync stamp

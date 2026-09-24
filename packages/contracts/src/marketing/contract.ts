@@ -1,11 +1,17 @@
 export {
   adPlatformLabel,
   adPlatforms,
+  audienceDimensionLabel,
+  audienceDimensions,
+  funnelStageLabel,
+  funnelStages,
   discountMetricKeys,
   socialPlatformLabel,
   socialPlatforms,
 } from "./marketing.types";
 export type {
+  AudienceDimension,
+  FunnelStage,
   FunnelStepDelta,
   MarketingGeneral,
   PlatformCard,
