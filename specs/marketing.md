@@ -43,7 +43,30 @@ One file holds the rules that move with the market, not with a screen:
   paga · organic → Orgânico · social → Social · crm → E-mail · referral →
   Referência · otherwise Direto; marketplace orders bucket as Marketplace.
 
-## Visão (`?aba=visao`)
+## Visão geral (`?aba=geral`, the default)
+
+First slice of G4 (`growth-plan.md`, the Looker coverage). Payload `MarketingGeneral` from
+`marketingGeneralService.ts` (pure `generalMetrics.ts`, tested); honours the global channel on sales.
+
+1. **KPIs with Δ** — Vendido (ERP/spreadsheet orders), Investido (ad spend + platform fee when
+   "Incluir taxa"), ROAS do site (site sales ÷ investido), MER (all sales ÷ investido + marketing cost
+   lines, the same lines for the comparison period), Pedidos, Ticket médio, Conversão (site orders ÷
+   sessions), Sessões — each with its glossary ⓘ.
+2. **Ano e projeção do mês** — Vendido no ano (investido as a note), ROAS do site no ano, and the
+   month-end run-rate of vendido and investido (`monthEndProjection`: month-to-date ÷ days elapsed ×
+   days in month, on the API clock).
+3. **Vendido × investido** — `ComboChart` bars Vendido and Investido, line ROAS do site; `serie`
+   picks the last 12 months (Mensal) or the period at its granularity (No período). Buckets
+   without ad spend leave a gap in the line, never a zero.
+4. **Sessões × taxa de conversão** — bars Sessões and Novos usuários, line Conversão; same picker.
+5. **Funil do site** — Sessões → Visualizar item → Carrinho → Checkout → Pedidos → Pedidos pagos,
+   each with the pass-through from the step above and the Δ vs the comparison (`FunnelSteps`).
+6. **Mídia por plataforma** — per ad platform: Investido, CPC, Conversões informadas (the
+   platform's count, never a sale) and Custo por conversão, each with Δ.
+
+The consulting pillars moved to the **Pilares** tab (`?aba=visao`).
+
+## Pilares (`?aba=visao`)
 
 The five pillars of the section (seeded from `marketingFixture.ts`) with the KPIs the
 data module already covers replaced by live values

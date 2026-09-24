@@ -72,8 +72,9 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       order UTM kept where the ERP/spreadsheet offers it
 - [ ] Shared: glossary hints on every Marketing tile and `DataTable` header, Δ% on every KPI, heat-shaded tables with totals, window toggle (7/14/30/90 dias,
       3/6 meses, ano), platform filter, last-sync stamp
-- [ ] Visão geral (YTD, month-end projection, monthly/daily combos, site funnel, products, one
-      card per platform)
+- [x] Visão geral (KPIs with Δ, YTD, month-end projection, monthly/daily combos, site funnel, one
+      card per platform) — products table waits for the GA4 items data
+- [ ] Visão geral: product table (views, carts, purchases from GA4 items; revenue from the ERP)
 - [ ] Meta Ads tab (KPIs, charts, campanha → conjunto → anúncio, account filter, leads and
       messages, creatives)
 - [ ] Google Ads tab (KPIs, charts, campanha → grupo → palavra-chave, comparison with Δ, campaign

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const marketingTabs = [
+  "geral",
   "visao",
   "resumo",
   "campanhas",
@@ -43,7 +44,8 @@ export const adMetrics = [
 export type AdMetric = (typeof adMetrics)[number];
 
 export const marketingSearchSchema = z.object({
-  aba: z.enum(marketingTabs).catch("visao"),
+  aba: z.enum(marketingTabs).catch("geral"),
+  serie: z.enum(["mensal", "diaria"]).catch("mensal"),
   incluirTaxa: z.boolean().catch(true),
   metricaInvest: z.enum(investmentMetrics).catch("totalSold"),
   metricaSessoes: z.enum(sessionMetrics).catch("totalSold"),

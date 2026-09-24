@@ -27,7 +27,7 @@ export function formatMetricCompact(value: number, unit: MetricUnit) {
     case "count":
       return value >= 1000 ? `${formatNumber(value / 1000, 1)}k` : formatNumber(value);
     case "percent":
-      return formatPercent(value, 0);
+      return formatPercent(value, Math.abs(value) < 10 && !Number.isInteger(value) ? 1 : 0);
     case "multiplier":
       return formatMultiplier(value, 1);
     case "days":

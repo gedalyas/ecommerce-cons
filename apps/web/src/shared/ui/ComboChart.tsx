@@ -29,22 +29,25 @@ const bucketLabel = (bucket: string, granularity: Granularity) => {
 
 export type ComboSeries = { label: string; unit: MetricUnit; points: SeriesPoint[] };
 
-/** Bars for one measure, a line for another, each on its own axis. */
 export function ComboChart({
   bars,
+  extraBars = null,
   line,
   granularity,
   className,
 }: {
   bars: ComboSeries;
+  extraBars?: ComboSeries | null;
   line: ComboSeries;
   granularity: Granularity;
   className?: string;
 }) {
   const lineMap = new Map(line.points.map((p) => [p.bucket, p.value]));
+  const extraMap = new Map((extraBars?.points ?? []).map((p) => [p.bucket, p.value]));
   const data = bars.points.map((p) => ({
     bucket: p.bucket,
     bars: p.value,
+    extra: extraMap.get(p.bucket) ?? null,
     line: lineMap.get(p.bucket) ?? null,
   }));
 
@@ -54,6 +57,11 @@ export function ComboChart({
         <span className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-sm bg-chart-1" /> {bars.label}
         </span>
+        {extraBars && (
+          <span className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-sm bg-chart-3" /> {extraBars.label}
+          </span>
+        )}
         <span className="flex items-center gap-2">
           <span className="h-0.5 w-4 bg-chart-2" /> {line.label}
         </span>
@@ -99,7 +107,9 @@ export function ComboChart({
               formatter={(value: number, name: string) =>
                 name === "bars"
                   ? [formatMetric(value, bars.unit), bars.label]
-                  : [formatMetric(value, line.unit), line.label]
+                  : name === "extra" && extraBars
+                    ? [formatMetric(value, extraBars.unit), extraBars.label]
+                    : [formatMetric(value, line.unit), line.label]
               }
             />
             <Bar
@@ -109,6 +119,15 @@ export function ComboChart({
               radius={[4, 4, 0, 0]}
               isAnimationActive={false}
             />
+            {extraBars && (
+              <Bar
+                yAxisId="bars"
+                dataKey="extra"
+                fill="var(--chart-3)"
+                radius={[4, 4, 0, 0]}
+                isAnimationActive={false}
+              />
+            )}
             <Line
               yAxisId="line"
               type="monotone"

@@ -17,6 +17,7 @@ const glossaryTerms = [
   "cartAbandonment",
   "revenuePerSession",
   "costPerSession",
+  "sessions",
 ] as const;
 
 type GlossaryTerm = (typeof glossaryTerms)[number];
@@ -97,6 +98,10 @@ const metricGlossary: Record<GlossaryTerm, MetricExplanation> = {
   revenuePerSession: {
     definition: "Quanto cada visita ao site rendeu em vendas, em média.",
     formula: "Faturamento ÷ sessões",
+  },
+  sessions: {
+    definition: "Visitas ao site no período, segundo o Google Analytics.",
+    formula: "Soma das sessões",
   },
   costPerSession: {
     definition: "Quanto custou, em média, trazer cada visita ao site.",

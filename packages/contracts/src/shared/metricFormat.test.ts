@@ -22,5 +22,7 @@ describe("formatMetricCompact", () => {
     expect(formatMetricCompact(250000, "currency")).toBe("250k");
     expect(formatMetricCompact(800, "count")).toBe("800");
     expect(formatMetricCompact(18.4, "percent")).toBe("18%");
+    expect(formatMetricCompact(1.5, "percent")).toBe("1,5%");
+    expect(formatMetricCompact(2, "percent")).toBe("2%");
   });
 });

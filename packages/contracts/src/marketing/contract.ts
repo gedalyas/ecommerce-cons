@@ -6,6 +6,11 @@ export {
   socialPlatforms,
 } from "./marketing.types";
 export type {
+  FunnelStepDelta,
+  MarketingGeneral,
+  PlatformCard,
+  SalesInvestmentPoint,
+  TrafficPoint,
   ChannelRoas,
   ChannelSales,
   AdPlatform,

@@ -247,7 +247,57 @@ export type MarketingVisao = {
   retention: MarketingRetention;
 };
 
+export type SalesInvestmentPoint = {
+  bucket: string;
+  sold: number;
+  invested: number;
+  roas: number | null;
+};
+
+export type TrafficPoint = {
+  bucket: string;
+  sessions: number;
+  newUsers: number;
+  conversionRate: number | null;
+};
+
+export type FunnelStepDelta = FunnelStepValue & {
+  previous: number | null;
+  fromPrevious: number | null;
+};
+
+export type PlatformCard = {
+  platform: AdPlatform;
+  label: string;
+  spend: MetricValue;
+  cpc: MetricValue;
+  conversions: MetricValue;
+  costPerConversion: MetricValue;
+};
+
+export type MarketingGeneral = {
+  kpis: {
+    sold: MetricValue;
+    invested: MetricValue;
+    roas: MetricValue;
+    mer: MetricValue;
+    orders: MetricValue;
+    aov: MetricValue;
+    conversionRate: MetricValue;
+    sessions: MetricValue;
+  };
+  year: { sold: number; invested: number; roas: number | null };
+  projection: { month: string; sold: number | null; invested: number | null };
+  monthly: SalesInvestmentPoint[];
+  daily: SalesInvestmentPoint[];
+  trafficMonthly: TrafficPoint[];
+  trafficDaily: TrafficPoint[];
+  funnel: FunnelStepDelta[];
+  platforms: PlatformCard[];
+};
+
 export type MarketingScreen =
+  | { aba: Extract<MarketingTab, "geral">; general: MarketingGeneral }
   | ({ aba: Extract<MarketingTab, "visao"> } & MarketingVisao)
   | { aba: Extract<MarketingTab, "resumo">; summary: MarketingSummary }
   | { aba: Extract<MarketingTab, "campanhas">; campaigns: MarketingCampaigns }

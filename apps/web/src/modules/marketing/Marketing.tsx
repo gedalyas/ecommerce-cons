@@ -11,13 +11,15 @@ import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
 import type { MarketingScreen, MarketingVisao, StaleSource } from "@ecommerce/contracts/marketing";
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingDescontos } from "./MarketingDescontos";
+import { MarketingGeral } from "./MarketingGeral";
 import { MarketingRegioes } from "./MarketingRegioes";
 import { MarketingResumo } from "./MarketingResumo";
 import { MarketingSocial } from "./MarketingSocial";
 import { useMarketingSearch } from "./useMarketingSearch";
 
 const tabs = [
-  { key: "visao", label: "Visão" },
+  { key: "geral", label: "Visão geral" },
+  { key: "visao", label: "Pilares" },
   { key: "resumo", label: "Resumo" },
   { key: "campanhas", label: "Campanhas" },
   { key: "descontos", label: "Descontos" },
@@ -79,6 +81,15 @@ export function Marketing({ data }: { data: MarketingScreen }) {
       <div className={cn(data.aba !== "visao" && layout.headerGap, layout.blockStack)}>
         <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
 
+        {data.aba === "geral" && (
+          <MarketingGeral
+            data={data.general}
+            search={search}
+            period={period}
+            comparisonLabel={comparisonLabel}
+            onPatch={patch}
+          />
+        )}
         {data.aba === "visao" && (
           <MarketingVisaoTab data={data} comparisonLabel={comparisonLabel} />
         )}
