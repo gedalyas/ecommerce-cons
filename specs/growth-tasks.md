@@ -85,8 +85,8 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 - [x] Visão geral (KPIs with Δ, YTD, month-end projection, monthly/daily combos, site funnel, one
       card per platform) — products table waits for the GA4 items data
 - [ ] Visão geral: product table (views, carts, purchases from GA4 items; revenue from the ERP)
-- [ ] Meta Ads tab (KPIs, charts, campanha → conjunto → anúncio, account filter, leads and
-      messages, creatives)
+- [x] Meta Ads tab (KPIs, charts, campanha → conjunto → anúncio, account filter, leads and
+      messages, creatives) — thumbnails render once the Meta provider writes them
 - [ ] Google Ads tab (KPIs, charts, campanha → grupo → palavra-chave, comparison with Δ, campaign
       type)
 - [ ] Site (GA4) tab (KPIs, charts, demographics, pages, regions)

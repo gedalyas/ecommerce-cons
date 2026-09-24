@@ -12,6 +12,7 @@ import type { MarketingScreen, MarketingVisao, StaleSource } from "@ecommerce/co
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingDescontos } from "./MarketingDescontos";
 import { MarketingGeral } from "./MarketingGeral";
+import { MarketingPlataforma } from "./MarketingPlataforma";
 import { MarketingRegioes } from "./MarketingRegioes";
 import { MarketingResumo } from "./MarketingResumo";
 import { MarketingSocial } from "./MarketingSocial";
@@ -19,6 +20,7 @@ import { useMarketingSearch } from "./useMarketingSearch";
 
 const tabs = [
   { key: "geral", label: "Visão geral" },
+  { key: "meta", label: "Meta Ads" },
   { key: "visao", label: "Pilares" },
   { key: "resumo", label: "Resumo" },
   { key: "campanhas", label: "Campanhas" },
@@ -84,6 +86,15 @@ export function Marketing({ data }: { data: MarketingScreen }) {
         {data.aba === "geral" && (
           <MarketingGeral
             data={data.general}
+            search={search}
+            period={period}
+            comparisonLabel={comparisonLabel}
+            onPatch={patch}
+          />
+        )}
+        {data.aba === "meta" && (
+          <MarketingPlataforma
+            data={data.platformTab}
             search={search}
             period={period}
             comparisonLabel={comparisonLabel}

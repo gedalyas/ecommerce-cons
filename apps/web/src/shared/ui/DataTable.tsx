@@ -1,14 +1,26 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
-import { isValidElement, useMemo, useState, type ReactNode } from "react";
+import { isValidElement, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { DataTableCards } from "./DataTableCards";
 import { DataTablePagination } from "./DataTablePagination";
-import { nextSortOf, sortRows } from "./dataTableRules";
+import { MetricHintButton } from "./MetricHintButton";
+import {
+  heatIntensity,
+  heatRangesOf,
+  nextSortOf,
+  sortRows,
+  type HeatRange,
+} from "./dataTableRules";
 import { cn } from "@/shared/utils/cn";
 import { downloadCsv, type CsvCell } from "@/shared/utils/csv";
 import { textClass } from "@/shared/styles/typography";
 import type { DataTableColumn, DataTableProps, DataTableSort } from "./dataTable.types";
 
-export type { DataTableColumn, DataTableProps, DataTableSort } from "./dataTable.types";
+export type {
+  DataTableColumn,
+  DataTableHeat,
+  DataTableProps,
+  DataTableSort,
+} from "./dataTable.types";
 
 const DEFAULT_PAGE_SIZES = [10, 20, 50, 100];
 
@@ -27,6 +39,43 @@ function cellClass<T>(column: DataTableColumn<T>, nowrap: boolean, pinned = fals
     pinned && "sticky left-0 z-10 bg-inherit max-md:max-w-52 max-md:truncate",
     column.align === "right" && cn(textClass.numeric, "text-right"),
     column.className,
+  );
+}
+
+function heatStyle<T>(
+  column: DataTableColumn<T>,
+  row: T,
+  ranges: Map<string, HeatRange | null>,
+): CSSProperties | undefined {
+  const intensity = column.sortValue
+    ? heatIntensity(column.sortValue(row), ranges.get(column.key) ?? null)
+    : null;
+  if (intensity == null) return undefined;
+  const tone = column.heat === "good-low" ? "var(--warning)" : "var(--primary)";
+  return {
+    backgroundColor: `color-mix(in srgb, ${tone} ${Math.round(intensity * 22)}%, transparent)`,
+  };
+}
+
+function BodyRow<T>({
+  row,
+  columns,
+  cell,
+  ranges,
+}: {
+  row: T;
+  columns: DataTableColumn<T>[];
+  cell: (column: DataTableColumn<T>, index: number) => string;
+  ranges: Map<string, HeatRange | null>;
+}) {
+  return (
+    <tr className="bg-card transition-colors duration-150 hover:bg-muted">
+      {columns.map((column, index) => (
+        <td key={column.key} className={cell(column, index)} style={heatStyle(column, row, ranges)}>
+          {column.render(row)}
+        </td>
+      ))}
+    </tr>
   );
 }
 
@@ -55,22 +104,30 @@ function HeaderCell<T>({
         "py-2 whitespace-nowrap text-muted-foreground",
       )}
     >
-      {column.sortValue ? (
-        <button
-          type="button"
-          onClick={() => onSort(column)}
-          className={cn(
-            "inline-flex items-center gap-1 hover:text-foreground",
-            column.align === "right" && "flex-row-reverse",
-            active && "text-foreground",
-          )}
-        >
-          {column.header}
-          <Icon className="h-3 w-3" aria-hidden />
-        </button>
-      ) : (
-        column.header
-      )}
+      <span
+        className={cn(
+          "inline-flex items-center gap-0.5",
+          column.align === "right" && "flex-row-reverse",
+        )}
+      >
+        {column.sortValue ? (
+          <button
+            type="button"
+            onClick={() => onSort(column)}
+            className={cn(
+              "inline-flex items-center gap-1 hover:text-foreground",
+              column.align === "right" && "flex-row-reverse",
+              active && "text-foreground",
+            )}
+          >
+            {column.header}
+            <Icon className="h-3 w-3" aria-hidden />
+          </button>
+        ) : (
+          column.header
+        )}
+        {column.hint && <MetricHintButton label={column.header} hint={column.hint} />}
+      </span>
     </th>
   );
 }
@@ -148,6 +205,7 @@ export function DataTable<T>({
   const cards = mobileLayout === "cards";
   const nowrap = !cards;
   const pinnedAt = (index: number) => nowrap && index === 0;
+  const ranges = heatRangesOf(columns, pageRows);
 
   return (
     <div className={cn("min-w-0", className)}>
@@ -191,16 +249,13 @@ export function DataTable<T>({
               </tr>
             )}
             {pageRows.map((row) => (
-              <tr
+              <BodyRow
                 key={rowKey(row)}
-                className="bg-card transition-colors duration-150 hover:bg-muted"
-              >
-                {columns.map((column, index) => (
-                  <td key={column.key} className={cellClass(column, nowrap, pinnedAt(index))}>
-                    {column.render(row)}
-                  </td>
-                ))}
-              </tr>
+                row={row}
+                columns={columns}
+                cell={(c, i) => cellClass(c, nowrap, pinnedAt(i))}
+                ranges={ranges}
+              />
             ))}
           </tbody>
           {totalRow && pageRows.length > 0 && (

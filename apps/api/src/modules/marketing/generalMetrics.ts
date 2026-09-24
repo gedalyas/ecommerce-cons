@@ -8,6 +8,7 @@ import type {
 } from "@ecommerce/contracts/marketing";
 import { funnelStepLabel, funnelSteps } from "@ecommerce/contracts/marketing";
 import type { OrdersBucket } from "@ecommerce/contracts/orders";
+import type { Window } from "@ecommerce/contracts/shared/periodWindow";
 
 type Spend = { spend: number; platformFee: number };
 
@@ -73,4 +74,11 @@ export function funnelWithDelta(
       fromPrevious: i > 0 && before > 0 ? (current[key] / before) * 100 : null,
     };
   });
+}
+
+export function lastMonthsWindow(today: string, months: number): Window {
+  const [year, month] = today.split("-").map(Number);
+  const start = new Date(Date.UTC(year ?? 2000, (month ?? 1) - months, 1));
+  const end = new Date(Date.UTC(year ?? 2000, month ?? 1, 1));
+  return { start, end };
 }

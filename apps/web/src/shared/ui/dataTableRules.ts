@@ -47,3 +47,35 @@ export function sortRows<T>(
   const factor = sort.direction === "asc" ? 1 : -1;
   return [...rows].sort((a, b) => compare(getter(a), getter(b)) * factor);
 }
+
+export type HeatRange = { min: number; max: number };
+
+export function heatRangeOf<T>(
+  rows: readonly T[],
+  value: (row: T) => number | string | null,
+): HeatRange | null {
+  const numbers = rows
+    .map(value)
+    .filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+  if (numbers.length < 2) return null;
+  return { min: Math.min(...numbers), max: Math.max(...numbers) };
+}
+
+export function heatIntensity(
+  value: number | string | null,
+  range: HeatRange | null,
+): number | null {
+  if (range == null || typeof value !== "number" || range.max === range.min) return null;
+  return (value - range.min) / (range.max - range.min);
+}
+
+export function heatRangesOf<T>(
+  columns: readonly DataTableColumn<T>[],
+  rows: readonly T[],
+): Map<string, HeatRange | null> {
+  return new Map(
+    columns.flatMap((c) =>
+      c.heat && c.sortValue ? [[c.key, heatRangeOf(rows, c.sortValue)] as const] : [],
+    ),
+  );
+}

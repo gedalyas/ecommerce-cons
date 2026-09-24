@@ -313,7 +313,81 @@ export type MarketingGeneral = {
   platforms: PlatformCard[];
 };
 
+export const platformKpis = [
+  "spend",
+  "impressions",
+  "reach",
+  "cpm",
+  "linkClicks",
+  "ctr",
+  "cpc",
+  "landingPageViews",
+  "sessions",
+  "costPerSession",
+  "addToCart",
+  "conversions",
+  "costPerConversion",
+  "leads",
+  "messages",
+  "costPerLead",
+  "clicks",
+  "impressionShare",
+] as const;
+export type PlatformKpi = (typeof platformKpis)[number];
+
+export type AdDepthRow = {
+  key: string;
+  id: string;
+  name: string;
+  campaignId: string;
+  campaignName: string | null;
+  adsetId: string | null;
+  adsetName: string | null;
+  campaignType: string | null;
+  thumbnailUrl: string | null;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  linkClicks: number;
+  landingPageViews: number;
+  addToCart: number;
+  conversions: number;
+  leads: number;
+  messages: number;
+  cpm: number | null;
+  ctr: number | null;
+  cpc: number | null;
+  costPerView: number | null;
+  costPerConversion: number | null;
+  costPerLead: number | null;
+  impressionShare: number | null;
+  spendVariation: number | null;
+  conversionsVariation: number | null;
+  costPerConversionVariation: number | null;
+};
+
+export type PlatformSeriesPoint = {
+  bucket: string;
+  spend: number;
+  conversions: number;
+  costPerConversion: number | null;
+  sessions: number | null;
+  costPerSession: number | null;
+};
+
+export type MarketingPlatformTab = {
+  platform: AdPlatform;
+  accounts: { id: string; name: string }[];
+  kpis: Record<PlatformKpi, MetricValue>;
+  monthly: PlatformSeriesPoint[];
+  daily: PlatformSeriesPoint[];
+  rows: AdDepthRow[];
+  total: AdDepthRow;
+};
+
 export type MarketingScreen =
+  | { aba: Extract<MarketingTab, "meta">; platformTab: MarketingPlatformTab }
   | { aba: Extract<MarketingTab, "geral">; general: MarketingGeneral }
   | ({ aba: Extract<MarketingTab, "visao"> } & MarketingVisao)
   | { aba: Extract<MarketingTab, "resumo">; summary: MarketingSummary }

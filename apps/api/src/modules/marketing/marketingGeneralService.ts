@@ -20,6 +20,7 @@ import { storeOrders } from "./attributionService";
 import {
   funnelWithDelta,
   investedOf,
+  lastMonthsWindow,
   monthEndProjection,
   salesInvestmentPoints,
   trafficPoints,
@@ -50,13 +51,6 @@ const monthWindow = (today: string): Window => ({
   start: dayOf(`${today.slice(0, 7)}-01`),
   end: nextDay(today),
 });
-
-function lastMonthsWindow(today: string, months: number): Window {
-  const [year, month] = today.split("-").map(Number);
-  const start = new Date(Date.UTC(year ?? 2000, (month ?? 1) - months, 1));
-  const end = new Date(Date.UTC(year ?? 2000, month ?? 1, 1));
-  return { start, end };
-}
 
 async function windowFacts(clientId: string, w: Window, { fee, platform }: FactOptions) {
   const [orders, ads, traffic, store] = await Promise.all([

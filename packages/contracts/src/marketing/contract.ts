@@ -2,6 +2,7 @@ export {
   adPlatformLabel,
   adPlatforms,
   audienceDimensionLabel,
+  platformKpis,
   audienceDimensions,
   funnelStageLabel,
   funnelStages,
@@ -10,6 +11,10 @@ export {
   socialPlatforms,
 } from "./marketing.types";
 export type {
+  AdDepthRow,
+  MarketingPlatformTab,
+  PlatformKpi,
+  PlatformSeriesPoint,
   AudienceDimension,
   FunnelStage,
   FunnelStepDelta,

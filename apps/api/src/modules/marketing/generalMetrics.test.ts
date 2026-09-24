@@ -3,6 +3,7 @@ import type { OrdersBucket } from "@ecommerce/contracts/orders";
 import {
   funnelWithDelta,
   investedOf,
+  lastMonthsWindow,
   monthEndProjection,
   salesInvestmentPoints,
   trafficPoints,
@@ -112,5 +113,13 @@ describe("funnelWithDelta", () => {
     });
     expect(steps[1]).toMatchObject({ key: "viewItem", fromPrevious: 50 });
     expect(funnelWithDelta(current, null)[2]?.previous).toBeNull();
+  });
+});
+
+describe("lastMonthsWindow", () => {
+  it("covers the whole current month and the months before it", () => {
+    const w = lastMonthsWindow("2026-09-10", 12);
+    expect(w.start.toISOString().slice(0, 10)).toBe("2025-10-01");
+    expect(w.end.toISOString().slice(0, 10)).toBe("2026-10-01");
   });
 });

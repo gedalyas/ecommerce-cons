@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { DataTableColumn } from "./dataTable.types";
-import { mobileColumnsOf, nextSortOf, sortRows } from "./dataTableRules";
+import {
+  mobileColumnsOf,
+  nextSortOf,
+  sortRows,
+  heatIntensity,
+  heatRangeOf,
+  heatRangesOf,
+} from "./dataTableRules";
 
 type Row = { name: string; total: number; items: number; email: string };
 
@@ -120,5 +127,44 @@ describe("sortRows", () => {
       sortRows(withNull, cols, { key: "total", direction }).map((r) => r.name);
     expect(names("asc")).toEqual(["c", "b", "a", "d"]);
     expect(names("desc")).toEqual(["d", "a", "b", "c"]);
+  });
+});
+
+describe("heat shading", () => {
+  const rows = [{ v: 10 }, { v: 30 }, { v: null }, { v: 20 }];
+
+  it("spans the numbers of the column and ignores the empty ones", () => {
+    expect(heatRangeOf(rows, (r) => r.v)).toEqual({ min: 10, max: 30 });
+    expect(heatRangeOf([{ v: 5 }], (r) => r.v)).toBeNull();
+  });
+
+  it("places each value between the lowest and the highest", () => {
+    const range = { min: 10, max: 30 };
+    expect(heatIntensity(20, range)).toBe(0.5);
+    expect(heatIntensity(null, range)).toBeNull();
+    expect(heatIntensity(10, { min: 10, max: 10 })).toBeNull();
+  });
+});
+
+describe("heatRangesOf", () => {
+  it("measures only the heat-shaded columns that can be sorted", () => {
+    const rows = [
+      { cost: 10, name: "a" },
+      { cost: 30, name: "b" },
+    ];
+    const columns: DataTableColumn<(typeof rows)[number]>[] = [
+      { key: "name", header: "Nome", render: (r) => r.name, sortValue: (r) => r.name },
+      {
+        key: "cost",
+        header: "Custo",
+        render: (r) => r.cost,
+        sortValue: (r) => r.cost,
+        heat: "good-low",
+      },
+      { key: "plain", header: "Sem ordem", render: (r) => r.cost, heat: "good-high" },
+    ];
+    const ranges = heatRangesOf(columns, rows);
+    expect([...ranges.keys()]).toEqual(["cost"]);
+    expect(ranges.get("cost")).toEqual({ min: 10, max: 30 });
   });
 });

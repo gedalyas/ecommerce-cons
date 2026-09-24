@@ -18,6 +18,22 @@ const glossaryTerms = [
   "revenuePerSession",
   "costPerSession",
   "sessions",
+  "spend",
+  "impressions",
+  "reach",
+  "cpm",
+  "clicks",
+  "linkClicks",
+  "ctr",
+  "cpc",
+  "landingPageViews",
+  "addToCart",
+  "conversions",
+  "costPerConversion",
+  "leads",
+  "messages",
+  "costPerLead",
+  "impressionShare",
 ] as const;
 
 type GlossaryTerm = (typeof glossaryTerms)[number];
@@ -106,6 +122,72 @@ const metricGlossary: Record<GlossaryTerm, MetricExplanation> = {
   costPerSession: {
     definition: "Quanto custou, em média, trazer cada visita ao site.",
     formula: "Investimento ÷ sessões",
+  },
+  spend: {
+    definition: "Quanto foi gasto em anúncios nesta plataforma no período.",
+    formula: "Soma do investimento da plataforma",
+  },
+  impressions: {
+    definition: "Quantas vezes os anúncios apareceram na tela.",
+    formula: "Soma das impressões",
+  },
+  reach: {
+    definition:
+      "Pessoas que viram os anúncios, somadas dia a dia: quem viu em dois dias conta duas vezes.",
+    formula: "Soma do alcance diário",
+  },
+  cpm: {
+    definition: "Quanto custou mostrar os anúncios mil vezes.",
+    formula: "Investimento ÷ impressões × 1.000",
+  },
+  clicks: {
+    definition: "Todos os cliques no anúncio, inclusive curtidas e perfil.",
+    formula: "Soma dos cliques",
+  },
+  linkClicks: {
+    definition: "Cliques que levaram para fora do anúncio, rumo ao site ou à loja.",
+    formula: "Soma dos cliques no link",
+  },
+  ctr: {
+    definition: "De cada 100 impressões, quantas viraram clique.",
+    formula: "Cliques ÷ impressões × 100",
+  },
+  cpc: {
+    definition: "Quanto custou, em média, cada clique.",
+    formula: "Investimento ÷ cliques",
+  },
+  landingPageViews: {
+    definition: "Cliques em que a página de destino chegou a carregar.",
+    formula: "Soma das visualizações da página de destino",
+  },
+  addToCart: {
+    definition: "Adições ao carrinho que a plataforma atribui aos anúncios.",
+    formula: "Soma das adições ao carrinho informadas",
+  },
+  conversions: {
+    definition:
+      "Compras que a própria plataforma atribui aos anúncios. Servem para comparar campanhas; a venda da loja vem do ERP ou da planilha.",
+    formula: "Soma das conversões informadas pela plataforma",
+  },
+  costPerConversion: {
+    definition: "Quanto custou, em média, cada conversão informada pela plataforma.",
+    formula: "Investimento ÷ conversões informadas",
+  },
+  leads: {
+    definition: "Cadastros gerados por formulários dos anúncios.",
+    formula: "Soma dos leads",
+  },
+  messages: {
+    definition: "Conversas iniciadas pelo anúncio no WhatsApp, Messenger ou Direct.",
+    formula: "Soma das conversas iniciadas",
+  },
+  costPerLead: {
+    definition: "Quanto custou, em média, cada cadastro.",
+    formula: "Investimento ÷ leads",
+  },
+  impressionShare: {
+    definition: "Das vezes em que o anúncio poderia aparecer nas buscas, em quantas apareceu.",
+    formula: "Impressões ÷ impressões possíveis × 100",
   },
 };
 

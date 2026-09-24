@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { CsvCell } from "@/shared/utils/csv";
+import type { MetricHint } from "./metricTile.types";
 
 export type DataTableColumn<T> = {
   key: string;
@@ -11,7 +12,11 @@ export type DataTableColumn<T> = {
   renderTotal?: (row: T) => ReactNode;
   mobile?: DataTableMobileRole;
   className?: string;
+  hint?: MetricHint | null;
+  heat?: DataTableHeat;
 };
+
+export type DataTableHeat = "good-high" | "good-low";
 
 export type DataTableMobileRole = "title" | "lead" | "hidden";
 

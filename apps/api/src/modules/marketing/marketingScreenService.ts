@@ -15,6 +15,7 @@ import {
 } from "@ecommerce/contracts/shared/periodWindow";
 import { adsByLevel, adsByPlatform, adsByPlatformBucket } from "./adsService";
 import { marketingGeneral } from "./marketingGeneralService";
+import { platformTab } from "./platformTabService";
 import { storeOrders, topSourceShare, utmSales } from "./attributionService";
 import { discountAggregate, discountCodes, discountsByBucket } from "./discountsService";
 import { regionPerformance } from "./regionsService";
@@ -348,6 +349,8 @@ export async function marketingScreen(
   switch (input.aba) {
     case "geral":
       return { aba: "geral", general: await marketingGeneral(clientId, input) };
+    case "meta":
+      return { aba: "meta", platformTab: await platformTab(clientId, "META", input) };
     case "visao":
       throw new Error("The visão tab is assembled by the controller (it needs the retention)");
     case "resumo":
