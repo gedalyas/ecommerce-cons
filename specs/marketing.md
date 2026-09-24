@@ -138,7 +138,21 @@ The Looker's 7/14/30/90-day windows are the global period presets.
 
 ## Funil de investimento (`?aba=funil`)
 
-First block: **Etapa e canal de cada campanha** — every campaign with investment in the period
+Payload `MarketingInvestmentFunnel` from `investmentFunnelService.ts` (pure `funnelSummary.ts`,
+tested): ad spend joined with `campaign_tag` (untagged → "Sem etapa", channel → Site), platform fee
+with "Incluir taxa".
+
+1. **KPIs with Δ** — Investimento total and one tile per stage (Topo, Meio, Fundo; "Sem etapa" only
+   when it has investment) with its share of the total.
+2. **Etapas por plataforma** — per stage, each platform's investment and its share inside the stage,
+   the stage total and its share.
+3. **Investimento por etapa** — one line per stage, Mensal (12 months) or No período.
+4. **Custo por pedido: site × Meta × Google** — site: investment of the campaigns tagged to the site
+   ÷ site orders from the ERP or the spreadsheet; Meta and Google: their investment ÷ the conversions
+   they report. A bucket without orders or conversions leaves a gap. TikTok stays out of this chart
+   (as in the agency report); its cost per conversion lives on the platform tabs.
+
+Last block: **Etapa e canal de cada campanha** — every campaign with investment in the period
 (all ad platforms, latest name), its investment, its funnel stage (Topo / Meio / Fundo / Sem
 etapa) and the sales channel it feeds (Site or a marketplace the store sold on in the last 13
 months; default Site). Staff edit both with a select per cell (`PUT /marketing/campaign-tags`

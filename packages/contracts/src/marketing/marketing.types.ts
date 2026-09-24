@@ -17,6 +17,14 @@ export const funnelStageLabel: Record<FunnelStage, string> = {
   BOTTOM: "Fundo",
 };
 
+export const stageKeys = [...funnelStages, "UNTAGGED"] as const;
+export type StageKey = (typeof stageKeys)[number];
+
+export const stageKeyLabel: Record<StageKey, string> = {
+  ...funnelStageLabel,
+  UNTAGGED: "Sem etapa",
+};
+
 export const audienceDimensions = ["GENDER", "AGE"] as const;
 export type AudienceDimension = (typeof audienceDimensions)[number];
 
@@ -497,7 +505,34 @@ export type CampaignTagRow = {
 
 export type SalesChannelOption = { key: string; label: string };
 
+export type StageSpend = {
+  stage: StageKey;
+  spend: MetricValue;
+  share: number | null;
+  byPlatform: { platform: AdPlatform; spend: number; share: number | null }[];
+};
+
+export type PlatformSpend = { platform: AdPlatform; spend: MetricValue; share: number | null };
+
+export type StageSeriesPoint = { bucket: string } & Record<StageKey, number>;
+
+export type CpaSeriesPoint = { bucket: string; site: number | null } & Record<
+  AdPlatform,
+  number | null
+>;
+
+export type InvestmentFunnelSummary = {
+  total: MetricValue;
+  stages: StageSpend[];
+  platforms: PlatformSpend[];
+  monthly: StageSeriesPoint[];
+  daily: StageSeriesPoint[];
+  cpaMonthly: CpaSeriesPoint[];
+  cpaDaily: CpaSeriesPoint[];
+};
+
 export type MarketingInvestmentFunnel = {
+  summary: InvestmentFunnelSummary;
   tags: CampaignTagRow[];
   channels: SalesChannelOption[];
   canEdit: boolean;

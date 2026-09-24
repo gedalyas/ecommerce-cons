@@ -4,6 +4,8 @@ export {
   audienceDimensionLabel,
   platformKpis,
   siteKpis,
+  stageKeyLabel,
+  stageKeys,
   audienceDimensions,
   funnelStageLabel,
   funnelStages,
@@ -13,6 +15,11 @@ export {
 } from "./marketing.types";
 export type {
   AdDepthRow,
+  CpaSeriesPoint,
+  InvestmentFunnelSummary,
+  StageKey,
+  StageSeriesPoint,
+  StageSpend,
   CampaignTagRow,
   MarketingInvestmentFunnel,
   SalesChannelOption,

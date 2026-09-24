@@ -118,7 +118,15 @@ export function Marketing({ data }: { data: MarketingScreen }) {
           />
         )}
         {data.aba === "canais" && <MarketingCanais data={data.salesChannels} period={period} />}
-        {data.aba === "funil" && <MarketingFunil data={data.funnel} />}
+        {data.aba === "funil" && (
+          <MarketingFunil
+            data={data.funnel}
+            search={search}
+            period={period}
+            comparisonLabel={comparisonLabel}
+            onPatch={patch}
+          />
+        )}
         {data.aba === "visao" && (
           <MarketingVisaoTab data={data} comparisonLabel={comparisonLabel} />
         )}

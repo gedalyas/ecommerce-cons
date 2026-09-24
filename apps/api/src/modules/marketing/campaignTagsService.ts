@@ -9,7 +9,6 @@ import {
   siteChannel,
   type CampaignTagInput,
   type CampaignTagRow,
-  type MarketingInvestmentFunnel,
   type SalesChannelOption,
 } from "@ecommerce/contracts/marketing";
 import type { Window } from "@ecommerce/contracts/shared/periodWindow";
@@ -26,7 +25,7 @@ type TagDbRow = {
   channel: string | null;
 };
 
-async function campaignTags(clientId: string, w: Window): Promise<CampaignTagRow[]> {
+export async function campaignTags(clientId: string, w: Window): Promise<CampaignTagRow[]> {
   const rows = await prismaClient.$queryRaw<TagDbRow[]>`
     select a.platform, a.campaign_id,
       (array_agg(a.campaign_name order by a.date desc))[1] as campaign_name,
@@ -46,19 +45,6 @@ async function campaignTags(clientId: string, w: Window): Promise<CampaignTagRow
     stage: r.stage,
     channel: r.channel ?? siteChannel,
   }));
-}
-
-export async function investmentFunnel(
-  clientId: string,
-  w: Window,
-  channelsWindow: Window,
-  canEdit: boolean,
-): Promise<MarketingInvestmentFunnel> {
-  const [tags, marketplaces] = await Promise.all([
-    campaignTags(clientId, w),
-    marketplaceChannels(clientId, channelsWindow),
-  ]);
-  return { tags, channels: salesChannelOptions(marketplaces), canEdit };
 }
 
 async function campaignName(clientId: string, input: CampaignTagInput): Promise<string> {

@@ -36,7 +36,6 @@ const strokes = [
 
 export type MultiSeries = { key: string; label: string; points: SeriesPoint[] };
 
-/** Up to five lines of the same unit over the same buckets. */
 export function MultiSeriesChart({
   series,
   unit,
@@ -48,7 +47,7 @@ export function MultiSeriesChart({
   granularity: Granularity;
   className?: string;
 }) {
-  const buckets = series[0]?.points.map((p) => p.bucket) ?? [];
+  const buckets = [...new Set(series.flatMap((s) => s.points.map((p) => p.bucket)))].sort();
   const maps = series.map((s) => new Map(s.points.map((p) => [p.bucket, p.value])));
   const data = buckets.map((bucket) => {
     const row: Record<string, string | number | null> = { bucket };

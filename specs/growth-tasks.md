@@ -96,7 +96,10 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 - [x] Staff "Campanhas" list: funnel stage + destination channel tagged by hand — on the
       Funil de investimento tab (`PUT /marketing/campaign-tags`, audited); the channel tag feeds the
       channel ROAS in the funnel slice
-- [ ] Funil de investimento tab (stage KPIs, lines, CPA per platform, creatives by stage)
+- [x] Funil de investimento tab: stage KPIs, stage × platform table, stage lines, CPA Site ×
+      Meta × Google (site investment = campaigns tagged to the site)
+- [ ] Funil de investimento: creatives by stage; the channel tag feeding Vendas por canal and the
+      dashboard's ROAS por canal
 - [ ] Per-platform vendido/ROAS by UTM on ERP/spreadsheet orders with coverage (when a source
       brings UTM)
 

@@ -18,8 +18,7 @@ import { marketingGeneral } from "./marketingGeneralService";
 import { platformTab } from "./platformTabService";
 import { siteTab } from "./siteTabService";
 import { salesChannels } from "./salesChannelsService";
-import { investmentFunnel } from "./campaignTagsService";
-import { lastMonthsWindow } from "./generalMetrics";
+import { investmentFunnel } from "./investmentFunnelService";
 import { storeOrders, topSourceShare, utmSales } from "./attributionService";
 import { discountAggregate, discountCodes, discountsByBucket } from "./discountsService";
 import { regionPerformance } from "./regionsService";
@@ -363,15 +362,7 @@ export async function marketingScreen(
     case "canais":
       return { aba: "canais", salesChannels: await salesChannels(clientId, input) };
     case "funil":
-      return {
-        aba: "funil",
-        funnel: await investmentFunnel(
-          clientId,
-          resolvePeriod(input).current,
-          lastMonthsWindow(currentDay(), 13),
-          input.canEdit,
-        ),
-      };
+      return { aba: "funil", funnel: await investmentFunnel(clientId, input, currentDay()) };
     case "visao":
       throw new Error("The visão tab is assembled by the controller (it needs the retention)");
     case "resumo":

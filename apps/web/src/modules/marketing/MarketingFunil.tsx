@@ -6,8 +6,11 @@ import {
   untaggedSummary,
   type CampaignTagRow,
   type MarketingInvestmentFunnel,
+  type MarketingSearch,
+  stageKeyLabel,
 } from "@ecommerce/contracts/marketing";
 import { formatCurrency, formatPercent } from "@ecommerce/contracts/shared/format";
+import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { AlertBanner } from "@/shared/ui/AlertBanner";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
@@ -15,9 +18,10 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { CampaignTagSelect } from "./CampaignTagSelect";
+import { FunnelSummary } from "./FunnelSummary";
 
 const stageOptions = [
-  { key: "none", label: "Sem etapa" },
+  { key: "none", label: stageKeyLabel.UNTAGGED },
   ...funnelStages.map((key) => ({ key, label: funnelStageLabel[key] })),
 ];
 
@@ -61,12 +65,10 @@ function tagColumns(
             label="Etapa"
             onError={onError}
           />
-        ) : r.stage ? (
-          funnelStageLabel[r.stage]
         ) : (
-          "Sem etapa"
+          stageKeyLabel[r.stage ?? "UNTAGGED"]
         ),
-      csv: (r) => (r.stage ? funnelStageLabel[r.stage] : "Sem etapa"),
+      csv: (r) => stageKeyLabel[r.stage ?? "UNTAGGED"],
       sortValue: (r) => r.stage,
     },
     {
@@ -90,7 +92,15 @@ function tagColumns(
   ];
 }
 
-export function MarketingFunil({ data }: { data: MarketingInvestmentFunnel }) {
+type Props = {
+  data: MarketingInvestmentFunnel;
+  search: MarketingSearch;
+  period: PeriodSearch;
+  comparisonLabel: string;
+  onPatch: (next: Partial<MarketingSearch>) => void;
+};
+
+export function MarketingFunil({ data, search, period, comparisonLabel, onPatch }: Props) {
   const [error, setError] = useState<string | null>(null);
   const untagged = untaggedSummary(data.tags);
   return (
@@ -105,6 +115,13 @@ export function MarketingFunil({ data }: { data: MarketingInvestmentFunnel }) {
           {data.canEdit ? ". Marque abaixo." : "; a consultoria faz essa marcação."}
         </AlertBanner>
       )}
+      <FunnelSummary
+        summary={data.summary}
+        search={search}
+        period={period}
+        comparisonLabel={comparisonLabel}
+        onPatch={onPatch}
+      />
       <SectionBlock
         title="Etapa e canal de cada campanha"
         description="A consultoria marca a etapa do funil (topo, meio ou fundo) e o canal de venda que cada campanha alimenta. O investimento das campanhas entra nessa etapa e nesse canal."
@@ -115,7 +132,7 @@ export function MarketingFunil({ data }: { data: MarketingInvestmentFunnel }) {
           rows={data.tags}
           rowKey={(r) => `${r.platform}|${r.campaignId}`}
           initialSort={{ key: "spend", direction: "desc" }}
-          initialPageSize={25}
+          initialPageSize={20}
           emptyMessage="Sem campanhas com investimento no período."
         />
       </SectionBlock>
