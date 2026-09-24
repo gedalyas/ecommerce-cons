@@ -16,7 +16,13 @@ import {
   type Window,
 } from "@ecommerce/contracts/shared/periodWindow";
 import { campaignTags } from "./campaignTagsService";
-import { cpaSeries, funnelTotals, stageSeries, type StageRow } from "./funnelSummary";
+import {
+  cpaSeries,
+  funnelTotals,
+  investmentByChannel,
+  stageSeries,
+  type StageRow,
+} from "./funnelSummary";
 import { lastMonthsWindow } from "./generalMetrics";
 
 type Granularity = "mes" | PeriodSearch["por"];
@@ -72,6 +78,14 @@ async function series(clientId: string, w: Window, granularity: Granularity, fee
     stages: stageSeries(buckets, rows, fee),
     cpa: cpaSeries(buckets, rows, orders, fee),
   };
+}
+
+export async function channelInvestment(
+  clientId: string,
+  w: Window,
+  fee: boolean,
+): Promise<Record<string, number>> {
+  return investmentByChannel(await stageRows(clientId, w, null), fee);
 }
 
 export async function investmentFunnel(

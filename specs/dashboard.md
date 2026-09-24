@@ -72,7 +72,8 @@ replaced Margem de contribuição on 2026-09-22 (`growth-plan.md`). Since G0 it 
 site** (site sales ÷ ad spend + platform fee, the investment that points at the site by default);
 the tile shows **MER** below it and its ⓘ lists the ROAS of every sales channel
 (`roasByChannel`, pure `channelRoas` in `contracts/marketing`: "Site 4,20x · Mercado Livre sem
-investimento"). Decision: `decisions/2026-09-23-sales-from-erp-and-roas-per-channel.md`.
+investimento"); each channel's investment is the spend of the campaigns tagged to it on Marketing ›
+Funil de investimento (`channelInvestment`, Site by default, fee included). Decision: `decisions/2026-09-23-sales-from-erp-and-roas-per-channel.md`.
 
 ## 2. "Resumo do período"
 

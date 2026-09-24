@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { cpaSeries, funnelTotals, stageSeries, type StageRow } from "./funnelSummary";
+import {
+  cpaSeries,
+  funnelTotals,
+  investmentByChannel,
+  stageSeries,
+  type StageRow,
+} from "./funnelSummary";
 
 const row = (over: Partial<StageRow>): StageRow => ({
   bucket: "2026-09-01",
@@ -59,5 +65,16 @@ describe("cpaSeries", () => {
       false,
     );
     expect(point).toEqual({ bucket: "2026-09-01", site: 50, META: 110, GOOGLE: 25, TIKTOK: null });
+  });
+});
+
+describe("investmentByChannel", () => {
+  it("adds each campaign's investment to the channel the staff tagged", () => {
+    expect(
+      investmentByChannel(
+        [...current, row({ channel: "Mercado Livre", spend: 200, platformFee: 20 })],
+        true,
+      ),
+    ).toEqual({ site: 1000, "Mercado Livre": 220 });
   });
 });

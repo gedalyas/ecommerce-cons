@@ -125,3 +125,14 @@ export function cpaSeries(
     };
   });
 }
+
+export function investmentByChannel(
+  rows: readonly StageRow[],
+  fee: boolean,
+): Record<string, number> {
+  const byChannel: Record<string, number> = {};
+  for (const r of rows) {
+    byChannel[r.channel] = (byChannel[r.channel] ?? 0) + r.spend + (fee ? r.platformFee : 0);
+  }
+  return byChannel;
+}

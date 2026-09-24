@@ -7,17 +7,29 @@ import {
   type MarketingSalesChannels,
   type SalesChannelRow,
 } from "@ecommerce/contracts/marketing";
+import type { Channel } from "@ecommerce/contracts/shared/period";
 import { variationOf } from "@ecommerce/contracts/shared/metricValue";
 import { ratio } from "./marketingMetrics";
 
 export type ChannelFacts = {
   sales: readonly ChannelSales[];
   siteSessions: number;
-  siteInvestment: number;
+  investment: Readonly<Record<string, number>>;
 };
 
+export function investmentForFilter(
+  channel: Channel,
+  investment: Readonly<Record<string, number>>,
+): Record<string, number> {
+  return Object.fromEntries(
+    Object.entries(investment).filter(([key]) =>
+      channel === "todos" ? true : (key === siteChannel) === (channel === "ecommerce"),
+    ),
+  );
+}
+
 function channelsOf(facts: ChannelFacts): ChannelRoas[] {
-  return channelRoas(channelsFromSales(facts.sales), { [siteChannel]: facts.siteInvestment });
+  return channelRoas(channelsFromSales(facts.sales), facts.investment);
 }
 
 function rowOf(

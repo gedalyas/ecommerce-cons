@@ -1,12 +1,13 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { alertsFor } from "@/modules/alerts/contract";
-import { channelRoas, channelsFromSales, siteChannel } from "@ecommerce/contracts/marketing";
+import { channelRoas, channelsFromSales } from "@ecommerce/contracts/marketing";
 import { dataSourcesFor } from "@/modules/connections/contract";
 import { milestoneCriteriaFor, openRecommendationsFor } from "@/modules/consulting/contract";
 import { customersAggregate, customersByBucket } from "@/modules/customers/contract";
 import {
   adSpendAggregate,
   adSpendByBucket,
+  channelInvestment,
   trafficAggregate,
   trafficByBucket,
 } from "@/modules/marketing/contract";
@@ -275,12 +276,12 @@ export async function dashboardOverview(
     openRecommendationsFor(clientId),
     dashboardLayoutFor(auth.userId, clientId),
   ]);
-  const [facts, bySource, products, channelSales, storeAds] = await Promise.all([
+  const [facts, bySource, products, channelSales, investment] = await Promise.all([
     overviewFacts(clientId, search, period, rules),
     revenueBySource(clientId, period.current, platform),
     productSales(clientId, period.current, platform, null),
     salesByChannel(clientId, period.current),
-    adSpendAggregate(clientId, period.current),
+    channelInvestment(clientId, period.current, true),
   ]);
   const { current, previous, currentByBucket, previousByBucket } = facts;
 
@@ -304,8 +305,6 @@ export async function dashboardOverview(
     customerMix: customerMixOf(current.facts),
     funnel: funnelOf(current.traffic, current.facts.orders),
     paidMedia: paidMediaOf(currentRows, currentByBucket.ads),
-    roasByChannel: channelRoas(channelsFromSales(channelSales), {
-      [siteChannel]: storeAds.spend + storeAds.platformFee,
-    }),
+    roasByChannel: channelRoas(channelsFromSales(channelSales), investment),
   };
 }

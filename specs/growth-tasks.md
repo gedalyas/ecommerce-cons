@@ -98,8 +98,11 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       channel ROAS in the funnel slice
 - [x] Funil de investimento tab: stage KPIs, stage × platform table, stage lines, CPA Site ×
       Meta × Google (site investment = campaigns tagged to the site)
-- [ ] Funil de investimento: creatives by stage; the channel tag feeding Vendas por canal and the
-      dashboard's ROAS por canal
+- [x] The channel tag feeds Vendas por canal and the dashboard's ROAS por canal (`channelInvestment`)
+- [ ] Dashboard headline "ROAS do site" and MER on the same tagged split: today the tile divides
+      site sales by all ad spend, so it drifts from the ⓘ list once a campaign is tagged to a
+      marketplace
+- [ ] Funil de investimento: creatives by stage
 - [ ] Per-platform vendido/ROAS by UTM on ERP/spreadsheet orders with coverage (when a source
       brings UTM)
 

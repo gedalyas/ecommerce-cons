@@ -2,9 +2,9 @@ import { salesByChannel } from "@/modules/orders/contract";
 import type { MarketingSalesChannels } from "@ecommerce/contracts/marketing";
 import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { resolvePeriod, type Window } from "@ecommerce/contracts/shared/periodWindow";
-import { investedOf } from "./generalMetrics";
-import { adSpendAggregate, trafficAggregate } from "./marketingService";
-import { salesChannelRows, type ChannelFacts } from "./salesChannelRows";
+import { channelInvestment } from "./investmentFunnelService";
+import { trafficAggregate } from "./marketingService";
+import { investmentForFilter, salesChannelRows, type ChannelFacts } from "./salesChannelRows";
 
 type ChannelsInput = PeriodSearch & { incluirTaxa: boolean };
 
@@ -16,15 +16,15 @@ async function channelFacts(
   w: Window,
   input: ChannelsInput,
 ): Promise<ChannelFacts> {
-  const [sales, traffic, ads] = await Promise.all([
+  const [sales, traffic, investment] = await Promise.all([
     salesByChannel(clientId, w),
     trafficAggregate(clientId, w),
-    adSpendAggregate(clientId, w),
+    channelInvestment(clientId, w, input.incluirTaxa),
   ]);
   return {
     sales: sales.filter((s) => keepsChannel(input.canal, s.marketplace)),
     siteSessions: traffic.sessions,
-    siteInvestment: input.canal === "marketplace" ? 0 : investedOf(ads, input.incluirTaxa),
+    investment: investmentForFilter(input.canal, investment),
   };
 }
 

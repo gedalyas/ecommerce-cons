@@ -132,7 +132,8 @@ One table, one row per sales channel (`salesChannelRows.ts`, tested; channels fr
 and orders come from the ERP or the spreadsheet (paid orders); the global channel filter keeps
 the site or the marketplaces. Columns: Vendido, Δ vendido, Participação, Pedidos, Ticket médio, Δ
 ticket, Sessões and Conversão (orders ÷ GA4 sessions, site only — "—" for marketplaces), Δ
-conversão, Investimento (Meta + Google + TikTok, fee with "Incluir taxa", pointed at the site) and
+conversão, Investimento (each campaign's spend goes to the channel the staff tagged on Funil de
+investimento, Site by default; fee with "Incluir taxa") and
 ROAS do canal ("—" without investment). Total row: all channels, its ROAS is the overall return.
 The Looker's 7/14/30/90-day windows are the global period presets.
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { salesChannelRows, type ChannelFacts } from "./salesChannelRows";
+import { investmentForFilter, salesChannelRows, type ChannelFacts } from "./salesChannelRows";
 
 const current: ChannelFacts = {
   sales: [
@@ -7,7 +7,7 @@ const current: ChannelFacts = {
     { marketplace: true, channel: "Mercado Livre", revenue: 40_000, orders: 250 },
   ],
   siteSessions: 20_000,
-  siteInvestment: 15_000,
+  investment: { site: 15_000 },
 };
 
 const previous: ChannelFacts = {
@@ -16,7 +16,7 @@ const previous: ChannelFacts = {
     { marketplace: true, channel: "Mercado Livre", revenue: 40_000, orders: 200 },
   ],
   siteSessions: 25_000,
-  siteInvestment: 12_000,
+  investment: { site: 12_000 },
 };
 
 describe("salesChannelRows", () => {
@@ -37,5 +37,26 @@ describe("salesChannelRows", () => {
     expect(total.roas).toBeCloseTo(6.67, 2);
     expect(total.revenueVariation).toBeNull();
     expect(rows[0]?.conversionVariation).toBeNull();
+  });
+
+  it("gives a marketplace the ROAS of the campaigns tagged to it", () => {
+    const { rows } = salesChannelRows(
+      { ...current, investment: { site: 15_000, "Mercado Livre": 4_000 } },
+      null,
+    );
+    expect(rows.find((r) => r.label === "Mercado Livre")).toMatchObject({
+      investment: 4_000,
+      roas: 10,
+    });
+  });
+});
+
+describe("investmentForFilter", () => {
+  const investment = { site: 15_000, "Mercado Livre": 4_000 };
+
+  it("keeps only the investment of the channels the global filter shows", () => {
+    expect(investmentForFilter("marketplace", investment)).toEqual({ "Mercado Livre": 4_000 });
+    expect(investmentForFilter("ecommerce", investment)).toEqual({ site: 15_000 });
+    expect(investmentForFilter("todos", investment)).toEqual(investment);
   });
 });
