@@ -1,7 +1,3 @@
-/**
- * Centralized formatting - Intl with the pt-BR locale.
- * No screen formats a number, currency, percentage or date on its own.
- */
 const LOCALE = "pt-BR";
 const cache = new Map<string, Intl.NumberFormat>();
 
@@ -28,7 +24,13 @@ export function formatCurrency(value: number, decimals = 0) {
   }).format(value);
 }
 
-/** Takes the value already in percentage points (e.g. 19.2 -> "19,2%"). */
+export function formatDuration(seconds: number) {
+  const total = Math.max(0, Math.round(seconds));
+  const minutes = Math.floor(total / 60);
+  const rest = total % 60;
+  return minutes === 0 ? `${rest} s` : `${minutes} min ${String(rest).padStart(2, "0")} s`;
+}
+
 export function formatPercent(value: number, decimals = 1) {
   return `${formatNumber(value, decimals)}%`;
 }
@@ -37,21 +39,15 @@ export function formatCompact(value: number) {
   return nf({ notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
-/** Multipliers such as ROAS: 3.1 -> "3,10x". */
 export function formatMultiplier(value: number, decimals = 2) {
   return `${formatNumber(value, decimals)}x`;
 }
 
-/** Signed percent change: 8.2 -> "+8,2%", -3.4 -> "−3,4%". */
 export function formatVariation(value: number, decimals = 1) {
   const sign = value > 0 ? "+" : value < 0 ? "−" : "";
   return `${sign}${formatNumber(Math.abs(value), decimals)}%`;
 }
 
-/**
- * "01/09 – 10/09", with the year appended when the range crosses years or when
- * `withYear` is set (e.g. a comparison window in another year).
- */
 export function formatPeriodLabel(inicio: string, fim: string, withYear = false) {
   const sameYear = inicio.slice(0, 4) === fim.slice(0, 4);
   const options: Intl.DateTimeFormatOptions =
@@ -71,10 +67,6 @@ export function formatDate(
   return new Intl.DateTimeFormat(LOCALE, options).format(date);
 }
 
-/**
- * Normalizes every number inside a string to the pt-BR convention
- * (dot as thousands separator, decimal comma, no stray spaces).
- */
 export function formatPtNumbers(value: string) {
   return value
     .replace(/(\d{1,3}(?:\.\d{3})+|\d+)\s*,\s*(\d+)/g, (_m, intPart: string, dec: string) => {

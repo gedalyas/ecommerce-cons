@@ -3,7 +3,7 @@
  * unit + variation), never as bare numbers, and every payload carries its
  * comparison period so screens only render the difference.
  */
-export type MetricUnit = "currency" | "count" | "percent" | "multiplier" | "days";
+export type MetricUnit = "currency" | "count" | "percent" | "multiplier" | "days" | "seconds";
 
 export type MetricValue = {
   value: number | null;

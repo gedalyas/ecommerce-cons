@@ -9,6 +9,8 @@ describe("formatMetric", () => {
     expect(formatMetric(19.25, "percent")).toBe("19,3%");
     expect(formatMetric(3.1, "multiplier")).toBe("3,10x");
     expect(formatMetric(4.5, "days")).toBe("4,5 dias");
+    expect(formatMetric(83.4, "seconds")).toBe("1 min 23 s");
+    expect(formatMetric(42, "seconds")).toBe("42 s");
   });
 
   it("renders a dash for a missing value", () => {

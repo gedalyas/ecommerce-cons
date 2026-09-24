@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dashboardMetricKeys } from "../dashboard/contract";
-import { investmentMetrics, platformKpis, sessionMetrics } from "../marketing/contract";
+import { investmentMetrics, platformKpis, sessionMetrics, siteKpis } from "../marketing/contract";
 import { explanationOf } from "./metricGlossary";
 
 const unexplained = (keys: readonly string[]) => keys.filter((key) => explanationOf(key) == null);
@@ -16,6 +16,10 @@ describe("explanationOf", () => {
 
   it("explains every tile of an ad platform tab", () => {
     expect(unexplained(platformKpis)).toEqual([]);
+  });
+
+  it("explains every tile of the site tab", () => {
+    expect(unexplained(siteKpis)).toEqual([]);
   });
 
   it("gives a definition and a formula", () => {

@@ -16,6 +16,7 @@ import {
 import { adsByLevel, adsByPlatform, adsByPlatformBucket } from "./adsService";
 import { marketingGeneral } from "./marketingGeneralService";
 import { platformTab } from "./platformTabService";
+import { siteTab } from "./siteTabService";
 import { storeOrders, topSourceShare, utmSales } from "./attributionService";
 import { discountAggregate, discountCodes, discountsByBucket } from "./discountsService";
 import { regionPerformance } from "./regionsService";
@@ -353,6 +354,8 @@ export async function marketingScreen(
       return { aba: "meta", platformTab: await platformTab(clientId, "META", input) };
     case "google":
       return { aba: "google", platformTab: await platformTab(clientId, "GOOGLE", input) };
+    case "site":
+      return { aba: "site", site: await siteTab(clientId, input) };
     case "visao":
       throw new Error("The visão tab is assembled by the controller (it needs the retention)");
     case "resumo":

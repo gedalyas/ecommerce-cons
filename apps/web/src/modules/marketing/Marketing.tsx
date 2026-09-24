@@ -15,6 +15,7 @@ import { MarketingGeral } from "./MarketingGeral";
 import { MarketingPlataforma } from "./MarketingPlataforma";
 import { MarketingRegioes } from "./MarketingRegioes";
 import { MarketingResumo } from "./MarketingResumo";
+import { MarketingSite } from "./MarketingSite";
 import { MarketingSocial } from "./MarketingSocial";
 import { useMarketingSearch } from "./useMarketingSearch";
 
@@ -22,6 +23,7 @@ const tabs = [
   { key: "geral", label: "Visão geral" },
   { key: "meta", label: "Meta Ads" },
   { key: "google", label: "Google Ads" },
+  { key: "site", label: "Site" },
   { key: "visao", label: "Pilares" },
   { key: "resumo", label: "Resumo" },
   { key: "campanhas", label: "Campanhas" },
@@ -96,6 +98,15 @@ export function Marketing({ data }: { data: MarketingScreen }) {
         {(data.aba === "meta" || data.aba === "google") && (
           <MarketingPlataforma
             data={data.platformTab}
+            search={search}
+            period={period}
+            comparisonLabel={comparisonLabel}
+            onPatch={patch}
+          />
+        )}
+        {data.aba === "site" && (
+          <MarketingSite
+            data={data.site}
             search={search}
             period={period}
             comparisonLabel={comparisonLabel}

@@ -3,6 +3,7 @@ export {
   adPlatforms,
   audienceDimensionLabel,
   platformKpis,
+  siteKpis,
   audienceDimensions,
   funnelStageLabel,
   funnelStages,
@@ -12,6 +13,12 @@ export {
 } from "./marketing.types";
 export type {
   AdDepthRow,
+  MarketingSiteTab,
+  SiteAudienceRow,
+  SiteKpi,
+  SitePageRow,
+  SiteRegionRow,
+  SiteSeriesPoint,
   AdKeywordRow,
   MarketingPlatformTab,
   PlatformKpi,
@@ -56,6 +63,7 @@ export type {
 } from "./marketing.types";
 export {
   adsetNounOf,
+  audienceValueLabelOf,
   campaignTypeLabelOf,
   matchTypeLabelOf,
   platformLevelLabel,

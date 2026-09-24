@@ -402,7 +402,68 @@ export type MarketingPlatformTab = {
   keywords: AdKeywordRow[];
 };
 
+export const siteKpis = [
+  "sessions",
+  "engagedSessions",
+  "users",
+  "newUsers",
+  "pageViews",
+  "averageDuration",
+  "engagementRate",
+  "bounceRate",
+] as const;
+export type SiteKpi = (typeof siteKpis)[number];
+
+export type SiteSeriesPoint = {
+  bucket: string;
+  sessions: number;
+  engagedSessions: number;
+  engagementRate: number | null;
+  users: number;
+  newUsers: number;
+  newUserShare: number | null;
+};
+
+export type SiteAudienceRow = {
+  value: string;
+  label: string;
+  sessions: number;
+  engagedSessions: number;
+  engagementRate: number | null;
+  users: number;
+  purchases: number;
+  purchaseRate: number | null;
+};
+
+export type SitePageRow = {
+  path: string;
+  pageViews: number;
+  sessions: number;
+  engagementRate: number | null;
+  averageDuration: number | null;
+};
+
+export type SiteRegionRow = {
+  province: string;
+  sessions: number;
+  pageViews: number;
+  engagementRate: number | null;
+  purchases: number;
+  purchaseRate: number | null;
+};
+
+export type MarketingSiteTab = {
+  kpis: Record<SiteKpi, MetricValue>;
+  monthly: SiteSeriesPoint[];
+  daily: SiteSeriesPoint[];
+  gender: SiteAudienceRow[];
+  age: SiteAudienceRow[];
+  pages: SitePageRow[];
+  regions: SiteRegionRow[];
+};
+
 export type MarketingScreen =
+  | { aba: Extract<MarketingTab, "site">; site: MarketingSiteTab }
   | { aba: Extract<MarketingTab, "meta" | "google">; platformTab: MarketingPlatformTab }
   | { aba: Extract<MarketingTab, "geral">; general: MarketingGeneral }
   | ({ aba: Extract<MarketingTab, "visao"> } & MarketingVisao)

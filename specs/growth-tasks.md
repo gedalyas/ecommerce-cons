@@ -89,7 +89,7 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       messages, creatives) — thumbnails render once the Meta provider writes them
 - [x] Google Ads tab (KPIs, charts, campanha → grupo → palavra-chave, comparison with Δ, campaign
       type)
-- [ ] Site (GA4) tab (KPIs, charts, demographics, pages, regions)
+- [x] Site (GA4) tab (KPIs, charts, demographics, pages, regions)
 - [ ] Vendas por canal tab (window toggle; sessions from GA4, sales from the ERP)
 - [ ] Staff "Campanhas" list: funnel stage + destination channel tagged by hand
 - [ ] Funil de investimento tab (stage KPIs, lines, CPA per platform, creatives by stage)

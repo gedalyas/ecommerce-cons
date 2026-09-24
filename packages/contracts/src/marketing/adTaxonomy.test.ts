@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   adsetNounOf,
+  audienceValueLabelOf,
   campaignTypeLabelOf,
   matchTypeLabelOf,
   platformLevelLabel,
@@ -39,5 +40,15 @@ describe("adsetNounOf", () => {
   it("names one ad set the way each platform does", () => {
     expect(adsetNounOf("GOOGLE")).toBe("Grupo");
     expect(adsetNounOf("META")).toBe("Conjunto");
+  });
+});
+
+describe("audienceValueLabelOf", () => {
+  it("names the GA4 gender and age values in Portuguese", () => {
+    expect(audienceValueLabelOf("GENDER", "female")).toBe("Feminino");
+    expect(audienceValueLabelOf("GENDER", "unknown")).toBe("Não informado");
+    expect(audienceValueLabelOf("AGE", "25-34")).toBe("25–34");
+    expect(audienceValueLabelOf("AGE", "65+")).toBe("65+");
+    expect(audienceValueLabelOf("AGE", "unknown")).toBe("Não informado");
   });
 });

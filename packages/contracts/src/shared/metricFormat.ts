@@ -1,5 +1,11 @@
 import type { MetricUnit } from "./metric.types";
-import { formatCurrency, formatMultiplier, formatNumber, formatPercent } from "./format";
+import {
+  formatCurrency,
+  formatDuration,
+  formatMultiplier,
+  formatNumber,
+  formatPercent,
+} from "./format";
 
 export function formatMetric(value: number | null, unit: MetricUnit) {
   if (value == null) return "—";
@@ -14,6 +20,8 @@ export function formatMetric(value: number | null, unit: MetricUnit) {
       return formatMultiplier(value);
     case "days":
       return `${formatNumber(value, value < 10 ? 1 : 0)} dias`;
+    case "seconds":
+      return formatDuration(value);
   }
 }
 
@@ -31,6 +39,7 @@ export function formatMetricCompact(value: number, unit: MetricUnit) {
     case "multiplier":
       return formatMultiplier(value, 1);
     case "days":
+    case "seconds":
       return formatNumber(value);
   }
 }

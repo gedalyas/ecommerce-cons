@@ -1,4 +1,4 @@
-import type { AdPlatform } from "./marketing.types";
+import type { AdPlatform, AudienceDimension } from "./marketing.types";
 import { adLevelLabel } from "./marketingLabels";
 import type { AdLevel } from "./marketingSchema";
 
@@ -60,3 +60,16 @@ export const platformLevelLabel = (platform: AdPlatform, level: AdLevel): string
 
 export const adsetNounOf = (platform: AdPlatform): string =>
   platform === "GOOGLE" ? "Grupo" : "Conjunto";
+
+const genderLabel: Record<string, string> = {
+  female: "Feminino",
+  male: "Masculino",
+  unknown: "Não informado",
+};
+
+export const audienceValueLabelOf = (dimension: AudienceDimension, value: string): string =>
+  dimension === "GENDER"
+    ? (genderLabel[value] ?? value)
+    : value === "unknown"
+      ? "Não informado"
+      : value.replace("-", "–");

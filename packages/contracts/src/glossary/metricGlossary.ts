@@ -34,6 +34,14 @@ const glossaryTerms = [
   "messages",
   "costPerLead",
   "impressionShare",
+  "engagedSessions",
+  "users",
+  "newUsers",
+  "pageViews",
+  "averageDuration",
+  "engagementRate",
+  "bounceRate",
+  "gaPurchases",
 ] as const;
 
 type GlossaryTerm = (typeof glossaryTerms)[number];
@@ -188,6 +196,40 @@ const metricGlossary: Record<GlossaryTerm, MetricExplanation> = {
   impressionShare: {
     definition: "Das vezes em que o anúncio poderia aparecer nas buscas, em quantas apareceu.",
     formula: "Impressões ÷ impressões possíveis × 100",
+  },
+  engagedSessions: {
+    definition:
+      "Visitas que duraram mais de 10 segundos, viram duas páginas ou mais ou tiveram uma conversão, segundo o Google Analytics.",
+    formula: "Soma das sessões engajadas",
+  },
+  users: {
+    definition: "Pessoas diferentes que visitaram o site no período.",
+    formula: "Usuários ativos do Google Analytics",
+  },
+  newUsers: {
+    definition: "Pessoas que visitaram o site pela primeira vez no período.",
+    formula: "Soma dos novos usuários",
+  },
+  pageViews: {
+    definition: "Quantas páginas do site foram abertas, contando repetições.",
+    formula: "Soma das visualizações de página",
+  },
+  averageDuration: {
+    definition: "Quanto tempo, em média, cada visita ficou no site.",
+    formula: "Duração total das sessões ÷ sessões",
+  },
+  engagementRate: {
+    definition: "De cada 100 visitas, quantas foram engajadas.",
+    formula: "Sessões engajadas ÷ sessões × 100",
+  },
+  bounceRate: {
+    definition: "De cada 100 visitas, quantas saíram sem engajar.",
+    formula: "100 − taxa de engajamento",
+  },
+  gaPurchases: {
+    definition:
+      "Compras que o Google Analytics contou no site. Servem para comparar públicos e regiões; a venda da loja vem do ERP ou da planilha.",
+    formula: "Soma dos eventos de compra",
   },
 };
 

@@ -1,7 +1,7 @@
 # Marketing (`/marketing`)
 
 Module: `src/modules/marketing`. The route validates
-`?aba=geral|meta|google|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
+`?aba=geral|meta|google|site|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
 (`marketingSchema.ts`: `incluirTaxa`, `metricaInvest`, `metricaSessoes`,
 `base`, `utm`, `nivel`, `plataforma`, `metricaAds`); defaults are stripped
 from the URL. `MarketingScreen` is a union on `aba`. The `TabBar` reads
@@ -107,6 +107,23 @@ layout (`platformLayouts.ts`):
 4. **Palavras-chave** — `ad_keyword_daily` grouped by ad group + keyword + match type (Exata,
    Frase, Ampla), honouring the account, campaign and ad group opened above; CTR, CPC, conversions
    and cost per conversion, heat-shaded, CSV.
+
+## Site (`?aba=site`)
+
+The store's site as GA4 sees it. Payload `MarketingSiteTab` from `siteTabService.ts` (pure
+`siteMetrics.ts`, tested). All site traffic, every source; the global channel does not apply.
+Purchases here are GA4 counts ("compras informadas"), never revenue.
+
+1. **KPIs with Δ** — Sessões, Sessões engajadas, Usuários, Novos usuários, Visualizações, Duração
+   média (duration ÷ sessions, shown as "1 min 23 s"), Taxa de engajamento (engaged ÷ sessions),
+   Taxa de rejeição (100 − engagement).
+2. **Sessões × engajamento** (bars sessions and engaged, line engagement rate) and **Usuários ×
+   novos usuários** (line: % of new), Mensal (12 months) or No período.
+3. **Público** — gender and age tables: sessions, engagement, compras informadas, compras por
+   sessão; GA4 values labelled in Portuguese (`audienceValueLabelOf`).
+4. **Páginas mais visitadas** — top 50 by page views: views, sessions, engagement, average
+   duration; CSV.
+5. **Regiões** — per state: sessions, views, engagement, compras informadas, compras por sessão; CSV.
 
 ## Pilares (`?aba=visao`)
 
