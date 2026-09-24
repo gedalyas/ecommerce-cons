@@ -2,7 +2,7 @@ import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { AdPlatform } from "@ecommerce/database/enums";
 import type { AdLevel } from "@ecommerce/contracts/marketing";
 import { isoDay, type truncUnit, type Window } from "@ecommerce/contracts/shared/periodWindow";
-import { paidMediums, trafficSourcesOf, type AdDepthSums } from "./adDepth";
+import { paidMediums, trafficSourcesOf, type AdDepthSums, type KeywordSums } from "./adDepth";
 
 export type DepthScope = {
   platform: AdPlatform;
@@ -16,6 +16,7 @@ const counters = Prisma.sql`
   coalesce(sum(a.platform_fee), 0)::float8 as platform_fee,
   coalesce(sum(a.impressions), 0)::int as impressions,
   coalesce(sum(a.eligible_impressions), 0)::int as eligible_impressions,
+  coalesce(sum(a.impressions) filter (where a.eligible_impressions > 0), 0)::int as share_impressions,
   coalesce(sum(a.reach), 0)::int as reach,
   coalesce(sum(a.clicks), 0)::int as clicks,
   coalesce(sum(a.link_clicks), 0)::int as link_clicks,
@@ -31,6 +32,7 @@ type CounterRow = {
   platform_fee: number;
   impressions: number;
   eligible_impressions: number;
+  share_impressions: number;
   reach: number;
   clicks: number;
   link_clicks: number;
@@ -99,6 +101,7 @@ const toSums = (r: LevelRow): AdDepthSums => ({
   platformFee: r.platform_fee,
   impressions: r.impressions,
   eligibleImpressions: r.eligible_impressions,
+  shareImpressions: r.share_impressions,
   reach: r.reach,
   clicks: r.clicks,
   linkClicks: r.link_clicks,
@@ -196,4 +199,49 @@ export async function platformSessionsTotal(
       and lower(t.medium) in (${Prisma.join(paidMediums)})
   `;
   return row?.sessions ?? 0;
+}
+
+type KeywordDbRow = {
+  key: string;
+  keyword: string;
+  match_type: string;
+  ad_group_name: string;
+  campaign_name: string;
+  spend: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+};
+
+export async function keywordSums(
+  clientId: string,
+  w: Window,
+  scope: DepthScope,
+): Promise<KeywordSums[]> {
+  const rows = await prismaClient.$queryRaw<KeywordDbRow[]>`
+    select k.ad_group_id || '|' || k.keyword || '|' || k.match_type as key, k.keyword, k.match_type,
+      (array_agg(k.ad_group_name order by k.date desc))[1] as ad_group_name,
+      (array_agg(k.campaign_name order by k.date desc))[1] as campaign_name,
+      coalesce(sum(k.spend), 0)::float8 as spend, coalesce(sum(k.impressions), 0)::int as impressions,
+      coalesce(sum(k.clicks), 0)::int as clicks, coalesce(sum(k.conversions), 0)::int as conversions
+    from ad_keyword_daily k
+    where k.client_id = ${clientId} and k.date >= ${w.start} and k.date < ${w.end}
+      and k.platform = ${scope.platform}::ad_platform
+      ${scope.account === "todas" ? Prisma.empty : Prisma.sql`and k.account_id = ${scope.account}`}
+      ${scope.campaign ? Prisma.sql`and k.campaign_id = ${scope.campaign}` : Prisma.empty}
+      ${scope.adset ? Prisma.sql`and k.ad_group_id = ${scope.adset}` : Prisma.empty}
+    group by k.ad_group_id, k.keyword, k.match_type
+    order by spend desc, key
+  `;
+  return rows.map((r) => ({
+    key: r.key,
+    keyword: r.keyword,
+    matchType: r.match_type,
+    adGroupName: r.ad_group_name,
+    campaignName: r.campaign_name,
+    spend: r.spend,
+    impressions: r.impressions,
+    clicks: r.clicks,
+    conversions: r.conversions,
+  }));
 }

@@ -12,6 +12,7 @@ import {
 } from "@ecommerce/contracts/shared/periodWindow";
 import {
   deriveDepth,
+  deriveKeyword,
   platformKpiUnit,
   platformKpiValues,
   platformSeries,
@@ -21,6 +22,7 @@ import {
   adAccounts,
   depthByBucket,
   depthByLevel,
+  keywordSums,
   platformSessionsByBucket,
   platformSessionsTotal,
   type DepthScope,
@@ -73,12 +75,13 @@ export async function platformTab(
     campaign: input.campanha,
     adset: input.conjunto,
   };
-  const [accounts, cur, prev, monthly, daily] = await Promise.all([
+  const [accounts, cur, prev, monthly, daily, keywords] = await Promise.all([
     adAccounts(clientId, platform, lastMonthsWindow(today, 13)),
     windowRows(clientId, period.current, input.nivel, scope),
     period.previous ? windowRows(clientId, period.previous, input.nivel, scope) : null,
     seriesOf(clientId, lastMonthsWindow(today, 12), "mes", scope),
     seriesOf(clientId, period.current, input.por, scope),
+    platform === "GOOGLE" ? keywordSums(clientId, period.current, scope) : [],
   ]);
   const fee = input.incluirTaxa;
   const total = deriveDepth(cur.total, prev?.total ?? null, fee);
@@ -95,5 +98,6 @@ export async function platformTab(
     daily,
     rows: cur.rows.map((r) => deriveDepth(r, previousByKey.get(r.key) ?? null, fee)),
     total,
+    keywords: keywords.map(deriveKeyword),
   };
 }

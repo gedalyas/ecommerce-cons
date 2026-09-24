@@ -21,6 +21,7 @@ import { useMarketingSearch } from "./useMarketingSearch";
 const tabs = [
   { key: "geral", label: "Visão geral" },
   { key: "meta", label: "Meta Ads" },
+  { key: "google", label: "Google Ads" },
   { key: "visao", label: "Pilares" },
   { key: "resumo", label: "Resumo" },
   { key: "campanhas", label: "Campanhas" },
@@ -92,7 +93,7 @@ export function Marketing({ data }: { data: MarketingScreen }) {
             onPatch={patch}
           />
         )}
-        {data.aba === "meta" && (
+        {(data.aba === "meta" || data.aba === "google") && (
           <MarketingPlataforma
             data={data.platformTab}
             search={search}

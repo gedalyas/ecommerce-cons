@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   deriveDepth,
+  deriveKeyword,
   paidMediums,
   platformKpiUnit,
   platformKpiValues,
@@ -24,6 +25,7 @@ const sums = (over: Partial<AdDepthSums> = {}): AdDepthSums => ({
   platformFee: 15,
   impressions: 100_000,
   eligibleImpressions: 0,
+  shareImpressions: 0,
   reach: 60_000,
   clicks: 2000,
   linkClicks: 1500,
@@ -49,7 +51,11 @@ describe("deriveDepth", () => {
   });
 
   it("sums impression share as impressions over eligible impressions", () => {
-    const row = deriveDepth(sums({ impressions: 5000, eligibleImpressions: 10_000 }), null, false);
+    const row = deriveDepth(
+      sums({ impressions: 5000, eligibleImpressions: 10_000, shareImpressions: 5000 }),
+      null,
+      false,
+    );
     expect(row.impressionShare).toBe(50);
   });
 
@@ -62,6 +68,13 @@ describe("deriveDepth", () => {
 });
 
 describe("sumDepth", () => {
+  it("keeps the impression share to the rows that report it", () => {
+    const search = sums({ impressions: 5000, eligibleImpressions: 10_000, shareImpressions: 5000 });
+    const pmax = sums({ impressions: 20_000 });
+    const total = deriveDepth(sumDepth([search, pmax], "total", "Total"), null, false);
+    expect(total.impressionShare).toBe(50);
+  });
+
   it("adds every counter of the rows", () => {
     const total = sumDepth([sums(), sums({ spend: 500, leads: 3 })], "total", "Total");
     expect(total.spend).toBe(1500);
@@ -117,5 +130,33 @@ describe("platformKpiValues", () => {
   it("leaves the cost per session empty without paid sessions", () => {
     expect(platformKpiValues(deriveDepth(sums(), null, false), 0).costPerSession).toBeNull();
     expect(platformKpiValues(deriveDepth(sums(), null, false), null).sessions).toBeNull();
+  });
+});
+
+describe("deriveKeyword", () => {
+  const keyword = {
+    key: "g1|marca|EXACT",
+    keyword: "loja exemplo",
+    matchType: "EXACT",
+    adGroupName: "Marca",
+    campaignName: "Search · marca",
+    spend: 200,
+    impressions: 4000,
+    clicks: 400,
+    conversions: 10,
+  };
+
+  it("derives CTR, CPC and cost per conversion of a keyword", () => {
+    const row = deriveKeyword(keyword);
+    expect(row.ctr).toBe(10);
+    expect(row.cpc).toBe(0.5);
+    expect(row.costPerConversion).toBe(20);
+  });
+
+  it("leaves the ratios empty without clicks or conversions", () => {
+    const row = deriveKeyword({ ...keyword, impressions: 0, clicks: 0, conversions: 0 });
+    expect(row.ctr).toBeNull();
+    expect(row.cpc).toBeNull();
+    expect(row.costPerConversion).toBeNull();
   });
 });

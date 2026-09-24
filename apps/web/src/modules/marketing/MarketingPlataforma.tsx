@@ -1,12 +1,12 @@
 import { explanationOf } from "@ecommerce/contracts/glossary";
 import {
-  adLevelLabel,
   adLevels,
   adPlatformLabel,
+  adsetNounOf,
+  platformLevelLabel,
   type AdDepthRow,
   type MarketingPlatformTab,
   type MarketingSearch,
-  type PlatformKpi,
   type PlatformSeriesPoint,
 } from "@ecommerce/contracts/marketing";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
@@ -22,6 +22,8 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { depthColumns } from "./depthColumns";
+import { keywordColumns } from "./keywordColumns";
+import { platformLayouts, type PlatformTile } from "./platformLayouts";
 
 type Props = {
   data: MarketingPlatformTab;
@@ -30,33 +32,6 @@ type Props = {
   comparisonLabel: string;
   onPatch: (next: Partial<MarketingSearch>) => void;
 };
-
-type Tile = { key: PlatformKpi; label: string; goodWhen?: "up" | "down" };
-
-const headlineTiles: Tile[] = [
-  { key: "spend", label: "Investido", goodWhen: "down" },
-  { key: "reach", label: "Alcance" },
-  { key: "cpm", label: "CPM", goodWhen: "down" },
-  { key: "ctr", label: "CTR" },
-  { key: "cpc", label: "CPC", goodWhen: "down" },
-  { key: "conversions", label: "Conversões" },
-  { key: "costPerConversion", label: "Custo por conversão", goodWhen: "down" },
-  { key: "costPerSession", label: "Custo por sessão", goodWhen: "down" },
-];
-
-const pathTiles: Tile[] = [
-  { key: "impressions", label: "Impressões" },
-  { key: "linkClicks", label: "Cliques no link" },
-  { key: "landingPageViews", label: "Visualizações da página" },
-  { key: "sessions", label: "Sessões pagas" },
-  { key: "addToCart", label: "Adições ao carrinho" },
-];
-
-const contactTiles: Tile[] = [
-  { key: "leads", label: "Leads" },
-  { key: "messages", label: "Conversas iniciadas" },
-  { key: "costPerLead", label: "Custo por lead", goodWhen: "down" },
-];
 
 const seriesOptions = [
   { key: "mensal", label: "Mensal" },
@@ -74,7 +49,7 @@ function Tiles({
   tiles,
   comparisonLabel,
   bare = false,
-}: Pick<Props, "data" | "comparisonLabel"> & { tiles: Tile[]; bare?: boolean }) {
+}: Pick<Props, "data" | "comparisonLabel"> & { tiles: PlatformTile[]; bare?: boolean }) {
   return (
     <MetricTileGroup
       bare={bare}
@@ -172,7 +147,7 @@ function Scope({ data, search, onPatch }: Pick<Props, "data" | "search" | "onPat
   const [first] = data.rows;
   const parts = [
     search.campanha ? `Campanha: ${first?.campaignName ?? "—"}` : null,
-    search.conjunto ? `Conjunto: ${first?.adsetName ?? "—"}` : null,
+    search.conjunto ? `${adsetNounOf(data.platform)}: ${first?.adsetName ?? "—"}` : null,
   ].filter(Boolean);
   return (
     <div className="flex flex-wrap items-center gap-2 px-4 pt-4">
@@ -191,12 +166,12 @@ function Scope({ data, search, onPatch }: Pick<Props, "data" | "search" | "onPat
 function LevelTable({ data, search, period, onPatch }: Omit<Props, "comparisonLabel">) {
   return (
     <SectionBlock
-      title={adLevelLabel[search.nivel]}
-      description="Clique numa campanha ou conjunto para abrir o nível de baixo. As cores marcam o melhor e o pior custo de cada coluna."
+      title={platformLevelLabel(data.platform, search.nivel)}
+      description="Clique numa campanha ou no nível do meio para abrir o de baixo. As cores marcam o melhor e o pior de cada coluna."
       meta={
         <SegmentedControl
           label="Nível"
-          options={adLevels.map((key) => ({ key, label: adLevelLabel[key] }))}
+          options={adLevels.map((key) => ({ key, label: platformLevelLabel(data.platform, key) }))}
           value={search.nivel}
           onChange={(nivel) => onPatch({ nivel })}
         />
@@ -204,7 +179,9 @@ function LevelTable({ data, search, period, onPatch }: Omit<Props, "comparisonLa
     >
       <Scope data={data} search={search} onPatch={onPatch} />
       <DataTable
-        columns={depthColumns(search.nivel, (row) => onPatch(drillPatch(search, row)))}
+        columns={depthColumns(data.platform, search.nivel, (row) =>
+          onPatch(drillPatch(search, row)),
+        )}
         rows={data.rows}
         totalRow={data.total}
         rowKey={(r) => r.key}
@@ -217,8 +194,28 @@ function LevelTable({ data, search, period, onPatch }: Omit<Props, "comparisonLa
   );
 }
 
+function Keywords({ data, period }: Pick<Props, "data" | "period">) {
+  return (
+    <SectionBlock
+      title="Palavras-chave"
+      description="Os termos das campanhas de pesquisa, com o tipo de correspondência. Respeitam a campanha e o grupo abertos acima."
+    >
+      <DataTable
+        columns={keywordColumns}
+        rows={data.keywords}
+        rowKey={(r) => r.key}
+        initialSort={{ key: "spend", direction: "desc" }}
+        initialPageSize={10}
+        csvFileName={`${data.platform.toLowerCase()}-palavras-chave-${period.inicio}-${period.fim}`}
+        emptyMessage="Sem campanhas de pesquisa no período."
+      />
+    </SectionBlock>
+  );
+}
+
 export function MarketingPlataforma({ data, search, period, comparisonLabel, onPatch }: Props) {
   const label = adPlatformLabel[data.platform];
+  const platformLayout = platformLayouts[data.platform];
   return (
     <div className={layout.blockStack}>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -228,23 +225,31 @@ export function MarketingPlataforma({ data, search, period, comparisonLabel, onP
         </p>
         <AccountFilter data={data} search={search} onPatch={onPatch} />
       </div>
-      <Tiles data={data} tiles={headlineTiles} comparisonLabel={comparisonLabel} />
+      <Tiles data={data} tiles={platformLayout.headline} comparisonLabel={comparisonLabel} />
       <Charts data={data} search={search} period={period} onPatch={onPatch} />
       <SectionBlock
-        title="Do anúncio ao carrinho"
-        description="Cada etapa entre a impressão e a adição ao carrinho."
+        title="Do anúncio ao site"
+        description="Cada etapa entre a impressão e a visita ao site."
         bodyClassName={layout.cardPadding}
       >
-        <Tiles data={data} tiles={pathTiles} comparisonLabel={comparisonLabel} bare />
+        <Tiles data={data} tiles={platformLayout.path} comparisonLabel={comparisonLabel} bare />
       </SectionBlock>
-      <SectionBlock
-        title="Leads e conversas"
-        description="Campanhas de cadastro e de mensagens, que não geram venda direta."
-        bodyClassName={layout.cardPadding}
-      >
-        <Tiles data={data} tiles={contactTiles} comparisonLabel={comparisonLabel} bare />
-      </SectionBlock>
+      {platformLayout.contact && (
+        <SectionBlock
+          title="Leads e conversas"
+          description="Campanhas de cadastro e de mensagens, que não geram venda direta."
+          bodyClassName={layout.cardPadding}
+        >
+          <Tiles
+            data={data}
+            tiles={platformLayout.contact}
+            comparisonLabel={comparisonLabel}
+            bare
+          />
+        </SectionBlock>
+      )}
       <LevelTable data={data} search={search} period={period} onPatch={onPatch} />
+      {data.platform === "GOOGLE" && <Keywords data={data} period={period} />}
     </div>
   );
 }

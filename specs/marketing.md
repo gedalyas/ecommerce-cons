@@ -1,7 +1,7 @@
 # Marketing (`/marketing`)
 
 Module: `src/modules/marketing`. The route validates
-`?aba=visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
+`?aba=geral|meta|google|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
 (`marketingSchema.ts`: `incluirTaxa`, `metricaInvest`, `metricaSessoes`,
 `base`, `utm`, `nivel`, `plataforma`, `metricaAds`); defaults are stripped
 from the URL. `MarketingScreen` is a union on `aba`. The `TabBar` reads
@@ -90,6 +90,23 @@ spreadsheet.
    views, carts, conversions, cost per conversion, Δ cost per conversion (vs the comparison),
    leads, conversations; CPM, CTR, CPC, conversions and cost per conversion are heat-shaded;
    ads show the creative thumbnail. Total row and CSV export.
+
+## Google Ads (`?aba=google`)
+
+Same payload and component as Meta Ads (`platformTab(clientId, "GOOGLE", input)`), with the Google
+layout (`platformLayouts.ts`):
+
+1. **KPIs with Δ** — Investido, Impressões, Parcela de impressões, CTR, CPC, Conversões, Custo por
+   conversão, Custo por sessão. Impression share = Σ impressions ÷ Σ eligible impressions, both
+   only over rows that report eligible impressions (Search), so Performance Max never inflates it.
+2. The same two combo charts; **Do anúncio ao site** — Impressões → Cliques → Sessões pagas → Custo
+   por sessão. No leads block.
+3. **Campanhas / Grupos de anúncios / Anúncios** — campaign type column (`campaignTypeLabelOf`:
+   Pesquisa, Performance Max, Shopping…, an unknown type shown as sent), Δ investimento, Δ
+   conversões and Δ custo por conversão vs the comparison, impression share heat-shaded.
+4. **Palavras-chave** — `ad_keyword_daily` grouped by ad group + keyword + match type (Exata,
+   Frase, Ampla), honouring the account, campaign and ad group opened above; CTR, CPC, conversions
+   and cost per conversion, heat-shaded, CSV.
 
 ## Pilares (`?aba=visao`)
 

@@ -351,6 +351,8 @@ export async function marketingScreen(
       return { aba: "geral", general: await marketingGeneral(clientId, input) };
     case "meta":
       return { aba: "meta", platformTab: await platformTab(clientId, "META", input) };
+    case "google":
+      return { aba: "google", platformTab: await platformTab(clientId, "GOOGLE", input) };
     case "visao":
       throw new Error("The visão tab is assembled by the controller (it needs the retention)");
     case "resumo":

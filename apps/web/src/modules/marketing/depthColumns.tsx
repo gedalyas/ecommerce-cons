@@ -7,7 +7,14 @@ import {
   formatPercent,
   formatVariation,
 } from "@ecommerce/contracts/shared/format";
-import { adLevelLabel, type AdDepthRow, type AdLevel } from "@ecommerce/contracts/marketing";
+import {
+  adsetNounOf,
+  campaignTypeLabelOf,
+  platformLevelLabel,
+  type AdDepthRow,
+  type AdLevel,
+  type AdPlatform,
+} from "@ecommerce/contracts/marketing";
 
 type NumericKey = {
   [K in keyof AdDepthRow]: AdDepthRow[K] extends number | null ? K : never;
@@ -43,7 +50,7 @@ function numeric(
   };
 }
 
-const metricColumns: DataTableColumn<AdDepthRow>[] = [
+const metaColumns: DataTableColumn<AdDepthRow>[] = [
   numeric("spend", "Investimento", "money"),
   numeric("impressions", "Impressões", "count"),
   numeric("reach", "Alcance", "count"),
@@ -54,30 +61,47 @@ const metricColumns: DataTableColumn<AdDepthRow>[] = [
   numeric("landingPageViews", "Visualizações da página", "count"),
   numeric("addToCart", "Adições ao carrinho", "count"),
   numeric("conversions", "Conversões", "count", "good-high"),
+  numeric("conversionsVariation", "Δ conversões", "variation"),
   numeric("costPerConversion", "Custo por conversão", "money2", "good-low"),
   numeric("costPerConversionVariation", "Δ custo por conversão", "variation"),
   numeric("leads", "Leads", "count"),
   numeric("messages", "Conversas", "count"),
 ];
 
-export function depthColumns(
-  level: AdLevel,
-  onDrill: (row: AdDepthRow) => void,
-): DataTableColumn<AdDepthRow>[] {
-  const head: DataTableColumn<AdDepthRow>[] = [
-    {
-      key: "name",
-      header: adLevelLabel[level],
-      render: (r) => <DepthNameCell row={r} level={level} onDrill={onDrill} />,
-      renderTotal: (r) => r.name,
-      csv: (r) => r.name,
-      sortValue: (r) => r.name,
-      className: "min-w-48 font-semibold",
-      mobile: "title",
-    },
-  ];
+const googleColumns: DataTableColumn<AdDepthRow>[] = [
+  numeric("spend", "Investimento", "money"),
+  numeric("spendVariation", "Δ investimento", "variation"),
+  numeric("impressions", "Impressões", "count"),
+  numeric("impressionShare", "Parcela de impressões", "percent", "good-high"),
+  numeric("clicks", "Cliques", "count"),
+  numeric("ctr", "CTR", "percent", "good-high"),
+  numeric("cpc", "CPC", "money2", "good-low"),
+  numeric("conversions", "Conversões", "count", "good-high"),
+  numeric("conversionsVariation", "Δ conversões", "variation"),
+  numeric("costPerConversion", "Custo por conversão", "money2", "good-low"),
+  numeric("costPerConversionVariation", "Δ custo por conversão", "variation"),
+];
+
+const metricColumnsOf: Record<AdPlatform, DataTableColumn<AdDepthRow>[]> = {
+  META: metaColumns,
+  GOOGLE: googleColumns,
+  TIKTOK: metaColumns,
+};
+
+function contextColumns(platform: AdPlatform, level: AdLevel): DataTableColumn<AdDepthRow>[] {
+  const columns: DataTableColumn<AdDepthRow>[] = [];
+  if (level === "campanha") {
+    columns.push({
+      key: "campaignType",
+      header: "Tipo",
+      render: (r) => campaignTypeLabelOf(r.campaignType),
+      csv: (r) => campaignTypeLabelOf(r.campaignType),
+      sortValue: (r) => r.campaignType,
+      className: "whitespace-nowrap",
+    });
+  }
   if (level !== "campanha") {
-    head.push({
+    columns.push({
       key: "campaignName",
       header: "Campanha",
       render: (r) => r.campaignName ?? "—",
@@ -86,13 +110,31 @@ export function depthColumns(
     });
   }
   if (level === "anuncio") {
-    head.push({
+    columns.push({
       key: "adsetName",
-      header: "Conjunto",
+      header: adsetNounOf(platform),
       render: (r) => r.adsetName ?? "—",
       sortValue: (r) => r.adsetName,
       className: "whitespace-nowrap",
     });
   }
-  return [...head, ...metricColumns];
+  return columns;
+}
+
+export function depthColumns(
+  platform: AdPlatform,
+  level: AdLevel,
+  onDrill: (row: AdDepthRow) => void,
+): DataTableColumn<AdDepthRow>[] {
+  const name: DataTableColumn<AdDepthRow> = {
+    key: "name",
+    header: platformLevelLabel(platform, level),
+    render: (r) => <DepthNameCell row={r} level={level} onDrill={onDrill} />,
+    renderTotal: (r) => r.name,
+    csv: (r) => r.name,
+    sortValue: (r) => r.name,
+    className: "min-w-48 font-semibold",
+    mobile: "title",
+  };
+  return [name, ...contextColumns(platform, level), ...metricColumnsOf[platform]];
 }

@@ -1,5 +1,6 @@
 import type {
   AdDepthRow,
+  AdKeywordRow,
   AdPlatform,
   PlatformKpi,
   PlatformSeriesPoint,
@@ -20,6 +21,7 @@ export type AdDepthSums = {
   platformFee: number;
   impressions: number;
   eligibleImpressions: number;
+  shareImpressions: number;
   reach: number;
   clicks: number;
   linkClicks: number;
@@ -46,7 +48,12 @@ export function deriveDepth(
   const costPerConversion = ratio(spend, sums.conversions);
   const prevSpend = previous ? spendOf(previous) : null;
   const prevCost = previous && prevSpend != null ? ratio(prevSpend, previous.conversions) : null;
-  const { platformFee: _fee, eligibleImpressions: _eligible, ...rest } = sums;
+  const {
+    platformFee: _fee,
+    eligibleImpressions: _eligible,
+    shareImpressions: _share,
+    ...rest
+  } = sums;
   return {
     ...rest,
     spend,
@@ -57,7 +64,9 @@ export function deriveDepth(
     costPerConversion,
     costPerLead: ratio(spend, sums.leads),
     impressionShare:
-      sums.eligibleImpressions > 0 ? (sums.impressions / sums.eligibleImpressions) * 100 : null,
+      sums.eligibleImpressions > 0
+        ? (sums.shareImpressions / sums.eligibleImpressions) * 100
+        : null,
     spendVariation: variation(spend, prevSpend),
     conversionsVariation: variation(sums.conversions, previous?.conversions ?? null),
     costPerConversionVariation: variation(costPerConversion, prevCost),
@@ -79,6 +88,7 @@ export function sumDepth(rows: readonly AdDepthSums[], id: string, name: string)
     platformFee: 0,
     impressions: 0,
     eligibleImpressions: 0,
+    shareImpressions: 0,
     reach: 0,
     clicks: 0,
     linkClicks: 0,
@@ -93,6 +103,7 @@ export function sumDepth(rows: readonly AdDepthSums[], id: string, name: string)
     total.platformFee += r.platformFee;
     total.impressions += r.impressions;
     total.eligibleImpressions += r.eligibleImpressions;
+    total.shareImpressions += r.shareImpressions;
     total.reach += r.reach;
     total.clicks += r.clicks;
     total.linkClicks += r.linkClicks;
@@ -183,3 +194,12 @@ export function platformKpiValues(
     impressionShare: row.impressionShare,
   };
 }
+
+export type KeywordSums = Omit<AdKeywordRow, "ctr" | "cpc" | "costPerConversion">;
+
+export const deriveKeyword = (sums: KeywordSums): AdKeywordRow => ({
+  ...sums,
+  ctr: sums.impressions > 0 ? (sums.clicks / sums.impressions) * 100 : null,
+  cpc: ratio(sums.spend, sums.clicks),
+  costPerConversion: ratio(sums.spend, sums.conversions),
+});

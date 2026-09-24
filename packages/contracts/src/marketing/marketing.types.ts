@@ -367,6 +367,21 @@ export type AdDepthRow = {
   costPerConversionVariation: number | null;
 };
 
+export type AdKeywordRow = {
+  key: string;
+  keyword: string;
+  matchType: string;
+  adGroupName: string;
+  campaignName: string;
+  spend: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  ctr: number | null;
+  cpc: number | null;
+  costPerConversion: number | null;
+};
+
 export type PlatformSeriesPoint = {
   bucket: string;
   spend: number;
@@ -384,10 +399,11 @@ export type MarketingPlatformTab = {
   daily: PlatformSeriesPoint[];
   rows: AdDepthRow[];
   total: AdDepthRow;
+  keywords: AdKeywordRow[];
 };
 
 export type MarketingScreen =
-  | { aba: Extract<MarketingTab, "meta">; platformTab: MarketingPlatformTab }
+  | { aba: Extract<MarketingTab, "meta" | "google">; platformTab: MarketingPlatformTab }
   | { aba: Extract<MarketingTab, "geral">; general: MarketingGeneral }
   | ({ aba: Extract<MarketingTab, "visao"> } & MarketingVisao)
   | { aba: Extract<MarketingTab, "resumo">; summary: MarketingSummary }

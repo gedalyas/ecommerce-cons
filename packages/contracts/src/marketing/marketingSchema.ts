@@ -3,6 +3,7 @@ import { z } from "zod";
 export const marketingTabs = [
   "geral",
   "meta",
+  "google",
   "visao",
   "resumo",
   "campanhas",

@@ -12,6 +12,7 @@ export {
 } from "./marketing.types";
 export type {
   AdDepthRow,
+  AdKeywordRow,
   MarketingPlatformTab,
   PlatformKpi,
   PlatformSeriesPoint,
@@ -53,6 +54,12 @@ export type {
   MarketingVisao,
   MarketingScreen,
 } from "./marketing.types";
+export {
+  adsetNounOf,
+  campaignTypeLabelOf,
+  matchTypeLabelOf,
+  platformLevelLabel,
+} from "./adTaxonomy";
 export {
   investmentMetricLabel,
   sessionMetricLabel,
