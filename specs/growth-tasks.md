@@ -46,7 +46,8 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
 - [x] Catalog: Bling niche names (+ Social commerce), logos (Simple Icons + monogram), new
       entries Tiny, Omie, Shopee, Magalu, TikTok Shop, Mercado Ads, Amazon Ads, Shopee Ads
 - [ ] Catalog: `credentialFields` and modalidade per marketplace (Amazon MFN / FBA Classic / FBA
-      Onsite; ML próprio / Full); sales channel groups modalities
+      Onsite; ML próprio / Full); sales channel groups modalities. Bling has no credential
+      field: OAuth with the Bling-generated app ID (confirmed 2026-09-24)
 - [x] Connector drawer: Conectar · O que puxa (owner per kind) · Ajuda (`connectorGuides.ts`,
       marketplace modalities explained)
 - [ ] `POST /connectors/:key/test` + `testCredentials?` per provider

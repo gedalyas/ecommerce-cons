@@ -75,9 +75,14 @@ the investment that serves that channel:
   sales/marketing cost lines, the same investment the dashboard already sums). The R$ per new
   customer stays available only where a screen is about customers (Clientes › LTV e CAC).
 - **Scheduled report = e-mail with a short summary in the body + PDF attached.**
-- **Connections are hybrid:** id/token field + "Testar" where the platform offers it (Bling API
-  key, VTEX app key, Tray, Nuvemshop…); OAuth "Conectar" kept where it is the only way (Meta,
-  Google), inside the same card layout, with the help tab and "Testar" after connecting.
+- **Connections are hybrid:** id/token field + "Testar" where the platform offers it (VTEX app
+  key, Tray, Nuvemshop…); OAuth "Conectar" where the platform requires it (Bling, Meta, Google),
+  inside the same card layout, with the help tab and "Testar" after connecting.
+- **Bling connects the way Bling requires (confirmed 2026-09-24):** API v3 is OAuth only — our
+  app is registered in Bling's Área do integrador, Bling generates its ID (`client_id`) and
+  secret, which live in our env; the store owner only clicks "Conectar" and authorizes in
+  Bling. No id/token field for Bling. The other IDs on Bling's screens are Bling-generated too
+  (`loja.id` per sales channel, read from `GET /canais-venda`): we read them, nobody types them.
 
 ## Stages
 
