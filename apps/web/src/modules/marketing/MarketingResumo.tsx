@@ -1,3 +1,4 @@
+import { withHints } from "./columnHints";
 import { Badge } from "@/shared/ui/Badge";
 import { BarBreakdownChart } from "@/shared/ui/BarBreakdownChart";
 import { ComboChart } from "@/shared/ui/ComboChart";
@@ -36,34 +37,49 @@ const money = (v: number | null) => (v == null ? "—" : formatCurrency(v));
 const pct = (v: number | null) => (v == null ? "—" : formatPercent(v));
 const times = (v: number | null) => (v == null ? "—" : formatMultiplier(v));
 
-const channelColumns: DataTableColumn<ChannelPerformanceRow>[] = [
-  { key: "label", header: "Canal", render: (r) => r.label, className: "font-semibold" },
+const channelColumns = withHints<ChannelPerformanceRow>(
+  [
+    { key: "label", header: "Canal", render: (r) => r.label, className: "font-semibold" },
+    {
+      key: "investment",
+      header: "Investimento",
+      align: "right",
+      render: (r) => money(r.investment),
+      csv: (r) => Math.round(r.investment * 100) / 100,
+    },
+    {
+      key: "revenue",
+      header: "Receita",
+      mobile: "lead",
+      align: "right",
+      render: (r) => money(r.revenue),
+      csv: (r) => Math.round(r.revenue * 100) / 100,
+    },
+    { key: "roi", header: "ROI", align: "right", render: (r) => pct(r.roi), csv: (r) => r.roi },
+    {
+      key: "roas",
+      header: "ROAS",
+      align: "right",
+      render: (r) => times(r.roas),
+      csv: (r) => r.roas,
+    },
+    { key: "cpa", header: "CPA", align: "right", render: (r) => money(r.cpa), csv: (r) => r.cpa },
+    {
+      key: "conversionRate",
+      header: "Conversão",
+      align: "right",
+      render: (r) => pct(r.conversionRate),
+      csv: (r) => r.conversionRate,
+    },
+  ],
   {
-    key: "investment",
-    header: "Investimento",
-    align: "right",
-    render: (r) => money(r.investment),
-    csv: (r) => Math.round(r.investment * 100) / 100,
+    investment: "marketingInvestment",
+    revenue: "totalSold",
+    roi: "roi",
+    cpa: "cpa",
+    conversionRate: "conversionRate",
   },
-  {
-    key: "revenue",
-    header: "Receita",
-    mobile: "lead",
-    align: "right",
-    render: (r) => money(r.revenue),
-    csv: (r) => Math.round(r.revenue * 100) / 100,
-  },
-  { key: "roi", header: "ROI", align: "right", render: (r) => pct(r.roi), csv: (r) => r.roi },
-  { key: "roas", header: "ROAS", align: "right", render: (r) => times(r.roas), csv: (r) => r.roas },
-  { key: "cpa", header: "CPA", align: "right", render: (r) => money(r.cpa), csv: (r) => r.cpa },
-  {
-    key: "conversionRate",
-    header: "Conversão",
-    align: "right",
-    render: (r) => pct(r.conversionRate),
-    csv: (r) => r.conversionRate,
-  },
-];
+);
 
 const verdictLabel: Record<BenchmarkVerdict, string> = {
   abaixo: "Abaixo",
@@ -112,42 +128,45 @@ const funnelColumns: DataTableColumn<FunnelRatioRow>[] = [
   },
 ];
 
-const utmColumns: DataTableColumn<UtmSalesRow>[] = [
-  { key: "label", header: "Dimensão", render: (r) => r.label, sortValue: (r) => r.label },
-  {
-    key: "orders",
-    header: "Pedidos",
-    align: "right",
-    render: (r) => formatNumber(r.orders),
-    csv: (r) => r.orders,
-    sortValue: (r) => r.orders,
-  },
-  {
-    key: "revenue",
-    header: "Receita",
-    mobile: "lead",
-    align: "right",
-    render: (r) => money(r.revenue),
-    csv: (r) => Math.round(r.revenue * 100) / 100,
-    sortValue: (r) => r.revenue,
-  },
-  {
-    key: "share",
-    header: "Participação",
-    align: "right",
-    render: (r) => pct(r.share),
-    csv: (r) => r.share,
-    sortValue: (r) => r.share,
-  },
-  {
-    key: "aov",
-    header: "Ticket médio",
-    align: "right",
-    render: (r) => money(r.aov),
-    csv: (r) => Math.round(r.aov * 100) / 100,
-    sortValue: (r) => r.aov,
-  },
-];
+const utmColumns = withHints<UtmSalesRow>(
+  [
+    { key: "label", header: "Dimensão", render: (r) => r.label, sortValue: (r) => r.label },
+    {
+      key: "orders",
+      header: "Pedidos",
+      align: "right",
+      render: (r) => formatNumber(r.orders),
+      csv: (r) => r.orders,
+      sortValue: (r) => r.orders,
+    },
+    {
+      key: "revenue",
+      header: "Receita",
+      mobile: "lead",
+      align: "right",
+      render: (r) => money(r.revenue),
+      csv: (r) => Math.round(r.revenue * 100) / 100,
+      sortValue: (r) => r.revenue,
+    },
+    {
+      key: "share",
+      header: "Participação",
+      align: "right",
+      render: (r) => pct(r.share),
+      csv: (r) => r.share,
+      sortValue: (r) => r.share,
+    },
+    {
+      key: "aov",
+      header: "Ticket médio",
+      align: "right",
+      render: (r) => money(r.aov),
+      csv: (r) => Math.round(r.aov * 100) / 100,
+      sortValue: (r) => r.aov,
+    },
+  ],
+  { orders: "orders", revenue: "totalSold", aov: "averageTicket" },
+);
 
 export function MarketingResumo({
   data,

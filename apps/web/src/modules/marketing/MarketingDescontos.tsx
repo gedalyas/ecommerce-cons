@@ -1,4 +1,6 @@
-import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
+import { withHints } from "./columnHints";
+import { explanationOf } from "@ecommerce/contracts/glossary";
+import { DataTable } from "@/shared/ui/DataTable";
 import { DualSeriesChart } from "@/shared/ui/DualSeriesChart";
 import { metricToTile } from "@/shared/ui/metricToTile";
 import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
@@ -15,64 +17,73 @@ const money = (v: number | null) => (v == null ? "—" : formatCurrency(v));
 const pct = (v: number | null) => (v == null ? "—" : formatPercent(v));
 const round2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);
 
-const codeColumns: DataTableColumn<DiscountCodeRow>[] = [
+const codeColumns = withHints<DiscountCodeRow>(
+  [
+    {
+      key: "code",
+      header: "Cupom",
+      render: (r) => r.code,
+      sortValue: (r) => r.code,
+      className: "whitespace-nowrap font-semibold",
+    },
+    {
+      key: "orders",
+      header: "Pedidos",
+      align: "right",
+      render: (r) => formatNumber(r.orders),
+      csv: (r) => r.orders,
+      sortValue: (r) => r.orders,
+    },
+    {
+      key: "firstOrders",
+      header: "Primeiras compras",
+      align: "right",
+      render: (r) => formatNumber(r.firstOrders),
+      csv: (r) => r.firstOrders,
+      sortValue: (r) => r.firstOrders,
+    },
+    {
+      key: "revenue",
+      header: "Receita",
+      mobile: "lead",
+      align: "right",
+      render: (r) => money(r.revenue),
+      csv: (r) => round2(r.revenue),
+      sortValue: (r) => r.revenue,
+    },
+    {
+      key: "discounts",
+      header: "Desconto concedido",
+      align: "right",
+      render: (r) => money(r.discounts),
+      csv: (r) => round2(r.discounts),
+      sortValue: (r) => r.discounts,
+    },
+    {
+      key: "discountRate",
+      header: "Desconto médio",
+      align: "right",
+      render: (r) => pct(r.discountRate),
+      csv: (r) => round2(r.discountRate),
+      sortValue: (r) => r.discountRate,
+    },
+    {
+      key: "aov",
+      header: "Ticket médio",
+      align: "right",
+      render: (r) => money(r.aov),
+      csv: (r) => round2(r.aov),
+      sortValue: (r) => r.aov,
+    },
+  ],
   {
-    key: "code",
-    header: "Cupom",
-    render: (r) => r.code,
-    sortValue: (r) => r.code,
-    className: "whitespace-nowrap font-semibold",
+    orders: "couponOrders",
+    revenue: "couponRevenue",
+    discounts: "discounts",
+    discountRate: "discountRate",
+    aov: "aovWithCoupon",
   },
-  {
-    key: "orders",
-    header: "Pedidos",
-    align: "right",
-    render: (r) => formatNumber(r.orders),
-    csv: (r) => r.orders,
-    sortValue: (r) => r.orders,
-  },
-  {
-    key: "firstOrders",
-    header: "Primeiras compras",
-    align: "right",
-    render: (r) => formatNumber(r.firstOrders),
-    csv: (r) => r.firstOrders,
-    sortValue: (r) => r.firstOrders,
-  },
-  {
-    key: "revenue",
-    header: "Receita",
-    mobile: "lead",
-    align: "right",
-    render: (r) => money(r.revenue),
-    csv: (r) => round2(r.revenue),
-    sortValue: (r) => r.revenue,
-  },
-  {
-    key: "discounts",
-    header: "Desconto concedido",
-    align: "right",
-    render: (r) => money(r.discounts),
-    csv: (r) => round2(r.discounts),
-    sortValue: (r) => r.discounts,
-  },
-  {
-    key: "discountRate",
-    header: "Desconto médio",
-    align: "right",
-    render: (r) => pct(r.discountRate),
-    csv: (r) => round2(r.discountRate),
-    sortValue: (r) => r.discountRate,
-  },
-  {
-    key: "aov",
-    header: "Ticket médio",
-    align: "right",
-    render: (r) => money(r.aov),
-    csv: (r) => round2(r.aov),
-    sortValue: (r) => r.aov,
-  },
-];
+);
 
 export function MarketingDescontos({
   data,
@@ -89,6 +100,7 @@ export function MarketingDescontos({
       metric: m.metric,
       comparisonLabel,
       goodWhen: m.goodWhen,
+      hint: explanationOf(m.key),
     }),
   );
   return (

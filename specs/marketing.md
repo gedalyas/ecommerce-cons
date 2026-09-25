@@ -10,7 +10,10 @@ canal · Funil de investimento · Pilares · Resumo · Campanhas · Descontos ·
 period and channel controls sit in the TopBar. Under the tabs, **Última atualização** lists the
 connected sources the tab reads with their last sync (`tabSources` in contracts: per tab the data
 kinds it uses, Meta Ads / Google Ads tabs only their connector; a source in error in orange; "Nenhuma
-fonte conectada para esta aba." when none).
+fonte conectada para esta aba." when none). Every tile and table header whose formula matches a glossary term carries its ⓘ
+(`explanationOf`; tables through `withHints(columns, { key: term })`); a number computed differently
+from the term (the ROAS per state or per channel of Resumo/Regiões) carries none rather than a
+wrong formula.
 
 ## Composition root
 

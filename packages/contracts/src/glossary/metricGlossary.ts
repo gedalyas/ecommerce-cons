@@ -42,6 +42,18 @@ const glossaryTerms = [
   "engagementRate",
   "bounceRate",
   "gaPurchases",
+  "couponOrders",
+  "couponShare",
+  "discounts",
+  "couponRevenue",
+  "discountRate",
+  "aovWithCoupon",
+  "aovWithoutCoupon",
+  "followers",
+  "socialReach",
+  "socialEngagement",
+  "socialEngagementRate",
+  "posts",
 ] as const;
 
 type GlossaryTerm = (typeof glossaryTerms)[number];
@@ -230,6 +242,54 @@ const metricGlossary: Record<GlossaryTerm, MetricExplanation> = {
     definition:
       "Compras que o Google Analytics contou no site. Servem para comparar públicos e regiões; a venda da loja vem do ERP ou da planilha.",
     formula: "Soma dos eventos de compra",
+  },
+  couponOrders: {
+    definition: "Pedidos pagos em que o cliente usou um cupom.",
+    formula: "Contagem de pedidos pagos com cupom",
+  },
+  couponShare: {
+    definition: "De cada 100 pedidos, quantos usaram cupom.",
+    formula: "Pedidos com cupom ÷ pedidos × 100",
+  },
+  discounts: {
+    definition: "Quanto a loja deixou de receber com os cupons.",
+    formula: "Soma dos descontos dos pedidos com cupom",
+  },
+  couponRevenue: {
+    definition: "O que os pedidos com cupom faturaram, já com o desconto.",
+    formula: "Soma do valor pago dos pedidos com cupom",
+  },
+  discountRate: {
+    definition: "Quanto do preço cheio o cupom abateu, em média.",
+    formula: "Desconto ÷ (receita com cupom + desconto) × 100",
+  },
+  aovWithCoupon: {
+    definition: "Valor médio dos pedidos que usaram cupom.",
+    formula: "Receita com cupom ÷ pedidos com cupom",
+  },
+  aovWithoutCoupon: {
+    definition: "Valor médio dos pedidos sem cupom, para comparar.",
+    formula: "Receita sem cupom ÷ pedidos sem cupom",
+  },
+  followers: {
+    definition: "Seguidores das contas no último dia sincronizado do período.",
+    formula: "Seguidores no fim do período",
+  },
+  socialReach: {
+    definition: "Pessoas alcançadas pelas publicações orgânicas, somadas dia a dia.",
+    formula: "Soma do alcance diário do Instagram e do Facebook",
+  },
+  socialEngagement: {
+    definition: "Curtidas, comentários, compartilhamentos e salvamentos nas publicações.",
+    formula: "Soma das interações",
+  },
+  socialEngagementRate: {
+    definition: "De cada 100 pessoas alcançadas, quantas interagiram.",
+    formula: "Engajamento ÷ alcance × 100",
+  },
+  posts: {
+    definition: "Publicações feitas no período.",
+    formula: "Contagem de publicações",
   },
 };
 

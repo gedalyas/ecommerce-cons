@@ -83,8 +83,9 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       order UTM kept where the ERP/spreadsheet offers it
 - [x] Shared: last-sync stamp under the tabs (`tabSources`: the connected sources each tab reads,
       in error in orange); the window toggle is the global period presets (CLAUDE.md)
-- [ ] Shared: glossary hints, Δ% and heat on the older tabs (Resumo, Campanhas, Descontos, Regiões,
-      Social)
+- [x] Shared: glossary hints on the older tabs (Resumo, Campanhas, Descontos, Regiões, Social) via
+      `withHints`; a number whose formula differs from the glossary term (region and channel ROAS)
+      stays without a hint
 - [x] Visão geral (KPIs with Δ, YTD, month-end projection, monthly/daily combos, site funnel, one
       card per platform) — products table waits for the GA4 items data
 - [x] Visão geral: product table (views, carts, purchases from GA4 items; units and revenue of site

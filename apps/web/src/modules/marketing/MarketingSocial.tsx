@@ -12,18 +12,21 @@ import type {
   SocialAccountRow,
   SocialPostRow,
 } from "@ecommerce/contracts/marketing";
+import { explanationOf } from "@ecommerce/contracts/glossary";
 import { socialPlatformLabel } from "@ecommerce/contracts/marketing";
 
 const pct = (v: number | null) => (v == null ? "—" : formatPercent(v * 100));
 
 const tiles = (data: MarketingSocialData, comparisonLabel: string) =>
   [
-    { label: "Seguidores", metric: data.followers },
-    { label: "Alcance", metric: data.reach },
-    { label: "Engajamento", metric: data.engagement },
-    { label: "Taxa de engajamento", metric: data.engagementRate },
-    { label: "Publicações", metric: data.posts },
-  ].map((tile) => metricToTile({ ...tile, comparisonLabel }));
+    { label: "Seguidores", metric: data.followers, term: "followers" },
+    { label: "Alcance", metric: data.reach, term: "socialReach" },
+    { label: "Engajamento", metric: data.engagement, term: "socialEngagement" },
+    { label: "Taxa de engajamento", metric: data.engagementRate, term: "socialEngagementRate" },
+    { label: "Publicações", metric: data.posts, term: "posts" },
+  ].map(({ term, ...tile }) =>
+    metricToTile({ ...tile, comparisonLabel, hint: explanationOf(term) }),
+  );
 
 const accountColumns: DataTableColumn<SocialAccountRow>[] = [
   {
