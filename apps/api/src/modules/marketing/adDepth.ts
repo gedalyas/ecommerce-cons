@@ -30,6 +30,7 @@ export type AdDepthSums = {
   conversions: number;
   leads: number;
   messages: number;
+  attributedRevenue: number;
 };
 
 const ratio = (a: number, b: number) => (b > 0 ? a / b : null);
@@ -63,6 +64,7 @@ export function deriveDepth(
     costPerView: ratio(spend, sums.landingPageViews),
     costPerConversion,
     costPerLead: ratio(spend, sums.leads),
+    roas: ratio(sums.attributedRevenue, spend),
     impressionShare:
       sums.eligibleImpressions > 0
         ? (sums.shareImpressions / sums.eligibleImpressions) * 100
@@ -97,6 +99,7 @@ export function sumDepth(rows: readonly AdDepthSums[], id: string, name: string)
     conversions: 0,
     leads: 0,
     messages: 0,
+    attributedRevenue: 0,
   };
   for (const r of rows) {
     total.spend += r.spend;
@@ -112,6 +115,7 @@ export function sumDepth(rows: readonly AdDepthSums[], id: string, name: string)
     total.conversions += r.conversions;
     total.leads += r.leads;
     total.messages += r.messages;
+    total.attributedRevenue += r.attributedRevenue;
   }
   return total;
 }
@@ -167,6 +171,8 @@ export const platformKpiUnit: Record<PlatformKpi, MetricUnit> = {
   costPerLead: "currency",
   clicks: "count",
   impressionShare: "percent",
+  platformRevenue: "currency",
+  platformRoas: "multiplier",
 };
 
 export function platformKpiValues(
@@ -192,6 +198,8 @@ export function platformKpiValues(
     costPerLead: row.costPerLead,
     clicks: row.clicks,
     impressionShare: row.impressionShare,
+    platformRevenue: row.attributedRevenue,
+    platformRoas: row.roas,
   };
 }
 

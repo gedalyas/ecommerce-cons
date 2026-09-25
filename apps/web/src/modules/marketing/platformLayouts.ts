@@ -23,25 +23,29 @@ const costPerSession: PlatformTile = {
   goodWhen: "down",
 };
 const impressions: PlatformTile = { key: "impressions", label: "Impressões" };
+const platformRevenue: PlatformTile = { key: "platformRevenue", label: "Vendas informadas" };
+const platformRoas: PlatformTile = { key: "platformRoas", label: "ROAS da plataforma" };
 const sessions: PlatformTile = { key: "sessions", label: "Sessões pagas" };
 
 const metaLayout: PlatformLayout = {
   headline: [
     spend,
-    { key: "reach", label: "Alcance" },
+    platformRevenue,
+    platformRoas,
     { key: "cpm", label: "CPM", goodWhen: "down" },
     ctr,
     cpc,
     conversions,
     costPerConversion,
-    costPerSession,
   ],
   path: [
+    { key: "reach", label: "Alcance" },
     impressions,
     { key: "linkClicks", label: "Cliques no link" },
     { key: "landingPageViews", label: "Visualizações da página" },
     sessions,
     { key: "addToCart", label: "Adições ao carrinho" },
+    costPerSession,
   ],
   contact: [
     { key: "leads", label: "Leads" },
@@ -53,13 +57,13 @@ const metaLayout: PlatformLayout = {
 const googleLayout: PlatformLayout = {
   headline: [
     spend,
-    impressions,
+    platformRevenue,
+    platformRoas,
     { key: "impressionShare", label: "Parcela de impressões" },
     ctr,
     cpc,
     conversions,
     costPerConversion,
-    costPerSession,
   ],
   path: [impressions, { key: "clicks", label: "Cliques" }, sessions, costPerSession],
   contact: null,

@@ -1,6 +1,6 @@
 import type { SalesPlatform } from "@ecommerce/database/enums";
 import { alertsFor } from "@/modules/alerts/contract";
-import { channelRoas, channelsFromSales, siteChannel } from "@ecommerce/contracts/marketing";
+import { channelRoas, channelsFromSales } from "@ecommerce/contracts/marketing";
 import { dataSourcesFor } from "@/modules/connections/contract";
 import { milestoneCriteriaFor, openRecommendationsFor } from "@/modules/consulting/contract";
 import { customersAggregate, customersByBucket } from "@/modules/customers/contract";
@@ -8,7 +8,6 @@ import {
   adSpendAggregate,
   adSpendByBucket,
   channelInvestment,
-  channelInvestmentBuckets,
   trafficAggregate,
   trafficByBucket,
 } from "@/modules/marketing/contract";
@@ -75,12 +74,11 @@ async function windowFacts(
 ): Promise<WindowFacts> {
   const platform = platformFor(channel);
   const mediaApplies = channel !== "marketplace";
-  const [orders, customers, traffic, ads, investment] = await Promise.all([
+  const [orders, customers, traffic, ads] = await Promise.all([
     ordersAggregate(clientId, w, platform),
     customersAggregate(clientId, w, platform),
     mediaApplies ? trafficAggregate(clientId, w) : null,
     mediaApplies ? adSpendAggregate(clientId, w) : null,
-    mediaApplies ? channelInvestment(clientId, w, true) : null,
   ]);
   const adSpend = ads?.spend ?? 0;
   return {
@@ -96,7 +94,6 @@ async function windowFacts(
       sessions: traffic?.sessions ?? 0,
       adSpend,
       adPlatformFee: ads?.platformFee ?? 0,
-      siteAdInvestment: investment?.[siteChannel] ?? 0,
       costs: expandCosts(rules, calendar, activityFor(orders, adSpend)),
     },
     traffic,
@@ -116,12 +113,11 @@ async function bucketFacts(
 ): Promise<BucketFacts> {
   const platform = platformFor(channel);
   const mediaApplies = channel !== "marketplace";
-  const [orders, customers, traffic, ads, siteInvestment] = await Promise.all([
+  const [orders, customers, traffic, ads] = await Promise.all([
     ordersByBucket(clientId, w, unit, platform),
     customersByBucket(clientId, w, unit, platform),
     mediaApplies ? trafficByBucket(clientId, w, unit) : [],
     mediaApplies ? adSpendByBucket(clientId, w, unit) : [],
-    mediaApplies ? channelInvestmentBuckets(clientId, w, unit, siteChannel, true) : [],
   ]);
   const byKey = <T extends { bucket: string }>(rows: T[]) =>
     new Map(rows.map((r) => [r.bucket, r]));
@@ -129,7 +125,6 @@ async function bucketFacts(
   const customersMap = byKey(customers);
   const trafficMap = byKey(traffic);
   const adsMap = byKey(ads);
-  const siteMap = byKey(siteInvestment);
   const emptyOrders: OrdersAggregate = {
     revenue: 0,
     orders: 0,
@@ -165,7 +160,6 @@ async function bucketFacts(
         sessions: t?.sessions ?? 0,
         adSpend,
         adPlatformFee: a?.platformFee ?? 0,
-        siteAdInvestment: siteMap.get(b.bucket)?.investment ?? 0,
         costs: expandCosts(rules, b, activityFor(o, adSpend)),
       },
     };

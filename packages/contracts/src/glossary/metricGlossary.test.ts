@@ -35,7 +35,10 @@ describe("explanationOf", () => {
   it("gives a definition and a formula", () => {
     const roas = explanationOf("roas");
     expect(roas?.definition).toContain("R$ 1");
-    expect(roas?.formula).toBe("Vendas do site ÷ investimento em anúncios do site");
+    expect(roas?.formula).toBe("Vendas totais ÷ investimento em anúncios");
+    expect(explanationOf("siteRoas")?.formula).toBe(
+      "Vendas do site ÷ investimento em anúncios do site",
+    );
   });
 
   it("answers null for a key it does not know", () => {

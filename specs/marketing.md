@@ -84,13 +84,16 @@ The consulting pillars moved to the **Pilares** tab (`?aba=visao`).
 
 The Meta Ads account seen alone (G4). Payload `MarketingPlatformTab` from `platformTabService.ts`
 (queries in `adsDepthService.ts`, pure `adDepth.ts`, tested); the same payload serves the Google Ads
-tab. Conversions are the platform's own count — never a sale; sales stay with the ERP or the
-spreadsheet.
+tab. Conversions, "Vendas informadas" (the platform's conversion value) and "ROAS da plataforma"
+(vendas informadas ÷ investment) are the platform's own numbers, named as such
+(`decisions/2026-09-25-platform-roas-and-global-dashboard-roas.md`); the store's revenue stays with
+the ERP or the spreadsheet.
 
 1. **Conta** — `conta` filters one ad account (`todas` by default); the select shows only with
    two or more accounts and resets the drill.
-2. **KPIs with Δ** — Investido, Alcance, CPM, CTR, CPC, Conversões, Custo por conversão, Custo por
-   sessão (spend ÷ paid sessions), each with its glossary ⓘ.
+2. **KPIs with Δ** — Investido, Vendas informadas, ROAS da plataforma, CPM, CTR, CPC, Conversões,
+   Custo por conversão, each with its glossary ⓘ (Alcance and Custo por sessão — spend ÷ paid
+   sessions — sit in the path block).
 3. **Investido × custo por conversão** and **Sessões pagas × custo por sessão** — `ComboChart`,
    `serie` Mensal (12 months) or No período. Paid sessions are GA4 sessions whose source is the
    platform's (`meta`, `facebook`, `instagram`, `fb`, `ig`) and whose medium is paid (`cpc`,
@@ -100,7 +103,7 @@ spreadsheet.
 5. **Leads e conversas** — leads, conversations started and cost per lead.
 6. **Campanhas / Conjuntos / Anúncios** — `nivel` picks the level; clicking a campaign opens its
    ad sets (`campanha`), clicking an ad set opens its ads (`conjunto`); "Ver todas as campanhas"
-   clears the drill. Columns: investment, impressions, reach, CPM, link clicks, CTR, CPC, page
+   clears the drill. Columns: investment, vendas informadas, ROAS da plataforma (heat), impressions, reach, CPM, link clicks, CTR, CPC, page
    views, carts, conversions, cost per conversion, Δ cost per conversion (vs the comparison),
    leads, conversations; CPM, CTR, CPC, conversions and cost per conversion are heat-shaded;
    ads show the creative thumbnail. Total row and CSV export.
@@ -110,7 +113,8 @@ spreadsheet.
 Same payload and component as Meta Ads (`platformTab(clientId, "GOOGLE", input)`), with the Google
 layout (`platformLayouts.ts`):
 
-1. **KPIs with Δ** — Investido, Impressões, Parcela de impressões, CTR, CPC, Conversões, Custo por
+1. **KPIs with Δ** — Investido, Vendas informadas, ROAS da plataforma, Parcela de impressões, CTR,
+   CPC, Conversões, Custo por
    conversão, Custo por sessão. Impression share = Σ impressions ÷ Σ eligible impressions, both
    only over rows that report eligible impressions (Search), so Performance Max never inflates it.
 2. The same two combo charts; **Do anúncio ao site** — Impressões → Cliques → Sessões pagas → Custo

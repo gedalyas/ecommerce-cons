@@ -6,6 +6,9 @@ const glossaryTerms = [
   "marketingInvestment",
   "adSpend",
   "roas",
+  "siteRoas",
+  "platformRevenue",
+  "platformRoas",
   "mer",
   "roi",
   "cac",
@@ -88,8 +91,23 @@ const metricGlossary: Record<GlossaryTerm, MetricExplanation> = {
   },
   roas: {
     definition:
+      "Quanto a loja vendeu, em todos os canais, para cada R$ 1 investido em anúncios. 5x = R$ 5 vendidos para cada R$ 1 investido.",
+    formula: "Vendas totais ÷ investimento em anúncios",
+  },
+  siteRoas: {
+    definition:
       "Quanto o site vendeu para cada R$ 1 investido nos anúncios que levam ao site. 5x = R$ 5 vendidos para cada R$ 1 investido.",
     formula: "Vendas do site ÷ investimento em anúncios do site",
+  },
+  platformRevenue: {
+    definition:
+      "Vendas que a própria plataforma atribui aos anúncios, pelo valor de conversão que ela informa.",
+    formula: "Soma do valor das conversões informadas pela plataforma",
+  },
+  platformRoas: {
+    definition:
+      "Quanto a plataforma diz ter vendido para cada R$ 1 investido nela. Serve para comparar campanhas e plataformas.",
+    formula: "Vendas informadas pela plataforma ÷ investimento na plataforma",
   },
   mer: {
     definition:

@@ -359,6 +359,8 @@ export const platformKpis = [
   "costPerLead",
   "clicks",
   "impressionShare",
+  "platformRevenue",
+  "platformRoas",
 ] as const;
 export type PlatformKpi = (typeof platformKpis)[number];
 
@@ -382,6 +384,8 @@ export type AdDepthRow = {
   conversions: number;
   leads: number;
   messages: number;
+  attributedRevenue: number;
+  roas: number | null;
   cpm: number | null;
   ctr: number | null;
   cpc: number | null;

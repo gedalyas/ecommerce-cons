@@ -34,6 +34,7 @@ const sums = (over: Partial<AdDepthSums> = {}): AdDepthSums => ({
   conversions: 20,
   leads: 0,
   messages: 0,
+  attributedRevenue: 4000,
   ...over,
 });
 
@@ -48,6 +49,7 @@ describe("deriveDepth", () => {
     expect(row.costPerLead).toBeNull();
     expect(row.impressionShare).toBeNull();
     expect(row.spendVariation).toBeNull();
+    expect(row.roas).toBe(4);
   });
 
   it("sums impression share as impressions over eligible impressions", () => {
@@ -123,6 +125,8 @@ describe("platformKpiValues", () => {
     expect(values.spend).toBe(1000);
     expect(values.sessions).toBe(800);
     expect(values.costPerSession).toBe(1.25);
+    expect(values.platformRevenue).toBe(4000);
+    expect(values.platformRoas).toBe(4);
     expect(values.impressionShare).toBeNull();
     expect(platformKpiUnit.ctr).toBe("percent");
   });

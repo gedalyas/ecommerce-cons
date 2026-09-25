@@ -24,7 +24,8 @@ const counters = Prisma.sql`
   coalesce(sum(a.add_to_cart), 0)::int as add_to_cart,
   coalesce(sum(a.conversions), 0)::int as conversions,
   coalesce(sum(a.leads), 0)::int as leads,
-  coalesce(sum(a.messages), 0)::int as messages
+  coalesce(sum(a.messages), 0)::int as messages,
+  coalesce(sum(a.attributed_revenue), 0)::float8 as attributed_revenue
 `;
 
 type CounterRow = {
@@ -41,6 +42,7 @@ type CounterRow = {
   conversions: number;
   leads: number;
   messages: number;
+  attributed_revenue: number;
 };
 
 type TruncUnit = (typeof truncUnit)[keyof typeof truncUnit];
@@ -110,6 +112,7 @@ const toSums = (r: LevelRow): AdDepthSums => ({
   conversions: r.conversions,
   leads: r.leads,
   messages: r.messages,
+  attributedRevenue: r.attributed_revenue,
 });
 
 export async function depthByLevel(

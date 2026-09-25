@@ -220,8 +220,8 @@ export function MarketingPlataforma({ data, search, period, comparisonLabel, onP
     <div className={layout.blockStack}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className={cn(textClass.body, "text-muted-foreground")}>
-          Dados da conta de anúncios {label}. Conversões são as que a plataforma informa; a venda da
-          loja vem do ERP ou da planilha.
+          Dados da conta de anúncios {label}. Conversões, vendas informadas e ROAS são os que a
+          plataforma informa; o faturamento da loja vem do ERP ou da planilha.
         </p>
         <AccountFilter data={data} search={search} onPatch={onPatch} />
       </div>

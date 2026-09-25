@@ -5,6 +5,7 @@ import {
   formatCurrency,
   formatNumber,
   formatPercent,
+  formatMultiplier,
   formatVariation,
 } from "@ecommerce/contracts/shared/format";
 import {
@@ -20,7 +21,7 @@ type NumericKey = {
   [K in keyof AdDepthRow]: AdDepthRow[K] extends number | null ? K : never;
 }[keyof AdDepthRow];
 
-type Format = "money" | "money2" | "count" | "percent" | "variation";
+type Format = "money" | "money2" | "count" | "percent" | "variation" | "multiplier";
 
 const formatters: Record<Format, (v: number) => string> = {
   money: (v) => formatCurrency(v),
@@ -28,6 +29,12 @@ const formatters: Record<Format, (v: number) => string> = {
   count: (v) => formatNumber(v),
   percent: (v) => formatPercent(v),
   variation: (v) => formatVariation(v),
+  multiplier: (v) => formatMultiplier(v),
+};
+
+const glossaryTermOf: Partial<Record<NumericKey, string>> = {
+  roas: "platformRoas",
+  attributedRevenue: "platformRevenue",
 };
 
 const round2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);
@@ -45,13 +52,15 @@ function numeric(
     render: (r) => (r[key] == null ? "—" : formatters[format](r[key])),
     csv: (r) => round2(r[key]),
     sortValue: (r) => r[key],
-    hint: explanationOf(key),
+    hint: explanationOf(glossaryTermOf[key] ?? key),
     ...(heat ? { heat } : {}),
   };
 }
 
 const metaColumns: DataTableColumn<AdDepthRow>[] = [
   numeric("spend", "Investimento", "money"),
+  numeric("attributedRevenue", "Vendas informadas", "money"),
+  numeric("roas", "ROAS da plataforma", "multiplier", "good-high"),
   numeric("impressions", "Impressões", "count"),
   numeric("reach", "Alcance", "count"),
   numeric("cpm", "CPM", "money2", "good-low"),
@@ -70,6 +79,8 @@ const metaColumns: DataTableColumn<AdDepthRow>[] = [
 
 const googleColumns: DataTableColumn<AdDepthRow>[] = [
   numeric("spend", "Investimento", "money"),
+  numeric("attributedRevenue", "Vendas informadas", "money"),
+  numeric("roas", "ROAS da plataforma", "multiplier", "good-high"),
   numeric("spendVariation", "Δ investimento", "variation"),
   numeric("impressions", "Impressões", "count"),
   numeric("impressionShare", "Parcela de impressões", "percent", "good-high"),

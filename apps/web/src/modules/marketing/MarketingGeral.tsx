@@ -61,7 +61,7 @@ function Kpis({ data, comparisonLabel }: Pick<Props, "data" | "comparisonLabel">
       metrics={[
         tile("Vendido", k.sold, "totalSold"),
         tile("Investido", k.invested, "adSpend", "down"),
-        tile("ROAS do site", k.roas, "roas"),
+        tile("ROAS do site", k.roas, "siteRoas"),
         tile("MER", k.mer, "mer"),
         tile("Pedidos", k.orders, "orders"),
         tile("Ticket médio", k.aov, "averageTicket"),
