@@ -1,4 +1,5 @@
-import type { TrafficRow } from "@/modules/imports/contract";
+import type { TrafficDetail, TrafficRow } from "@/modules/imports/contract";
+import { provinceCodeOf, UNKNOWN_PROVINCE } from "./nuvemshopOrders";
 
 export type Ga4Report = {
   dimensionHeaders?: { name: string }[];
@@ -11,7 +12,15 @@ export const GA4_FUNNEL_EVENTS = ["view_item", "add_to_cart", "begin_checkout"] 
 export const sessionsRequest = (from: string, to: string) => ({
   dateRanges: [{ startDate: from, endDate: to }],
   dimensions: [{ name: "date" }, { name: "sessionSource" }, { name: "sessionMedium" }],
-  metrics: [{ name: "sessions" }, { name: "totalUsers" }, { name: "newUsers" }],
+  metrics: [
+    { name: "sessions" },
+    { name: "totalUsers" },
+    { name: "newUsers" },
+    { name: "engagedSessions" },
+    { name: "screenPageViews" },
+    { name: "userEngagementDuration" },
+    { name: "ecommercePurchases" },
+  ],
   limit: 100000,
 });
 
@@ -75,7 +84,127 @@ export function trafficRowsOf(sessions: Ga4Report, funnel: Ga4Report): TrafficRo
         viewItem: funnelOf["view_item"] ?? 0,
         addToCart: funnelOf["add_to_cart"] ?? 0,
         beginCheckout: funnelOf["begin_checkout"] ?? 0,
+        engagedSessions: Number(cell["engagedSessions"] ?? 0),
+        pageViews: Number(cell["screenPageViews"] ?? 0),
+        durationSeconds: Math.round(Number(cell["userEngagementDuration"] ?? 0)),
+        purchases: Number(cell["ecommercePurchases"] ?? 0),
       },
     ];
   });
+}
+
+const report = (from: string, to: string, dimensions: string[], metrics: string[]) => ({
+  dateRanges: [{ startDate: from, endDate: to }],
+  dimensions: dimensions.map((name) => ({ name })),
+  metrics: metrics.map((name) => ({ name })),
+  limit: 100000,
+});
+
+export const pagesRequest = (from: string, to: string) =>
+  report(
+    from,
+    to,
+    ["date", "pagePath"],
+    ["screenPageViews", "sessions", "engagedSessions", "userEngagementDuration"],
+  );
+
+export const itemsRequest = (from: string, to: string) =>
+  report(
+    from,
+    to,
+    ["date", "itemId", "itemName"],
+    ["itemsViewed", "itemsAddedToCart", "itemsPurchased"],
+  );
+
+export const audienceRequest = (
+  from: string,
+  to: string,
+  dimension: "userGender" | "userAgeBracket",
+) =>
+  report(
+    from,
+    to,
+    ["date", dimension],
+    ["sessions", "engagedSessions", "totalUsers", "ecommercePurchases"],
+  );
+
+export const regionsRequest = (from: string, to: string) => ({
+  ...report(
+    from,
+    to,
+    ["date", "region"],
+    ["sessions", "screenPageViews", "engagedSessions", "ecommercePurchases"],
+  ),
+  dimensionFilter: { filter: { fieldName: "countryId", stringFilter: { value: "BR" } } },
+});
+
+export type Ga4DetailReports = {
+  pages: Ga4Report;
+  items: Ga4Report;
+  gender: Ga4Report;
+  age: Ga4Report;
+  regions: Ga4Report;
+};
+
+const n = (cell: Cell, name: string) => Math.round(Number(cell[name] ?? 0)) || 0;
+
+const dated = (report: Ga4Report) =>
+  reportCells(report).flatMap((cell) =>
+    (cell["date"] ?? "").length === 8 ? [{ cell, date: isoDay(cell["date"] ?? "") }] : [],
+  );
+
+const audienceOf = (report: Ga4Report, dimension: "GENDER" | "AGE", field: string) =>
+  dated(report).map(({ cell, date }) => ({
+    date,
+    dimension,
+    value: cell[field] || "unknown",
+    sessions: n(cell, "sessions"),
+    engagedSessions: n(cell, "engagedSessions"),
+    users: n(cell, "totalUsers"),
+    purchases: n(cell, "ecommercePurchases"),
+  }));
+
+export function trafficDetailOf(reports: Ga4DetailReports): TrafficDetail {
+  return {
+    pages: dated(reports.pages).map(({ cell, date }) => ({
+      date,
+      pagePath: cell["pagePath"] || "/",
+      pageViews: n(cell, "screenPageViews"),
+      sessions: n(cell, "sessions"),
+      engagedSessions: n(cell, "engagedSessions"),
+      durationSeconds: n(cell, "userEngagementDuration"),
+    })),
+    items: dated(reports.items).flatMap(({ cell, date }) => {
+      const itemId = cell["itemId"] ?? "";
+      if (itemId === "" || itemId === "(not set)") return [];
+      return [
+        {
+          date,
+          itemId,
+          itemName: cell["itemName"] || itemId,
+          itemsViewed: n(cell, "itemsViewed"),
+          itemsAddedToCart: n(cell, "itemsAddedToCart"),
+          itemsPurchased: n(cell, "itemsPurchased"),
+        },
+      ];
+    }),
+    audience: [
+      ...audienceOf(reports.gender, "GENDER", "userGender"),
+      ...audienceOf(reports.age, "AGE", "userAgeBracket"),
+    ],
+    regions: dated(reports.regions).flatMap(({ cell, date }) => {
+      const province = provinceCodeOf(cell["region"]);
+      if (province === UNKNOWN_PROVINCE) return [];
+      return [
+        {
+          date,
+          province,
+          sessions: n(cell, "sessions"),
+          pageViews: n(cell, "screenPageViews"),
+          engagedSessions: n(cell, "engagedSessions"),
+          purchases: n(cell, "ecommercePurchases"),
+        },
+      ];
+    }),
+  };
 }

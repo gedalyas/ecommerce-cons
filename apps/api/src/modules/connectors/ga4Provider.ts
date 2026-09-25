@@ -1,6 +1,16 @@
 import type { ConnectorAccountOption } from "@ecommerce/contracts/connectors";
 import type { ConnectorProvider, SyncContext, SyncResult } from "./connectorProvider.types";
-import { funnelRequest, sessionsRequest, trafficRowsOf, type Ga4Report } from "./ga4Rows";
+import {
+  audienceRequest,
+  funnelRequest,
+  itemsRequest,
+  pagesRequest,
+  regionsRequest,
+  sessionsRequest,
+  trafficDetailOf,
+  trafficRowsOf,
+  type Ga4Report,
+} from "./ga4Rows";
 import {
   GA4_SCOPE,
   googleAuthorizeUrl,
@@ -67,10 +77,30 @@ async function runReport(
   );
 }
 
+async function detailReports(
+  config: Ga4Config,
+  credentials: GoogleCredentials,
+  propertyId: string,
+  range: { start: string; end: string },
+) {
+  const run = (request: unknown) => runReport(config, credentials, propertyId, request);
+  const [pages, items, gender, age, regions] = await Promise.all([
+    run(pagesRequest(range.start, range.end)),
+    run(itemsRequest(range.start, range.end)),
+    run(audienceRequest(range.start, range.end, "userGender")),
+    run(audienceRequest(range.start, range.end, "userAgeBracket")),
+    run(regionsRequest(range.start, range.end)),
+  ]);
+  return trafficDetailOf({ pages, items, gender, age, regions });
+}
+
 async function pull(config: Ga4Config, context: SyncContext, from: string): Promise<SyncResult> {
   const credentials = context.credentials as GoogleCredentials;
   const propertyId = (context.settings["accountId"] as string | null | undefined) ?? null;
   if (!propertyId) throw new Error("Escolha a propriedade do GA4 nas configurações da conexão.");
+  if (!(await properties(config, credentials)).some((p) => p.id === propertyId)) {
+    throw new Error("A propriedade do GA4 escolhida não está mais acessível. Escolha outra.");
+  }
   const to = dayOf(context.now);
   let written = 0;
   for (let start = from; start <= to; start = shiftDays(start, CHUNK_DAYS)) {
@@ -85,6 +115,9 @@ async function pull(config: Ga4Config, context: SyncContext, from: string): Prom
       rows.map((r) => ({ externalId: `${r.date}|${r.source}|${r.medium}`, payload: r })),
     );
     written += await context.writeTraffic(rows);
+    written += await context.writeTrafficDetail(
+      await detailReports(config, credentials, propertyId, { start, end }),
+    );
   }
   return { cursor: { ...context.cursor, [CURSOR]: to }, written };
 }

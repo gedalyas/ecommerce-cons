@@ -32,7 +32,7 @@ export type NuvemshopOrder = {
 
 export const NUVEMSHOP_CHANNEL = "Nuvemshop";
 const DEFAULT_CATEGORY = "Sem categoria";
-const UNKNOWN_PROVINCE = "ND";
+export const UNKNOWN_PROVINCE = "ND";
 
 const paymentStatusOf: Record<string, FinancialStatus> = {
   paid: "PAID",
@@ -60,6 +60,7 @@ const provinceOf: Record<string, string> = {
   bahia: "BA",
   ceara: "CE",
   "distrito federal": "DF",
+  "federal district": "DF",
   "espirito santo": "ES",
   goias: "GO",
   maranhao: "MA",
@@ -94,7 +95,10 @@ export function provinceCodeOf(raw: string | null | undefined): string {
   if (!raw) return UNKNOWN_PROVINCE;
   const trimmed = raw.trim();
   if (/^[A-Za-z]{2}$/.test(trimmed)) return trimmed.toUpperCase();
-  return provinceOf[stripAccents(trimmed).toLowerCase()] ?? UNKNOWN_PROVINCE;
+  const name = stripAccents(trimmed)
+    .toLowerCase()
+    .replace(/^state of /, "");
+  return provinceOf[name] ?? UNKNOWN_PROVINCE;
 }
 
 export function utmOf(landingUrl: string | null | undefined): {

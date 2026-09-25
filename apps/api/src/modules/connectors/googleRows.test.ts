@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { funnelRequest, reportCells, sessionsRequest, trafficRowsOf } from "./ga4Rows";
+import {
+  funnelRequest,
+  regionsRequest,
+  reportCells,
+  sessionsRequest,
+  trafficDetailOf,
+  trafficRowsOf,
+} from "./ga4Rows";
 import {
   adSpendRowOfGoogle,
   adsQuery,
@@ -151,6 +158,10 @@ describe("ga4 rows", () => {
         viewItem: 0,
         addToCart: 40,
         beginCheckout: 0,
+        engagedSessions: 0,
+        pageViews: 0,
+        durationSeconds: 0,
+        purchases: 0,
       },
       {
         row: 2,
@@ -163,6 +174,10 @@ describe("ga4 rows", () => {
         viewItem: 0,
         addToCart: 0,
         beginCheckout: 0,
+        engagedSessions: 0,
+        pageViews: 0,
+        durationSeconds: 0,
+        purchases: 0,
       },
     ]);
   });
@@ -172,5 +187,78 @@ describe("ga4 rows", () => {
     expect(
       funnelRequest("2026-09-01", "2026-09-30").dimensionFilter.filter.inListFilter.values,
     ).toEqual(["view_item", "add_to_cart", "begin_checkout"]);
+  });
+});
+
+describe("ga4 detail", () => {
+  const report = (dims: string[], metrics: string[], rows: string[][]) => ({
+    dimensionHeaders: dims.map((name) => ({ name })),
+    metricHeaders: metrics.map((name) => ({ name })),
+    rows: rows.map((r) => ({
+      dimensionValues: r.slice(0, dims.length).map((value) => ({ value })),
+      metricValues: r.slice(dims.length).map((value) => ({ value })),
+    })),
+  });
+  const detail = trafficDetailOf({
+    pages: report(
+      ["date", "pagePath"],
+      ["screenPageViews", "sessions", "engagedSessions", "userEngagementDuration"],
+      [["20260903", "/cart", "30", "20", "12", "610.4"]],
+    ),
+    items: report(
+      ["date", "itemId", "itemName"],
+      ["itemsViewed", "itemsAddedToCart", "itemsPurchased"],
+      [
+        ["20260903", "SKU-1", "Vaso", "50", "8", "2"],
+        ["20260903", "(not set)", "(not set)", "9", "0", "0"],
+      ],
+    ),
+    gender: report(
+      ["date", "userGender"],
+      ["sessions", "engagedSessions", "totalUsers", "ecommercePurchases"],
+      [["20260903", "female", "40", "25", "35", "2"]],
+    ),
+    age: report(
+      ["date", "userAgeBracket"],
+      ["sessions", "engagedSessions", "totalUsers", "ecommercePurchases"],
+      [["20260903", "25-34", "30", "20", "28", "1"]],
+    ),
+    regions: report(
+      ["date", "region"],
+      ["sessions", "screenPageViews", "engagedSessions", "ecommercePurchases"],
+      [
+        ["20260903", "State of Sao Paulo", "60", "150", "40", "3"],
+        ["20260903", "Federal District", "10", "20", "6", "0"],
+        ["20260903", "(not set)", "4", "4", "1", "0"],
+      ],
+    ),
+  });
+
+  it("maps pages, items by SKU, audience and regions to the store's rows", () => {
+    expect(detail.pages).toEqual([
+      {
+        date: "2026-09-03",
+        pagePath: "/cart",
+        pageViews: 30,
+        sessions: 20,
+        engagedSessions: 12,
+        durationSeconds: 610,
+      },
+    ]);
+    expect(detail.items.map((i) => i.itemId)).toEqual(["SKU-1"]);
+    expect(detail.audience.map((a) => [a.dimension, a.value, a.purchases])).toEqual([
+      ["GENDER", "female", 2],
+      ["AGE", "25-34", 1],
+    ]);
+    expect(detail.regions.map((r) => [r.province, r.sessions])).toEqual([
+      ["SP", 60],
+      ["DF", 10],
+    ]);
+  });
+
+  it("asks GA4 only for Brazilian regions", () => {
+    expect(
+      regionsRequest("2026-09-01", "2026-09-30").dimensionFilter.filter.stringFilter.value,
+    ).toBe("BR");
   });
 });

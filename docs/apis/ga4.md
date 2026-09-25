@@ -34,6 +34,18 @@ e a métrica `eventCount`, filtrado em `view_item`, `add_to_cart`, `begin_checko
 `purchase`, pivotado para as colunas de `traffic_daily`. Receita por origem (atribuição
 GA4): `purchaseRevenue` e `transactions` por `sessionSourceMedium` / `sessionCampaignName`.
 
+Relatórios de profundidade (um `runReport` cada, por bloco de 31 dias):
+
+| Relatório | Dimensões                                  | Métricas                                                                                                                   | Vira                                                                                                                               |
+| --------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Sessões   | `date`, `sessionSource`, `sessionMedium`   | `sessions`, `totalUsers`, `newUsers`, `engagedSessions`, `screenPageViews`, `userEngagementDuration`, `ecommercePurchases` | `traffic_daily`                                                                                                                    |
+| Páginas   | `date`, `pagePath`                         | `screenPageViews`, `sessions`, `engagedSessions`, `userEngagementDuration`                                                 | `traffic_page_daily` (caminho sem query string)                                                                                    |
+| Itens     | `date`, `itemId`, `itemName`               | `itemsViewed`, `itemsAddedToCart`, `itemsPurchased`                                                                        | `traffic_item_daily` — o `itemId` deve ser o **SKU** (é por ele que a tabela de produtos casa com o ERP); "(not set)" é descartado |
+| Público   | `date`, `userGender` / `userAgeBracket`    | `sessions`, `engagedSessions`, `totalUsers`, `ecommercePurchases`                                                          | `traffic_audience_daily`                                                                                                           |
+| Regiões   | `date`, `region` (filtro `countryId = BR`) | `sessions`, `screenPageViews`, `engagedSessions`, `ecommercePurchases`                                                     | `traffic_region_daily` com a UF ("State of Sao Paulo" → SP, "Federal District" → DF)                                               |
+
+A propriedade escolhida só sincroniza se ainda estiver entre as que o token enxerga.
+
 ## Limites
 
 Cota por propriedade (tokens por dia/hora); `runReport` até 100 000 linhas; dados de hoje
