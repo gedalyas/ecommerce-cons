@@ -90,8 +90,9 @@ export async function channelInvestmentBuckets(
   w: Window,
   unit: string,
   channel: string,
+  fee: boolean,
 ): Promise<{ bucket: string; investment: number }[]> {
-  return channelInvestmentByBucket(await stageRows(clientId, w, unit), channel, true);
+  return channelInvestmentByBucket(await stageRows(clientId, w, unit), channel, fee);
 }
 
 export async function investmentFunnel(

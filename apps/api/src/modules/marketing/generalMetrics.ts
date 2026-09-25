@@ -22,15 +22,18 @@ export function salesInvestmentPoints(
   buckets: readonly string[],
   orders: readonly OrdersBucket[],
   ads: readonly AdSpendBucket[],
+  siteInvested: readonly { bucket: string; investment: number }[],
   includeFee: boolean,
 ): SalesInvestmentPoint[] {
   const o = byBucket(orders);
   const a = byBucket(ads);
+  const site = byBucket(siteInvested);
   return buckets.map((bucket) => {
     const sold = o.get(bucket)?.revenue ?? 0;
     const siteSold = o.get(bucket)?.ecommerce.revenue ?? 0;
     const invested = investedOf(a.get(bucket), includeFee);
-    return { bucket, sold, invested, roas: invested > 0 ? siteSold / invested : null };
+    const toSite = site.get(bucket)?.investment ?? 0;
+    return { bucket, sold, invested, roas: toSite > 0 ? siteSold / toSite : null };
   });
 }
 

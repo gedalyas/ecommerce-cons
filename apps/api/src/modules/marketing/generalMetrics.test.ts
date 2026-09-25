@@ -43,15 +43,16 @@ describe("investedOf", () => {
 });
 
 describe("salesInvestmentPoints", () => {
-  it("puts sold, invested and the site ROAS side by side per bucket", () => {
+  it("puts sold, invested and the site ROAS (over the site-tagged investment) side by side", () => {
     const points = salesInvestmentPoints(
       ["2026-08-01", "2026-09-01"],
       [orders("2026-08-01", 50_000, 40_000, 100)],
       [ads("2026-08-01", 10_000)],
+      [{ bucket: "2026-08-01", investment: 8_000 }],
       false,
     );
     expect(points).toEqual([
-      { bucket: "2026-08-01", sold: 50_000, invested: 10_000, roas: 4 },
+      { bucket: "2026-08-01", sold: 50_000, invested: 10_000, roas: 5 },
       { bucket: "2026-09-01", sold: 0, invested: 0, roas: null },
     ]);
   });

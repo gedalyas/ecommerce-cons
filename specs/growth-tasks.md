@@ -102,8 +102,9 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 - [x] The channel tag feeds Vendas por canal and the dashboard's ROAS por canal (`channelInvestment`)
 - [x] Dashboard headline "ROAS do site" on the tagged split (`siteAdInvestment`, window and
       buckets); MER stays all sales ÷ all investment, as the plan defines it
-- [ ] Marketing › Visão geral "ROAS do site" (KPI, year, monthly/daily line) and the consulting
-      live KPI (`marketingLiveKpis`) on the same tagged split as the dashboard tile
+- [x] Marketing › Visão geral "ROAS do site" (KPI, year, monthly/daily line) on the same tagged
+      split as the dashboard tile; the Pilares KPI stays "ROAS geral" (all sales ÷ all investment)
+      by design
 - [ ] Funil de investimento: creatives by stage
 - [ ] Per-platform vendido/ROAS by UTM on ERP/spreadsheet orders with coverage (when a source
       brings UTM)

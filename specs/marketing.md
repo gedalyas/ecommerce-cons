@@ -49,7 +49,8 @@ First slice of G4 (`growth-plan.md`, the Looker coverage). Payload `MarketingGen
 `marketingGeneralService.ts` (pure `generalMetrics.ts`, tested); honours the global channel on sales.
 
 1. **KPIs with Δ** — Vendido (ERP/spreadsheet orders), Investido (ad spend + platform fee when
-   "Incluir taxa"), ROAS do site (site sales ÷ investido), MER (all sales ÷ investido + marketing cost
+   "Incluir taxa"), ROAS do site (site sales ÷ the investment of the campaigns tagged to the site on Funil de
+   investimento, the same split as the dashboard tile — also in the year number and the line), MER (all sales ÷ investido + marketing cost
    lines, the same lines for the comparison period), Pedidos, Ticket médio, Conversão (site orders ÷
    sessions), Sessões — each with its glossary ⓘ.
 2. **Ano e projeção do mês** — Vendido no ano (investido as a note), ROAS do site no ano, and the

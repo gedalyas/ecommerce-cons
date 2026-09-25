@@ -121,7 +121,7 @@ async function bucketFacts(
     customersByBucket(clientId, w, unit, platform),
     mediaApplies ? trafficByBucket(clientId, w, unit) : [],
     mediaApplies ? adSpendByBucket(clientId, w, unit) : [],
-    mediaApplies ? channelInvestmentBuckets(clientId, w, unit, siteChannel) : [],
+    mediaApplies ? channelInvestmentBuckets(clientId, w, unit, siteChannel, true) : [],
   ]);
   const byKey = <T extends { bucket: string }>(rows: T[]) =>
     new Map(rows.map((r) => [r.bucket, r]));

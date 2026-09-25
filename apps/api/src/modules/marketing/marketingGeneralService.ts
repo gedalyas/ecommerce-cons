@@ -2,6 +2,7 @@ import { currentDay } from "@/shared/config/clock";
 import { ordersAggregate, ordersByBucket } from "@/modules/orders/contract";
 import {
   adPlatformLabel,
+  siteChannel,
   type MarketingCostLine,
   type MarketingGeneral,
   type PlatformCard,
@@ -16,6 +17,7 @@ import {
   type Window,
 } from "@ecommerce/contracts/shared/periodWindow";
 import { adsByPlatform } from "./adsService";
+import { channelInvestment, channelInvestmentBuckets } from "./investmentFunnelService";
 import { storeOrders } from "./attributionService";
 import {
   funnelWithDelta,
@@ -53,13 +55,20 @@ const monthWindow = (today: string): Window => ({
 });
 
 async function windowFacts(clientId: string, w: Window, { fee, platform }: FactOptions) {
-  const [orders, ads, traffic, store] = await Promise.all([
+  const [orders, ads, traffic, store, byChannel] = await Promise.all([
     ordersAggregate(clientId, w, platform),
     adSpendAggregate(clientId, w),
     trafficAggregate(clientId, w),
     storeOrders(clientId, w),
+    channelInvestment(clientId, w, fee),
   ]);
-  return { orders, invested: investedOf(ads, fee), traffic, store };
+  return {
+    orders,
+    invested: investedOf(ads, fee),
+    siteInvested: byChannel[siteChannel] ?? 0,
+    traffic,
+    store,
+  };
 }
 
 type Facts = Awaited<ReturnType<typeof windowFacts>>;
@@ -67,7 +76,7 @@ type Facts = Awaited<ReturnType<typeof windowFacts>>;
 const kpisOf = (f: Facts, costs: number, media: boolean) => ({
   sold: f.orders.revenue,
   invested: f.invested,
-  roas: media ? ratio(f.orders.ecommerce.revenue, f.invested) : null,
+  roas: media ? ratio(f.orders.ecommerce.revenue, f.siteInvested) : null,
   mer: media ? ratio(f.orders.revenue, f.invested + costs) : null,
   orders: f.orders.orders,
   aov: ratio(f.orders.revenue, f.orders.orders),
@@ -109,13 +118,14 @@ async function series(
 ) {
   const unit = truncUnit[granularity];
   const buckets = bucketWindows(w, granularity).map((b) => b.bucket);
-  const [orders, ads, traffic] = await Promise.all([
+  const [orders, ads, traffic, siteInvested] = await Promise.all([
     ordersByBucket(clientId, w, unit, platform),
     adSpendByBucket(clientId, w, unit),
     trafficByBucket(clientId, w, unit),
+    channelInvestmentBuckets(clientId, w, unit, siteChannel, fee),
   ]);
   return {
-    sales: salesInvestmentPoints(buckets, orders, ads, fee),
+    sales: salesInvestmentPoints(buckets, orders, ads, siteInvested, fee),
     traffic: trafficPoints(buckets, traffic, orders),
   };
 }
