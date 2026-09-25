@@ -7,6 +7,7 @@ import type {
   OrderSnapshot,
   TrafficSnapshot,
 } from "./importUndo.types";
+import { safeImageUrl } from "./adSpendRules";
 import { orderRowOf } from "./orderRow";
 import { adSpendDayKey, adSpendScopes, scopeAccounts, trafficKey } from "./undoPlan";
 import type { UndoRecorder } from "./undoRecorder";
@@ -251,7 +252,12 @@ export async function persistAdSpend(
   });
   for (const group of chunks(rows)) {
     await prismaClient.adSpendDaily.createMany({
-      data: group.map(({ row: _row, date, ...rest }) => ({ clientId, date: dayOf(date), ...rest })),
+      data: group.map(({ row: _row, date, thumbnailUrl, ...rest }) => ({
+        clientId,
+        date: dayOf(date),
+        ...rest,
+        thumbnailUrl: safeImageUrl(thumbnailUrl),
+      })),
     });
   }
   return rows.length;

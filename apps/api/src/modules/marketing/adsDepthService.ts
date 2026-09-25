@@ -125,7 +125,7 @@ export async function depthByLevel(
     select ${levelKeys[level]}, ${levelNames[level]} as name, a.campaign_id,
       ${latest(Prisma.sql`a.campaign_name`)} as campaign_name,
       ${level === "anuncio" ? latest(Prisma.sql`a.adset_name`) : Prisma.sql`null`} as adset_name,
-      max(a.campaign_type) as campaign_type, max(a.thumbnail_url) as thumbnail_url, ${counters}
+      max(a.campaign_type) as campaign_type, (array_agg(a.thumbnail_url order by a.date desc) filter (where a.thumbnail_url is not null))[1] as thumbnail_url, ${counters}
     from ad_spend_daily a
     where ${whereOf(clientId, w, scope)}
     group by ${levelGroups[level]}

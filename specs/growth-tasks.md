@@ -79,8 +79,9 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       connector row its account plus the spreadsheet rows of that day; undo snapshots carry the new
       fields; `SyncContext.writeKeywords` / `writeTrafficDetail` (pages normalised, items, audience,
       regions) honour the owner and the date cut
-- [ ] Connectors 2/4 — Meta: account, reach, link clicks, landing page views, carts, leads,
-      conversations, campaign type, thumbnails, several accounts (stub-tested)
+- [x] Connectors 2/4 — Meta: account, reach, link clicks, landing page views, carts, leads,
+      conversations, campaign type (from the objective), thumbnails, several accounts ("Todas as
+      contas"); stub-tested with two accounts
 - [ ] Connectors 3/4 — Google Ads: campaign type (PMax…), impression share → eligible impressions,
       keywords with match type (stub-tested)
 - [ ] Connectors 4/4 — GA4: engagement, page views, duration, purchases; pages, items (SKU),

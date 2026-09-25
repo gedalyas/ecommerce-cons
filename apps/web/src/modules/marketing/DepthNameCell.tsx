@@ -8,7 +8,13 @@ export function CreativeThumbnail({ url }: { url: string | null }) {
       className={`flex size-10 shrink-0 items-center justify-center overflow-hidden border border-border bg-muted ${radiusClass.badge}`}
     >
       {url ? (
-        <img src={url} alt="" className="size-full object-cover" loading="lazy" />
+        <img
+          src={url}
+          alt=""
+          className="size-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+        />
       ) : (
         <ImageOff className="size-4 text-muted-foreground" aria-hidden />
       )}

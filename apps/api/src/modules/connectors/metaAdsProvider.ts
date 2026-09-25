@@ -1,6 +1,8 @@
 import type { ConnectorAccountOption } from "@ecommerce/contracts/connectors";
 import type { ConnectorProvider, SyncContext, SyncResult } from "./connectorProvider.types";
 import {
+  accountOptions,
+  accountsToSync,
   adSpendRowOfMeta,
   META_INSIGHT_FIELDS,
   metaInsightId,
@@ -48,46 +50,89 @@ async function adAccounts(
   });
 }
 
-async function insights(
-  config: MetaConfig,
-  credentials: MetaCredentials,
-  accountId: string,
-  from: string,
-  to: string,
-): Promise<MetaInsight[]> {
-  const first = new URL(`${config.graphUrl.replace(/\/$/, "")}/${accountId}/insights`);
-  first.searchParams.set("level", "ad");
-  first.searchParams.set("time_increment", "1");
-  first.searchParams.set("fields", META_INSIGHT_FIELDS);
-  first.searchParams.set("time_range", JSON.stringify({ since: from, until: to }));
-  first.searchParams.set("limit", "500");
-  first.searchParams.set("access_token", credentials.accessToken);
-  const rows: MetaInsight[] = [];
+async function pages<T>(config: MetaConfig, first: URL): Promise<T[]> {
+  const rows: T[] = [];
+  const origin = first.origin;
   let next: string | null = first.toString();
-  for (let page = 0; next && page < MAX_PAGES; page += 1) {
-    const body: { data?: MetaInsight[]; paging?: { next?: string } } = await graph(config, next);
+  for (let page = 0; next && new URL(next).origin === origin && page < MAX_PAGES; page += 1) {
+    const body: { data?: T[]; paging?: { next?: string } } = await graph(config, next);
     rows.push(...(body.data ?? []));
     next = body.paging?.next ?? null;
   }
   return rows;
 }
 
-async function pull(config: MetaConfig, context: SyncContext, from: string): Promise<SyncResult> {
+function accountUrl(config: MetaConfig, credentials: MetaCredentials, path: string): URL {
+  const url = new URL(`${config.graphUrl.replace(/\/$/, "")}/${path}`);
+  url.searchParams.set("limit", "500");
+  url.searchParams.set("access_token", credentials.accessToken);
+  return url;
+}
+
+function insights(
+  config: MetaConfig,
+  credentials: MetaCredentials,
+  accountId: string,
+  range: { from: string; to: string },
+): Promise<MetaInsight[]> {
+  const url = accountUrl(config, credentials, `${accountId}/insights`);
+  url.searchParams.set("level", "ad");
+  url.searchParams.set("time_increment", "1");
+  url.searchParams.set("fields", META_INSIGHT_FIELDS);
+  url.searchParams.set("time_range", JSON.stringify({ since: range.from, until: range.to }));
+  return pages<MetaInsight>(config, url);
+}
+
+async function thumbnails(
+  config: MetaConfig,
+  credentials: MetaCredentials,
+  accountId: string,
+): Promise<Map<string, string>> {
+  const url = accountUrl(config, credentials, `${accountId}/ads`);
+  url.searchParams.set("fields", "id,creative{thumbnail_url}");
+  const ads = await pages<{ id?: string; creative?: { thumbnail_url?: string } }>(config, url);
+  return new Map(
+    ads.flatMap((ad) =>
+      ad.id && ad.creative?.thumbnail_url ? [[ad.id, ad.creative.thumbnail_url] as const] : [],
+    ),
+  );
+}
+
+async function pullAccount(
+  config: MetaConfig,
+  context: SyncContext,
+  accountId: string,
+  from: string,
+): Promise<number> {
   const credentials = context.credentials as MetaCredentials;
-  const accountId = (context.settings["accountId"] as string | null | undefined) ?? null;
-  if (!accountId) throw new Error("Escolha a conta de anúncios nas configurações da conexão.");
   const to = dayOf(context.now);
+  const rowContext = { accountId, thumbnails: await thumbnails(config, credentials, accountId) };
   let written = 0;
   for (let start = from; start <= to; start = shiftDays(start, CHUNK_DAYS)) {
     const end = shiftDays(start, CHUNK_DAYS - 1) < to ? shiftDays(start, CHUNK_DAYS - 1) : to;
-    const rows = await insights(config, credentials, accountId, start, end);
+    const rows = await insights(config, credentials, accountId, { from: start, to: end });
     await context.saveRaw(
       "ad_insight",
-      rows.map((r, i) => ({ externalId: metaInsightId(r, i), payload: r })),
+      rows.map((r, i) => ({ externalId: `${accountId}:${metaInsightId(r, i)}`, payload: r })),
     );
-    written += await context.writeAdSpend(rows.map(adSpendRowOfMeta).filter((r) => r !== null));
+    written += await context.writeAdSpend(
+      rows.map((r, i) => adSpendRowOfMeta(r, i, rowContext)).filter((r) => r !== null),
+    );
   }
-  return { cursor: { ...context.cursor, [CURSOR]: to }, written };
+  return written;
+}
+
+async function pull(config: MetaConfig, context: SyncContext, from: string): Promise<SyncResult> {
+  const selected = (context.settings["accountId"] as string | null | undefined) ?? null;
+  if (!selected) throw new Error("Escolha a conta de anúncios nas configurações da conexão.");
+  const available = (await adAccounts(config, context.credentials as MetaCredentials)).map(
+    (a) => a.id,
+  );
+  let written = 0;
+  for (const accountId of accountsToSync(selected, available)) {
+    written += await pullAccount(config, context, accountId, from);
+  }
+  return { cursor: { ...context.cursor, [CURSOR]: dayOf(context.now) }, written };
 }
 
 const monthsAgo = (now: Date, months: number) => {
@@ -128,7 +173,7 @@ export function metaAdsProvider(config: MetaConfig): ConnectorProvider {
       return longLivedMetaToken(config, credentials.accessToken, now);
     },
     describeSettings: async (credentials) => ({
-      accounts: await adAccounts(config, credentials as MetaCredentials),
+      accounts: accountOptions(await adAccounts(config, credentials as MetaCredentials)),
     }),
     backfill: (context) => pull(config, context, monthsAgo(context.now, config.backfillMonths)),
     sync(context) {

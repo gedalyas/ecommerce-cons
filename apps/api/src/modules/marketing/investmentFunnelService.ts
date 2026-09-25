@@ -90,7 +90,7 @@ async function creativeRows(clientId: string, w: Window): Promise<CreativeRow[]>
       (array_agg(a.ad_name order by a.date desc))[1] as ad_name,
       (array_agg(a.campaign_name order by a.date desc))[1] as campaign_name,
       (array_agg(a.adset_name order by a.date desc))[1] as adset_name,
-      max(a.thumbnail_url) as thumbnail_url,
+      (array_agg(a.thumbnail_url order by a.date desc) filter (where a.thumbnail_url is not null))[1] as thumbnail_url,
       coalesce(sum(a.spend), 0)::float8 as spend,
       coalesce(sum(a.platform_fee), 0)::float8 as platform_fee,
       coalesce(sum(a.impressions), 0)::int as impressions,
