@@ -1,4 +1,4 @@
-export { channelInvestment } from "./investmentFunnelService";
+export { channelInvestment, channelInvestmentBuckets } from "./investmentFunnelService";
 export { createMarketingRouter } from "./marketingRouter";
 export {
   adSpendAggregate,

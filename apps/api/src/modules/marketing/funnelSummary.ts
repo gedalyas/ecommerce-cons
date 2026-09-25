@@ -136,3 +136,16 @@ export function investmentByChannel(
   }
   return byChannel;
 }
+
+export function channelInvestmentByBucket(
+  rows: readonly StageRow[],
+  channel: string,
+  fee: boolean,
+): { bucket: string; investment: number }[] {
+  const byBucket = new Map<string, number>();
+  for (const r of rows) {
+    if (r.bucket == null || r.channel !== channel) continue;
+    byBucket.set(r.bucket, (byBucket.get(r.bucket) ?? 0) + r.spend + (fee ? r.platformFee : 0));
+  }
+  return [...byBucket].map(([bucket, investment]) => ({ bucket, investment }));
+}

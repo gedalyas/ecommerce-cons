@@ -17,6 +17,7 @@ import {
 } from "@ecommerce/contracts/shared/periodWindow";
 import { campaignTags } from "./campaignTagsService";
 import {
+  channelInvestmentByBucket,
   cpaSeries,
   funnelTotals,
   investmentByChannel,
@@ -37,13 +38,9 @@ type StageDbRow = {
   conversions: number;
 };
 
-async function stageRows(
-  clientId: string,
-  w: Window,
-  granularity: Granularity | null,
-): Promise<StageRow[]> {
-  const bucket = granularity
-    ? Prisma.sql`date_trunc(${truncUnit[granularity]}, a.date::timestamp)`
+async function stageRows(clientId: string, w: Window, unit: string | null): Promise<StageRow[]> {
+  const bucket = unit
+    ? Prisma.sql`date_trunc(${unit}, a.date::timestamp)`
     : Prisma.sql`null::timestamp`;
   const rows = await prismaClient.$queryRaw<StageDbRow[]>`
     select ${bucket} as bucket, a.platform, coalesce(t.stage::text, 'UNTAGGED') as stage,
@@ -71,7 +68,7 @@ async function stageRows(
 async function series(clientId: string, w: Window, granularity: Granularity, fee: boolean) {
   const buckets = bucketWindows(w, granularity).map((b) => b.bucket);
   const [rows, orders] = await Promise.all([
-    stageRows(clientId, w, granularity),
+    stageRows(clientId, w, truncUnit[granularity]),
     ordersByBucket(clientId, w, truncUnit[granularity], "ECOMMERCE"),
   ]);
   return {
@@ -86,6 +83,15 @@ export async function channelInvestment(
   fee: boolean,
 ): Promise<Record<string, number>> {
   return investmentByChannel(await stageRows(clientId, w, null), fee);
+}
+
+export async function channelInvestmentBuckets(
+  clientId: string,
+  w: Window,
+  unit: string,
+  channel: string,
+): Promise<{ bucket: string; investment: number }[]> {
+  return channelInvestmentByBucket(await stageRows(clientId, w, unit), channel, true);
 }
 
 export async function investmentFunnel(

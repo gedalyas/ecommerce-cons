@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  channelInvestmentByBucket,
   cpaSeries,
   funnelTotals,
   investmentByChannel,
@@ -76,5 +77,24 @@ describe("investmentByChannel", () => {
         true,
       ),
     ).toEqual({ site: 1000, "Mercado Livre": 220 });
+  });
+});
+
+describe("channelInvestmentByBucket", () => {
+  it("adds up one channel's investment per bucket", () => {
+    expect(
+      channelInvestmentByBucket(
+        [
+          ...current,
+          row({ bucket: "2026-10-01", spend: 50, platformFee: 5 }),
+          row({ channel: "Mercado Livre", spend: 999 }),
+        ],
+        "site",
+        true,
+      ),
+    ).toEqual([
+      { bucket: "2026-09-01", investment: 1000 },
+      { bucket: "2026-10-01", investment: 55 },
+    ]);
   });
 });

@@ -69,7 +69,9 @@ Each tile shows the variation against the comparison window ("vs 13/07 –
 11/08") and an ⓘ that explains the metric (definition + formula from
 `packages/contracts/src/glossary`): hover opens it, a click or a tap pins it. ROAS
 replaced Margem de contribuição on 2026-09-22 (`growth-plan.md`). Since G0 it is the **ROAS do
-site** (site sales ÷ ad spend + platform fee, the investment that points at the site by default);
+site** (site sales ÷ the ad spend + platform fee of the campaigns tagged to the site on Marketing ›
+Funil de investimento — every campaign by default; the same split in the tile, its comparison and
+its series);
 the tile shows **MER** below it and its ⓘ lists the ROAS of every sales channel
 (`roasByChannel`, pure `channelRoas` in `contracts/marketing`: "Site 4,20x · Mercado Livre sem
 investimento"); each channel's investment is the spend of the campaigns tagged to it on Marketing ›

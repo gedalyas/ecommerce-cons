@@ -13,6 +13,7 @@ const facts: DashboardFacts = {
   sessions: 16_000,
   adSpend: 18_000,
   adPlatformFee: 300,
+  siteAdInvestment: 16_000,
   costs: { cogs: 5_000, salesMarketing: 1_700, operational: 9_000, total: 15_700 },
 };
 
@@ -27,12 +28,12 @@ describe("computeDashboardMetrics", () => {
     expect(m.repurchaseRate).toBe(15);
   });
 
-  it("counts investment as ad spend + platform fee + marketing cost rules", () => {
+  it("counts investment as ad spend + platform fee + marketing cost rules, ROAS over the site's share", () => {
     expect(m.marketingInvestment).toBe(20_000);
     expect(m.cac).toBe(20);
     expect(m.cpa).toBe(50);
     expect(m.roi).toBe(4);
-    expect(m.roas).toBeCloseTo(4.37, 2);
+    expect(m.roas).toBe(5);
     expect(m.mer).toBe(5);
   });
 
