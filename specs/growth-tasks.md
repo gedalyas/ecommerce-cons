@@ -74,13 +74,17 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       traffic_region_daily, campaign_tag (+ FunnelStage, AudienceDimension closed sets); traffic
       gains engaged sessions, page views, duration, purchases (a count). Dev seed fills them
       (`seedMarketing.ts`, second deterministic RNG so the existing data does not move)
-- [ ] Providers write the new fields: GA4 (funnel incl. purchase, engagement, pages, items,
-      demographics, region), Meta (account, reach, actions: link clicks, landing page views, carts,
-      leads, messaging; thumbnails), Google (campaign type incl. PMax, keywords, impression share);
-      ad spend replaced per (platform, account, date) — today the replace key ignores the account;
-      import undo snapshots carry the new ad spend and traffic fields; GA4 page paths normalised
-      (no query string, capped length) and items keyed by item id; keywords keyed with match type;
-      order UTM kept where the ERP/spreadsheet offers it
+- [x] Connectors 1/4 — write path: ad spend and traffic rows carry the new fields; ad spend replaced
+      per (plataforma, conta, dia) — a spreadsheet row (no account) replaces the whole day, a
+      connector row its account plus the spreadsheet rows of that day; undo snapshots carry the new
+      fields; `SyncContext.writeKeywords` / `writeTrafficDetail` (pages normalised, items, audience,
+      regions) honour the owner and the date cut
+- [ ] Connectors 2/4 — Meta: account, reach, link clicks, landing page views, carts, leads,
+      conversations, campaign type, thumbnails, several accounts (stub-tested)
+- [ ] Connectors 3/4 — Google Ads: campaign type (PMax…), impression share → eligible impressions,
+      keywords with match type (stub-tested)
+- [ ] Connectors 4/4 — GA4: engagement, page views, duration, purchases; pages, items (SKU),
+      audience, regions → UF (stub-tested)
 - [x] Shared: last-sync stamp under the tabs (`tabSources`: the connected sources each tab reads,
       in error in orange); the window toggle is the global period presets (CLAUDE.md)
 - [x] Shared: glossary hints on the older tabs (Resumo, Campanhas, Descontos, Regiões, Social) via

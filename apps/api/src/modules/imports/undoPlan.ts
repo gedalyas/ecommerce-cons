@@ -11,12 +11,32 @@ import { undoEntities } from "./importUndo.types";
 const KEY_SEPARATOR = "|";
 
 export const adSpendDayKey = (key: AdSpendDayKey): string =>
-  [key.platform, key.date].join(KEY_SEPARATOR);
+  (key.accountId == null ? [key.platform, key.date] : [key.platform, key.date, key.accountId]).join(
+    KEY_SEPARATOR,
+  );
 
 export function parseAdSpendDayKey(key: string): AdSpendDayKey {
-  const [platform = "", date = ""] = key.split(KEY_SEPARATOR);
-  return { platform: platform as AdPlatform, date };
+  const [platform = "", date = "", ...account] = key.split(KEY_SEPARATOR);
+  return {
+    platform: platform as AdPlatform,
+    date,
+    accountId: account.length > 0 ? account.join(KEY_SEPARATOR) : null,
+  };
 }
+
+export function adSpendScopes(
+  rows: readonly { platform: AdPlatform; date: string; accountId?: string }[],
+): AdSpendDayKey[] {
+  const scopes = new Map<string, AdSpendDayKey>();
+  for (const row of rows) {
+    const scope = { platform: row.platform, date: row.date, accountId: row.accountId || null };
+    scopes.set(adSpendDayKey(scope), scope);
+  }
+  return [...scopes.values()];
+}
+
+export const scopeAccounts = (scope: AdSpendDayKey): string[] | null =>
+  scope.accountId == null ? null : [scope.accountId, ""];
 
 export const trafficKey = (key: TrafficKey): string =>
   [key.date, key.source, key.medium].join(KEY_SEPARATOR);

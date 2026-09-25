@@ -136,7 +136,11 @@ Every pulled row is stored as it came in `raw_record`; orders, ad spend and traf
 written through the same write service the CSV import uses, so the dashboards do not know
 the source. Providers today: Nuvemshop, Bling (with the status mapping), Google Ads, GA4,
 Meta Ads, Shopify, TikTok Ads — one sheet each in `docs/apis/`, plan in
-`connectors-plan.md`.
+`connectors-plan.md`. Ad spend is replaced per (platform, account, day): a connector row replaces its account
+and any spreadsheet row of that day, a spreadsheet row (no account) the whole platform-day, so two
+accounts of one platform never erase each other and a day is never counted twice. Keywords and
+the GA4 detail (pages with the query string dropped, items by SKU, audience, regions) go through
+`writeKeywords` / `writeTrafficDetail`, replaced per day.
 
 The shell shows "Conecte uma fonte de dados da loja" (`GET /data-readiness`) until the store
 has a connection, an import or orders.

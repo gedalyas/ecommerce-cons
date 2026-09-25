@@ -4,7 +4,14 @@ import type {
   ConnectorKey,
   ConnectorStatusOption,
 } from "@ecommerce/contracts/connectors";
-import type { AdSpendRow, OrderInput, SocialInput, TrafficRow } from "@/modules/imports/contract";
+import type {
+  AdSpendRow,
+  KeywordRow,
+  OrderInput,
+  SocialInput,
+  TrafficDetail,
+  TrafficRow,
+} from "@/modules/imports/contract";
 
 export type Credentials = Record<string, unknown>;
 
@@ -45,6 +52,8 @@ export type SyncContext = {
   writeOrders(orders: OrderInput[]): Promise<number>;
   writeAdSpend(rows: AdSpendRow[]): Promise<number>;
   writeTraffic(rows: TrafficRow[]): Promise<number>;
+  writeKeywords(rows: KeywordRow[]): Promise<number>;
+  writeTrafficDetail(detail: TrafficDetail): Promise<number>;
   writeSocial(input: SocialInput): Promise<number>;
 };
 

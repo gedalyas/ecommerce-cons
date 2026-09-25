@@ -235,7 +235,8 @@ module load order cannot form a runtime cycle either.
   `providerRegistry.ts` only when its env credentials exist, and the API flips the
   catalog's availability to `oauth` for registered providers — the web needs no
   per-environment knowledge. A provider never touches Prisma: it receives a `SyncContext`
-  (`saveRaw`, `readRaw`, `listRaw`, `writeOrders`, `writeAdSpend`, `writeTraffic`, the
+  (`saveRaw`, `readRaw`, `listRaw`, `writeOrders`, `writeAdSpend`, `writeTraffic`, `writeKeywords`,
+  `writeTrafficDetail`, the
   cursor and the settings) and returns the new cursor. Credentials are sealed with the vault
   and only opened inside the worker. The client connects alone: a new connector needs its
   `requirements` (and `domainHint`) in the catalog, and a provider that offers several

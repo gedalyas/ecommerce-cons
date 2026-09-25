@@ -1,9 +1,14 @@
 import type { ConnectorKey } from "@ecommerce/contracts/connectors";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
-import type { AdSpendSnapshot, OrderSnapshot, TrafficSnapshot } from "./importUndo.types";
+import type {
+  AdSpendDayKey,
+  AdSpendSnapshot,
+  OrderSnapshot,
+  TrafficSnapshot,
+} from "./importUndo.types";
 import { orderRowOf } from "./orderRow";
-import { adSpendDayKey, trafficKey } from "./undoPlan";
+import { adSpendDayKey, adSpendScopes, scopeAccounts, trafficKey } from "./undoPlan";
 import type { UndoRecorder } from "./undoRecorder";
 
 const CHUNK = 200;
@@ -195,6 +200,17 @@ const adSpendSnapshotSelect = {
   clicks: true,
   conversions: true,
   attributedRevenue: true,
+  accountId: true,
+  accountName: true,
+  campaignType: true,
+  reach: true,
+  linkClicks: true,
+  landingPageViews: true,
+  addToCart: true,
+  leads: true,
+  messages: true,
+  eligibleImpressions: true,
+  thumbnailUrl: true,
 } as const;
 
 type AdSpendSnapshotRow = Prisma.AdSpendDailyGetPayload<{ select: typeof adSpendSnapshotSelect }>;
@@ -206,16 +222,14 @@ export const adSpendSnapshotOf = (row: AdSpendSnapshotRow): AdSpendSnapshot => (
   attributedRevenue: num(row.attributedRevenue),
 });
 
-function adSpendDays(rows: AdSpendRow[]): { platform: AdSpendRow["platform"]; date: string }[] {
-  const seen = new Set<string>();
-  const days = [];
-  for (const row of rows) {
-    const key = adSpendDayKey(row);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    days.push({ platform: row.platform, date: row.date });
-  }
-  return days;
+export function adSpendScopeWhere(clientId: string, scope: AdSpendDayKey) {
+  const accounts = scopeAccounts(scope);
+  return {
+    clientId,
+    platform: scope.platform,
+    date: dayOf(scope.date),
+    ...(accounts ? { accountId: { in: accounts } } : {}),
+  };
 }
 
 export async function persistAdSpend(
@@ -224,12 +238,12 @@ export async function persistAdSpend(
   undo: UndoRecorder,
 ): Promise<number> {
   await prismaClient.$transaction(async (tx) => {
-    for (const day of adSpendDays(rows)) {
-      const where = { clientId, platform: day.platform, date: dayOf(day.date) };
+    for (const scope of adSpendScopes(rows)) {
+      const where = adSpendScopeWhere(clientId, scope);
       const previous = await tx.adSpendDaily.findMany({ where, select: adSpendSnapshotSelect });
       undo.add({
         entity: "AD_SPEND_DAY",
-        key: adSpendDayKey(day),
+        key: adSpendDayKey(scope),
         previous: previous.length > 0 ? previous.map(adSpendSnapshotOf) : null,
       });
       await tx.adSpendDaily.deleteMany({ where });
@@ -250,6 +264,10 @@ const trafficSnapshotSelect = {
   viewItem: true,
   addToCart: true,
   beginCheckout: true,
+  engagedSessions: true,
+  pageViews: true,
+  durationSeconds: true,
+  purchases: true,
 } as const;
 
 export async function persistTraffic(

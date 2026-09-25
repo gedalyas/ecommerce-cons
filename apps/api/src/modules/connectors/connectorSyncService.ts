@@ -16,9 +16,12 @@ import { recordActivity } from "@/modules/audit/contract";
 import { refreshCustomers } from "@/modules/customers/contract";
 import {
   writeSyncedAdSpend,
+  writeSyncedKeywords,
   writeSyncedOrders,
   writeSyncedSocial,
   writeSyncedTraffic,
+  writeSyncedTrafficDetail,
+  trafficDetailSince,
 } from "@/modules/imports/contract";
 import type { Jobs } from "@/shared/jobs/jobs.types";
 import type {
@@ -125,6 +128,12 @@ function contextOf(
     writeTraffic: (rows) =>
       provides("traffic")
         ? writeSyncedTraffic(row.clientId, daysSince(rows, cuts.traffic))
+        : Promise.resolve(0),
+    writeKeywords: (rows) =>
+      provides("ad_spend") ? writeSyncedKeywords(row.clientId, rows) : Promise.resolve(0),
+    writeTrafficDetail: (detail) =>
+      provides("traffic")
+        ? writeSyncedTrafficDetail(row.clientId, trafficDetailSince(detail, cuts.traffic))
         : Promise.resolve(0),
     writeSocial: (input) =>
       provides("social") ? writeSyncedSocial(row.clientId, input) : Promise.resolve(0),

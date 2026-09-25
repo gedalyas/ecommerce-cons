@@ -4,6 +4,7 @@ import { refreshCustomers } from "@/modules/customers/contract";
 import { HttpError, notFound } from "@/shared/http/httpError";
 import { connectorKeysOfKind, manualConnector } from "./importSources";
 import type { OrderSnapshot, UndoEntry, UndoPlan } from "./importUndo.types";
+import { adSpendScopeWhere } from "./importsWriteService";
 import { isUndoEntity, undoPlanOf } from "./undoPlan";
 
 const CHUNK = 200;
@@ -100,11 +101,11 @@ async function undoOrders(clientId: string, plan: UndoPlan) {
 
 async function undoAdSpend(clientId: string, plan: UndoPlan) {
   for (const { key, rows } of plan.adSpendDays) {
-    const where = { clientId, platform: key.platform, date: dayOf(key.date) };
+    const day = { clientId, platform: key.platform, date: dayOf(key.date) };
     await prismaClient.$transaction(async (tx) => {
-      await tx.adSpendDaily.deleteMany({ where });
+      await tx.adSpendDaily.deleteMany({ where: adSpendScopeWhere(clientId, key) });
       if (rows.length > 0) {
-        await tx.adSpendDaily.createMany({ data: rows.map((r) => ({ ...where, ...r })) });
+        await tx.adSpendDaily.createMany({ data: rows.map((r) => ({ ...day, ...r })) });
       }
     });
   }

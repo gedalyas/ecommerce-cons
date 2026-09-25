@@ -58,6 +58,17 @@ export type AdSpendSnapshot = {
   clicks: number;
   conversions: number;
   attributedRevenue: number;
+  accountId?: string;
+  accountName?: string;
+  campaignType?: string | null;
+  reach?: number;
+  linkClicks?: number;
+  landingPageViews?: number;
+  addToCart?: number;
+  leads?: number;
+  messages?: number;
+  eligibleImpressions?: number;
+  thumbnailUrl?: string | null;
 };
 
 export type TrafficSnapshot = {
@@ -67,6 +78,10 @@ export type TrafficSnapshot = {
   viewItem: number;
   addToCart: number;
   beginCheckout: number;
+  engagedSessions?: number;
+  pageViews?: number;
+  durationSeconds?: number;
+  purchases?: number;
 };
 
 export type UndoEntry =
@@ -76,7 +91,7 @@ export type UndoEntry =
   | { entity: "AD_SPEND_DAY"; key: string; previous: AdSpendSnapshot[] | null }
   | { entity: "TRAFFIC"; key: string; previous: TrafficSnapshot | null };
 
-export type AdSpendDayKey = { platform: AdPlatform; date: string };
+export type AdSpendDayKey = { platform: AdPlatform; date: string; accountId: string | null };
 export type TrafficKey = { date: string; source: string; medium: string };
 
 export type UndoPlan = {
