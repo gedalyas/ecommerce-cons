@@ -64,6 +64,12 @@ First slice of G4 (`growth-plan.md`, the Looker coverage). Payload `MarketingGen
    each with the pass-through from the step above and the Δ vs the comparison (`FunnelSteps`).
 6. **Mídia por plataforma** — per ad platform: Investido, CPC, Conversões informadas (the
    platform's count, never a sale) and Custo por conversão, each with Δ.
+7. **Desempenho dos produtos** — GA4 items (`traffic_item_daily`) resolved to a product in SQL: by
+   variant SKU when exactly one product owns it (the key the GA4 connector must write), else by product
+   id; an ambiguous SKU stays unmatched. One row per product (its SKUs summed), the 50 most viewed:
+   views, carts, vistos → carrinho, compras informadas, vistos → compra (GA4 counts, site only), and
+   units and revenue of the **site** sales in the ERP or the spreadsheet (marketplaces never beside
+   site views; "—" for an unmatched item, 0 for a product without site sales). CSV.
 
 The consulting pillars moved to the **Pilares** tab (`?aba=visao`).
 

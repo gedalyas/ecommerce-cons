@@ -17,6 +17,7 @@ import {
   type Window,
 } from "@ecommerce/contracts/shared/periodWindow";
 import { adsByPlatform } from "./adsService";
+import { productPerformanceOf } from "./productPerformanceService";
 import { channelInvestment, channelInvestmentBuckets } from "./investmentFunnelService";
 import { storeOrders } from "./attributionService";
 import {
@@ -84,6 +85,19 @@ const kpisOf = (f: Facts, costs: number, media: boolean) => ({
   sessions: f.traffic.sessions,
 });
 
+type Kpis = ReturnType<typeof kpisOf>;
+
+const kpiMetrics = (c: Kpis, p: Kpis | null): MarketingGeneral["kpis"] => ({
+  sold: metricValue("currency", c.sold, p?.sold ?? null),
+  invested: metricValue("currency", c.invested, p?.invested ?? null),
+  roas: metricValue("multiplier", c.roas, p?.roas ?? null),
+  mer: metricValue("multiplier", c.mer, p?.mer ?? null),
+  orders: metricValue("count", c.orders, p?.orders ?? null),
+  aov: metricValue("currency", c.aov, p?.aov ?? null),
+  conversionRate: metricValue("percent", c.conversionRate, p?.conversionRate ?? null),
+  sessions: metricValue("count", c.sessions, p?.sessions ?? null),
+});
+
 const funnelCounts = (f: Facts) => ({
   sessions: f.traffic.sessions,
   viewItem: f.traffic.viewItem,
@@ -138,34 +152,28 @@ export async function marketingGeneral(
   const period = resolvePeriod(input);
   const costs = input.custos.reduce((s, l) => s + l.amount, 0);
   const opts = { fee: input.incluirTaxa, platform: platformFor(input.canal) };
-  const [cur, prev, year, month, monthly, daily, platforms, prevPlatforms] = await Promise.all([
-    windowFacts(clientId, period.current, opts),
-    period.previous ? windowFacts(clientId, period.previous, opts) : null,
-    windowFacts(clientId, yearWindow(today), opts),
-    windowFacts(clientId, monthWindow(today), opts),
-    series(clientId, lastMonthsWindow(today, 12), "mes", opts),
-    series(clientId, period.current, input.por, opts),
-    adsByPlatform(clientId, period.current),
-    period.previous ? adsByPlatform(clientId, period.previous) : [],
-  ]);
-  const c = kpisOf(cur, costs, opts.platform !== "MARKETPLACE");
-  const p = prev ? kpisOf(prev, costs, opts.platform !== "MARKETPLACE") : null;
+  const [cur, prev, year, month, monthly, daily, platforms, prevPlatforms, products] =
+    await Promise.all([
+      windowFacts(clientId, period.current, opts),
+      period.previous ? windowFacts(clientId, period.previous, opts) : null,
+      windowFacts(clientId, yearWindow(today), opts),
+      windowFacts(clientId, monthWindow(today), opts),
+      series(clientId, lastMonthsWindow(today, 12), "mes", opts),
+      series(clientId, period.current, input.por, opts),
+      adsByPlatform(clientId, period.current),
+      period.previous ? adsByPlatform(clientId, period.previous) : [],
+      productPerformanceOf(clientId, period.current),
+    ]);
+  const media = opts.platform !== "MARKETPLACE";
+  const c = kpisOf(cur, costs, media);
+  const p = prev ? kpisOf(prev, costs, media) : null;
   const prevByPlatform = new Map(prevPlatforms.map((s) => [s.platform, s]));
   return {
-    kpis: {
-      sold: metricValue("currency", c.sold, p?.sold ?? null),
-      invested: metricValue("currency", c.invested, p?.invested ?? null),
-      roas: metricValue("multiplier", c.roas, p?.roas ?? null),
-      mer: metricValue("multiplier", c.mer, p?.mer ?? null),
-      orders: metricValue("count", c.orders, p?.orders ?? null),
-      aov: metricValue("currency", c.aov, p?.aov ?? null),
-      conversionRate: metricValue("percent", c.conversionRate, p?.conversionRate ?? null),
-      sessions: metricValue("count", c.sessions, p?.sessions ?? null),
-    },
+    kpis: kpiMetrics(c, p),
     year: {
       sold: year.orders.revenue,
       invested: year.invested,
-      roas: kpisOf(year, 0, opts.platform !== "MARKETPLACE").roas,
+      roas: kpisOf(year, 0, media).roas,
     },
     projection: {
       month: today.slice(0, 7),
@@ -178,5 +186,6 @@ export async function marketingGeneral(
     trafficDaily: daily.traffic,
     funnel: funnelWithDelta(funnelCounts(cur), prev ? funnelCounts(prev) : null),
     platforms: platforms.map((s) => platformCard(s, prevByPlatform.get(s.platform), opts.fee)),
+    products,
   };
 }

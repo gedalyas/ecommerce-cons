@@ -10,6 +10,7 @@ import { formatDate } from "@ecommerce/contracts/shared/format";
 import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { ComboChart } from "@/shared/ui/ComboChart";
+import { DataTable } from "@/shared/ui/DataTable";
 import { metricToTile } from "@/shared/ui/metricToTile";
 import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
@@ -18,6 +19,7 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { FunnelSteps } from "./FunnelSteps";
+import { productColumns } from "./productColumns";
 
 type Props = {
   data: MarketingGeneral;
@@ -209,6 +211,20 @@ export function MarketingGeral({ data, search, period, comparisonLabel, onPatch 
         <FunnelSteps steps={data.funnel} />
       </SectionBlock>
       <PlatformCards platforms={data.platforms} comparisonLabel={comparisonLabel} />
+      <SectionBlock
+        title="Desempenho dos produtos"
+        description="Visualizações, carrinhos e compras contados pelo Google Analytics no site; unidades e receita das vendas do site no ERP ou na planilha. Os 50 produtos mais vistos no período."
+      >
+        <DataTable
+          columns={productColumns}
+          rows={data.products}
+          rowKey={(r) => r.key}
+          initialSort={{ key: "views", direction: "desc" }}
+          initialPageSize={10}
+          csvFileName={`produtos-${period.inicio}-${period.fim}`}
+          emptyMessage="Sem produtos vistos no período."
+        />
+      </SectionBlock>
     </div>
   );
 }

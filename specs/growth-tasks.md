@@ -85,7 +85,8 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       3/6 meses, ano), platform filter, last-sync stamp
 - [x] Visão geral (KPIs with Δ, YTD, month-end projection, monthly/daily combos, site funnel, one
       card per platform) — products table waits for the GA4 items data
-- [ ] Visão geral: product table (views, carts, purchases from GA4 items; revenue from the ERP)
+- [x] Visão geral: product table (views, carts, purchases from GA4 items; units and revenue of site
+      sales from the ERP; one row per product, matched by unique variant SKU, else product id)
 - [x] Meta Ads tab (KPIs, charts, campanha → conjunto → anúncio, account filter, leads and
       messages, creatives) — thumbnails render once the Meta provider writes them
 - [x] Google Ads tab (KPIs, charts, campanha → grupo → palavra-chave, comparison with Δ, campaign

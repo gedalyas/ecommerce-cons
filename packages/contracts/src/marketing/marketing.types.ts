@@ -306,6 +306,18 @@ export type PlatformCard = {
   costPerConversion: MetricValue;
 };
 
+export type ProductPerformanceRow = {
+  key: string;
+  name: string;
+  views: number;
+  addToCart: number;
+  purchases: number;
+  cartRate: number | null;
+  purchaseRate: number | null;
+  units: number | null;
+  revenue: number | null;
+};
+
 export type MarketingGeneral = {
   kpis: {
     sold: MetricValue;
@@ -325,6 +337,7 @@ export type MarketingGeneral = {
   trafficDaily: TrafficPoint[];
   funnel: FunnelStepDelta[];
   platforms: PlatformCard[];
+  products: ProductPerformanceRow[];
 };
 
 export const platformKpis = [

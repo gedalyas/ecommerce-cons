@@ -37,6 +37,7 @@ export type {
   MarketingPlatformTab,
   PlatformKpi,
   PlatformSeriesPoint,
+  ProductPerformanceRow,
   AudienceDimension,
   FunnelStage,
   FunnelStepDelta,
