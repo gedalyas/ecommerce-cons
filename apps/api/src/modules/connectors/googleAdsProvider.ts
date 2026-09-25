@@ -10,9 +10,12 @@ import {
   type GoogleCredentials,
 } from "./googleAuth";
 import {
-  adSpendRowOfGoogle,
   adsQuery,
+  campaignsQuery,
   customerIdOf,
+  googleAdSpendRows,
+  keywordRowOfGoogle,
+  keywordsQuery,
   type GoogleAdsResultRow,
 } from "./googleAdsRows";
 
@@ -78,20 +81,31 @@ async function pull(
   const credentials = context.credentials as GoogleCredentials;
   const accountId = (context.settings["accountId"] as string | null | undefined) ?? null;
   if (!accountId) throw new Error("Escolha a conta do Google Ads nas configurações da conexão.");
+  const accessible = await accessibleCustomers(config, credentials);
+  if (!accessible.some((a) => a.id === accountId)) {
+    throw new Error("A conta do Google Ads escolhida não está mais acessível. Escolha outra.");
+  }
   const to = dayOf(context.now);
   let written = 0;
   for (let start = from; start <= to; start = shiftDays(start, CHUNK_DAYS)) {
     const end = shiftDays(start, CHUNK_DAYS - 1) < to ? shiftDays(start, CHUNK_DAYS - 1) : to;
-    const results = await searchStream(config, credentials, accountId, adsQuery(start, end));
+    const search = (query: string) => searchStream(config, credentials, accountId, query);
+    const [ads, campaigns, keywords] = await Promise.all([
+      search(adsQuery(start, end)),
+      search(campaignsQuery(start, end)),
+      search(keywordsQuery(start, end)),
+    ]);
     await context.saveRaw(
       "ad_insight",
-      results.map((r, i) => ({
+      ads.map((r, i) => ({
         externalId: `${r.segments?.date ?? start}:${r.adGroupAd?.ad?.id ?? r.campaign?.id ?? i}`,
         payload: r,
       })),
     );
-    const rows = results.map(adSpendRowOfGoogle).filter((r) => r !== null);
-    written += await context.writeAdSpend(rows);
+    written += await context.writeAdSpend(googleAdSpendRows(ads, campaigns, accountId));
+    written += await context.writeKeywords(
+      keywords.flatMap((r) => keywordRowOfGoogle(r, accountId) ?? []),
+    );
   }
   return { cursor: { ...context.cursor, [CURSOR]: to }, written };
 }

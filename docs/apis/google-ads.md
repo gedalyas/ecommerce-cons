@@ -27,12 +27,33 @@ Categoria: mídia paga. Alimenta `ad_spend_daily` por campanha/grupo/anúncio e 
 `POST https://googleads.googleapis.com/v19/customers/{customer_id}/googleAds:searchStream`
 com GAQL:
 
+três consultas GAQL por janela de 31 dias:
+
 ```
+-- anúncios
+SELECT segments.date, customer.descriptive_name, campaign.id, campaign.name,
+       campaign.advertising_channel_type, ad_group.id, ad_group.name, ad_group_ad.ad.id,
+       ad_group_ad.ad.name, metrics.cost_micros, metrics.impressions, metrics.clicks,
+       metrics.conversions, metrics.conversions_value
+FROM ad_group_ad WHERE segments.date BETWEEN '…' AND '…'
+
+-- campanhas: traz Performance Max (sem ad_group_ad) e a parcela de impressões
+SELECT segments.date, customer.descriptive_name, campaign.id, campaign.name,
+       campaign.advertising_channel_type, metrics.cost_micros, metrics.impressions, metrics.clicks,
+       metrics.conversions, metrics.conversions_value, metrics.search_impression_share
+FROM campaign WHERE segments.date BETWEEN '…' AND '…'
+
+-- palavras-chave com o tipo de correspondência
 SELECT segments.date, campaign.id, campaign.name, ad_group.id, ad_group.name,
-       ad_group_ad.ad.id, ad_group_ad.ad.name, metrics.cost_micros, metrics.impressions,
-       metrics.clicks, metrics.conversions, metrics.conversions_value
-FROM ad_group_ad WHERE segments.date BETWEEN '2026-08-01' AND '2026-08-31'
+       ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type,
+       metrics.cost_micros, metrics.impressions, metrics.clicks, metrics.conversions
+FROM keyword_view WHERE segments.date BETWEEN '…' AND '…'
 ```
+
+Campanha sem anúncio no dia (Performance Max) vira uma linha no nível da campanha. A parcela de
+impressões (`search_impression_share`, fração 0–1) só existe por campanha: cada anúncio recebe
+impressões elegíveis = impressões ÷ parcela, e a tela soma impressões ÷ elegíveis. O tipo de
+campanha é `advertising_channel_type` (SEARCH, PERFORMANCE_MAX, SHOPPING, DISPLAY, VIDEO…).
 
 Região: `FROM geographic_view` com `segments.geo_target_region`. `cost_micros / 1e6` =
 gasto. Listar contas acessíveis: `customers:listAccessibleCustomers`.
