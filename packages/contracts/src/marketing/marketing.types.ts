@@ -521,6 +521,21 @@ export type CpaSeriesPoint = { bucket: string; site: number | null } & Record<
   number | null
 >;
 
+export type StageCreative = {
+  platform: AdPlatform;
+  adId: string;
+  adName: string;
+  campaignName: string;
+  adsetName: string;
+  thumbnailUrl: string | null;
+  spend: number;
+  conversions: number;
+  ctr: number | null;
+  costPerConversion: number | null;
+};
+
+export type StageCreatives = { stage: StageKey; ads: StageCreative[] };
+
 export type InvestmentFunnelSummary = {
   total: MetricValue;
   stages: StageSpend[];
@@ -529,6 +544,7 @@ export type InvestmentFunnelSummary = {
   daily: StageSeriesPoint[];
   cpaMonthly: CpaSeriesPoint[];
   cpaDaily: CpaSeriesPoint[];
+  creatives: StageCreatives[];
 };
 
 export type MarketingInvestmentFunnel = {

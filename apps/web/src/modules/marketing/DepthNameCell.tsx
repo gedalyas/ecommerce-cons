@@ -2,7 +2,7 @@ import { ImageOff } from "lucide-react";
 import type { AdDepthRow, AdLevel } from "@ecommerce/contracts/marketing";
 import { radiusClass } from "@/shared/styles/radius";
 
-function Thumbnail({ url }: { url: string | null }) {
+export function CreativeThumbnail({ url }: { url: string | null }) {
   return (
     <span
       className={`flex size-10 shrink-0 items-center justify-center overflow-hidden border border-border bg-muted ${radiusClass.badge}`}
@@ -28,7 +28,7 @@ export function DepthNameCell({
   if (level === "anuncio") {
     return (
       <span className="flex items-center gap-3">
-        <Thumbnail url={row.thumbnailUrl} />
+        <CreativeThumbnail url={row.thumbnailUrl} />
         {row.name}
       </span>
     );

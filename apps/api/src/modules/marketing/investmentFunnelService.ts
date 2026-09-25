@@ -22,6 +22,8 @@ import {
   funnelTotals,
   investmentByChannel,
   stageSeries,
+  topCreativesByStage,
+  type CreativeRow,
   type StageRow,
 } from "./funnelSummary";
 import { lastMonthsWindow } from "./generalMetrics";
@@ -65,6 +67,57 @@ async function stageRows(clientId: string, w: Window, unit: string | null): Prom
   }));
 }
 
+const CREATIVES_PER_STAGE = 3;
+
+type CreativeDbRow = {
+  stage: StageKey;
+  platform: AdPlatform;
+  ad_id: string;
+  ad_name: string;
+  campaign_name: string;
+  adset_name: string;
+  thumbnail_url: string | null;
+  spend: number;
+  platform_fee: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+};
+
+async function creativeRows(clientId: string, w: Window): Promise<CreativeRow[]> {
+  const rows = await prismaClient.$queryRaw<CreativeDbRow[]>`
+    select coalesce(t.stage::text, 'UNTAGGED') as stage, a.platform, a.ad_id,
+      (array_agg(a.ad_name order by a.date desc))[1] as ad_name,
+      (array_agg(a.campaign_name order by a.date desc))[1] as campaign_name,
+      (array_agg(a.adset_name order by a.date desc))[1] as adset_name,
+      max(a.thumbnail_url) as thumbnail_url,
+      coalesce(sum(a.spend), 0)::float8 as spend,
+      coalesce(sum(a.platform_fee), 0)::float8 as platform_fee,
+      coalesce(sum(a.impressions), 0)::int as impressions,
+      coalesce(sum(a.clicks), 0)::int as clicks,
+      coalesce(sum(a.conversions), 0)::int as conversions
+    from ad_spend_daily a
+    left join campaign_tag t
+      on t.client_id = a.client_id and t.platform = a.platform and t.campaign_id = a.campaign_id
+    where a.client_id = ${clientId} and a.date >= ${w.start} and a.date < ${w.end}
+    group by 1, a.platform, a.ad_id
+  `;
+  return rows.map((r) => ({
+    stage: r.stage,
+    platform: r.platform,
+    adId: r.ad_id,
+    adName: r.ad_name,
+    campaignName: r.campaign_name,
+    adsetName: r.adset_name,
+    thumbnailUrl: r.thumbnail_url,
+    spend: r.spend,
+    platformFee: r.platform_fee,
+    impressions: r.impressions,
+    clicks: r.clicks,
+    conversions: r.conversions,
+  }));
+}
+
 async function series(clientId: string, w: Window, granularity: Granularity, fee: boolean) {
   const buckets = bucketWindows(w, granularity).map((b) => b.bucket);
   const [rows, orders] = await Promise.all([
@@ -102,13 +155,14 @@ export async function investmentFunnel(
 ): Promise<MarketingInvestmentFunnel> {
   const period = resolvePeriod(input);
   const fee = input.incluirTaxa;
-  const [current, previous, monthly, daily, tags, marketplaces] = await Promise.all([
+  const [current, previous, monthly, daily, tags, marketplaces, creatives] = await Promise.all([
     stageRows(clientId, period.current, null),
     period.previous ? stageRows(clientId, period.previous, null) : null,
     series(clientId, lastMonthsWindow(today, 12), "mes", fee),
     series(clientId, period.current, input.por, fee),
     campaignTags(clientId, period.current),
     marketplaceChannels(clientId, lastMonthsWindow(today, 13)),
+    creativeRows(clientId, period.current),
   ]);
   return {
     summary: {
@@ -117,6 +171,7 @@ export async function investmentFunnel(
       daily: daily.stages,
       cpaMonthly: monthly.cpa,
       cpaDaily: daily.cpa,
+      creatives: topCreativesByStage(creatives, fee, CREATIVES_PER_STAGE),
     },
     tags,
     channels: salesChannelOptions(marketplaces),

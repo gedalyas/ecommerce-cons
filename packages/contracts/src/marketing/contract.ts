@@ -17,6 +17,8 @@ export type {
   AdDepthRow,
   CpaSeriesPoint,
   InvestmentFunnelSummary,
+  StageCreative,
+  StageCreatives,
   StageKey,
   StageSeriesPoint,
   StageSpend,

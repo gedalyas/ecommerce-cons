@@ -5,6 +5,8 @@ import {
   type AdPlatform,
   type CpaSeriesPoint,
   type InvestmentFunnelSummary,
+  type StageCreative,
+  type StageCreatives,
   type StageKey,
   type StageSeriesPoint,
 } from "@ecommerce/contracts/marketing";
@@ -148,4 +150,34 @@ export function channelInvestmentByBucket(
     byBucket.set(r.bucket, (byBucket.get(r.bucket) ?? 0) + r.spend + (fee ? r.platformFee : 0));
   }
   return [...byBucket].map(([bucket, investment]) => ({ bucket, investment }));
+}
+
+export type CreativeRow = Omit<StageCreative, "ctr" | "costPerConversion"> & {
+  stage: StageKey;
+  platformFee: number;
+  impressions: number;
+  clicks: number;
+};
+
+export function topCreativesByStage(
+  rows: readonly CreativeRow[],
+  fee: boolean,
+  limit: number,
+): StageCreatives[] {
+  return stageKeys.map((stage) => ({
+    stage,
+    ads: rows
+      .filter((r) => r.stage === stage)
+      .map(({ stage: _stage, platformFee, impressions, clicks, ...ad }) => {
+        const spend = ad.spend + (fee ? platformFee : 0);
+        return {
+          ...ad,
+          spend,
+          ctr: impressions > 0 ? (clicks / impressions) * 100 : null,
+          costPerConversion: ratio(spend, ad.conversions),
+        };
+      })
+      .sort((a, b) => b.spend - a.spend || a.adId.localeCompare(b.adId))
+      .slice(0, limit),
+  }));
 }

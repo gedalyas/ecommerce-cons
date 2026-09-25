@@ -18,6 +18,7 @@ import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { MultiSeriesChart, type MultiSeries } from "@/shared/ui/MultiSeriesChart";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
+import { CreativesByStage } from "./CreativesByStage";
 import { visibleStages } from "./funnelStages";
 
 type Props = {
@@ -175,6 +176,7 @@ export function FunnelSummary({ summary, search, period, comparisonLabel, onPatc
           granularity={granularity}
         />
       </SectionBlock>
+      <CreativesByStage stages={summary.creatives} />
     </>
   );
 }

@@ -105,7 +105,8 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 - [x] Marketing › Visão geral "ROAS do site" (KPI, year, monthly/daily line) on the same tagged
       split as the dashboard tile; the Pilares KPI stays "ROAS geral" (all sales ÷ all investment)
       by design
-- [ ] Funil de investimento: creatives by stage
+- [x] Funil de investimento: creatives by stage (top 3 ads by investment per stage; thumbnails
+      once the Meta provider writes them)
 - [ ] Per-platform vendido/ROAS by UTM on ERP/spreadsheet orders with coverage (when a source
       brings UTM)
 

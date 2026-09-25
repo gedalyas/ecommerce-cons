@@ -5,6 +5,8 @@ import {
   funnelTotals,
   investmentByChannel,
   stageSeries,
+  topCreativesByStage,
+  type CreativeRow,
   type StageRow,
 } from "./funnelSummary";
 
@@ -96,5 +98,34 @@ describe("channelInvestmentByBucket", () => {
       { bucket: "2026-09-01", investment: 1000 },
       { bucket: "2026-10-01", investment: 55 },
     ]);
+  });
+});
+
+describe("topCreativesByStage", () => {
+  const ad = (adId: string, stage: CreativeRow["stage"], spend: number): CreativeRow => ({
+    stage,
+    platform: "META",
+    adId,
+    adName: adId,
+    campaignName: "Campanha",
+    adsetName: "Conjunto",
+    thumbnailUrl: null,
+    spend,
+    platformFee: 10,
+    impressions: 1000,
+    clicks: 20,
+    conversions: 4,
+  });
+
+  it("keeps the ads with the most investment in each stage, with their CTR and cost", () => {
+    const stages = topCreativesByStage(
+      [ad("a", "TOP", 100), ad("b", "TOP", 300), ad("c", "TOP", 200), ad("d", "BOTTOM", 50)],
+      true,
+      2,
+    );
+    const top = stages.find((s) => s.stage === "TOP");
+    expect(top?.ads.map((a) => a.adId)).toEqual(["b", "c"]);
+    expect(top?.ads[0]).toMatchObject({ spend: 310, ctr: 2, costPerConversion: 77.5 });
+    expect(stages.find((s) => s.stage === "MIDDLE")?.ads).toEqual([]);
   });
 });

@@ -153,6 +153,9 @@ with "Incluir taxa".
    ÷ site orders from the ERP or the spreadsheet; Meta and Google: their investment ÷ the conversions
    they report. A bucket without orders or conversions leaves a gap. TikTok stays out of this chart
    (as in the agency report); its cost per conversion lives on the platform tabs.
+5. **Criativos por etapa** — per stage, the 3 ads with the most investment (`topCreativesByStage`):
+   thumbnail (placeholder until the platform sends it), name, platform · campaign · ad set,
+   investment, CTR and cost per reported conversion.
 
 Last block: **Etapa e canal de cada campanha** — every campaign with investment in the period
 (all ad platforms, latest name), its investment, its funnel stage (Topo / Meio / Fundo / Sem
