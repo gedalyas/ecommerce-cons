@@ -8,7 +8,7 @@ import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
-import type { MarketingScreen, MarketingVisao, StaleSource } from "@ecommerce/contracts/marketing";
+import type { MarketingPayload, MarketingVisao, StaleSource } from "@ecommerce/contracts/marketing";
 import { MarketingCampanhas } from "./MarketingCampanhas";
 import { MarketingCanais } from "./MarketingCanais";
 import { MarketingDescontos } from "./MarketingDescontos";
@@ -19,6 +19,7 @@ import { MarketingRegioes } from "./MarketingRegioes";
 import { MarketingResumo } from "./MarketingResumo";
 import { MarketingSite } from "./MarketingSite";
 import { MarketingSocial } from "./MarketingSocial";
+import { SourceStamps } from "./SourceStamps";
 import { useMarketingSearch } from "./useMarketingSearch";
 
 const tabs = [
@@ -71,7 +72,7 @@ function MarketingVisaoTab({
   );
 }
 
-export function Marketing({ data }: { data: MarketingScreen }) {
+export function Marketing({ data }: { data: MarketingPayload }) {
   const { period, comparison } = usePeriod();
   const { search, patch } = useMarketingSearch();
   const comparisonLabel = comparison
@@ -89,6 +90,7 @@ export function Marketing({ data }: { data: MarketingScreen }) {
 
       <div className={cn(data.aba !== "visao" && layout.headerGap, layout.blockStack)}>
         <TabBar tabs={tabs} value={data.aba} onChange={(aba) => patch({ aba })} />
+        <SourceStamps sources={data.sources} />
 
         {data.aba === "geral" && (
           <MarketingGeral

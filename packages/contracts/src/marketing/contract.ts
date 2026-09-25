@@ -78,6 +78,8 @@ export type {
 } from "./marketing.types";
 export { campaignTagSchema } from "./campaignTagSchema";
 export { untaggedSummary } from "./campaignTags";
+export { tabSources } from "./tabSources";
+export type { MarketingPayload, SourceStamp } from "./tabSources";
 export type { CampaignTagInput } from "./campaignTagSchema";
 export {
   adsetNounOf,

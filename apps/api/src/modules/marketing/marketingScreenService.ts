@@ -38,7 +38,12 @@ import type {
   AdMetric,
   MarketingSearch,
 } from "@ecommerce/contracts/marketing";
-import { adPlatformLabel, cacPercent } from "@ecommerce/contracts/marketing";
+import {
+  adPlatformLabel,
+  cacPercent,
+  tabSources,
+  type SourceStamp,
+} from "@ecommerce/contracts/marketing";
 import {
   channelPerformance,
   bestAndWorstByCost,
@@ -376,6 +381,13 @@ export async function marketingScreen(
     case "social":
       return { aba: "social", social: await marketingSocial(clientId, input) };
   }
+}
+
+export async function marketingSources(
+  clientId: string,
+  tab: MarketingSearch["aba"],
+): Promise<SourceStamp[]> {
+  return tabSources(tab, await dataSourcesFor(clientId));
 }
 
 export async function marketingVisao(

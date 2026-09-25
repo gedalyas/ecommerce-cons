@@ -4,9 +4,13 @@ Module: `src/modules/marketing`. The route validates
 `?aba=geral|meta|google|site|canais|funil|visao|resumo|campanhas|descontos|regioes|social` plus the tab controls
 (`marketingSchema.ts`: `incluirTaxa`, `metricaInvest`, `metricaSessoes`,
 `base`, `utm`, `nivel`, `plataforma`, `metricaAds`); defaults are stripped
-from the URL. `MarketingScreen` is a union on `aba`. The `TabBar` reads
-**Visão · Resumo · Campanhas · Descontos · Regiões · Social**; the period and channel controls
-sit above it on every tab.
+from the URL. `MarketingScreen` is a union on `aba`; the response is `MarketingPayload` = the
+screen + `sources`. The `TabBar` reads **Visão geral · Meta Ads · Google Ads · Site · Vendas por
+canal · Funil de investimento · Pilares · Resumo · Campanhas · Descontos · Regiões · Social**; the
+period and channel controls sit in the TopBar. Under the tabs, **Última atualização** lists the
+connected sources the tab reads with their last sync (`tabSources` in contracts: per tab the data
+kinds it uses, Meta Ads / Google Ads tabs only their connector; a source in error in orange; "Nenhuma
+fonte conectada para esta aba." when none).
 
 ## Composition root
 

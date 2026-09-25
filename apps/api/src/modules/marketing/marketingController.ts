@@ -13,7 +13,7 @@ import { forbidden } from "@/shared/http/httpError";
 import { parseOrThrow } from "@/shared/http/validate";
 import { screenQuery } from "@/shared/http/parseQuery";
 import { tagCampaign } from "./campaignTagsService";
-import { marketingScreen, marketingVisao } from "./marketingScreenService";
+import { marketingScreen, marketingSources, marketingVisao } from "./marketingScreenService";
 
 export type MarketingDependencies = {
   costLinesFor: (clientId: string, search: PeriodSearch) => Promise<MarketingCostLine[]>;
@@ -42,7 +42,7 @@ export function marketingController({ costLinesFor, retentionFor }: MarketingDep
               )),
             }
           : await marketingScreen(clientId, input);
-      res.json(screen);
+      res.json({ ...screen, sources: await marketingSources(clientId, search.aba) });
     },
     async tagCampaign(req: Request, res: Response) {
       const auth = authOf(req);

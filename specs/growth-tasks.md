@@ -81,8 +81,10 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       import undo snapshots carry the new ad spend and traffic fields; GA4 page paths normalised
       (no query string, capped length) and items keyed by item id; keywords keyed with match type;
       order UTM kept where the ERP/spreadsheet offers it
-- [ ] Shared: glossary hints on every Marketing tile and `DataTable` header, Δ% on every KPI, heat-shaded tables with totals, window toggle (7/14/30/90 dias,
-      3/6 meses, ano), platform filter, last-sync stamp
+- [x] Shared: last-sync stamp under the tabs (`tabSources`: the connected sources each tab reads,
+      in error in orange); the window toggle is the global period presets (CLAUDE.md)
+- [ ] Shared: glossary hints, Δ% and heat on the older tabs (Resumo, Campanhas, Descontos, Regiões,
+      Social)
 - [x] Visão geral (KPIs with Δ, YTD, month-end projection, monthly/daily combos, site funnel, one
       card per platform) — products table waits for the GA4 items data
 - [x] Visão geral: product table (views, carts, purchases from GA4 items; units and revenue of site
