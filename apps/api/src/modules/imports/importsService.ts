@@ -60,7 +60,7 @@ type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: Conn
 type Table = { header: string[]; rows: string[][] };
 type ProcessInput = { clientId: string; kind: ImportKind; table: Table; undo: UndoRecorder };
 
-async function readTable(file: UploadedFile): Promise<Table> {
+export async function readTable(file: UploadedFile): Promise<Table> {
   const table =
     extensionOf(file.name) === ".xlsx"
       ? await readXlsxTable(file.buffer, { maxRows: IMPORT_MAX_ROWS, budgetMs: PARSE_BUDGET_MS })
@@ -169,6 +169,7 @@ export type ImportRequest = {
 export async function previewImport(
   clientId: string,
   { kind, file, mapping }: ImportRequest,
+  aiAvailable: boolean,
 ): Promise<ImportPreviewResult> {
   const table = await readTable(file);
   if (!mapping && !isTemplateLayout(kind, table.header)) {
@@ -180,6 +181,7 @@ export async function previewImport(
       sample: mappingSampleOf(table.rows),
       mapping: remembered ?? suggestMapping(kind, table.header),
       remembered: remembered !== null,
+      aiAvailable,
     };
   }
   const { total, mapped } = mapTable(kind, templateTableOf(kind, table, mapping));

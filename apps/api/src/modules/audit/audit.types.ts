@@ -29,6 +29,7 @@ export type AuditDetail =
     }
   | { action: "IMPORT_RUN"; kind: string; fileName: string; imported: number; total: number }
   | { action: "IMPORT_UNDONE"; kind: string; fileName: string }
+  | { action: "IMPORT_MAPPING_SUGGESTED"; kind: string; fileName: string; fields: number }
   | { action: "PILLAR_UPDATED"; pillar: string; status: string }
   | { action: "MANUAL_KPI_SET"; pillar: string; kpi: string; value: string }
   | {

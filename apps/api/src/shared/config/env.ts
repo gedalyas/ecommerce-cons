@@ -71,6 +71,8 @@ const envSchema = z.object({
   TIKTOK_APP_SECRET: z.string().default(""),
   TIKTOK_AUTH_URL: z.string().url().default("https://business-api.tiktok.com/portal/auth"),
   TIKTOK_API_URL: z.string().url().default("https://business-api.tiktok.com/open_api/v1.3"),
+  ANTHROPIC_API_KEY: z.string().default(""),
+  ANTHROPIC_BASE_URL: z.string().url().default("https://api.anthropic.com"),
   MAIL_FROM: z.string().min(3).default("E-commerce Insights <no-reply@localhost>"),
   SMTP_URL: z
     .string()
@@ -99,10 +101,15 @@ const envSchema = z.object({
     .transform((value) => value.trim().toLowerCase() === "true"),
 });
 
-const productionMailSchema = envSchema.refine(
-  (env) => env.NODE_ENV !== "production" || Boolean(env.SMTP_URL),
-  { path: ["SMTP_URL"], message: "SMTP_URL is required in production" },
-);
+const productionMailSchema = envSchema
+  .refine((env) => env.NODE_ENV !== "production" || Boolean(env.SMTP_URL), {
+    path: ["SMTP_URL"],
+    message: "SMTP_URL is required in production",
+  })
+  .refine((env) => env.NODE_ENV !== "production" || env.ANTHROPIC_BASE_URL.startsWith("https://"), {
+    path: ["ANTHROPIC_BASE_URL"],
+    message: "ANTHROPIC_BASE_URL must be https in production",
+  });
 
 export type Env = z.infer<typeof envSchema>;
 

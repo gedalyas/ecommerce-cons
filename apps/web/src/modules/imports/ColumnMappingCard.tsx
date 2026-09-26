@@ -1,3 +1,4 @@
+import { Sparkles } from "lucide-react";
 import { useState } from "react";
 import {
   importTemplates,
@@ -17,23 +18,53 @@ export function ColumnMappingCard({
   busy,
   onConfirm,
   onCancel,
+  onSuggest,
 }: {
   step: ImportMappingPreview;
   busy: boolean;
   onConfirm: (mapping: ColumnMapping) => void;
   onCancel: () => void;
+  onSuggest: () => Promise<ColumnMapping | null>;
 }) {
   const [mapping, setMapping] = useState<ColumnMapping>(step.mapping);
+  const [suggesting, setSuggesting] = useState(false);
+  const suggest = async () => {
+    setSuggesting(true);
+    try {
+      const suggested = await onSuggest();
+      if (suggested) setMapping(suggested);
+    } finally {
+      setSuggesting(false);
+    }
+  };
   const sources = sourceOptionsOf(step.header);
   const problems = mappingProblems(step.kind, step.header, mapping);
   return (
     <div className={cn("border border-border bg-card p-4", radiusClass.card)} role="region">
-      <div className={cn(textClass.cardTitle, "text-foreground")}>Conferir colunas</div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className={cn(textClass.cardTitle, "text-foreground")}>Conferir colunas</div>
+        {step.aiAvailable && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void suggest()}
+            disabled={busy || suggesting}
+          >
+            <Sparkles className="h-4 w-4" /> {suggesting ? "Sugerindo…" : "Sugerir com IA"}
+          </Button>
+        )}
+      </div>
       <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
         {step.remembered
           ? "Usamos as colunas que você confirmou da última vez para esta planilha. Confira e siga."
           : "A planilha não segue o modelo. Diga qual coluna corresponde a cada campo — da próxima vez a gente lembra."}
       </p>
+      {step.aiAvailable && (
+        <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
+          "Sugerir com IA" envia à Anthropic os nomes das colunas e até 10 linhas anonimizadas
+          (nomes, documentos, telefones e e-mails viram marcadores).
+        </p>
+      )}
       <ul className="mt-4 divide-y divide-border">
         {importTemplates[step.kind].columns.map((column) => {
           const source = mapping[column.key] ?? null;
@@ -81,7 +112,10 @@ export function ColumnMappingCard({
         <Button variant="outline" onClick={onCancel} disabled={busy}>
           Cancelar
         </Button>
-        <Button onClick={() => onConfirm(mapping)} disabled={busy || problems.length > 0}>
+        <Button
+          onClick={() => onConfirm(mapping)}
+          disabled={busy || suggesting || problems.length > 0}
+        >
           {busy ? "Lendo…" : "Ver prévia"}
         </Button>
       </div>

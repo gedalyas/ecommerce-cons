@@ -81,6 +81,9 @@ export type ImportMappingPreview = {
   sample: string[][];
   mapping: ColumnMapping;
   remembered: boolean;
+  aiAvailable: boolean;
 };
+
+export type ImportMappingSuggestion = { mapping: ColumnMapping };
 
 export type ImportPreviewResult = ImportPreview | ImportMappingPreview;

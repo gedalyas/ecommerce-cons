@@ -52,6 +52,14 @@ describe("auditSummary", () => {
     ).toBe("Importou pedidos (p.csv): 2 de 3 linhas");
     expect(
       auditSummary({
+        action: "IMPORT_MAPPING_SUGGESTED",
+        kind: "Pedidos",
+        fileName: "p.xlsx",
+        fields: 9,
+      }),
+    ).toBe("Pediu à IA as colunas de pedidos (p.xlsx): 9 campos sugeridos");
+    expect(
+      auditSummary({
         action: "MILESTONE_UPDATED",
         criterion: "Caixa de 90 dias",
         progress: 100,

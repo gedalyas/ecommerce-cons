@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   importUploadSchema,
   type ImportJob,
+  type ImportMappingSuggestion,
   type ImportPreviewResult,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
@@ -78,4 +79,14 @@ export const uploadImportFn = createServerFn({ method: "POST" })
   .validator(csvInput)
   .handler(({ data }) =>
     sendCsv<ImportJob>("/imports", data, "Não foi possível importar agora. Tente novamente."),
+  );
+
+export const suggestMappingFn = createServerFn({ method: "POST" })
+  .validator(csvInput)
+  .handler(({ data }) =>
+    sendCsv<ImportMappingSuggestion>(
+      "/imports/mapping/suggest",
+      data,
+      "A IA não respondeu agora. Escolha as colunas à mão ou tente de novo.",
+    ),
   );

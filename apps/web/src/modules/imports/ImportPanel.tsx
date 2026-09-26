@@ -28,7 +28,7 @@ import { importHistoryColumns } from "./importHistoryColumns";
 import { UndoImportButton } from "./UndoImportButton";
 import { ImportPreviewCard } from "./ImportPreviewCard";
 import { ImportResult } from "./ImportResult";
-import { previewImportFn, uploadImportFn } from "./importsController";
+import { previewImportFn, suggestMappingFn, uploadImportFn } from "./importsController";
 
 const kindOptions = importKinds.map((key) => ({ key, label: importKindLabel[key] }));
 
@@ -43,6 +43,7 @@ const csvForm = (kind: ImportKind, file: File, mapping: ColumnMapping | null) =>
 function useImportUpload() {
   const upload = useServerFn(uploadImportFn);
   const previewFn = useServerFn(previewImportFn);
+  const suggestFn = useServerFn(suggestMappingFn);
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -79,12 +80,29 @@ function useImportUpload() {
       setBusy(false);
     }
   };
+  const suggest = async (kind: ImportKind, file: File): Promise<ColumnMapping | null> => {
+    setMessage(null);
+    const result = await suggestFn({ data: csvForm(kind, file, null) });
+    if (result.ok) return result.data.mapping;
+    setMessage(result.message);
+    return null;
+  };
   const reset = () => {
     setPreview(null);
     setMapping(null);
     setMessage(null);
   };
-  return { busy, message, setMessage, preview, job, previewFile: preview_, submit, reset };
+  return {
+    busy,
+    message,
+    setMessage,
+    preview,
+    job,
+    previewFile: preview_,
+    submit,
+    suggest,
+    reset,
+  };
 }
 
 function TemplateColumns({ kind }: { kind: ImportKind }) {
@@ -127,7 +145,8 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement>(null);
-  const { busy, message, setMessage, preview, job, previewFile, submit, reset } = useImportUpload();
+  const { busy, message, setMessage, preview, job, previewFile, submit, suggest, reset } =
+    useImportUpload();
 
   const pick = (candidate: File | null) => {
     reset();
@@ -235,6 +254,7 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
               busy={busy}
               onConfirm={(chosen) => void previewFile(kind, file, chosen)}
               onCancel={reset}
+              onSuggest={() => suggest(kind, file)}
             />
           )}
 

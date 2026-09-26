@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { type Express } from "express";
+import { createAnthropic, type AnthropicClient } from "@/shared/ai/createAnthropic";
 import { createAnalysisRouter } from "@/modules/analysis/contract";
 import { createAdminRouter, visibleClientIds } from "@/modules/admin/contract";
 import { createStaffActivityRouter, createStoreActivityRouter } from "@/modules/audit/contract";
@@ -93,6 +94,7 @@ function storeRouters(
   shared: Shared & { rateLimited: boolean },
   billing: BillingDependencies,
   connectors: ConnectorsDependencies,
+  anthropic: AnthropicClient | null,
 ) {
   const { now, rateLimited } = shared;
   return [
@@ -116,7 +118,7 @@ function storeRouters(
       liveKeys: [...connectors.providers.keys()],
     }),
     createConsultingRouter({ now }),
-    createImportsRouter({ now, rateLimited }),
+    createImportsRouter({ now, rateLimited, anthropic }),
     createStoreActivityRouter({ visibleStoresOf: visibleClientIds }),
     createBillingRouter(billing),
     createConnectorsRouter(connectors, { rateLimited }),
@@ -152,7 +154,12 @@ export function createApp(env: Env, jobs: Jobs, now: () => Date = () => new Date
     createStoreOnboardingRouter({ now }),
   );
 
-  app.use(API_PREFIX, requireAuth, resolveClient, ...storeRouters(shared, billing, connectors));
+  app.use(
+    API_PREFIX,
+    requireAuth,
+    resolveClient,
+    ...storeRouters(shared, billing, connectors, createAnthropic(env)),
+  );
 
   app.use((_req, _res, next) => next(notFound("Rota não encontrada")));
   app.use(errorHandler);

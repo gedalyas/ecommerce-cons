@@ -72,8 +72,10 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
 - [x] Slice 2 — `.xlsx` read in a worker thread with `read-excel-file` (not `exceljs`: see
       `decisions/2026-09-25-xlsx-import-in-worker.md`), zip directory checked before unzipping,
       same ceilings and the same mapping / undo pipeline
-- [ ] Slice 3 — "Sugerir com IA" (Claude Haiku 4.5): masked header + sample → mapping, validated
-      against the template; optional `ANTHROPIC_API_KEY`; decision record
+- [x] Slice 3 — "Sugerir com IA" (Claude Haiku 4.5): header + 10 masked rows → structured
+      mapping validated against the template and the file; optional `ANTHROPIC_API_KEY`
+      (`aiAvailable`), 502/503 in Portuguese, audit `IMPORT_MAPPING_SUGGESTED`; decision
+      `2026-09-25-ai-column-mapping-masked-sample.md`
 
 ## G4 — Marketing at the Looker depth
 

@@ -35,7 +35,11 @@ mapping is saved in `import_layout` keyed by (store, kind, sha256 of the normali
 header) — the next file with the same columns, in any order, comes pre-mapped; undoing the
 import keeps it (it is the store's preference, not imported data). A header wider than 200
 columns or with a name longer than 200 characters is 422; the multipart takes at most the
-`kind` and `mapping` fields (20 KB each) besides the file. All pure rules
+`kind` and `mapping` fields (20 KB each) besides the file. With `ANTHROPIC_API_KEY` set, the mapping step carries `aiAvailable: true`
+and "Sugerir com IA" calls `POST /imports/mapping/suggest` (same multipart; 10 per 15 min):
+the header and 10 masked rows go to Claude Haiku 4.5, whose structured answer is re-validated
+and only pre-fills the selects (`decisions/2026-09-25-ai-column-mapping-masked-sample.md`);
+503 without a key, 502 when the API fails. All pure rules
 live in `packages/contracts/src/imports/columnMapping.ts` with their test.
 
 Defaults when an optional column is empty: `plataforma` ecommerce, `canal` "Loja", `gateway`

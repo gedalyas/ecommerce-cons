@@ -14,6 +14,7 @@ export type {
   ImportJob,
   ImportKind,
   ImportMappingPreview,
+  ImportMappingSuggestion,
   ImportPreview,
   ImportPreviewCell,
   ImportPreviewColumn,

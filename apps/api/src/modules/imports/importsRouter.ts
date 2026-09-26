@@ -8,6 +8,7 @@ import { importsController, type ImportsDependencies } from "./importsController
 
 const UPLOADS_PER_15_MIN = 10;
 const PREVIEWS_PER_15_MIN = 30;
+const SUGGESTIONS_PER_15_MIN = 10;
 
 function singleCsv() {
   const upload = multer({
@@ -44,6 +45,7 @@ export function createImportsRouter(deps: ImportsDependencies): Router {
       standardHeaders: true,
       legacyHeaders: false,
       skip: () => !deps.rateLimited,
+      keyGenerator: (req) => `${req.auth?.clientId ?? "anon"}:${req.auth?.userId ?? ""}`,
       message: { message: "Muitos envios. Aguarde alguns minutos." },
     });
 
@@ -58,6 +60,12 @@ export function createImportsRouter(deps: ImportsDependencies): Router {
     limiter(PREVIEWS_PER_15_MIN),
     singleCsv(),
     asyncHandler(controller.preview),
+  );
+  router.post(
+    "/imports/mapping/suggest",
+    limiter(SUGGESTIONS_PER_15_MIN),
+    singleCsv(),
+    asyncHandler(controller.suggest),
   );
   router.get("/imports", asyncHandler(controller.list));
   router.get("/imports/templates", controller.templates);

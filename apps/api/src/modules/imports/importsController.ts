@@ -17,10 +17,16 @@ import {
   undoImportJob,
   type ImportRequest,
 } from "./importsService";
+import type { AnthropicClient } from "@/shared/ai/createAnthropic";
+import { suggestMappingWithAi } from "./importsSuggestService";
 import { readSlots, type ReadSlots } from "./readSlots";
 import { extensionOf, fileTypeProblem } from "./uploadRules";
 
-export type ImportsDependencies = { now: () => Date; rateLimited: boolean };
+export type ImportsDependencies = {
+  now: () => Date;
+  rateLimited: boolean;
+  anthropic: AnthropicClient | null;
+};
 
 function uploadedCsv(req: Request): ImportRequest {
   const { kind, mapping } = parseOrThrow(importUploadSchema, req.body);
@@ -52,7 +58,7 @@ async function withReadSlot<T>(slots: ReadSlots, upload: ImportRequest, work: ()
   }
 }
 
-export function importsController({ now }: ImportsDependencies) {
+export function importsController({ now, anthropic }: ImportsDependencies) {
   const xlsxSlots = readSlots(XLSX_READS_AT_ONCE);
   return {
     async upload(req: Request, res: Response) {
@@ -67,7 +73,20 @@ export function importsController({ now }: ImportsDependencies) {
       const upload = uploadedCsv(req);
       const auth = authOf(req);
       assertAreaEdit(auth, areaOfImportKind[upload.kind]);
-      res.json(await withReadSlot(xlsxSlots, upload, () => previewImport(auth.clientId, upload)));
+      res.json(
+        await withReadSlot(xlsxSlots, upload, () =>
+          previewImport(auth.clientId, upload, anthropic !== null),
+        ),
+      );
+    },
+    async suggest(req: Request, res: Response) {
+      const upload = uploadedCsv(req);
+      const auth = authOf(req);
+      assertAreaEdit(auth, areaOfImportKind[upload.kind]);
+      if (!anthropic) throw new HttpError(503, "A sugestão com IA não está disponível.");
+      res.json(
+        await withReadSlot(xlsxSlots, upload, () => suggestMappingWithAi(auth, upload, anthropic)),
+      );
     },
     async list(req: Request, res: Response) {
       res.json(await importsScreen(authOf(req)));
