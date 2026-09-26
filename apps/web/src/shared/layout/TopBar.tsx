@@ -1,9 +1,18 @@
+import type { ReactNode } from "react";
 import { PeriodSelector } from "@/shared/ui/PeriodSelector";
 import { usePeriod } from "@/shared/hooks/usePeriod";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 
-export function TopBar({ storeName, showPeriod }: { storeName: string; showPeriod: boolean }) {
+export function TopBar({
+  storeName,
+  showPeriod,
+  action,
+}: {
+  storeName: string;
+  showPeriod: boolean;
+  action?: ReactNode;
+}) {
   const { period, setPeriod } = usePeriod();
 
   return (
@@ -18,6 +27,7 @@ export function TopBar({ storeName, showPeriod }: { storeName: string; showPerio
           className="ml-auto md:-ml-2 md:mr-auto"
         />
       )}
+      {action}
     </div>
   );
 }

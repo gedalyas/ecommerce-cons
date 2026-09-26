@@ -21,6 +21,7 @@ because that is what ships.
 | [kpi-fidelity.md](kpi-fidelity.md)                                                 | The KPI component and the A/B/C data-fidelity seal                                         |
 | [connections.md](connections.md)                                                   | Data sources screen                                                                        |
 | [imports.md](imports.md)                                                           | Manual CSV import: kinds, templates, file rules, endpoint, screen                          |
+| [reports.md](reports.md)                                                           | Relatório: document model, sections, templates, preview endpoint, builder                  |
 | [assistant.md](assistant.md)                                                       | AI assistant panel behavior                                                                |
 | [design-system.md](design-system.md)                                               | Tokens, constraints, visual language                                                       |
 | [conventions.md](conventions.md)                                                   | Language rule, naming, project structure                                                   |

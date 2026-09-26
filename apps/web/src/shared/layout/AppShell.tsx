@@ -15,11 +15,13 @@ export function AppShell({
   status,
   banner,
   account,
+  topBarAction,
 }: {
   assistant: ReactNode;
   assistantFab: ReactNode;
   status: ShellStatus;
   banner?: ReactNode;
+  topBarAction?: ReactNode;
   account: ShellAccount;
 }) {
   const { ref, bottom } = useScrollShadow<HTMLElement>();
@@ -32,7 +34,11 @@ export function AppShell({
         <Sidebar status={status} account={account} />
         <div className="flex h-dvh min-w-0 flex-1 flex-col">
           {!isAssistant && (
-            <TopBar storeName={account.store?.name ?? ""} showPeriod={showsPeriod(pathname)} />
+            <TopBar
+              storeName={account.store?.name ?? ""}
+              showPeriod={showsPeriod(pathname)}
+              action={topBarAction}
+            />
           )}
           <div className="relative min-h-0 min-w-0 flex-1">
             <main

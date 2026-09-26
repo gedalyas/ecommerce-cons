@@ -136,8 +136,10 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 
 ## G5 — Relatório
 
-- [ ] TopBar "Relatório" button on the dashboard; builder Sheet with sections, templates,
-      preview
-- [ ] PDF rendering in the worker (decision on the library) + "Baixar PDF"
-- [ ] Schedules (weekly/monthly, hour, recipients) + pg-boss cron + e-mail with attachment;
-      audit entries
+- [x] Slice 1 — build and preview: `ReportDocument` in contracts (kpis / chart / table / note),
+      section catalogue + templates + `sectionsVisibleTo`; `POST /reports/preview` from the
+      dashboard and marketing services; "Relatório" button in the top bar on the Dashboard,
+      builder sheet and preview (`specs/reports.md`)
+- [ ] Slice 2 — PDF with `pdfmake` from the same document + "Baixar PDF" (decision record)
+- [ ] Slice 3 — schedules (migration `report_schedule`), hourly pg-boss tick, e-mail with the
+      PDF attached, audit entries

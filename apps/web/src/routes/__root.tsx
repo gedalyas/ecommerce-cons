@@ -32,6 +32,7 @@ import {
   underDevelopmentSlugOf,
 } from "@/shared/layout/screenAccess";
 import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
+import { ReportButton } from "@/modules/reports/contract";
 import { SessionBanner, getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
 import {
   DataReadinessBanner,
@@ -276,6 +277,9 @@ function RootComponent() {
       <AppShell
         assistant={assistantReleased ? <AssistantPanel /> : null}
         assistantFab={assistantReleased ? <AssistantFab /> : null}
+        topBarAction={
+          pathname === "/" ? <ReportButton access={areaAccessOf(user)} release={release} /> : null
+        }
         banner={
           <>
             {sessionBanner}

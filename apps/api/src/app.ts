@@ -37,6 +37,7 @@ import { createLogisticsRouter } from "@/modules/logistics/contract";
 import { createManagementRouter } from "@/modules/management/contract";
 import { createMarketingRouter } from "@/modules/marketing/contract";
 import { createMoneyRouter, marketingCostLines } from "@/modules/money/contract";
+import { createReportsRouter } from "@/modules/reports/contract";
 import { createOrdersRouter } from "@/modules/orders/contract";
 import { createProductsRouter } from "@/modules/products/contract";
 import { createStoreOnboardingRouter, createStoreRouter } from "@/modules/store/contract";
@@ -119,6 +120,7 @@ function storeRouters(
     }),
     createConsultingRouter({ now }),
     createImportsRouter({ now, rateLimited, anthropic }),
+    createReportsRouter({ costLinesFor: marketingCostLines, now, rateLimited }),
     createStoreActivityRouter({ visibleStoresOf: visibleClientIds }),
     createBillingRouter(billing),
     createConnectorsRouter(connectors, { rateLimited }),
