@@ -70,7 +70,7 @@ describe("sectionBlocks", () => {
     const [kpis, table] = sectionBlocks.investmentFunnel({ ...noFacts, funnel });
     expect(kpis).toEqual({
       kind: "kpis",
-      items: [{ label: "Investimento total", metric: total }],
+      items: [{ label: "Investimento total", metric: total, goodWhen: "down" }],
     });
     expect(table).toMatchObject({
       kind: "table",

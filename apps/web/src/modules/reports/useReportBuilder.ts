@@ -9,7 +9,7 @@ import {
 import { todayIso } from "@ecommerce/contracts/shared/clock";
 import type { DateRange } from "@ecommerce/contracts/shared/period";
 import { usePeriod } from "@/shared/hooks/usePeriod";
-import { templateSectionsFor, toggledSections } from "./reportBuilderRules";
+import { reportRequestOf, templateSectionsFor, toggledSections } from "./reportBuilderRules";
 import { previewReportFn } from "./reportsController";
 
 export type ReportChoice = ReportTemplate | "current";
@@ -23,6 +23,7 @@ export function useReportBuilder(available: readonly ReportSectionKey[]) {
   const [report, setReport] = useState<ReportDocument | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const request = reportRequestOf(range, sections, period);
 
   const choose = (next: ReportChoice) => {
     setChoice(next);
@@ -42,20 +43,12 @@ export function useReportBuilder(available: readonly ReportSectionKey[]) {
     setBusy(true);
     setMessage(null);
     try {
-      const result = await preview({
-        data: {
-          ...range,
-          sections,
-          por: period.por,
-          comparar: period.comparar,
-          canal: period.canal,
-        },
-      });
+      const result = await preview({ data: request });
       if (result.ok) setReport(result.value);
       else setMessage(result.message);
     } finally {
       setBusy(false);
     }
   };
-  return { choice, choose, range, sections, toggle, report, message, busy, run };
+  return { choice, choose, range, sections, toggle, request, report, message, busy, run };
 }

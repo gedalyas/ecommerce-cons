@@ -1,19 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   chartSeriesOf,
-  formatReportCell,
+  reportRequestOf,
   templateSectionsFor,
   toggledSections,
 } from "./reportBuilderRules";
-
-describe("formatReportCell", () => {
-  it("formats numbers by unit and shows a dash for no value", () => {
-    expect(formatReportCell(null, "currency")).toBe("—");
-    expect(formatReportCell("Site", "text")).toBe("Site");
-    expect(formatReportCell(3, "count")).toBe("3");
-    expect(formatReportCell(2.5, "multiplier")).toContain("2,5");
-  });
-});
 
 describe("chartSeriesOf", () => {
   it("pairs each value with its bucket", () => {
@@ -51,5 +42,26 @@ describe("templateSectionsFor", () => {
       "kpis",
       "salesVsInvestment",
     ]);
+  });
+});
+
+describe("reportRequestOf", () => {
+  it("asks for the chosen range and sections with the screen's granularity, comparison and channel", () => {
+    expect(
+      reportRequestOf({ inicio: "2026-08-01", fim: "2026-08-31" }, ["kpis"], {
+        inicio: "2026-09-01",
+        fim: "2026-09-25",
+        por: "semana",
+        comparar: "nenhum",
+        canal: "ecommerce",
+      }),
+    ).toEqual({
+      inicio: "2026-08-01",
+      fim: "2026-08-31",
+      sections: ["kpis"],
+      por: "semana",
+      comparar: "nenhum",
+      canal: "ecommerce",
+    });
   });
 });

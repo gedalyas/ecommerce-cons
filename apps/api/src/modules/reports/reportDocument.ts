@@ -10,6 +10,7 @@ export type ReportInput = {
   storeName: string;
   range: { inicio: string; fim: string };
   generatedAt: string;
+  timezone: string;
   sections: readonly ReportSectionKey[];
   facts: ReportFacts;
 };
@@ -18,6 +19,7 @@ export function reportDocumentOf({
   storeName,
   range,
   generatedAt,
+  timezone,
   sections,
   facts,
 }: ReportInput): ReportDocument {
@@ -26,6 +28,7 @@ export function reportDocumentOf({
     storeName,
     range,
     generatedAt,
+    timezone,
     sections: reportSectionKeys
       .filter((key) => sections.includes(key))
       .map((key) => ({

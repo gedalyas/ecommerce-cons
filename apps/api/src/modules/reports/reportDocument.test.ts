@@ -26,6 +26,7 @@ const input = (sections: ReportSectionKey[], facts = noFacts) =>
     storeName: "Loja Exemplo",
     range: { inicio: "2026-09-01", fim: "2026-09-30" },
     generatedAt: "2026-09-25T12:00:00.000Z",
+    timezone: "America/Sao_Paulo",
     sections,
     facts,
   });
@@ -52,7 +53,13 @@ describe("reportDocumentOf", () => {
     });
     const overview = {
       metrics: [
-        { key: "totalSold", label: "Total vendido", carousel: true, metric: metric(100) },
+        {
+          key: "totalSold",
+          label: "Total vendido",
+          carousel: true,
+          goodWhen: "up",
+          metric: metric(100),
+        },
         { key: "repurchaseRate", label: "Recompra", carousel: false, metric: metric(1) },
       ],
       series: { totalSold: series([100, 200]), marketingInvestment: series([10]) },
@@ -62,7 +69,7 @@ describe("reportDocumentOf", () => {
     } as unknown as DashboardOverview;
     const doc = input(["kpis", "salesVsInvestment", "roasByChannel"], { ...noFacts, overview });
     expect(doc.sections[0]?.blocks).toEqual([
-      { kind: "kpis", items: [{ label: "Total vendido", metric: metric(100) }] },
+      { kind: "kpis", items: [{ label: "Total vendido", metric: metric(100), goodWhen: "up" }] },
     ]);
     expect(doc.sections[1]?.blocks[0]).toMatchObject({
       kind: "chart",

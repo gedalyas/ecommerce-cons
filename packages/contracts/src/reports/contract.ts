@@ -16,5 +16,8 @@ export type {
   ReportTemplate,
 } from "./reports.types";
 export { reportTemplateSections, sectionsVisibleTo, templateRange } from "./reportRules";
+export { formatReportCell } from "./reportFormat";
+export { reportPalette } from "./reportPalette";
+export type { ReportPalette } from "./reportPalette";
 export { reportRequestSchema } from "./reportsSchema";
 export type { ReportRequest } from "./reportsSchema";

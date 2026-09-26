@@ -41,7 +41,7 @@ function kpisBlocks({ overview }: ReportFacts): ReportBlock[] {
   if (!overview) return [EMPTY_NOTE];
   const items = overview.metrics
     .filter((m) => m.carousel)
-    .map((m) => ({ label: m.label, metric: m.metric }));
+    .map((m) => ({ label: m.label, metric: m.metric, goodWhen: m.goodWhen }));
   return [{ kind: "kpis", items }];
 }
 
@@ -123,23 +123,24 @@ function funnelBlocks({ overview }: ReportFacts): ReportBlock[] {
 
 function platformBlocks(tab: MarketingPlatformTab | null): ReportBlock[] {
   if (!tab) return [EMPTY_NOTE];
-  const kpi = (label: string, key: keyof MarketingPlatformTab["kpis"]) => ({
-    label,
-    metric: tab.kpis[key],
-  });
+  const kpi = (
+    label: string,
+    key: keyof MarketingPlatformTab["kpis"],
+    goodWhen: "up" | "down" = "up",
+  ) => ({ label, metric: tab.kpis[key], goodWhen });
   const campaigns = [...tab.rows].sort((a, b) => b.spend - a.spend).slice(0, TOP_ROWS);
   return [
     {
       kind: "kpis",
       items: [
-        kpi("Investido", "spend"),
+        kpi("Investido", "spend", "down"),
         kpi("Impressões", "impressions"),
-        kpi("CPM", "cpm"),
+        kpi("CPM", "cpm", "down"),
         kpi("CTR", "ctr"),
-        kpi("CPC", "cpc"),
+        kpi("CPC", "cpc", "down"),
         kpi("Sessões", "sessions"),
         kpi(`Compras informadas (${adPlatformLabel[tab.platform]})`, "conversions"),
-        kpi("Custo por compra informada", "costPerConversion"),
+        kpi("Custo por compra informada", "costPerConversion", "down"),
       ],
     },
     ...table(
@@ -158,7 +159,10 @@ function platformBlocks(tab: MarketingPlatformTab | null): ReportBlock[] {
 function investmentFunnelBlocks({ funnel }: ReportFacts): ReportBlock[] {
   if (!funnel) return [EMPTY_NOTE];
   return [
-    { kind: "kpis", items: [{ label: "Investimento total", metric: funnel.total }] },
+    {
+      kind: "kpis",
+      items: [{ label: "Investimento total", metric: funnel.total, goodWhen: "down" }],
+    },
     ...table(
       [
         { key: "label", label: "Etapa", unit: "text" },

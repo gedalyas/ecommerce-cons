@@ -140,6 +140,8 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
       section catalogue + templates + `sectionsVisibleTo`; `POST /reports/preview` from the
       dashboard and marketing services; "Relatório" button in the top bar on the Dashboard,
       builder sheet and preview (`specs/reports.md`)
-- [ ] Slice 2 — PDF with `pdfmake` from the same document + "Baixar PDF" (decision record)
+- [x] Slice 2 — PDF with `pdfmake` from the same document (Manrope WOFF, print palette, SVG
+      charts, unbreakable sections), `POST /reports/pdf`, "Baixar PDF" through `apiFetchBinary`
+      (`decisions/2026-09-25-report-pdf-with-pdfmake.md`)
 - [ ] Slice 3 — schedules (migration `report_schedule`), hourly pg-boss tick, e-mail with the
       PDF attached, audit entries

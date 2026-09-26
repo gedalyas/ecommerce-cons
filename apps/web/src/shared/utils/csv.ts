@@ -1,7 +1,5 @@
-/**
- * CSV export in the pt-BR convention Excel expects: semicolon separator,
- * decimal comma, UTF-8 with BOM. Browser-only (creates a download link).
- */
+import { downloadBlob } from "./download";
+
 export type CsvCell = string | number | null | undefined;
 
 const BOM = "\u{FEFF}";
@@ -18,12 +16,5 @@ export function toCsv(rows: CsvCell[][]) {
 
 export function downloadCsv(fileName: string, rows: CsvCell[][]) {
   const blob = new Blob([toCsv(rows)], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName.endsWith(".csv") ? fileName : `${fileName}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  downloadBlob(fileName.endsWith(".csv") ? fileName : `${fileName}.csv`, blob);
 }

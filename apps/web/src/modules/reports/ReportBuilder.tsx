@@ -1,3 +1,4 @@
+import { Download } from "lucide-react";
 import {
   reportSectionLabel,
   reportTemplateLabel,
@@ -14,6 +15,7 @@ import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { ReportPreview } from "./ReportPreview";
 import { useReportBuilder, type ReportChoice } from "./useReportBuilder";
+import { useReportDownload } from "./useReportDownload";
 
 const choiceOptions: { key: ReportChoice; label: string }[] = [
   { key: "current", label: "Período da tela" },
@@ -22,8 +24,10 @@ const choiceOptions: { key: ReportChoice; label: string }[] = [
 
 export function ReportBuilder({ available }: { available: readonly ReportSectionKey[] }) {
   const { period } = usePeriod();
-  const { choice, choose, range, sections, toggle, report, message, busy, run } =
+  const { choice, choose, range, sections, toggle, request, report, message, busy, run } =
     useReportBuilder(available);
+  const { downloading, downloadMessage, save } = useReportDownload();
+  const problem = message ?? downloadMessage;
 
   return (
     <div className={cn(layout.cardPadding, layout.groupStack)}>
@@ -54,12 +58,20 @@ export function ReportBuilder({ available }: { available: readonly ReportSection
           ))}
         </ul>
       </fieldset>
-      {message && (
+      {problem && (
         <p role="alert" className={cn(textClass.meta, "text-destructive")}>
-          {message}
+          {problem}
         </p>
       )}
-      <div className="flex justify-end">
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <Button
+          variant="outline"
+          onClick={() => void save(request)}
+          disabled={downloading || sections.length === 0}
+          className="h-11 w-full md:h-9 md:w-auto"
+        >
+          <Download className="h-4 w-4" /> {downloading ? "Gerando PDF…" : "Baixar PDF"}
+        </Button>
         <Button
           onClick={() => void run()}
           disabled={busy || sections.length === 0}

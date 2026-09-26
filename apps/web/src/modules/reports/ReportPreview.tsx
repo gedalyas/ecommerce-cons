@@ -1,4 +1,9 @@
-import type { ReportBlock, ReportCell, ReportDocument } from "@ecommerce/contracts/reports";
+import {
+  formatReportCell,
+  type ReportBlock,
+  type ReportCell,
+  type ReportDocument,
+} from "@ecommerce/contracts/reports";
 import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import type { Granularity } from "@ecommerce/contracts/shared/period";
 import { DataTable } from "@/shared/ui/DataTable";
@@ -8,7 +13,7 @@ import { metricToTile } from "@/shared/ui/metricToTile";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { chartSeriesOf, formatReportCell } from "./reportBuilderRules";
+import { chartSeriesOf } from "./reportBuilderRules";
 
 type Row = { index: number; cells: Record<string, ReportCell> };
 
@@ -18,7 +23,7 @@ function ReportBlockView({ block, granularity }: { block: ReportBlock; granulari
       return (
         <MetricTileGroup
           metrics={block.items.map((item) =>
-            metricToTile({ label: item.label, metric: item.metric }),
+            metricToTile({ label: item.label, metric: item.metric, goodWhen: item.goodWhen }),
           )}
         />
       );

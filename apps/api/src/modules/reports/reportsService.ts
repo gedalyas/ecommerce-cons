@@ -84,12 +84,13 @@ export async function reportPreview(
   const { sections, ...period } = request;
   const store = await prismaClient.client.findUniqueOrThrow({
     where: { id: auth.clientId },
-    select: { name: true },
+    select: { name: true, timezone: true },
   });
   return reportDocumentOf({
     storeName: store.name,
     range: { inicio: period.inicio, fim: period.fim },
     generatedAt: deps.now().toISOString(),
+    timezone: store.timezone,
     sections,
     facts: await reportFacts(auth, sections, period, deps),
   });

@@ -39,7 +39,7 @@ export type ReportCell = string | number | null;
 
 export type ReportColumn = { key: string; label: string; unit: MetricUnit | "text" };
 
-export type ReportKpi = { label: string; metric: MetricValue };
+export type ReportKpi = { label: string; metric: MetricValue; goodWhen: "up" | "down" };
 
 export type ReportChartSeries = { key: string; label: string; values: number[] };
 
@@ -62,5 +62,6 @@ export type ReportDocument = {
   storeName: string;
   range: { inicio: string; fim: string };
   generatedAt: string;
+  timezone: string;
   sections: ReportSection[];
 };

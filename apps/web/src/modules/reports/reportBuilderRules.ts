@@ -2,20 +2,14 @@ import {
   reportSectionKeys,
   reportTemplateSections,
   type ReportBlock,
-  type ReportCell,
+  type ReportRequest,
   type ReportSectionKey,
   type ReportTemplate,
 } from "@ecommerce/contracts/reports";
-import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
-import type { MetricUnit, SeriesPoint } from "@ecommerce/contracts/shared/metric.types";
+import type { SeriesPoint } from "@ecommerce/contracts/shared/metric.types";
+import type { DateRange, PeriodSearch } from "@ecommerce/contracts/shared/period";
 
 type ChartBlock = Extract<ReportBlock, { kind: "chart" }>;
-
-export function formatReportCell(cell: ReportCell, unit: MetricUnit | "text"): string {
-  if (cell === null || cell === "") return "—";
-  if (unit === "text" || typeof cell === "string") return String(cell);
-  return formatMetric(cell, unit);
-}
 
 export function chartSeriesOf(
   block: ChartBlock,
@@ -41,4 +35,12 @@ export function templateSectionsFor(
   available: readonly ReportSectionKey[],
 ): ReportSectionKey[] {
   return reportTemplateSections[template].filter((key) => available.includes(key));
+}
+
+export function reportRequestOf(
+  range: DateRange,
+  sections: ReportSectionKey[],
+  period: PeriodSearch,
+): ReportRequest {
+  return { ...range, sections, por: period.por, comparar: period.comparar, canal: period.canal };
 }

@@ -38,10 +38,21 @@ mês** (last month); "Período da tela" keeps the period chosen in the top bar.
 `ReportDocument`. 60 per 15 min per store and user. An empty store answers zeros, "—" and notes,
 never an error.
 
+## PDF
+
+`POST /api/v1/reports/pdf` — the same body, the same checks → `application/pdf` named
+`relatorio-<loja>-<inicio>-a-<fim>.pdf` (20 per 15 min per store and user). Drawn by `pdfmake`
+from the same `ReportDocument` (`reportPdfDefinition.ts`, `reportChartSvg.ts`, both pure and
+tested): A4, the title and period, each section kept on one page, KPIs four per row with the
+variation green or red by the KPI's `goodWhen`, charts as SVG (bars or lines, with a legend),
+tables with the screens' formatting, the store and period in the header and "gerado em … ·
+página x de y" in the footer, in the store's timezone. Font Manrope; print colours from
+`reportPalette`. See `decisions/2026-09-25-report-pdf-with-pdfmake.md`.
+
 ## Screen
 
 On the Dashboard only, a **Relatório** button at the right of the top bar opens a sheet: the
 model (Período da tela · Reunião semanal · Fechamento do mês), the period it covers, the
-sections the person can see as checkboxes (the template ticks its own), **Pré-visualizar**, and
-the preview — the title, the period, then each section drawn with the design system's metric
+sections the person can see as checkboxes (the template ticks its own), **Baixar PDF** (the browser saves the file the API
+rendered), **Pré-visualizar**, and the preview — the title, the period, then each section drawn with the design system's metric
 tiles, the multi-series chart and the data table.
