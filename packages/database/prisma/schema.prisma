@@ -307,6 +307,13 @@ enum ProcessingMethod {
   @@map("processing_method")
 }
 
+enum Fulfillment {
+  SELLER
+  MARKETPLACE
+
+  @@map("fulfillment")
+}
+
 enum AdPlatform {
   META
   GOOGLE
@@ -450,6 +457,8 @@ model Order {
   /// Gateway label, e.g. "Pagar.me".
   paymentGateway         String           @map("payment_gateway")
   processingMethod       ProcessingMethod @map("processing_method")
+  /// Who shipped the order: the store or the marketplace (Mercado Livre Full, Amazon FBA). Null when the source does not say.
+  fulfillment            Fulfillment?
   productRevenue         Decimal          @map("product_revenue") @db.Decimal(12, 2)
   shippingRevenue        Decimal          @map("shipping_revenue") @db.Decimal(12, 2)
   totalDiscounts         Decimal          @map("total_discounts") @db.Decimal(12, 2)

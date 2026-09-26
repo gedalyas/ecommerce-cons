@@ -106,11 +106,11 @@ export async function productsScreen(
           topByVolume: [...sold].sort((a, b) => b.units - a.units).slice(0, 20),
           bottomByVolume: [...sold].sort((a, b) => a.units - b.units).slice(0, 20),
           atRisk: inventory
-            .filter((r) => r.daysToZero != null && r.daysToZero <= 15)
+            .filter((r) => !r.marketplaceStock && r.daysToZero != null && r.daysToZero <= 15)
             .sort((a, b) => a.daysToZero! - b.daysToZero!)
             .slice(0, 20),
           outOfStock: inventory
-            .filter((r) => r.stockQty <= 0)
+            .filter((r) => !r.marketplaceStock && r.stockQty <= 0)
             .sort((a, b) => (b.lostRevenueSinceStockOut ?? 0) - (a.lostRevenueSinceStockOut ?? 0))
             .slice(0, 20),
           boughtTogether: pairs,

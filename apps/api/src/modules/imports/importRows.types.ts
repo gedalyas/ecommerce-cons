@@ -2,6 +2,7 @@ import type {
   AdPlatform,
   AudienceDimension,
   FinancialStatus,
+  Fulfillment,
   ProcessingMethod,
   SalesPlatform,
   SocialPlatform,
@@ -51,6 +52,7 @@ export type OrderInput = Omit<
   items: OrderItemInput[];
   productRevenue: number;
   totalPrice: number;
+  fulfillment?: Fulfillment | null;
 };
 
 export type AdSpendRow = {

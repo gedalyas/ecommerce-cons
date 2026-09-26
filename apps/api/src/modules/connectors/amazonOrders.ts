@@ -11,6 +11,7 @@ export type AmazonOrder = {
   OrderTotal?: Money;
   PaymentMethod?: string | null;
   PaymentMethodDetails?: string[] | null;
+  FulfillmentChannel?: string | null;
   ShippingAddress?: {
     City?: string | null;
     StateOrRegion?: string | null;
@@ -83,6 +84,11 @@ const money = (value: Money): number => {
 
 const plain = (value: string) => value.normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
 
+export const amazonFulfillmentOf = (
+  channel: string | null | undefined,
+): "SELLER" | "MARKETPLACE" | null =>
+  channel === "AFN" ? "MARKETPLACE" : channel === "MFN" ? "SELLER" : null;
+
 export function amazonProvinceOf(stateOrRegion: string | null | undefined): string {
   const value = stateOrRegion?.trim() ?? "";
   if (/^[A-Za-z]{2}$/.test(value)) return value.toUpperCase();
@@ -131,6 +137,7 @@ export function amazonOrderInputOf(order: AmazonOrder): OrderInput | null {
     channel: AMAZON_CHANNEL,
     gateway: GATEWAY,
     processingMethod: amazonMethodOf(order.PaymentMethodDetails),
+    fulfillment: amazonFulfillmentOf(order.FulfillmentChannel),
     utmSource: null,
     utmMedium: null,
     utmCampaign: null,

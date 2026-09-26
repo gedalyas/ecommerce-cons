@@ -78,6 +78,8 @@ export type InventoryRow = {
   sold90: number;
   sold30: number;
   sold7: number;
+  sold30Marketplace: number;
+  marketplaceStock: boolean;
   /** Units per day over the last 30 days (90 when the last 30 had none). */
   velocity: number;
   daysToZero: number | null;

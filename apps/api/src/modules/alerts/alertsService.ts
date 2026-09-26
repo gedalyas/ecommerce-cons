@@ -1,3 +1,4 @@
+import { isMarketplaceStock } from "@ecommerce/contracts/products";
 import { currentDay } from "@/shared/config/clock";
 import { trafficAggregate } from "@/modules/marketing/contract";
 import { ordersAggregate } from "@/modules/orders/contract";
@@ -54,6 +55,7 @@ export async function alertFactsFor(
       stockQty: v.stockQty,
       sold30: v.sold30,
       sold90: v.sold90,
+      marketplaceStock: isMarketplaceStock(v.sold30, v.sold30Marketplace),
     })),
   };
 }

@@ -7,6 +7,14 @@ export const financialStatusLabel: Record<string, string> = {
   REFUNDED: "Reembolsado",
 };
 
+export const fulfillments = ["SELLER", "MARKETPLACE"] as const;
+export type Fulfillment = (typeof fulfillments)[number];
+
+export const fulfillmentLabel: Record<Fulfillment, string> = {
+  SELLER: "Enviado pela loja",
+  MARKETPLACE: "Enviado pelo marketplace (Full / FBA)",
+};
+
 export const processingMethodLabel: Record<string, string> = {
   CREDIT_CARD: "Cartão de crédito",
   PIX: "Pix",

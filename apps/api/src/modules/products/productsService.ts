@@ -117,6 +117,7 @@ export async function inventoryFacts(
       sold_90: number;
       sold_30: number;
       sold_7: number;
+      sold_30_marketplace: number;
     }[]
   >`
     with sold as (
@@ -124,7 +125,8 @@ export async function inventoryFacts(
         sum(i.quantity)::int as sold_total,
         sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '90 days')::int as sold_90,
         sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '30 days')::int as sold_30,
-        sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '7 days')::int as sold_7
+        sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '7 days')::int as sold_7,
+        sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '30 days' and o.fulfillment = 'MARKETPLACE')::int as sold_30_marketplace
       from order_item i
       join sales_order o on o.id = i.order_id
       where o.client_id = ${clientId} and o.financial_status = 'PAID' and o.placed_at < ${today}::timestamp + interval '1 day'
@@ -134,7 +136,8 @@ export async function inventoryFacts(
       p.category, p.subcategory, p.brand, p.collection,
       v.stock_qty, v.price::float8 as price, v.cost::float8 as cost, v.last_sale_at,
       coalesce(s.sold_total, 0) as sold_total, coalesce(s.sold_90, 0) as sold_90,
-      coalesce(s.sold_30, 0) as sold_30, coalesce(s.sold_7, 0) as sold_7
+      coalesce(s.sold_30, 0) as sold_30, coalesce(s.sold_7, 0) as sold_7,
+      coalesce(s.sold_30_marketplace, 0) as sold_30_marketplace
     from product_variant v
     join product p on p.id = v.product_id
     left join sold s on s.variant_id = v.id
@@ -158,6 +161,7 @@ export async function inventoryFacts(
     sold90: r.sold_90,
     sold30: r.sold_30,
     sold7: r.sold_7,
+    sold30Marketplace: r.sold_30_marketplace,
   }));
 }
 

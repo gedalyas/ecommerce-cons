@@ -46,6 +46,7 @@ export type MercadoLivreShipment = {
     state?: { id?: string | null; name?: string | null } | null;
   } | null;
   shipping_option?: { cost?: number | null; list_cost?: number | null } | null;
+  logistic_type?: string | null;
 };
 
 export const MERCADO_LIVRE_CHANNEL = "Mercado Livre";
@@ -91,6 +92,15 @@ export function mercadoLivreProvinceOf(shipment: MercadoLivreShipment | null | u
   return match?.[1] ?? "ND";
 }
 
+export const mercadoLivreFulfillmentOf = (
+  shipment: MercadoLivreShipment | null | undefined,
+): "SELLER" | "MARKETPLACE" | null =>
+  !shipment?.logistic_type
+    ? null
+    : shipment.logistic_type === "fulfillment"
+      ? "MARKETPLACE"
+      : "SELLER";
+
 export function mercadoLivreOrderInputOf(order: MercadoLivreOrder): OrderInput | null {
   const email = mercadoLivreBuyerEmailOf(order.buyer);
   if (!email || !order.date_created) return null;
@@ -122,6 +132,7 @@ export function mercadoLivreOrderInputOf(order: MercadoLivreOrder): OrderInput |
     channel: MERCADO_LIVRE_CHANNEL,
     gateway: GATEWAY,
     processingMethod: mercadoLivreMethodOf(order),
+    fulfillment: mercadoLivreFulfillmentOf(order.shipment),
     utmSource: null,
     utmMedium: null,
     utmCampaign: null,

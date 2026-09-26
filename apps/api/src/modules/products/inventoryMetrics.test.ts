@@ -18,6 +18,7 @@ const facts = (overrides: Partial<InventoryFacts> = {}): InventoryFacts => ({
   sold90: 180,
   sold30: 60,
   sold7: 14,
+  sold30Marketplace: 0,
   ...overrides,
 });
 
@@ -67,5 +68,14 @@ describe("inventoryHealth", () => {
     expect(health.outOfStock).toBe(1);
     expect(health.stockOutRate).toBeCloseTo(33.33, 2);
     expect(health.coverageDays).toBe(8);
+  });
+});
+
+describe("marketplace stock", () => {
+  it("marks a variant sold mostly through Full / FBA as the marketplace's stock", () => {
+    expect(deriveInventory(facts({ sold30Marketplace: 40 }), "2026-09-10").marketplaceStock).toBe(
+      true,
+    );
+    expect(deriveInventory(facts(), "2026-09-10").marketplaceStock).toBe(false);
   });
 });

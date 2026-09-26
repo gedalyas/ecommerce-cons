@@ -18,7 +18,14 @@ export type {
   OrdersRegions,
   OrdersScreen,
 } from "./orders.types";
-export { financialStatusLabel, processingMethodLabel, labelFor } from "./ordersLabels";
+export {
+  financialStatusLabel,
+  fulfillmentLabel,
+  fulfillments,
+  processingMethodLabel,
+  labelFor,
+} from "./ordersLabels";
+export type { Fulfillment } from "./ordersLabels";
 export {
   ordersTabs,
   ordersFilterKeys,

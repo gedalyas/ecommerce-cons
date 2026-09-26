@@ -1,4 +1,8 @@
-import type { InventoryHealth, InventoryRow } from "@ecommerce/contracts/products";
+import {
+  isMarketplaceStock,
+  type InventoryHealth,
+  type InventoryRow,
+} from "@ecommerce/contracts/products";
 
 export type InventoryFacts = Omit<
   InventoryRow,
@@ -10,6 +14,7 @@ export type InventoryFacts = Omit<
   | "daysOutOfStock"
   | "lostRevenueSinceStockOut"
   | "stockOutCostPerDay"
+  | "marketplaceStock"
 >;
 
 const DAY = 86_400_000;
@@ -34,6 +39,7 @@ export function deriveInventory(facts: InventoryFacts, today: string): Inventory
     facts.sold90 > 0 ? facts.sold90 / 90 : facts.soldTotal > 0 ? velocity : 0;
   return {
     ...facts,
+    marketplaceStock: isMarketplaceStock(facts.sold30, facts.sold30Marketplace),
     velocity,
     daysToZero,
     stockOutDate: daysToZero == null ? null : isoDay(todayIndex + Math.ceil(daysToZero)),

@@ -17,6 +17,7 @@ const variant = (over: Partial<Parameters<typeof lowStockRiskAlert>[0][number]>)
   stockQty: 50,
   sold30: 30,
   sold90: 90,
+  marketplaceStock: false,
   ...over,
 });
 
@@ -91,5 +92,16 @@ describe("deriveAlerts", () => {
         variants: [variant({})],
       }),
     ).toEqual([]);
+  });
+});
+
+describe("marketplace stock", () => {
+  it("never warns about stock the marketplace keeps (Full / FBA)", () => {
+    expect(
+      lowStockRiskAlert([variant({ stockQty: 5, sold30: 60, marketplaceStock: true })]),
+    ).toBeNull();
+    expect(
+      keyVariantsUnavailableAlert([variant({ stockQty: 0, sold90: 200, marketplaceStock: true })]),
+    ).toBeNull();
   });
 });

@@ -18,6 +18,7 @@ export function orderRowOf(order: OrderInput, customerId: string, orderNumberFor
     financialStatus: order.status,
     paymentGateway: order.gateway,
     processingMethod: order.processingMethod,
+    fulfillment: order.fulfillment ?? null,
     productRevenue: order.productRevenue,
     shippingRevenue: order.shipping,
     totalDiscounts: order.discount,

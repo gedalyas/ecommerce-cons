@@ -62,6 +62,7 @@ async function restoreOrder(tx: Tx, clientId: string, number: string, snapshot: 
   const data = {
     ...rest,
     source: rest.source ?? null,
+    fulfillment: rest.fulfillment ?? null,
     placedAt: new Date(placedAt),
     paidAt: paidAt ? new Date(paidAt) : null,
   };

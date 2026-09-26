@@ -38,6 +38,7 @@ export type VariantStock = {
   stockQty: number;
   sold30: number;
   sold90: number;
+  marketplaceStock: boolean;
 };
 
 export type AlertFacts = {

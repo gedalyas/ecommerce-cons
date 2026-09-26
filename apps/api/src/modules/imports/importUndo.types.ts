@@ -1,6 +1,7 @@
 import type {
   AdPlatform,
   FinancialStatus,
+  Fulfillment,
   ProcessingMethod,
   SalesPlatform,
 } from "@ecommerce/database/enums";
@@ -29,6 +30,7 @@ export type OrderSnapshot = {
   financialStatus: FinancialStatus;
   paymentGateway: string;
   processingMethod: ProcessingMethod;
+  fulfillment?: Fulfillment | null;
   productRevenue: number;
   shippingRevenue: number;
   totalDiscounts: number;

@@ -4,6 +4,7 @@ import {
   amazonMethodOf,
   amazonOrderInputOf,
   amazonProvinceOf,
+  amazonFulfillmentOf,
   type AmazonOrder,
 } from "./amazonOrders";
 
@@ -82,5 +83,13 @@ describe("amazonProvinceOf and amazonMethodOf", () => {
     expect(amazonMethodOf(["Pix"])).toBe("PIX");
     expect(amazonMethodOf(["Boleto"])).toBe("BOLETO");
     expect(amazonMethodOf(null)).toBe("CREDIT_CARD");
+  });
+});
+
+describe("amazonFulfillmentOf", () => {
+  it("reads FBA from the order's fulfillment channel", () => {
+    expect(amazonFulfillmentOf("AFN")).toBe("MARKETPLACE");
+    expect(amazonFulfillmentOf("MFN")).toBe("SELLER");
+    expect(amazonFulfillmentOf(undefined)).toBeNull();
   });
 });

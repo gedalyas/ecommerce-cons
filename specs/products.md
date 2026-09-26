@@ -71,3 +71,17 @@ velocity (B). The other Logística KPIs stay on fixtures.
 (assembles the tab from the pure core) → `productsService.ts` (catalog
 sales, inventory facts, bought-together pairs, filter options). Summary KPIs
 reuse `ordersAggregate` through the orders the API module `contract.ts`.
+
+## Estoque do marketplace (Full / FBA)
+
+Every order records who shipped it (`sales_order.fulfillment`: SELLER or MARKETPLACE; null when the
+source does not say — CSV and Bling today). Mercado Livre sets MARKETPLACE for Full
+(`shipment.logistic_type = fulfillment`) and Amazon for FBA (`FulfillmentChannel = AFN`). A variant
+whose last 30 days sold at least half through the marketplace is **estoque do marketplace**
+(`isMarketplaceStock` in contracts, tested): the marketplace owns and refills that stock, so it
+never raises the stockout alerts (`lowStockRiskAlert`, `keyVariantsUnavailableAlert`), stays out of
+Resumo's "em risco" and "sem estoque" lists, and the Estoque table shows it in the column
+**Estoque de quem** ("Do marketplace (Full / FBA)" / "Da loja"). A later write that does not know who
+shipped (a CSV, a re-sync without the shipment) keeps the value already recorded. Gap: Bling orders
+do not carry it yet, so a store whose sales come only from Bling never marks marketplace stock until
+the Bling mapper reads its logistics field.

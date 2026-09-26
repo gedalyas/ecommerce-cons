@@ -229,6 +229,14 @@ export const outOfStockColumns: DataTableColumn<InventoryRow>[] = [
 export const inventoryColumns: DataTableColumn<InventoryRow>[] = [
   ...variantColumns,
   {
+    key: "marketplaceStock",
+    header: "Estoque de quem",
+    render: (r) => (r.marketplaceStock ? "Do marketplace (Full / FBA)" : "Da loja"),
+    csv: (r) => (r.marketplaceStock ? "Do marketplace" : "Da loja"),
+    sortValue: (r) => (r.marketplaceStock ? 1 : 0),
+    className: "whitespace-nowrap",
+  },
+  {
     key: "soldTotal",
     header: "Vendas desde o início",
     align: "right",

@@ -38,6 +38,7 @@ const orderSnapshotSelect = {
   financialStatus: true,
   paymentGateway: true,
   processingMethod: true,
+  fulfillment: true,
   productRevenue: true,
   shippingRevenue: true,
   totalDiscounts: true,
@@ -162,10 +163,11 @@ async function writeOrder(
     });
   }
   const data = { ...orderRowOf(order, customerId, previousPaid + 1), source };
+  const { fulfillment: _unknown, ...withoutFulfillment } = data;
   const saved = await tx.order.upsert({
     where: { clientId_number: { clientId, number: order.number } },
     create: { clientId, number: order.number, ...data },
-    update: data,
+    update: data.fulfillment == null ? withoutFulfillment : data,
     select: { id: true },
   });
   await tx.orderItem.deleteMany({ where: { orderId: saved.id } });

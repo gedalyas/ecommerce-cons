@@ -1,3 +1,4 @@
+export { isMarketplaceStock } from "./fulfillmentRules";
 export { productsSummaryKeys } from "./products.types";
 export type {
   AbcClass,

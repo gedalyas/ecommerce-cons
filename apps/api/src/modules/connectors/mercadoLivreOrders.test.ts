@@ -5,6 +5,7 @@ import {
   mercadoLivreOrderInputOf,
   mercadoLivreProvinceOf,
   mercadoLivreStatusOf,
+  mercadoLivreFulfillmentOf,
   type MercadoLivreOrder,
 } from "./mercadoLivreOrders";
 
@@ -86,5 +87,14 @@ describe("mercadoLivreMethodOf and province", () => {
   it("reads the UF from the BR-XX state id", () => {
     expect(mercadoLivreProvinceOf({ receiver_address: { state: { id: "br-sp" } } })).toBe("SP");
     expect(mercadoLivreProvinceOf(null)).toBe("ND");
+  });
+});
+
+describe("mercadoLivreFulfillmentOf", () => {
+  it("reads Full from the shipment's logistic type", () => {
+    expect(mercadoLivreFulfillmentOf({ logistic_type: "fulfillment" })).toBe("MARKETPLACE");
+    expect(mercadoLivreFulfillmentOf({ logistic_type: "cross_docking" })).toBe("SELLER");
+    expect(mercadoLivreFulfillmentOf({ logistic_type: null })).toBeNull();
+    expect(mercadoLivreFulfillmentOf(null)).toBeNull();
   });
 });
