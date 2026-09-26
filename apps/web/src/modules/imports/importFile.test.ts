@@ -5,7 +5,8 @@ describe("importFileProblem", () => {
   it("accepts a small csv and refuses the rest with a Portuguese message", () => {
     expect(importFileProblem("pedidos.csv", 1024)).toBeNull();
     expect(importFileProblem("pedidos.CSV", 1024)).toBeNull();
-    expect(importFileProblem("pedidos.xlsx", 1024)).toMatch(/\.csv/);
+    expect(importFileProblem("pedidos.xlsx", 1024)).toBeNull();
+    expect(importFileProblem("pedidos.xls", 1024)).toMatch(/\.csv, \.xlsx/);
     expect(importFileProblem("pedidos.csv", 11 * 1024 * 1024)).toMatch(/10 MB/);
     expect(importFileProblem("pedidos.csv", 0)).toMatch(/vazio/);
   });

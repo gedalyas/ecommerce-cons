@@ -10,6 +10,7 @@ export {
 } from "./imports.types";
 export type {
   ColumnMapping,
+  ImportExtension,
   ImportJob,
   ImportKind,
   ImportMappingPreview,

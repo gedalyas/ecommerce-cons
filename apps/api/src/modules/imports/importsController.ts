@@ -17,7 +17,8 @@ import {
   undoImportJob,
   type ImportRequest,
 } from "./importsService";
-import { fileTypeProblem } from "./uploadRules";
+import { readSlots, type ReadSlots } from "./readSlots";
+import { extensionOf, fileTypeProblem } from "./uploadRules";
 
 export type ImportsDependencies = { now: () => Date; rateLimited: boolean };
 
@@ -34,19 +35,39 @@ function uploadedCsv(req: Request): ImportRequest {
   };
 }
 
+const XLSX_READS_AT_ONCE = 2;
+
+async function withReadSlot<T>(slots: ReadSlots, upload: ImportRequest, work: () => Promise<T>) {
+  if (extensionOf(upload.file.name) !== ".xlsx") return work();
+  if (!slots.tryAcquire()) {
+    throw new HttpError(
+      503,
+      "Outras planilhas estão sendo lidas agora. Tente de novo em instantes.",
+    );
+  }
+  try {
+    return await work();
+  } finally {
+    slots.release();
+  }
+}
+
 export function importsController({ now }: ImportsDependencies) {
+  const xlsxSlots = readSlots(XLSX_READS_AT_ONCE);
   return {
     async upload(req: Request, res: Response) {
       const upload = uploadedCsv(req);
       const auth = authOf(req);
       assertAreaEdit(auth, areaOfImportKind[upload.kind]);
-      res.status(201).json(await runImport(auth, upload, now()));
+      res
+        .status(201)
+        .json(await withReadSlot(xlsxSlots, upload, () => runImport(auth, upload, now())));
     },
     async preview(req: Request, res: Response) {
       const upload = uploadedCsv(req);
       const auth = authOf(req);
       assertAreaEdit(auth, areaOfImportKind[upload.kind]);
-      res.json(await previewImport(auth.clientId, upload));
+      res.json(await withReadSlot(xlsxSlots, upload, () => previewImport(auth.clientId, upload)));
     },
     async list(req: Request, res: Response) {
       res.json(await importsScreen(authOf(req)));

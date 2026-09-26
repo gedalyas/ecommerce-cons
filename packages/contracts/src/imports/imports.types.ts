@@ -21,7 +21,8 @@ export const IMPORT_MAX_BYTES = 10 * 1024 * 1024;
 export const IMPORT_MAX_ROWS = 50_000;
 export const IMPORT_MAX_COLUMNS = 200;
 export const IMPORT_MAX_HEADER_LENGTH = 200;
-export const IMPORT_ACCEPTED_EXTENSIONS = [".csv"] as const;
+export const IMPORT_ACCEPTED_EXTENSIONS = [".csv", ".xlsx"] as const;
+export type ImportExtension = (typeof IMPORT_ACCEPTED_EXTENSIONS)[number];
 
 export type ImportRowError = { row: number; message: string };
 

@@ -3,7 +3,7 @@
 Modules: `apps/api/src/modules/imports` (upload, parsing, persistence, history) and
 `apps/web/src/modules/imports` (the panel on Conexões); shapes and templates in
 `packages/contracts/src/imports`. Plan and decisions: `ingestion-plan.md`,
-`decisions/2026-09-13-csv-import-without-worker.md`.
+`decisions/2026-09-13-csv-import-without-worker.md`, `decisions/2026-09-25-xlsx-import-in-worker.md`.
 
 ## Kinds and templates
 
@@ -48,11 +48,18 @@ Defaults when an optional column is empty: `plataforma` ecommerce, `canal` "Loja
 
 1. rate limit — 10 uploads / 15 min per IP (429);
 2. byte ceiling — 10 MB on the web input and on multer (413);
-3. extension `.csv` and a CSV/text mime, or none (415);
+3. extension `.csv` with a CSV/text mime, or `.xlsx` with the Excel or zip mime; no mime passes
+   (415);
 4. content — no NUL byte in the first 8 KB (415), UTF-8 with latin-1 fallback, the required
    headers present or a valid `mapping` (400 / 422), at least one data row (422);
-5. contained parser — 50 000 rows and 20 s budget (422);
-6. nothing is unzipped;
+5. contained parser — 50 000 rows and 20 s budget (422); an `.xlsx` is read in a worker thread
+   with a memory cap, and only after its zip directory declares at most 500 entries, 150 MB
+   unzipped and a 100× ratio (422; not a zip is 415). Cells arrive as the CSV's text (ISO dates,
+   dot decimals), so everything below is the same for both formats;
+6. an `.xlsx` is unzipped by its central directory only (the sizes checked in rule 5 bound
+   every output buffer; entries hidden outside the directory are never read), keeping only its
+   `.xml` / `.rels` parts, which are re-packed uncompressed before the sheet reader sees them;
+   at most 2 `.xlsx` are read at once (503 otherwise); nothing else is ever unzipped;
 7. every failure is `{ message }` in Portuguese.
 
 Before any row is read, an orders or traffic import is refused with **409** when another
@@ -92,8 +99,8 @@ carries `undoneAt` and `canUndo`.
 ## Screen
 
 Inside Conexões: kind selector (Pedidos · Mídia paga · Tráfego do site), the template's
-description and columns, "Baixar modelo", the drop zone ("Arraste o CSV aqui ou selecione um
-arquivo · Formato aceito: .csv · até 10 MB"), the "Conferir …" button, for a free layout the
+description and columns, "Baixar modelo", the drop zone ("Arraste a planilha aqui ou selecione um
+arquivo · Formatos aceitos: .csv e .xlsx (Excel) · até 10 MB"), the "Conferir …" button, for a free layout the
 "Conferir colunas" card (one select per template field, required ones bold with `*`, "Não usar",
 the first filled sample value beside it, the problems in orange, "Ver prévia" disabled until
 they are gone), then the preview card

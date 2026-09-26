@@ -42,6 +42,8 @@ import { persistAdSpend, persistOrders, persistTraffic } from "./importsWriteSer
 import { mapAdSpend, mapOrders, mapTraffic } from "./mapRows";
 import { adSpendPreview, ordersPreview, trafficPreview, type PreviewBody } from "./previewRows";
 import { undoRecorder, type UndoRecorder } from "./undoRecorder";
+import { extensionOf } from "./uploadRules";
+import { readXlsxTable } from "./xlsxReader";
 
 export type UploadedFile = { name: string; size: number; buffer: Buffer };
 
@@ -58,7 +60,18 @@ type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: Conn
 type Table = { header: string[]; rows: string[][] };
 type ProcessInput = { clientId: string; kind: ImportKind; table: Table; undo: UndoRecorder };
 
-function readTable(file: UploadedFile): Table {
+async function readTable(file: UploadedFile): Promise<Table> {
+  const table =
+    extensionOf(file.name) === ".xlsx"
+      ? await readXlsxTable(file.buffer, { maxRows: IMPORT_MAX_ROWS, budgetMs: PARSE_BUDGET_MS })
+      : readCsvTable(file);
+  const problem = headerProblem(table.header);
+  if (problem) throw new HttpError(422, problem);
+  if (table.rows.length === 0) throw new HttpError(422, "O arquivo não tem linhas de dados.");
+  return table;
+}
+
+function readCsvTable(file: UploadedFile): Table {
   if (hasBinaryContent(file.buffer)) {
     throw new HttpError(415, "O arquivo não é um CSV de texto.");
   }
@@ -72,9 +85,6 @@ function readTable(file: UploadedFile): Table {
     if (error instanceof CsvLimitError) throw new HttpError(422, error.message);
     throw error;
   }
-  const problem = headerProblem(table.header);
-  if (problem) throw new HttpError(422, problem);
-  if (table.rows.length === 0) throw new HttpError(422, "O arquivo não tem linhas de dados.");
   return table;
 }
 
@@ -160,7 +170,7 @@ export async function previewImport(
   clientId: string,
   { kind, file, mapping }: ImportRequest,
 ): Promise<ImportPreviewResult> {
-  const table = readTable(file);
+  const table = await readTable(file);
   if (!mapping && !isTemplateLayout(kind, table.header)) {
     const remembered = await rememberedMapping({ clientId, kind, header: table.header });
     return {
@@ -246,7 +256,7 @@ export async function runImport(
   now: Date,
 ): Promise<ImportJob> {
   const { clientId, userId } = auth;
-  const source = readTable(file);
+  const source = await readTable(file);
   const table = templateTableOf(kind, source, mapping);
   await claimForSpreadsheet(clientId, kind);
   const undo = undoRecorder();

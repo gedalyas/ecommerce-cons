@@ -9,8 +9,20 @@ describe("fileTypeProblem", () => {
     expect(fileTypeProblem("pedidos.csv", "")).toBeNull();
   });
 
+  it("accepts .xlsx with the Excel mime, a zip mime or no mime", () => {
+    expect(
+      fileTypeProblem(
+        "pedidos.xlsx",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ),
+    ).toBeNull();
+    expect(fileTypeProblem("pedidos.xlsx", "application/zip")).toBeNull();
+    expect(fileTypeProblem("pedidos.xlsx", undefined)).toBeNull();
+  });
+
   it("refuses other extensions and foreign mimes", () => {
-    expect(fileTypeProblem("pedidos.xlsx", "text/csv")).toMatch(/\.csv/);
+    expect(fileTypeProblem("pedidos.xlsx", "text/csv")).toMatch(/\.xlsx/);
+    expect(fileTypeProblem("pedidos.xls", "application/vnd.ms-excel")).toMatch(/\.csv, \.xlsx/);
     expect(fileTypeProblem("pedidos.csv", "application/zip")).toMatch(/application\/zip/);
     expect(fileTypeProblem("pedidos", "text/csv")).toMatch(/\.csv/);
   });

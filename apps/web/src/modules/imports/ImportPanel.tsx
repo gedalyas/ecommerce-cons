@@ -149,7 +149,7 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
   return (
     <SectionBlock
       title="Importação manual"
-      description="Planilhas CSV que ainda não têm integração automática — no modelo ou do jeito que a sua planilha já é: você diz qual coluna é qual e a gente lembra. O arquivo é validado e gravado nas mesmas tabelas que alimentam os indicadores."
+      description="Planilhas (CSV ou Excel) de dados que ainda não têm integração automática — no modelo ou do jeito que a sua planilha já é: você diz qual coluna é qual e a gente lembra. O arquivo é validado e gravado nas mesmas tabelas que alimentam os indicadores."
       bodyClassName={cn(layout.cardPadding, layout.groupStack)}
     >
       {editableOptions.length === 0 && (
@@ -191,7 +191,7 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
             <input
               ref={input}
               type="file"
-              accept=".csv,text/csv"
+              accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               className="hidden"
               onChange={(e) => pick(e.target.files?.[0] ?? null)}
             />
@@ -199,12 +199,12 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
               <FileUp className="h-5 w-5 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
                 <div className="text-[15px] font-semibold text-foreground">
-                  {file ? file.name : "Arraste o CSV aqui ou selecione um arquivo"}
+                  {file ? file.name : "Arraste a planilha aqui ou selecione um arquivo"}
                 </div>
                 <p className={cn(textClass.meta, "mt-1 text-muted-foreground")}>
                   {file
                     ? `${formatFileSize(file.size)} · clique para trocar`
-                    : "Formato aceito: .csv · até 10 MB"}
+                    : "Formatos aceitos: .csv e .xlsx (Excel) · até 10 MB"}
                 </p>
               </div>
             </div>

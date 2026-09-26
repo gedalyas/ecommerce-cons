@@ -10,6 +10,7 @@ await build({
   entryPoints: [
     "src/index.ts",
     "src/worker.ts",
+    { in: "src/modules/imports/xlsxWorker.ts", out: "xlsxWorker" },
     { in: "../../packages/database/prisma/seed.ts", out: "seed" },
   ],
   bundle: true,
