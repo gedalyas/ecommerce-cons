@@ -30,6 +30,11 @@ export type AuditDetail =
   | { action: "IMPORT_RUN"; kind: string; fileName: string; imported: number; total: number }
   | { action: "IMPORT_UNDONE"; kind: string; fileName: string }
   | { action: "IMPORT_MAPPING_SUGGESTED"; kind: string; fileName: string; fields: number }
+  | {
+      action: "REPORT_SCHEDULE_CREATED" | "REPORT_SCHEDULE_UPDATED" | "REPORT_SCHEDULE_DELETED";
+      name: string;
+    }
+  | { action: "REPORT_SENT"; name: string; recipients: number }
   | { action: "PILLAR_UPDATED"; pillar: string; status: string }
   | { action: "MANUAL_KPI_SET"; pillar: string; kpi: string; value: string }
   | {

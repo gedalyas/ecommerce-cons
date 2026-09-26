@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sectionsVisibleTo, templateRange } from "./reportRules";
+import { sectionsCovered, sectionsVisibleTo, templateRange } from "./reportRules";
 
 describe("sectionsVisibleTo", () => {
   it("gives owners and staff every section", () => {
@@ -29,5 +29,14 @@ describe("templateRange", () => {
       inicio: "2026-08-01",
       fim: "2026-08-31",
     });
+  });
+});
+
+describe("sectionsCovered", () => {
+  it("is true only when the person sees every section of the report", () => {
+    const marketingOnly = [{ area: "MARKETING" as const, level: "view" as const }];
+    expect(sectionsCovered(["kpis", "meta"], marketingOnly, null)).toBe(true);
+    expect(sectionsCovered(["kpis", "meta"], [{ area: "MONEY", level: "view" }], null)).toBe(false);
+    expect(sectionsCovered(["meta"], null, ["ORDERS"])).toBe(false);
   });
 });

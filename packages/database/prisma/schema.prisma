@@ -202,6 +202,7 @@ model User {
   connectionRequests ConnectionRequest[]
   auditEvents        AuditEvent[]
   dashboardLayouts   DashboardLayout[]
+  reportSchedules    ReportSchedule[]
 
   @@index([clientId])
   @@map("user")
@@ -221,6 +222,38 @@ model DashboardLayout {
 
   @@unique([userId, clientId])
   @@map("dashboard_layout")
+}
+
+enum ReportFrequency {
+  WEEKLY
+  MONTHLY
+
+  @@map("report_frequency")
+}
+
+/// A Relatório a user asked to receive by e-mail: weekday (1 = Monday) for WEEKLY, month day
+/// (1-28) for MONTHLY, hour in the store's timezone; recipients are user ids of the store.
+model ReportSchedule {
+  id         String          @id @default(cuid())
+  clientId   String          @map("client_id")
+  userId     String          @map("user_id")
+  name       String
+  sections   String[]
+  frequency  ReportFrequency
+  weekday    Int?
+  monthDay   Int?            @map("month_day")
+  hour       Int
+  recipients String[]
+  enabled    Boolean         @default(true)
+  lastSentAt DateTime?       @map("last_sent_at")
+  createdAt  DateTime        @default(now()) @map("created_at")
+  updatedAt  DateTime        @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, userId])
+  @@map("report_schedule")
 }
 
 model ConsultantAssignment {
@@ -828,6 +861,7 @@ model Client {
   contract             Contract?
   connections          Connection[]
   dashboardLayouts     DashboardLayout[]
+  reportSchedules      ReportSchedule[]
 
   @@map("client")
 }

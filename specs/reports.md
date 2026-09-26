@@ -49,9 +49,42 @@ tables with the screens' formatting, the store and period in the header and "ger
 página x de y" in the footer, in the store's timezone. Font Manrope; print colours from
 `reportPalette`. See `decisions/2026-09-25-report-pdf-with-pdfmake.md`.
 
+## Automações (scheduled e-mail)
+
+`report_schedule` (migration `report_schedule`): per store and user — name, sections, frequency
+(`WEEKLY` with a weekday 1 = segunda … 7 = domingo, or `MONTHLY` with a day 1–28), hour in
+the store's timezone, recipients (user ids), on/off, `lastSentAt`. Endpoints, all on the active
+store and the person's own schedules (404 otherwise):
+
+- `GET /reports/schedules` → `{ schedules, recipients }` — recipients are the person; staff also
+  get the store's users.
+- `POST /reports/schedules` (201), `PUT /reports/schedules/:id`, `DELETE /reports/schedules/:id`
+  (204) — `reportScheduleSchema` (pt-BR messages: name, at least one section and one recipient,
+  the day the frequency needs, hour 0–23); sections the person cannot see → 403; a recipient
+  outside the list → 422; a recipient who does not see every chosen section (member areas, screens
+  released to the store) → 422 naming the person; at most 10 schedules per person and store;
+  30 writes per 15 min; names without control characters. Audit: "Criou / Alterou / Excluiu a automação de relatório …".
+
+The worker registers `report.dispatch` every hour (`0 * * * *`): each enabled schedule of a live
+store whose weekday or month day and hour match now in the store's timezone (`isDue`, pure) is
+sent to `report.send` (no retries). Sending checks again that it is due, keeps only the
+recipients whose current access covers every section (re-evaluated at each sending), claims the
+slot atomically (`lastSentAt` compared and set in one update, so a slot goes out at most once), rebuilds the creator's access (a person who lost
+the store or the area is skipped), builds the document for **last week** (weekly) or **last
+month** (monthly) with the same code as the preview, renders the PDF and e-mails each recipient
+still in the store: subject "<nome> — <loja> (<período>)", the first four indicators in the body,
+the PDF attached, and who owns the automation, so a recipient knows whom to ask to leave
+(`reportMail`, pure). A failing address does not stop the others. Then the audit line "Enviou o relatório
+… para N destinatários" (N = e-mails accepted; actor: Relatório automático). Recipient ids of
+people who left the store are dropped from the list the screen edits. The dev outbox writes the PDF next to the
+message.
+
 ## Screen
 
-On the Dashboard only, a **Relatório** button at the right of the top bar opens a sheet: the
+On the Dashboard only, a **Relatório** button at the right of the top bar opens a sheet with two
+tabs. **Automações** lists the person's schedules ("Toda segunda às 8h · 2 destinatário(s)",
+"Pausada"), edits them in a form (nome, Semanal / Mensal, dia, hora da loja, destinatários,
+seções, ativa) and deletes behind a confirmation. **Montar** holds the
 model (Período da tela · Reunião semanal · Fechamento do mês), the period it covers, the
 sections the person can see as checkboxes (the template ticks its own), **Baixar PDF** (the browser saves the file the API
 rendered), **Pré-visualizar**, and the preview — the title, the period, then each section drawn with the design system's metric

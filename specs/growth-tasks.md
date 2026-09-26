@@ -143,5 +143,6 @@ Acceptance: every row of the coverage table in `growth-plan.md` › G4, followin
 - [x] Slice 2 — PDF with `pdfmake` from the same document (Manrope WOFF, print palette, SVG
       charts, unbreakable sections), `POST /reports/pdf`, "Baixar PDF" through `apiFetchBinary`
       (`decisions/2026-09-25-report-pdf-with-pdfmake.md`)
-- [ ] Slice 3 — schedules (migration `report_schedule`), hourly pg-boss tick, e-mail with the
-      PDF attached, audit entries
+- [x] Slice 3 — schedules (migration `report_schedule`), hourly pg-boss tick in the store's
+      timezone, e-mail with a KPI summary and the PDF attached, one sending per slot, audit
+      entries; "Automações" tab in the builder

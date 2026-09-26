@@ -6,6 +6,7 @@ import type { ReportDependencies } from "./reportsService";
 
 const PREVIEWS_PER_15_MIN = 60;
 const PDFS_PER_15_MIN = 20;
+const SCHEDULE_WRITES_PER_15_MIN = 30;
 
 export function createReportsRouter(deps: ReportDependencies & { rateLimited: boolean }): Router {
   const router = Router();
@@ -22,5 +23,10 @@ export function createReportsRouter(deps: ReportDependencies & { rateLimited: bo
     });
   router.post("/reports/preview", limiter(PREVIEWS_PER_15_MIN), asyncHandler(controller.preview));
   router.post("/reports/pdf", limiter(PDFS_PER_15_MIN), asyncHandler(controller.pdf));
+  router.get("/reports/schedules", asyncHandler(controller.schedules));
+  const writes = limiter(SCHEDULE_WRITES_PER_15_MIN);
+  router.post("/reports/schedules", writes, asyncHandler(controller.createSchedule));
+  router.put("/reports/schedules/:id", writes, asyncHandler(controller.updateSchedule));
+  router.delete("/reports/schedules/:id", writes, asyncHandler(controller.deleteSchedule));
   return router;
 }

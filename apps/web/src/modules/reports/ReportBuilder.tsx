@@ -1,6 +1,5 @@
 import { Download } from "lucide-react";
 import {
-  reportSectionLabel,
   reportTemplateLabel,
   reportTemplates,
   type ReportSectionKey,
@@ -10,10 +9,10 @@ import { usePeriod } from "@/shared/hooks/usePeriod";
 import { Button } from "@/shared/ui/Button";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { layout } from "@/shared/styles/spacing";
-import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { ReportPreview } from "./ReportPreview";
+import { SectionChecklist } from "./SectionChecklist";
 import { useReportBuilder, type ReportChoice } from "./useReportBuilder";
 import { useReportDownload } from "./useReportDownload";
 
@@ -35,29 +34,7 @@ export function ReportBuilder({ available }: { available: readonly ReportSection
       <p className={cn(textClass.meta, "text-muted-foreground")}>
         Período: {formatPeriodLabel(range.inicio, range.fim, true)}
       </p>
-      <fieldset>
-        <legend className={cn(textClass.label, "text-foreground")}>Seções</legend>
-        <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {available.map((key) => (
-            <li key={key}>
-              <label
-                className={cn(
-                  "flex min-h-11 cursor-pointer items-center gap-3 border border-border px-3 py-2",
-                  radiusClass.control,
-                )}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 accent-primary"
-                  checked={sections.includes(key)}
-                  onChange={() => toggle(key)}
-                />
-                <span className={textClass.body}>{reportSectionLabel[key]}</span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      </fieldset>
+      <SectionChecklist available={available} selected={sections} onToggle={toggle} />
       {problem && (
         <p role="alert" className={cn(textClass.meta, "text-destructive")}>
           {problem}

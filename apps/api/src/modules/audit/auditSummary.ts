@@ -78,6 +78,14 @@ export function auditSummary(detail: AuditDetail): string {
       return `Importou ${detail.kind.toLowerCase()} (${detail.fileName}): ${detail.imported} de ${detail.total} linhas`;
     case "IMPORT_UNDONE":
       return `Desfez a importação de ${detail.kind.toLowerCase()} (${detail.fileName})`;
+    case "REPORT_SCHEDULE_CREATED":
+      return `Criou a automação de relatório "${detail.name}"`;
+    case "REPORT_SCHEDULE_UPDATED":
+      return `Alterou a automação de relatório "${detail.name}"`;
+    case "REPORT_SCHEDULE_DELETED":
+      return `Excluiu a automação de relatório "${detail.name}"`;
+    case "REPORT_SENT":
+      return `Enviou o relatório "${detail.name}" para ${detail.recipients} ${detail.recipients === 1 ? "destinatário" : "destinatários"}`;
     case "IMPORT_MAPPING_SUGGESTED":
       return `Pediu à IA as colunas de ${detail.kind.toLowerCase()} (${detail.fileName}): ${detail.fields} campos sugeridos`;
     case "PILLAR_UPDATED":

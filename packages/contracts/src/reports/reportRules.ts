@@ -47,6 +47,15 @@ export function sectionsVisibleTo(access: AreaAccess, release: ScreenRelease): R
   });
 }
 
+export function sectionsCovered(
+  sections: readonly ReportSectionKey[],
+  access: AreaAccess,
+  release: ScreenRelease,
+): boolean {
+  const visible = sectionsVisibleTo(access, release);
+  return sections.every((key) => visible.includes(key));
+}
+
 export function templateRange(template: ReportTemplate, today: string): DateRange {
   const preset = periodPresets.find((p) => p.key === templatePreset[template]);
   if (!preset) throw new Error(`Missing period preset for ${template}`);

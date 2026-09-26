@@ -1,10 +1,9 @@
 import type { ClientMembership, UserRole } from "@ecommerce/contracts/auth";
 import { userRoleLabel } from "@ecommerce/contracts/auth";
+import { escapeHtml } from "@/shared/mail/escapeHtml";
 import type { MailMessage } from "@/shared/mail/mailer.types";
 
 const PRODUCT = "E-commerce Insights";
-
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 const pageLink = (appUrl: string, path: string, param: string, token: string) =>
   `${appUrl.replace(/\/$/, "")}${path}?${param}=${encodeURIComponent(token)}`;

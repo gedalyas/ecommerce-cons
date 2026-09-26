@@ -14,12 +14,12 @@ import {
 import { prismaClient } from "@ecommerce/database/client";
 import { hashPassword, verifyPassword } from "@ecommerce/database/passwordHash";
 import type { AccessArea, ClientMembership, StoreScreen } from "@ecommerce/database/enums";
-import type { Principal } from "@/shared/http/auth.types";
+import type { AuthContext, Principal } from "@/shared/http/auth.types";
 import { forbidden, HttpError, notFound, unauthorized } from "@/shared/http/httpError";
 import type { Mailer } from "@/shared/mail/mailer.types";
 import { recordActivity } from "@/modules/audit/contract";
 import { passwordResetLink, passwordResetMail } from "./authMail";
-import { type StoreAccess } from "./storeAccess";
+import { canAccessStore, isBlockedByArchive, type StoreAccess } from "./storeAccess";
 import {
   ACCESS_TOKEN_SECONDS,
   PASSWORD_RESET_SECONDS,
@@ -108,6 +108,17 @@ export async function storesOf(
     select: storeSelect,
   });
   return own ? [toStore(own)] : [];
+}
+
+export async function authContextFor(
+  principal: Principal,
+  clientId: string,
+): Promise<AuthContext | null> {
+  const access = await storeAccessOf(principal).catch(() => null);
+  if (!access || !canAccessStore(access, clientId) || isBlockedByArchive(access, clientId)) {
+    return null;
+  }
+  return { ...principal, clientId, access: access.areaAccess, release: access.release };
 }
 
 export async function storeAccessOf(principal: Principal): Promise<StoreAccess> {

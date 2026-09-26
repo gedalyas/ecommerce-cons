@@ -34,7 +34,10 @@ const dashboardSections: readonly ReportSectionKey[] = [
   "funnel",
 ];
 
-function assertSectionsVisible(auth: AuthContext, sections: readonly ReportSectionKey[]): void {
+export function assertSectionsVisible(
+  auth: AuthContext,
+  sections: readonly ReportSectionKey[],
+): void {
   const visible = sectionsVisibleTo(auth.access, auth.release);
   const denied = sections.filter((key) => !visible.includes(key));
   if (denied.length > 0) {
