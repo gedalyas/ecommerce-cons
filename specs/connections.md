@@ -136,7 +136,18 @@ Every pulled row is stored as it came in `raw_record`; orders, ad spend and traf
 written through the same write service the CSV import uses, so the dashboards do not know
 the source. Providers today: Nuvemshop, Bling (with the status mapping), Google Ads, GA4,
 Meta Ads, Shopify, TikTok Ads — one sheet each in `docs/apis/`, plan in
-`connectors-plan.md`. Ad spend is replaced per (platform, account, day): a connector row replaces its account
+`connectors-plan.md`.
+
+**Testar** (drawer › Conectar, for whoever manages the connector; 20 tests / 15 min per store and
+connector): `POST /connectors/:key/test` uses the stored token as it is — it never renews it, so it
+cannot race the worker's refresh; an expired token skips the probe ("unverified") — and calls the
+platform's cheapest authenticated endpoint (the provider's `test`, or `describeSettings` checking that
+the chosen account is still visible). It counts the `raw_record` rows fetched in the last 7 days per
+kind and returns a `ConnectionCheck` with a pure verdict (`connectionVerdict`): "Tudo certo — os
+dados estão chegando", "Conectado, mas nenhum dado chegou nos últimos 7 dias", "A plataforma não
+respondeu agora" (network failure) or "Acesso recusado — reconecte a integração" (a fixed message:
+the platform's or internal error text only goes to the server log). Nothing is stored but the
+`CONNECTION_TESTED` activity. Ad spend is replaced per (platform, account, day): a connector row replaces its account
 and any spreadsheet row of that day, a spreadsheet row (no account) the whole platform-day, so two
 accounts of one platform never erase each other and a day is never counted twice. Keywords and
 the GA4 detail (pages with the query string dropped, items by SKU, audience, regions) go through

@@ -251,6 +251,11 @@ export function amazonProvider(config: AmazonConfig): ConnectorProvider {
       });
       return credentialsOf(token, current, now);
     },
+    async test(credentials) {
+      const amazon = credentials as AmazonCredentials;
+      await apiGet(config, amazon, "/sellers/v1/marketplaceParticipations", {});
+      return { accountLabel: `Vendedor ${amazon.sellingPartnerId}` };
+    },
     backfill: (context) =>
       pullOrders(config, context, monthsAgo(context.now, config.backfillMonths)),
     sync(context) {

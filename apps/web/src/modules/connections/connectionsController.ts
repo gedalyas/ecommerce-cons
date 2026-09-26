@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { ConnectionsHealth, ConnectionsScreen } from "@ecommerce/contracts/connections";
+import type { ConnectionCheck } from "@ecommerce/contracts/connectors";
 import {
   connectionRequestInputSchema,
   connectorKeySchema,
@@ -10,7 +11,7 @@ import {
   type ConnectorSettings,
   type DataReadiness,
 } from "@ecommerce/contracts/connectors";
-import { ApiRequestError, apiFetch } from "@/shared/dependencies/apiClient";
+import { ApiRequestError, apiFetch, attempt } from "@/shared/dependencies/apiClient";
 
 export type RequestResult =
   { ok: true; request: ConnectionRequest } | { ok: false; message: string };
@@ -128,3 +129,15 @@ export const requestConnectionFn = createServerFn({ method: "POST" })
       return { ok: false, message: "Não foi possível solicitar agora. Tente novamente." };
     }
   });
+
+export const testConnectionFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => connectorKeySchema.parse(input))
+  .handler(({ data }) =>
+    attempt(
+      () =>
+        apiFetch<ConnectionCheck>(`/connectors/${encodeURIComponent(data.key)}/test`, {
+          method: "POST",
+        }),
+      "Não foi possível testar a conexão agora.",
+    ),
+  );

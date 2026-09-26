@@ -17,6 +17,7 @@ export type CommercialDetail = Extract<
       | "CONNECTION_REMOVED"
       | "CONNECTION_SYNCED"
       | "CONNECTION_FAILED"
+      | "CONNECTION_TESTED"
       | "DATA_SOURCE_CHANGED";
   }
 >;
@@ -49,6 +50,8 @@ export function commercialSummary(detail: CommercialDetail): string {
       return `${detail.connector}: sincronização concluída, ${detail.rows} registros`;
     case "CONNECTION_FAILED":
       return `${detail.connector}: sincronização falhou — ${detail.message}`;
+    case "CONNECTION_TESTED":
+      return `Testou ${detail.connector}: ${detail.result}`;
     case "DATA_SOURCE_CHANGED":
       return detail.source
         ? `${detail.kind} passam a vir de ${detail.source} ${detail.since ? `a partir de ${detail.since}` : "com todo o histórico"}`

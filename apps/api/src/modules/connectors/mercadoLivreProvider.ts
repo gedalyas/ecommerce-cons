@@ -221,6 +221,15 @@ export function mercadoLivreProvider(config: MercadoLivreConfig): ConnectorProvi
         now,
       );
     },
+    async test(credentials) {
+      const me = await apiGet<{ nickname?: string }>(
+        config,
+        credentials as MercadoLivreCredentials,
+        "/users/me",
+      );
+      if (!me) throw new Error("Mercado Livre não encontrou o vendedor");
+      return { accountLabel: me.nickname?.trim() || "Mercado Livre" };
+    },
     backfill: (context) =>
       pullOrders(config, context, monthsAgo(context.now, config.backfillMonths)),
     sync(context) {

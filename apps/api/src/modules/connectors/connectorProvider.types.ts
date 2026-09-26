@@ -3,6 +3,7 @@ import type {
   ConnectorAccountOption,
   ConnectorKey,
   ConnectorStatusOption,
+  ReceivedKind,
 } from "@ecommerce/contracts/connectors";
 import type {
   AdSpendRow,
@@ -27,7 +28,7 @@ export type ProviderSettings = {
   accounts?: ConnectorAccountOption[];
 };
 
-export type RawKind = "order" | "product" | "customer" | "ad_insight" | "traffic" | "social";
+export type RawKind = ReceivedKind;
 
 export type RawRow = { externalId: string; payload: unknown };
 
@@ -75,6 +76,7 @@ export type ConnectorProvider = {
   fromCredentials?(fields: Record<string, string>): Promise<Authorized>;
   refresh?(credentials: Credentials, now: Date): Promise<Credentials | null>;
   describeSettings?(credentials: Credentials): Promise<ProviderSettings>;
+  test?(credentials: Credentials): Promise<{ accountLabel: string }>;
   backfill(context: SyncContext): Promise<SyncResult>;
   sync(context: SyncContext): Promise<SyncResult>;
 };

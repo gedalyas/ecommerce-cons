@@ -121,4 +121,14 @@ describe("commercial actions", () => {
       }),
     ).toBe('Marcou a campanha "Prospecção · interesses casa" (Meta Ads): topo, canal "Site"');
   });
+
+  it("describes a connection test and its verdict", () => {
+    expect(
+      auditSummary({
+        action: "CONNECTION_TESTED",
+        connector: "Meta Ads",
+        result: "Tudo certo — os dados estão chegando.",
+      }),
+    ).toBe("Testou Meta Ads: Tudo certo — os dados estão chegando.");
+  });
 });

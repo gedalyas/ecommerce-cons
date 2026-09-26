@@ -50,7 +50,9 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
       field: OAuth with the Bling-generated app ID (confirmed 2026-09-24)
 - [x] Connector drawer: Conectar · O que puxa (owner per kind) · Ajuda (`connectorGuides.ts`,
       marketplace modalities explained)
-- [ ] `POST /connectors/:key/test` + `testCredentials?` per provider
+- [x] "Testar" the Bling way (after linking, is the data arriving?): `POST /connectors/:key/test`
+      probes the access with the stored token (`test?`, else `describeSettings` + the chosen account
+      still visible), counts the rows received in 7 days and answers a pure verdict; audited
 - [x] Source picker in "O que puxa": "Usar esta integração" / "Deixar de usar", date cut
       (`since`, migration `store_data_source_since`), "Gerado no sistema" for products/customers
       without an owner, `DATA_SOURCE_CHANGED` activity

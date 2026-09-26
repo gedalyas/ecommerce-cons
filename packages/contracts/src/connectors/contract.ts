@@ -84,3 +84,17 @@ export {
 export type { DataOwner, DataOwners, KindOwnership } from "./dataSourceRules";
 export { connectorGuides, guideSteps } from "./connectorGuides";
 export type { DataKind } from "./dataKinds";
+export {
+  accountCheck,
+  CHECK_WINDOW_DAYS,
+  connectionVerdict,
+  receivedKindLabel,
+  receivedKinds,
+} from "./connectionCheck";
+export type {
+  AccessResult,
+  CheckVerdict,
+  ConnectionCheck,
+  ReceivedKind,
+  ReceivedRows,
+} from "./connectionCheck";

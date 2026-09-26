@@ -109,6 +109,11 @@ export function nuvemshopProvider(config: NuvemshopConfig): ConnectorProvider {
         externalLabel: domain || `loja ${token.user_id}`,
       };
     },
+    async test(credentials) {
+      const store = credentials as NuvemshopCredentials;
+      await nuvemshopFetch(config, store, "/store", {});
+      return { accountLabel: `loja ${store.storeId}` };
+    },
     backfill: (context) =>
       pullOrders(config, context, monthsAgo(context.now, config.backfillMonths)),
     sync(context) {

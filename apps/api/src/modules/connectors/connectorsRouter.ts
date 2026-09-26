@@ -5,6 +5,7 @@ import { connectorsController } from "./connectorsController";
 import type { ConnectorsDependencies } from "./connectorsService";
 
 const SOURCE_SWITCHES_PER_15_MIN = 10;
+const CONNECTION_TESTS_PER_15_MIN = 20;
 
 export function createConnectorsRouter(
   deps: ConnectorsDependencies,
@@ -19,10 +20,20 @@ export function createConnectorsRouter(
     skip: () => !rateLimited,
     message: { message: "Muitas trocas de fonte. Aguarde alguns minutos." },
   });
+  const tests = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: CONNECTION_TESTS_PER_15_MIN,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: () => !rateLimited,
+    keyGenerator: (req) => `${req.auth?.clientId ?? "anon"}:${req.params["key"] ?? ""}`,
+    message: { message: "Muitos testes seguidos. Aguarde alguns minutos." },
+  });
   const controller = connectorsController(deps);
   router.post("/connectors/:key/authorize", asyncHandler(controller.authorize));
   router.post("/connectors/:key/credentials", asyncHandler(controller.credentials));
   router.post("/connectors/:key/sync", asyncHandler(controller.sync));
+  router.post("/connectors/:key/test", tests, asyncHandler(controller.test));
   router.get("/connectors/:key/settings", asyncHandler(controller.settings));
   router.put("/connectors/:key/settings", asyncHandler(controller.saveSettings));
   router.put("/data-sources", switches, asyncHandler(controller.chooseSource));

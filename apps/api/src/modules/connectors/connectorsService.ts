@@ -47,7 +47,7 @@ const authPatternEnum: Record<string, ConnectionAuthPattern> = {
 const redirectUriOf = (apiUrl: string, key: ConnectorKey) =>
   `${apiUrl.replace(/\/$/, "")}/api/v1/connectors/${key}/callback`;
 
-function providerOf(deps: ConnectorsDependencies, key: ConnectorKey) {
+export function providerOf(deps: ConnectorsDependencies, key: ConnectorKey) {
   const provider = deps.providers.get(key);
   if (!provider) throw new HttpError(422, "Este conector ainda não está disponível.");
   return provider;

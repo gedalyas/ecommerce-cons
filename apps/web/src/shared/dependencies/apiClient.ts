@@ -91,15 +91,14 @@ export async function apiFetch<T>(path: string, init: ApiRequest = {}): Promise<
   return result.body as T;
 }
 
-export type WriteResult = { ok: true } | { ok: false; message: string };
+export type AttemptResult<T> = { ok: true; value: T } | { ok: false; message: string };
 
-export async function attemptWrite(
-  run: () => Promise<unknown>,
+export async function attempt<T>(
+  run: () => Promise<T>,
   fallback: string,
-): Promise<WriteResult> {
+): Promise<AttemptResult<T>> {
   try {
-    await run();
-    return { ok: true };
+    return { ok: true, value: await run() };
   } catch (error) {
     if (isRedirect(error)) throw error;
     if (error instanceof ApiRequestError && error.status < 500) {
@@ -109,4 +108,14 @@ export async function attemptWrite(
     console.error(error);
     return { ok: false, message: fallback };
   }
+}
+
+export type WriteResult = { ok: true } | { ok: false; message: string };
+
+export async function attemptWrite(
+  run: () => Promise<unknown>,
+  fallback: string,
+): Promise<WriteResult> {
+  const result = await attempt(run, fallback);
+  return result.ok ? { ok: true } : result;
 }

@@ -11,6 +11,7 @@ import { Sheet } from "@/shared/ui/Sheet";
 import { TabBar } from "@/shared/ui/TabBar";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
+import { ConnectionTest } from "./ConnectionTest";
 import { ConnectorLogo } from "./ConnectorLogo";
 import { DataSourceSwitch } from "./DataSourceSwitch";
 
@@ -94,6 +95,7 @@ function ConnectTab({
         </ul>
       )}
       <div onClickCapture={onAction}>{action}</div>
+      <ConnectionTest connector={connector} />
     </div>
   );
 }

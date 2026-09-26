@@ -153,6 +153,11 @@ export function shopifyProvider(config: ShopifyConfig): ConnectorProvider {
       return url.toString();
     },
     exchangeCode: (params) => exchangeShopifyCode(config, params),
+    async test(credentials) {
+      const shopify = credentials as ShopifyCredentials;
+      await ordersPage(config, shopify, { first: 1, after: null, query: "" });
+      return { accountLabel: shopify.shop };
+    },
     backfill: (context) =>
       pullOrders(config, context, monthsAgo(context.now, config.backfillMonths)),
     sync(context) {

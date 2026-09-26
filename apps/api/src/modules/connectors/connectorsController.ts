@@ -23,6 +23,7 @@ import {
   triggerSync,
   type ConnectorsDependencies,
 } from "./connectorsService";
+import { checkConnection } from "./connectionCheckService";
 import { chooseDataSource } from "./dataSourceChoiceService";
 
 function managing(req: Request) {
@@ -69,6 +70,10 @@ export function connectorsController(deps: ConnectorsDependencies) {
       const { auth, key } = managing(req);
       await triggerSync(auth, key, deps);
       res.status(202).json({ queued: true });
+    },
+    async test(req: Request, res: Response) {
+      const { auth, key } = managing(req);
+      res.json(await checkConnection(auth, key, deps));
     },
     async settings(req: Request, res: Response) {
       const { auth, key } = managing(req);
