@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-  importKindSchema,
+  importUploadSchema,
   type ImportJob,
-  type ImportPreview,
+  type ImportPreviewResult,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
 import { z } from "zod";
@@ -12,10 +12,13 @@ export type CsvResult<T> = { ok: true; data: T } | { ok: false; message: string 
 
 const csvInput = (input: unknown) => {
   if (!(input instanceof FormData)) throw new Error("Expected a FormData payload");
-  const { kind } = importKindSchema.parse({ kind: input.get("kind") });
+  const { kind, mapping } = importUploadSchema.parse({
+    kind: input.get("kind"),
+    mapping: input.get("mapping") ?? undefined,
+  });
   const file = input.get("file");
   if (!(file instanceof File)) throw new Error("Expected a file");
-  return { kind, file };
+  return { kind, file, mapping: mapping ?? null };
 };
 
 async function sendCsv<T>(
@@ -26,6 +29,7 @@ async function sendCsv<T>(
   const body = new FormData();
   body.append("kind", data.kind);
   body.append("file", data.file, data.file.name);
+  if (data.mapping) body.append("mapping", JSON.stringify(data.mapping));
   try {
     return { ok: true, data: await apiFetch<T>(path, { method: "POST", body }) };
   } catch (error) {
@@ -44,7 +48,7 @@ export const getImportsScreen = createServerFn({ method: "GET" }).handler(async 
 export const previewImportFn = createServerFn({ method: "POST" })
   .validator(csvInput)
   .handler(({ data }) =>
-    sendCsv<ImportPreview>(
+    sendCsv<ImportPreviewResult>(
       "/imports/preview",
       data,
       "Não foi possível ler o arquivo agora. Tente novamente.",

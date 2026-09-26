@@ -65,8 +65,13 @@ Status: **approved 2026-09-23 — G1 and G0 done (except the `system` source, wh
 
 ## G3 — Spreadsheet read by AI
 
-- [ ] Upload CSV/xlsx (worker thread for xlsx), header + sample → model → column mapping
-- [ ] Pure mapping applier + test; preview, edit, remembered mapping per store; undo
+- [x] Slice 1 — any-layout CSV with manual mapping: migration `import_layout`; pure
+      `suggestMapping` (synonyms) / `mappingProblems` / `remapTable` / `layoutKeyOf` + tests;
+      preview answers the mapping step, upload takes `mapping`, remembered per store and layout;
+      "Conferir colunas" on the screen; undo unchanged
+- [ ] Slice 2 — `.xlsx` read in a worker thread (`exceljs`), same ceilings, decision record
+- [ ] Slice 3 — "Sugerir com IA" (Claude Haiku 4.5): masked header + sample → mapping, validated
+      against the template; optional `ANTHROPIC_API_KEY`; decision record
 
 ## G4 — Marketing at the Looker depth
 

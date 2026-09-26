@@ -19,6 +19,8 @@ export const importStatusLabel: Record<ImportStatus, string> = {
 
 export const IMPORT_MAX_BYTES = 10 * 1024 * 1024;
 export const IMPORT_MAX_ROWS = 50_000;
+export const IMPORT_MAX_COLUMNS = 200;
+export const IMPORT_MAX_HEADER_LENGTH = 200;
 export const IMPORT_ACCEPTED_EXTENSIONS = [".csv"] as const;
 
 export type ImportRowError = { row: number; message: string };
@@ -58,6 +60,7 @@ export type ImportPreviewSummary = {
 };
 
 export type ImportPreview = {
+  step: "preview";
   kind: ImportKind;
   counts: { total: number; valid: number; rejected: number };
   errors: ImportRowError[];
@@ -65,3 +68,18 @@ export type ImportPreview = {
   columns: ImportPreviewColumn[];
   sample: Record<string, ImportPreviewCell>[];
 };
+
+export const IMPORT_MAPPING_SAMPLE_ROWS = 5;
+
+export type ColumnMapping = Record<string, string>;
+
+export type ImportMappingPreview = {
+  step: "mapping";
+  kind: ImportKind;
+  header: string[];
+  sample: string[][];
+  mapping: ColumnMapping;
+  remembered: boolean;
+};
+
+export type ImportPreviewResult = ImportPreview | ImportMappingPreview;

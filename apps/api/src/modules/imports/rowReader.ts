@@ -12,13 +12,6 @@ import {
 
 export type ColumnIndex = Map<string, number>;
 
-export function missingRequiredHeaders(kind: ImportKind, header: string[]): string[] {
-  const present = new Set(header.map(normalizeHeader));
-  return importTemplates[kind].columns
-    .filter((c) => c.required && !present.has(c.header))
-    .map((c) => c.header);
-}
-
 export function columnIndexOf(kind: ImportKind, header: string[]): ColumnIndex {
   const normalized = header.map(normalizeHeader);
   const index: ColumnIndex = new Map();

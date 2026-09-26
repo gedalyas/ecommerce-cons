@@ -161,6 +161,22 @@ model ImportUndo {
   @@map("import_undo")
 }
 
+/// The column mapping a store confirmed for a spreadsheet layout, reused on the next upload
+/// with the same header: `layoutKey` is the sha256 of the normalized, sorted header and
+/// `mapping` is { templateKey: sourceHeader }.
+model ImportLayout {
+  clientId  String     @map("client_id")
+  kind      ImportKind
+  layoutKey String     @map("layout_key")
+  mapping   Json
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@id([clientId, kind, layoutKey])
+  @@map("import_layout")
+}
+
 /// Someone who signs in. CLIENT users belong to one store; consultants and admins have none
 /// and reach stores through assignments (or everything, for admins).
 model User {
@@ -789,6 +805,7 @@ model Client {
   dataOwners           StoreDataSource[]
   connectionRequests   ConnectionRequest[]
   importJobs           ImportJob[]
+  importLayouts        ImportLayout[]
   products             Product[]
   customers            Customer[]
   orders               Order[]

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { mapAdSpend, mapOrders, mapTraffic } from "./mapRows";
-import { missingRequiredHeaders } from "./rowReader";
 
 const ordersHeader = [
   "numero",
@@ -225,12 +224,5 @@ describe("mapTraffic", () => {
       [["2026-09-05", "Google", "CPC", "420"]],
     );
     expect(rows[0]).toMatchObject({ source: "google", medium: "cpc", sessions: 420, users: 420 });
-  });
-});
-
-describe("missingRequiredHeaders", () => {
-  it("names the required columns the header lacks, ignoring accents and case", () => {
-    expect(missingRequiredHeaders("TRAFFIC", ["Data", "Origem", "Sessões"])).toEqual(["meio"]);
-    expect(missingRequiredHeaders("TRAFFIC", ["data", "origem", "meio", "sessoes"])).toEqual([]);
   });
 });

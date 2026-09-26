@@ -2,9 +2,8 @@ import type { Request, Response } from "express";
 import {
   areaOfImportKind,
   importIdSchema,
-  importKindSchema,
   importTemplates,
-  type ImportKind,
+  importUploadSchema,
 } from "@ecommerce/contracts/imports";
 import { assertAreaEdit } from "@/modules/auth/contract";
 import { authOf } from "@/shared/http/authOf";
@@ -16,32 +15,38 @@ import {
   previewImport,
   runImport,
   undoImportJob,
-  type UploadedFile,
+  type ImportRequest,
 } from "./importsService";
 import { fileTypeProblem } from "./uploadRules";
 
 export type ImportsDependencies = { now: () => Date; rateLimited: boolean };
 
-function uploadedCsv(req: Request): { kind: ImportKind; file: UploadedFile } {
-  const { kind } = parseOrThrow(importKindSchema, req.body);
+function uploadedCsv(req: Request): ImportRequest {
+  const { kind, mapping } = parseOrThrow(importUploadSchema, req.body);
   const file = req.file;
   if (!file) throw new HttpError(400, 'Envie o arquivo no campo "file".');
   const problem = fileTypeProblem(file.originalname, file.mimetype);
   if (problem) throw new HttpError(415, problem);
-  return { kind, file: { name: file.originalname, size: file.size, buffer: file.buffer } };
+  return {
+    kind,
+    file: { name: file.originalname, size: file.size, buffer: file.buffer },
+    mapping: mapping ?? null,
+  };
 }
 
 export function importsController({ now }: ImportsDependencies) {
   return {
     async upload(req: Request, res: Response) {
-      const { kind, file } = uploadedCsv(req);
+      const upload = uploadedCsv(req);
       const auth = authOf(req);
-      assertAreaEdit(auth, areaOfImportKind[kind]);
-      res.status(201).json(await runImport(auth, kind, file, now()));
+      assertAreaEdit(auth, areaOfImportKind[upload.kind]);
+      res.status(201).json(await runImport(auth, upload, now()));
     },
     async preview(req: Request, res: Response) {
-      const { kind, file } = uploadedCsv(req);
-      res.json(previewImport(kind, file));
+      const upload = uploadedCsv(req);
+      const auth = authOf(req);
+      assertAreaEdit(auth, areaOfImportKind[upload.kind]);
+      res.json(await previewImport(auth.clientId, upload));
     },
     async list(req: Request, res: Response) {
       res.json(await importsScreen(authOf(req)));

@@ -7,9 +7,10 @@ import {
   importKinds,
   importTemplates,
   templateRows,
+  type ColumnMapping,
   type ImportJob,
   type ImportKind,
-  type ImportPreview,
+  type ImportPreviewResult,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
 import { Button } from "@/shared/ui/Button";
@@ -21,6 +22,7 @@ import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { downloadCsv } from "@/shared/utils/csv";
+import { ColumnMappingCard } from "./ColumnMappingCard";
 import { formatFileSize, importFileProblem } from "./importFile";
 import { importHistoryColumns } from "./importHistoryColumns";
 import { UndoImportButton } from "./UndoImportButton";
@@ -30,10 +32,11 @@ import { previewImportFn, uploadImportFn } from "./importsController";
 
 const kindOptions = importKinds.map((key) => ({ key, label: importKindLabel[key] }));
 
-const csvForm = (kind: ImportKind, file: File) => {
+const csvForm = (kind: ImportKind, file: File, mapping: ColumnMapping | null) => {
   const form = new FormData();
   form.append("kind", kind);
   form.append("file", file, file.name);
+  if (mapping) form.append("mapping", JSON.stringify(mapping));
   return form;
 };
 
@@ -43,15 +46,17 @@ function useImportUpload() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [preview, setPreview] = useState<ImportPreviewResult | null>(null);
+  const [mapping, setMapping] = useState<ColumnMapping | null>(null);
   const [job, setJob] = useState<ImportJob | null>(null);
 
-  const preview_ = async (kind: ImportKind, file: File) => {
+  const preview_ = async (kind: ImportKind, file: File, chosen: ColumnMapping | null = null) => {
     setBusy(true);
     setMessage(null);
     setJob(null);
+    setMapping(chosen);
     try {
-      const result = await previewFn({ data: csvForm(kind, file) });
+      const result = await previewFn({ data: csvForm(kind, file, chosen) });
       if (result.ok) setPreview(result.data);
       else setMessage(result.message);
     } finally {
@@ -62,7 +67,7 @@ function useImportUpload() {
     setBusy(true);
     setMessage(null);
     try {
-      const result = await upload({ data: csvForm(kind, file) });
+      const result = await upload({ data: csvForm(kind, file, mapping) });
       if (result.ok) {
         setJob(result.data);
         setPreview(null);
@@ -76,6 +81,7 @@ function useImportUpload() {
   };
   const reset = () => {
     setPreview(null);
+    setMapping(null);
     setMessage(null);
   };
   return { busy, message, setMessage, preview, job, previewFile: preview_, submit, reset };
@@ -143,7 +149,7 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
   return (
     <SectionBlock
       title="Importação manual"
-      description="Planilhas CSV que ainda não têm integração automática. O arquivo é validado e gravado nas mesmas tabelas que alimentam os indicadores."
+      description="Planilhas CSV que ainda não têm integração automática — no modelo ou do jeito que a sua planilha já é: você diz qual coluna é qual e a gente lembra. O arquivo é validado e gravado nas mesmas tabelas que alimentam os indicadores."
       bodyClassName={cn(layout.cardPadding, layout.groupStack)}
     >
       {editableOptions.length === 0 && (
@@ -222,7 +228,17 @@ export function ImportPanel({ data }: { data: ImportsScreen }) {
             </div>
           )}
 
-          {preview && file && (
+          {preview?.step === "mapping" && file && (
+            <ColumnMappingCard
+              key={preview.header.join("|")}
+              step={preview}
+              busy={busy}
+              onConfirm={(chosen) => void previewFile(kind, file, chosen)}
+              onCancel={reset}
+            />
+          )}
+
+          {preview?.step === "preview" && file && (
             <ImportPreviewCard
               preview={preview}
               busy={busy}

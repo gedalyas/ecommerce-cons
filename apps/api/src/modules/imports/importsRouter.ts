@@ -12,7 +12,7 @@ const PREVIEWS_PER_15_MIN = 30;
 function singleCsv() {
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: IMPORT_MAX_BYTES, files: 1 },
+    limits: { fileSize: IMPORT_MAX_BYTES, files: 1, fields: 2, fieldSize: 20 * 1024, parts: 3 },
   });
   const handler = upload.single("file");
   return (req: Request, res: Response, next: NextFunction) => {

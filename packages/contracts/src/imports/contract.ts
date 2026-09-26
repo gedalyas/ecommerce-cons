@@ -9,12 +9,15 @@ export {
   importStatuses,
 } from "./imports.types";
 export type {
+  ColumnMapping,
   ImportJob,
   ImportKind,
+  ImportMappingPreview,
   ImportPreview,
   ImportPreviewCell,
   ImportPreviewColumn,
   ImportPreviewColumnType,
+  ImportPreviewResult,
   ImportPreviewSummary,
   ImportRowError,
   ImportStatus,
@@ -38,6 +41,20 @@ export {
   parseImportNumber,
   parseImportOption,
 } from "./importValues";
-export { importIdSchema, importKindSchema } from "./importsSchema";
+export {
+  columnMappingSchema,
+  importIdSchema,
+  importKindSchema,
+  importUploadSchema,
+} from "./importsSchema";
 export type { ImportKindInput } from "./importsSchema";
+export {
+  headerProblem,
+  isTemplateLayout,
+  layoutKeyOf,
+  mappingProblems,
+  mappingSampleOf,
+  remapTable,
+  suggestMapping,
+} from "./columnMapping";
 export { areaOfImportKind, dataKindOfImport, editableImportKinds } from "./importAccess";

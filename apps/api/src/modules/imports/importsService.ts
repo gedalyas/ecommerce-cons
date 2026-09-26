@@ -3,10 +3,17 @@ import {
   areaOfImportKind,
   dataKindOfImport,
   editableImportKinds,
+  headerProblem,
   importKindLabel,
+  isTemplateLayout,
+  mappingProblems,
+  mappingSampleOf,
+  remapTable,
+  suggestMapping,
+  type ColumnMapping,
   type ImportJob,
   type ImportKind,
-  type ImportPreview,
+  type ImportPreviewResult,
   type ImportRowError,
   type ImportsScreen,
 } from "@ecommerce/contracts/imports";
@@ -26,6 +33,7 @@ import { refreshCustomers } from "@/modules/customers/contract";
 import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
 import { CsvLimitError, decodeCsvBuffer, hasBinaryContent, parseCsv } from "./csvParse";
+import { rememberLayout, rememberedMapping } from "./importLayoutService";
 import { importOutcome, type ImportCounts } from "./importOutcome";
 import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
 import { sourcesStampedBy } from "./importSources";
@@ -33,7 +41,6 @@ import { saveUndoEntries, undoImport, undoableJobIds } from "./importsUndoServic
 import { persistAdSpend, persistOrders, persistTraffic } from "./importsWriteService";
 import { mapAdSpend, mapOrders, mapTraffic } from "./mapRows";
 import { adSpendPreview, ordersPreview, trafficPreview, type PreviewBody } from "./previewRows";
-import { missingRequiredHeaders } from "./rowReader";
 import { undoRecorder, type UndoRecorder } from "./undoRecorder";
 
 export type UploadedFile = { name: string; size: number; buffer: Buffer };
@@ -48,9 +55,10 @@ type Mapped =
   | { kind: "TRAFFIC"; rows: TrafficRow[]; errors: ImportRowError[] };
 
 type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: ConnectorKey[] };
-type ProcessInput = { clientId: string; kind: ImportKind; file: UploadedFile; undo: UndoRecorder };
+type Table = { header: string[]; rows: string[][] };
+type ProcessInput = { clientId: string; kind: ImportKind; table: Table; undo: UndoRecorder };
 
-function tableOf(kind: ImportKind, file: UploadedFile) {
+function readTable(file: UploadedFile): Table {
   if (hasBinaryContent(file.buffer)) {
     throw new HttpError(415, "O arquivo não é um CSV de texto.");
   }
@@ -64,16 +72,25 @@ function tableOf(kind: ImportKind, file: UploadedFile) {
     if (error instanceof CsvLimitError) throw new HttpError(422, error.message);
     throw error;
   }
-  const missing = missingRequiredHeaders(kind, table.header);
-  if (missing.length > 0) {
-    throw new HttpError(400, `Faltam colunas obrigatórias no cabeçalho: ${missing.join(", ")}.`);
-  }
+  const problem = headerProblem(table.header);
+  if (problem) throw new HttpError(422, problem);
   if (table.rows.length === 0) throw new HttpError(422, "O arquivo não tem linhas de dados.");
   return table;
 }
 
-function mapTable(kind: ImportKind, file: UploadedFile): { total: number; mapped: Mapped } {
-  const table = tableOf(kind, file);
+function templateTableOf(kind: ImportKind, table: Table, mapping: ColumnMapping | null): Table {
+  if (mapping) {
+    const problems = mappingProblems(kind, table.header, mapping);
+    if (problems.length > 0) throw new HttpError(422, problems.join(" "));
+    return remapTable(kind, table.header, table.rows, mapping);
+  }
+  if (!isTemplateLayout(kind, table.header)) {
+    throw new HttpError(400, "As colunas da planilha não seguem o modelo. Confira as colunas.");
+  }
+  return table;
+}
+
+function mapTable(kind: ImportKind, table: Table): { total: number; mapped: Mapped } {
   const total = table.rows.length;
   switch (kind) {
     case "ORDERS":
@@ -85,8 +102,8 @@ function mapTable(kind: ImportKind, file: UploadedFile): { total: number; mapped
   }
 }
 
-async function process({ clientId, kind, file, undo }: ProcessInput): Promise<Processed> {
-  const { total, mapped } = mapTable(kind, file);
+async function process({ clientId, kind, table, undo }: ProcessInput): Promise<Processed> {
+  const { total, mapped } = mapTable(kind, table);
   const rejected = mapped.errors.length;
   switch (mapped.kind) {
     case "ORDERS": {
@@ -133,11 +150,33 @@ function previewBodyOf(mapped: Mapped): PreviewBody {
   }
 }
 
-export function previewImport(kind: ImportKind, file: UploadedFile): ImportPreview {
-  const { total, mapped } = mapTable(kind, file);
+export type ImportRequest = {
+  kind: ImportKind;
+  file: UploadedFile;
+  mapping: ColumnMapping | null;
+};
+
+export async function previewImport(
+  clientId: string,
+  { kind, file, mapping }: ImportRequest,
+): Promise<ImportPreviewResult> {
+  const table = readTable(file);
+  if (!mapping && !isTemplateLayout(kind, table.header)) {
+    const remembered = await rememberedMapping({ clientId, kind, header: table.header });
+    return {
+      step: "mapping",
+      kind,
+      header: table.header,
+      sample: mappingSampleOf(table.rows),
+      mapping: remembered ?? suggestMapping(kind, table.header),
+      remembered: remembered !== null,
+    };
+  }
+  const { total, mapped } = mapTable(kind, templateTableOf(kind, table, mapping));
   const rejected = mapped.errors.length;
   const valid = mapped.kind === "ORDERS" ? total - rejected : mapped.rows.length;
   return {
+    step: "preview",
     kind,
     counts: { total, valid, rejected },
     errors: mapped.errors.slice(0, ERRORS_KEPT),
@@ -203,14 +242,15 @@ async function releaseIfNoImportLeft(clientId: string, kind: ImportKind): Promis
 
 export async function runImport(
   auth: AuthContext,
-  kind: ImportKind,
-  file: UploadedFile,
+  { kind, file, mapping }: ImportRequest,
   now: Date,
 ): Promise<ImportJob> {
   const { clientId, userId } = auth;
+  const source = readTable(file);
+  const table = templateTableOf(kind, source, mapping);
   await claimForSpreadsheet(clientId, kind);
   const undo = undoRecorder();
-  const { counts, errors, sources } = await process({ clientId, kind, file, undo });
+  const { counts, errors, sources } = await process({ clientId, kind, table, undo });
   const status = importOutcome(counts);
   if (counts.imported === 0) await releaseIfNoImportLeft(clientId, kind);
   if (counts.imported > 0) {
@@ -241,6 +281,9 @@ export async function runImport(
     imported: counts.imported,
     total: counts.total,
   });
+  if (mapping && counts.imported > 0) {
+    await rememberLayout({ clientId, kind, header: source.header }, mapping);
+  }
   return toJob(job, entries.length > 0);
 }
 
