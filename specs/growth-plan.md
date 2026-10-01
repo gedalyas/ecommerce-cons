@@ -131,7 +131,8 @@ the investment that serves that channel:
 - Catalog grouped by **niche** (ERP · Hubs · Marketplaces · Lojas virtuais · Anúncios ·
   Analytics · Redes sociais · Planilha), searchable, a card per platform with its **logo**
   (SVG in `apps/web/public/connectors/`), status and the feeds it provides.
-- **Variants are modalities, not separate cards** — one card per marketplace with a
+- ~~**Variants are modalities, not separate cards**~~ — superseded on 2026-10-01: modalities are separate integrations (`decisions/2026-10-01-connector-modalities-as-integrations.md`).
+  Original text: — one card per marketplace with a
   "modalidade" choice (Amazon MFN / FBA Classic / FBA Onsite; Mercado Livre próprio / Full),
   see _Marketplace variants_; each modality has its own help section.
 - Connector detail drawer with tabs **Conectar** (id/token/domain fields from a per-connector

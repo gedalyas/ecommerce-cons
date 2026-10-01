@@ -36,7 +36,8 @@ or last sync; no history; "Salvar" repeated per tab.
 
 1. **Name and URL "Integrações"** — menu, title and `/integracoes`; `/conexoes` redirects
    keeping its query (OAuth returns, e-mails, help links).
-2. **Modalities as cards**, like Bling (Mercado Livre / Mercado Livre Full; Amazon / FBA
+2. **Modalities as separate integrations, like Bling — also behind the screen** (confirmed
+   the same day: each connects on its own and brings only its orders). Was: **Modalities as cards**, like Bling (Mercado Livre / Mercado Livre Full; Amazon / FBA
    Classic / FBA Onsite) — supersedes the 2026-09-23 "modality inside the card"; recorded in
    `decisions/` in slice 3.
 3. **Several accounts of the same platform, now** — named instances ("ML Matriz", "ML

@@ -39,6 +39,22 @@ describe("conflictingOwner", () => {
   });
 });
 
+describe("conflictingOwner, modalities", () => {
+  it("lets a marketplace's modalities share the kinds the platform holds", () => {
+    expect(conflictingOwner("stock", "mercado_livre_full", { stock: "mercado_livre" })).toBeNull();
+    expect(conflictingOwner("stock", "amazon", { stock: "amazon_fba_classic" })).toBeNull();
+    expect(conflictingOwner("stock", "amazon", { stock: "mercado_livre" })).toBe("mercado_livre");
+    expect(conflictingOwner("stock", "mercado_livre", { stock: "system" })).toBe("system");
+  });
+});
+
+describe("kindOwnership, modalities", () => {
+  it("says the kind comes from the same platform", () => {
+    const [row] = kindOwnership(["stock"], "mercado_livre_full", { stock: "mercado_livre" });
+    expect(row).toMatchObject({ owner: "this", text: "Vem de Mercado Livre, da mesma plataforma" });
+  });
+});
+
 describe("ownerConflictMessage", () => {
   it("names the kind and the owner in Portuguese", () => {
     expect(ownerConflictMessage("sales", "bling")).toBe(

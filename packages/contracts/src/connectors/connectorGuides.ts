@@ -48,6 +48,12 @@ const mercadoLivreModalities: ConnectorModality[] = [
   },
 ];
 
+const amazonSteps = [
+  'Clique em "Conectar": a autorização é concluída dentro do Seller Central.',
+  "Entre com a conta administradora do Seller Central (Amazon.com.br) e autorize.",
+  "Aguarde a primeira importação: o andamento aparece aqui mesmo, em Integrações.",
+];
+
 export const connectorGuides: Record<ConnectorKey, ConnectorGuide> = {
   bling: { steps: oauthSteps("Bling", "o usuário administrador do Bling"), modalities: [] },
   tiny: {
@@ -85,14 +91,13 @@ export const connectorGuides: Record<ConnectorKey, ConnectorGuide> = {
     steps: oauthSteps("Mercado Livre", "a conta vendedora do Mercado Livre"),
     modalities: mercadoLivreModalities,
   },
-  amazon: {
-    steps: [
-      'Clique em "Conectar": a autorização é concluída dentro do Seller Central.',
-      "Entre com a conta administradora do Seller Central (Amazon.com.br) e autorize.",
-      "Aguarde a primeira importação: o andamento aparece aqui mesmo, em Integrações.",
-    ],
-    modalities: amazonModalities,
+  mercado_livre_full: {
+    steps: oauthSteps("Mercado Livre", "a conta vendedora do Mercado Livre"),
+    modalities: mercadoLivreModalities,
   },
+  amazon: { steps: amazonSteps, modalities: amazonModalities },
+  amazon_fba_classic: { steps: amazonSteps, modalities: amazonModalities },
+  amazon_fba_onsite: { steps: requestSteps("Amazon FBA Onsite"), modalities: amazonModalities },
   shopee: { steps: requestSteps("Shopee"), modalities: [] },
   magalu: { steps: requestSteps("Magalu"), modalities: [] },
   tiktok_shop: { steps: requestSteps("TikTok Shop"), modalities: [] },

@@ -44,6 +44,17 @@ Região **NA** (`https://sellingpartnerapi-na.amazon.com`) — o marketplace Bra
   Token** e o papel de PII aprovado: o piloto não usa — cada pedido vira um cliente sintético
   (`<order id>@comprador.amazon.com.br`).
 
+## Modalidades (desde 01/10/2026)
+
+Integrações separadas no catálogo, como no Bling, com o mesmo app e a mesma URL de retorno
+(`/connectors/amazon/callback`; a chave real vai no `state` assinado):
+
+- **Amazon** (`amazon`) — pedidos `FulfillmentChannel = MFN` (ou sem o campo).
+- **Amazon FBA Classic** (`amazon_fba_classic`) — pedidos `AFN`. Os itens só são buscados para os
+  pedidos da modalidade (economiza a cota de `getOrderItems`).
+- **Amazon FBA Onsite** (`amazon_fba_onsite`) — no catálogo com "Solicitar conexão": o pedido não
+  diz se é Onsite (só AFN/MFN). Falta confirmar com a Amazon o campo que distingue.
+
 ## Limites
 
 `getOrders`: 0,0167 req/s (1 por minuto) com burst 20; `getOrderItems`: 0,5 req/s com burst 30. O provider gasta o burst e depois espaça as chamadas (`AMAZON_ORDERS_INTERVAL_MS`,

@@ -16,7 +16,12 @@ export function HelpPanel({ connector }: { connector: StoreConnector }) {
       </ol>
       {guide.modalities.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className={cn(textClass.label, "text-muted-foreground")}>Modalidades</p>
+          <p className={cn(textClass.label, "text-muted-foreground")}>
+            Modalidades desta plataforma
+          </p>
+          <p className={cn(textClass.meta, "text-muted-foreground")}>
+            Cada modalidade é uma integração própria no catálogo: conecte as que a loja usa.
+          </p>
           <ul className="flex flex-col gap-2">
             {guide.modalities.map((m) => (
               <li key={m.key} className={cn(textClass.meta, "text-foreground")}>

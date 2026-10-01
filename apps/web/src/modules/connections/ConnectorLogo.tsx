@@ -1,5 +1,5 @@
 import { FileSpreadsheet } from "lucide-react";
-import type { ConnectorKey } from "@ecommerce/contracts/connectors";
+import { connectorOf, familyOf, type ConnectorKey } from "@ecommerce/contracts/connectors";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
@@ -8,7 +8,9 @@ import { connectorLogoPath, monogramOf } from "./connectorLogos";
 type Props = { connectorKey: ConnectorKey; label: string; className?: string };
 
 export function ConnectorLogo({ connectorKey, label, className }: Props) {
-  const path = connectorLogoPath[connectorKey];
+  const family = familyOf(connectorKey);
+  const path = connectorLogoPath[family];
+  const monogram = monogramOf(family === connectorKey ? label : connectorOf(family).label);
   return (
     <span
       aria-hidden
@@ -25,7 +27,7 @@ export function ConnectorLogo({ connectorKey, label, className }: Props) {
           <path d={path} />
         </svg>
       ) : (
-        <span className={cn(textClass.meta, "font-semibold")}>{monogramOf(label)}</span>
+        <span className={cn(textClass.meta, "font-semibold")}>{monogram}</span>
       )}
     </span>
   );

@@ -32,6 +32,19 @@ Categoria: marketplace. Alimenta `order` (pedidos com `sales_platform = MARKETPL
   (item id/título/`seller_sku`, quantidade, `unit_price`), `shipping.id`.
 - `GET /shipments/{id}` → `receiver_address.city.name` e `state.id` (`BR-SP`).
 
+## Modalidades (desde 01/10/2026)
+
+Duas integrações no catálogo, como no Bling, com o mesmo app OAuth e a mesma URL de retorno
+(`/connectors/mercado_livre/callback`; a chave real vai no `state` assinado):
+
+- **Mercado Livre** (`mercado_livre`) — só os pedidos de envio próprio (Mercado Envios, Flex) ou
+  sem envio: `shipment.logistic_type` diferente de `fulfillment`.
+- **Mercado Livre Full** (`mercado_livre_full`) — só os pedidos com `logistic_type = fulfillment`.
+
+O filtro (`keepsOrderFor`, `contracts/connectors/connectorModalities.ts`) roda antes de guardar o
+bruto; o cursor avança por todos os pedidos da página. As duas dividem a fonte de produtos e
+estoque da loja (mesma plataforma, `sameFamily`).
+
 ## Limites
 
 Busca de pedidos paginada por `offset`/`limit` (máx. 51 por página); janelas de data longas

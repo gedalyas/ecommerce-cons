@@ -29,6 +29,15 @@ tabs in the URL (`aba`, `integrationsSearchSchema` in `contracts/connections`; d
   Empty: "A loja ainda não tem integrações…" + "Ver integrações". OAuth returns land here.
 - **Planilhas** (`planilhas`) — the manual import (below).
 
+## Marketplace modalities (2026-10-01)
+
+Like Bling, each modality is its own integration (`decisions/2026-10-01-connector-modalities-as-integrations.md`):
+**Mercado Livre** brings own-shipping orders and **Mercado Livre Full** the Full ones; **Amazon**
+brings MFN and **Amazon FBA Classic** AFN; **Amazon FBA Onsite** is "Solicitar conexão" (the
+Orders API cannot tell it apart yet). Each connects, syncs and is configured on its own, with
+the platform's app and callback; its logo is the platform's. Modalities of one platform share
+the one-source-per-kind rule ("Vem de Mercado Livre, da mesma plataforma").
+
 ## Summary banner
 
 Above the list: "**5 de 7 fontes ativas** · 1 com erro, 1 não conectada" —
@@ -42,7 +51,8 @@ Rows are grouped by connector kind in the order a new store should follow
 → Redes sociais → Analytics).
 Each row carries the platform logo (`ConnectorLogo`: Simple Icons paths drawn in `currentColor`,
 a monogram when the brand is not in the open set). Catalog since 2026-09-23: Bling, Tiny (Olist),
-Omie · Shopify, Nuvemshop, VTEX · Mercado Livre, Amazon, Shopee, Magalu · TikTok Shop · Meta Ads,
+Omie · Shopify, Nuvemshop, VTEX · Mercado Livre, Mercado Livre Full, Amazon, Amazon FBA Classic,
+Amazon FBA Onsite, Shopee, Magalu · TikTok Shop · Meta Ads,
 Google Ads, TikTok Ads, Mercado Ads, Amazon Ads, Shopee Ads · Instagram e Facebook · Google
 Analytics 4 · Planilha, each with a one-line hint; empty groups are
 hidden. Each connector declares the **data kinds it can provide** (`provides`, closed set

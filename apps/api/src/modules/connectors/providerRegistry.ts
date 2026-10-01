@@ -94,38 +94,41 @@ function shopifyOf(env: Env): ConnectorProvider[] {
   ];
 }
 
+const modalityKeys = {
+  mercado_livre: ["mercado_livre", "mercado_livre_full"],
+  amazon: ["amazon", "amazon_fba_classic"],
+} as const satisfies Record<string, readonly ConnectorKey[]>;
+
 function mercadoLivreOf(env: Env): ConnectorProvider[] {
   if (!env.MERCADO_LIVRE_APP_ID || !env.MERCADO_LIVRE_CLIENT_SECRET) return [];
-  return [
-    mercadoLivreProvider({
-      appId: env.MERCADO_LIVRE_APP_ID,
-      clientSecret: env.MERCADO_LIVRE_CLIENT_SECRET,
-      authUrl: env.MERCADO_LIVRE_AUTH_URL,
-      apiUrl: env.MERCADO_LIVRE_API_URL,
-      userAgent: env.CONNECTOR_USER_AGENT,
-      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
-    }),
-  ];
+  const config = {
+    appId: env.MERCADO_LIVRE_APP_ID,
+    clientSecret: env.MERCADO_LIVRE_CLIENT_SECRET,
+    authUrl: env.MERCADO_LIVRE_AUTH_URL,
+    apiUrl: env.MERCADO_LIVRE_API_URL,
+    userAgent: env.CONNECTOR_USER_AGENT,
+    backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+  };
+  return modalityKeys.mercado_livre.map((key) => mercadoLivreProvider({ key, ...config }));
 }
 
 function amazonOf(env: Env): ConnectorProvider[] {
   if (!env.AMAZON_APP_ID || !env.AMAZON_LWA_CLIENT_ID || !env.AMAZON_LWA_CLIENT_SECRET) return [];
-  return [
-    amazonProvider({
-      appId: env.AMAZON_APP_ID,
-      clientId: env.AMAZON_LWA_CLIENT_ID,
-      clientSecret: env.AMAZON_LWA_CLIENT_SECRET,
-      consentUrl: env.AMAZON_CONSENT_URL,
-      tokenUrl: env.AMAZON_TOKEN_URL,
-      apiUrl: env.AMAZON_API_URL,
-      marketplaceId: env.AMAZON_MARKETPLACE_ID,
-      draft: env.AMAZON_APP_DRAFT,
-      ordersIntervalMs: env.AMAZON_ORDERS_INTERVAL_MS,
-      itemsIntervalMs: env.AMAZON_ITEMS_INTERVAL_MS,
-      userAgent: env.CONNECTOR_USER_AGENT,
-      backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
-    }),
-  ];
+  const config = {
+    appId: env.AMAZON_APP_ID,
+    clientId: env.AMAZON_LWA_CLIENT_ID,
+    clientSecret: env.AMAZON_LWA_CLIENT_SECRET,
+    consentUrl: env.AMAZON_CONSENT_URL,
+    tokenUrl: env.AMAZON_TOKEN_URL,
+    apiUrl: env.AMAZON_API_URL,
+    marketplaceId: env.AMAZON_MARKETPLACE_ID,
+    draft: env.AMAZON_APP_DRAFT,
+    ordersIntervalMs: env.AMAZON_ORDERS_INTERVAL_MS,
+    itemsIntervalMs: env.AMAZON_ITEMS_INTERVAL_MS,
+    userAgent: env.CONNECTOR_USER_AGENT,
+    backfillMonths: env.CONNECTOR_BACKFILL_MONTHS,
+  };
+  return modalityKeys.amazon.map((key) => amazonProvider({ key, ...config }));
 }
 
 function tiktokOf(env: Env): ConnectorProvider[] {

@@ -1,3 +1,4 @@
+import { keepsOrderFor, type ConnectorKey } from "@ecommerce/contracts/connectors";
 import type {
   Authorized,
   ConnectorProvider,
@@ -7,12 +8,14 @@ import type {
   SyncResult,
 } from "./connectorProvider.types";
 import {
+  mercadoLivreFulfillmentOf,
   mercadoLivreOrderInputOf,
   type MercadoLivreOrder,
   type MercadoLivreShipment,
 } from "./mercadoLivreOrders";
 
 export type MercadoLivreConfig = {
+  key: ConnectorKey;
   appId: string;
   clientSecret: string;
   authUrl: string;
@@ -157,12 +160,15 @@ async function pullChunk(
     for (const order of orders) {
       enriched.push({ ...order, shipment: await shipmentOf(config, credentials, order) });
     }
+    const kept = enriched.filter((o) =>
+      keepsOrderFor(config.key, mercadoLivreFulfillmentOf(o.shipment)),
+    );
     await context.saveRaw(
       "order",
-      enriched.map((o) => ({ externalId: String(o.id), payload: o })),
+      kept.map((o) => ({ externalId: String(o.id), payload: o })),
     );
     written += await context.writeOrders(
-      enriched.map(mercadoLivreOrderInputOf).filter((o) => o !== null),
+      kept.map(mercadoLivreOrderInputOf).filter((o) => o !== null),
     );
     for (const o of enriched)
       if (o.last_updated && o.last_updated > latest) latest = o.last_updated;
@@ -201,7 +207,7 @@ const monthsAgo = (now: Date, months: number) => {
 
 export function mercadoLivreProvider(config: MercadoLivreConfig): ConnectorProvider {
   return {
-    key: "mercado_livre",
+    key: config.key,
     authPattern: "oauth",
     authorizeUrl: ({ state, redirectUri }) => {
       const url = new URL(`${config.authUrl.replace(/\/$/, "")}/authorization`);

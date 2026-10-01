@@ -74,6 +74,7 @@ export {
   searchConnectors,
 } from "./connectorCategories";
 export type { CategoryGroup, ConnectorCategory } from "./connectorCategories";
+export { familyOf, keepsOrderFor } from "./connectorModalities";
 export { areaOfDataKind, areasOfConnector, canManageConnector } from "./connectorAccess";
 export { dataKindLabel, dataKinds } from "./dataKinds";
 export {

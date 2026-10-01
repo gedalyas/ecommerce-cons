@@ -1,4 +1,5 @@
 import { connectorKeys, connectorOf, type ConnectorKey } from "./connectorCatalog";
+import { sameFamily } from "./connectorModalities";
 import { dataKindLabel, dataKinds, type DataKind } from "./dataKinds";
 
 export const exclusiveDataKinds = [
@@ -40,7 +41,8 @@ export function conflictingOwner(
   owners: DataOwners,
 ): DataOwner | null {
   const owner = owners[kind];
-  return isExclusiveKind(kind) && owner != null && owner !== source ? owner : null;
+  if (!isExclusiveKind(kind) || owner == null) return null;
+  return owner === "system" || !sameFamily(owner, source) ? owner : null;
 }
 
 export const blockedKinds = (
@@ -66,10 +68,12 @@ export function kindOwnership(
     const owner = owners[kind] ?? null;
     const connected = owner == null || owner === "system" ? null : owner;
     const ownerLabel = connected == null ? null : connectorOf(connected).label;
-    const holder = connected == null ? "none" : connected === source ? "this" : "other";
+    const holder = connected == null ? "none" : sameFamily(connected, source) ? "this" : "other";
     const text =
       holder === "this"
-        ? "Vem desta integração"
+        ? connected === source
+          ? "Vem desta integração"
+          : `Vem de ${ownerLabel}, da mesma plataforma`
         : holder === "other"
           ? `Hoje vem de ${ownerLabel}`
           : derivableKinds.includes(kind)

@@ -1,4 +1,10 @@
-import { amazonOrderInputOf, type AmazonOrder, type AmazonOrderItem } from "./amazonOrders";
+import { keepsOrderFor, type ConnectorKey } from "@ecommerce/contracts/connectors";
+import {
+  amazonFulfillmentOf,
+  amazonOrderInputOf,
+  type AmazonOrder,
+  type AmazonOrderItem,
+} from "./amazonOrders";
 import type {
   Authorized,
   ConnectorProvider,
@@ -9,6 +15,7 @@ import type {
 } from "./connectorProvider.types";
 
 export type AmazonConfig = {
+  key: ConnectorKey;
   appId: string;
   clientId: string;
   clientSecret: string;
@@ -172,6 +179,23 @@ async function ordersPage(
   return body;
 }
 
+async function withItems(
+  config: AmazonConfig,
+  credentials: AmazonCredentials,
+  items: Pacer,
+  rows: AmazonOrder[],
+): Promise<AmazonOrder[]> {
+  const enriched: AmazonOrder[] = [];
+  for (const order of rows) {
+    if (!keepsOrderFor(config.key, amazonFulfillmentOf(order.FulfillmentChannel))) continue;
+    enriched.push({
+      ...order,
+      items: await itemsOf(config, credentials, items, order.AmazonOrderId),
+    });
+  }
+  return enriched;
+}
+
 async function pullOrders(
   config: AmazonConfig,
   context: SyncContext,
@@ -200,13 +224,7 @@ async function pullOrders(
     );
     const rows = body.payload?.Orders ?? [];
     if (rows.length === 0) break;
-    const enriched: AmazonOrder[] = [];
-    for (const order of rows) {
-      enriched.push({
-        ...order,
-        items: await itemsOf(config, credentials, items, order.AmazonOrderId),
-      });
-    }
+    const enriched = await withItems(config, credentials, items, rows);
     await context.saveRaw(
       "order",
       enriched.map((o) => ({ externalId: o.AmazonOrderId, payload: o })),
@@ -214,7 +232,7 @@ async function pullOrders(
     written += await context.writeOrders(
       enriched.map(amazonOrderInputOf).filter((o) => o !== null),
     );
-    for (const o of enriched) {
+    for (const o of rows) {
       if (o.LastUpdateDate && o.LastUpdateDate > latest) latest = o.LastUpdateDate;
     }
     nextToken = body.payload?.NextToken ?? null;
@@ -231,7 +249,7 @@ const monthsAgo = (now: Date, months: number) => {
 
 export function amazonProvider(config: AmazonConfig): ConnectorProvider {
   return {
-    key: "amazon",
+    key: config.key,
     authPattern: "oauth",
     authorizeUrl: ({ state, redirectUri }) => {
       const url = new URL(config.consentUrl);

@@ -9,6 +9,7 @@ import {
   type ConnectorStartInput,
   type DataReadiness,
   type StatusMappingTarget,
+  familyOf,
 } from "@ecommerce/contracts/connectors";
 import { prismaClient, type Prisma } from "@ecommerce/database/client";
 import { releaseDataKinds } from "@/modules/connections/contract";
@@ -46,7 +47,7 @@ const authPatternEnum: Record<string, ConnectionAuthPattern> = {
 };
 
 const redirectUriOf = (apiUrl: string, key: ConnectorKey) =>
-  `${apiUrl.replace(/\/$/, "")}/api/v1/connectors/${key}/callback`;
+  `${apiUrl.replace(/\/$/, "")}/api/v1/connectors/${familyOf(key)}/callback`;
 
 export function providerOf(deps: ConnectorsDependencies, key: ConnectorKey) {
   const provider = deps.providers.get(key);
@@ -169,11 +170,12 @@ const enqueueBackfill = (connectionId: string, deps: ConnectorsDependencies) =>
   );
 
 export async function completeCallback(
-  key: ConnectorKey,
+  pathKey: ConnectorKey,
   callback: { code: string; state: string; query: Record<string, string> },
   deps: ConnectorsDependencies,
 ): Promise<{ redirectTo: string }> {
   const state = verifyOAuthState(callback.state, deps.secret);
+  const key = state && familyOf(state.key) === pathKey ? state.key : pathKey;
   const target = connectionsLink(deps.appUrl);
   const failed = (reason: ConnectorErrorReason) => ({
     redirectTo: `${target}?erro=${key}&motivo=${reason}`,
