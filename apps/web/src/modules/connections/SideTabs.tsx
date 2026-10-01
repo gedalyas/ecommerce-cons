@@ -1,33 +1,29 @@
-import {
-  connectorCategories,
-  connectorCategoryLabel,
-  type ConnectorCategory,
-} from "@ecommerce/contracts/connectors";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 
-type Props = {
-  value: ConnectorCategory;
-  dimmed: boolean;
-  onChange: (category: ConnectorCategory) => void;
+type Props<K extends string> = {
+  label: string;
+  items: readonly { key: K; label: string }[];
+  value: K | null;
+  onChange: (key: K) => void;
 };
 
-export function CategoryMenu({ value, dimmed, onChange }: Props) {
+export function SideTabs<K extends string>({ label, items, value, onChange }: Props<K>) {
   return (
-    <nav aria-label="Categorias de integração">
+    <nav aria-label={label} className="min-w-0">
       <div className={cn(textClass.label, "mb-2 hidden text-muted-foreground @3xl:block")}>
-        Categorias
+        {label}
       </div>
       <ul className="flex gap-2 overflow-x-auto pb-1 @3xl:flex-col @3xl:gap-1 @3xl:overflow-visible @3xl:pb-0">
-        {connectorCategories.map((category) => {
-          const active = !dimmed && category === value;
+        {items.map((item) => {
+          const active = item.key === value;
           return (
-            <li key={category} className="shrink-0">
+            <li key={item.key} className="shrink-0">
               <button
                 type="button"
                 aria-current={active ? "true" : undefined}
-                onClick={() => onChange(category)}
+                onClick={() => onChange(item.key)}
                 className={cn(
                   textClass.body,
                   radiusClass.control,
@@ -37,7 +33,7 @@ export function CategoryMenu({ value, dimmed, onChange }: Props) {
                     : "border-border text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                {connectorCategoryLabel[category]}
+                {item.label}
               </button>
             </li>
           );

@@ -1,4 +1,4 @@
-import type { StoreConnector } from "@ecommerce/contracts/connectors";
+import type { ConnectorSettings, StoreConnector } from "@ecommerce/contracts/connectors";
 
 type CardState = "connected" | "error" | "manual" | null;
 
@@ -13,3 +13,11 @@ export function cardStateOf(connector: Stated): CardState {
 
 export const isStoreIntegration = (connector: Stated): boolean =>
   connector.kind !== "manual" && cardStateOf(connector) !== null;
+
+type SettingsDraft = Pick<ConnectorSettings, "statusMap" | "accountId">;
+
+export function settingsChanged(saved: ConnectorSettings, draft: SettingsDraft): boolean {
+  if (draft.accountId !== saved.accountId) return true;
+  const ids = new Set([...Object.keys(saved.statusMap), ...Object.keys(draft.statusMap)]);
+  return [...ids].some((id) => saved.statusMap[id] !== draft.statusMap[id]);
+}

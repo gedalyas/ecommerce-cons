@@ -35,6 +35,7 @@ import { Route as resetPasswordRouteImport } from './routes/resetPassword'
 import { Route as adminRouteImport } from './routes/admin'
 import { Route as adminAccessRouteImport } from './routes/adminAccess'
 import { Route as adminUsersRouteImport } from './routes/adminUsers'
+import { Route as integrationRouteImport } from './routes/integration'
 
 const dashboardRoute = dashboardRouteImport.update({
   id: '/',
@@ -166,6 +167,11 @@ const adminUsersRoute = adminUsersRouteImport.update({
   path: '/usuarios',
   getParentRoute: () => adminLayoutRoute,
 } as any)
+const integrationRoute = integrationRouteImport.update({
+  id: '/integracoes/$chave',
+  path: '/integracoes/$chave',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof dashboardRoute
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof adminRoute
   '/admin/acesso': typeof adminAccessRoute
   '/admin/usuarios': typeof adminUsersRoute
+  '/integracoes/$chave': typeof integrationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof dashboardRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/admin': typeof adminRoute
   '/admin/acesso': typeof adminAccessRoute
   '/admin/usuarios': typeof adminUsersRoute
+  '/integracoes/$chave': typeof integrationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/admin/': typeof adminRoute
   '/admin/acesso': typeof adminAccessRoute
   '/admin/usuarios': typeof adminUsersRoute
+  '/integracoes/$chave': typeof integrationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -280,6 +289,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/acesso'
     | '/admin/usuarios'
+    | '/integracoes/$chave'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -307,6 +317,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/acesso'
     | '/admin/usuarios'
+    | '/integracoes/$chave'
   id:
     | '__root__'
     | '/'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/acesso'
     | '/admin/usuarios'
+    | '/integracoes/$chave'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -361,6 +373,7 @@ export interface RootRouteChildren {
   ordersRoute: typeof ordersRoute
   productsRoute: typeof productsRoute
   resetPasswordRoute: typeof resetPasswordRoute
+  integrationRoute: typeof integrationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -547,6 +560,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof adminUsersRouteImport
       parentRoute: typeof adminLayoutRoute
     }
+    '/integracoes/$chave': {
+      id: '/integracoes/$chave'
+      path: '/integracoes/$chave'
+      fullPath: '/integracoes/$chave'
+      preLoaderRoute: typeof integrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -590,6 +610,7 @@ const rootRouteChildren: RootRouteChildren = {
   ordersRoute: ordersRoute,
   productsRoute: productsRoute,
   resetPasswordRoute: resetPasswordRoute,
+  integrationRoute: integrationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

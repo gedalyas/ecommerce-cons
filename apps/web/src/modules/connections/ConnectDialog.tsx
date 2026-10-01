@@ -1,5 +1,3 @@
-import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
 import type { StoreConnector } from "@ecommerce/contracts/connectors";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
@@ -8,7 +6,7 @@ import { Input } from "@/shared/ui/Input";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { startConnectorFn } from "./connectionsController";
+import { useStartConnection } from "./useStartConnection";
 
 export function ConnectDialog({
   connector,
@@ -17,26 +15,10 @@ export function ConnectDialog({
   connector: StoreConnector | null;
   onClose: () => void;
 }) {
-  const start = useServerFn(startConnectorFn);
-  const [domain, setDomain] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const needsDomain = connector?.authPattern === "domain_oauth";
+  const { domain, setDomain, busy, error, needsDomain, canSubmit, submit } =
+    useStartConnection(connector);
   const hint = connector?.domainHint ?? null;
   const requirements = connector?.requirements ?? [];
-
-  const submit = async () => {
-    if (!connector) return;
-    setBusy(true);
-    setError(null);
-    const result = await start({ data: { key: connector.key, domain } });
-    if (!result.ok) {
-      setBusy(false);
-      setError(result.message);
-      return;
-    }
-    window.location.assign(result.url);
-  };
 
   return (
     <Dialog
@@ -76,7 +58,7 @@ export function ConnectDialog({
           <Button variant="outline" onClick={onClose} disabled={busy}>
             Cancelar
           </Button>
-          <Button onClick={() => void submit()} disabled={busy || (needsDomain && !domain.trim())}>
+          <Button onClick={() => void submit()} disabled={!canSubmit}>
             {busy ? "Abrindo…" : connector ? `Conectar-se a ${connector.label}` : "Conectar"}
           </Button>
         </div>

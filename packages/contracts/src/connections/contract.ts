@@ -6,9 +6,13 @@ export type {
 } from "./connections.types";
 export { connectionsSummaryOf, hasErrorSource, summaryDetail } from "./connectionsSummary";
 export {
+  defaultIntegrationPageSearch,
   defaultIntegrationsSearch,
+  integrationPageSearchSchema,
+  integrationPageTabLabel,
+  integrationPageTabs,
   integrationsSearchSchema,
   integrationsTabLabel,
   integrationsTabs,
 } from "./connectionsSchema";
-export type { IntegrationsSearch, IntegrationsTab } from "./connectionsSchema";
+export type { IntegrationPageSearch, IntegrationsSearch } from "./connectionsSchema";

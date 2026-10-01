@@ -20,6 +20,7 @@ export const routes = rootRoute("__root.tsx", [
   route("/logistica", "logistics.tsx"),
   route("/gestao", "management.tsx"),
   route("/integracoes", "connections.tsx"),
+  route("/integracoes/$chave", "integration.tsx"),
   route("/conexoes", "legacyConnections.tsx"),
   route("/assistente", "assistant.tsx"),
   route("/pedidos", "orders.tsx"),

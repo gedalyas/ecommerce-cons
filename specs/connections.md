@@ -18,7 +18,7 @@ tabs in the URL (`aba`, `integrationsSearchSchema` in `contracts/connections`; d
   Livre, Shopify, Nuvemshop; Meta Ads, Google Ads, GA4) and one section per connector kind, in the
   guide's order, each a grid of cards. A card (`ConnectorCard`) is the logo, the name, a two-line
   description and badges — **Conectada** / **Com erro** / **Por planilha** (`cardStateOf`, what Bling does not show)
-  and **Recomendado**; the whole card is the button and opens the connector drawer. Typing in
+  and **Recomendado**; the whole card is the button and opens the integration page. Typing in
   the search (`busca`) replaces the category with the matches grouped by category
   (`searchConnectors`: name, description or kind, accents ignored); nothing found says so.
   Choosing a category clears the search. The menu is a side column when the content is at
@@ -82,15 +82,37 @@ the sidebar's Integrações item, the Marketing banner, the "Aquisição" pillar
 data pendency and the assistant's caveat about estimated numbers all stem from
 it.
 
-## Connector drawer
+## Integration page (`/integracoes/$chave`)
 
-A catalog card or "Detalhes" on a row opens a sheet (`ConnectorDrawer`) with three tabs: **Conectar** (description,
-requirements and the same action as the row), **O que puxa** (each data kind the platform
-provides and who holds it in this store — "Vem desta integração", "Hoje vem de Planilha", "Ainda
-sem fonte", from `kindOwnership` over `ConnectionsScreen.owners`) and **Ajuda** (the step-by-step
-guide in `contracts/connectors/connectorGuides.ts`, pt-BR, and the marketplace modalities:
-Amazon MFN / FBA Classic / FBA Onsite, Mercado Livre envio próprio / Full). Platforms not built
-yet say so and point to "Solicitar conexão".
+A catalog card or "Detalhes" on a row opens the integration's own page (`IntegrationPage`): a
+"‹ Integrações" link back, the big logo, name, description and the state badge, then four
+sections (`aba`: `conexao` default · `dados` · `configuracoes` · `ajuda`) as a side menu when the
+content is at least 48rem wide and a row of chips otherwise. An unknown key says "Integração não
+encontrada" with a link to the catalog.
+
+- **Conexão** — not connected and the API has the provider: "Fique tranquilo: … só lê os dados",
+  the guide's steps in numbered green circles, the prerequisites, the store address field
+  (marked *) for domain + OAuth platforms and a full-width **"Conectar com X"** that starts the
+  authorization. Not built yet: the steps and "Solicitar conexão" (or the request's status).
+  Spreadsheet: a link to Planilhas. Connected: the account, the stage stepper (with the last
+  sync), the row's actions (Reconectar, Configurar → Configurações, Sincronizar, Desconectar) and
+  **Testar**. People without the area see a sentence instead of the button.
+- **O que puxa** — every data kind, ✓ when the platform provides it and struck through when it
+  does not; provided kinds show who holds them in this store ("Vem desta integração", "Hoje vem
+  de Planilha", "Ainda sem fonte", from `kindOwnership` over `ConnectionsScreen.owners`) and the
+  "Usar esta integração" / "Deixar de usar" switch (below).
+- **Configurações** — the account or property and the ERP status mapping inline, with one
+  **Salvar** fixed at the foot ("Alterações não salvas"; leaving with unsaved changes asks to
+  discard, `settingsChanged`). A connection still waiting for its account counts as changed so the
+  first account can be saved. Without a connection, without the area, or for a storefront it says
+  why there is nothing to set.
+- **Ajuda** — "Manual de integração" (the step-by-step guide in
+  `contracts/connectors/connectorGuides.ts`) and the marketplace modalities (Amazon MFN / FBA
+  Classic / FBA Onsite, Mercado Livre envio próprio / Full).
+
+Every section but Ajuda ends with the box "Tem dúvidas sobre essa integração?" and "Ver manual".
+The settings dialog stays for the account choice after an OAuth return (`escolher=true`) and the
+row's "Configurar" on Minhas integrações.
 
 ## Data owners
 
@@ -104,7 +126,7 @@ finishes, then flags the connection `ERROR` with `ownerConflictMessage` ("A font
 loja é Planilha…") so Integrações explains why nothing arrives. The spreadsheet claims only the
 kind it imported, after at least one row was written; undoing its last active import of that
 kind releases it. Disconnecting releases a connector's kinds. **Choosing another owner** (`PUT /data-sources` { kind, source | null }, area edit of the
-kind; from "O que puxa" in the drawer: "Usar esta integração" / "Deixar de usar" with a
+kind; from "O que puxa" on the integration page: "Usar esta integração" / "Deixar de usar" with a
 confirmation — `switchNotice`) **cuts by date** (Davi, 2026-09-23): the new owner counts from
 today (`store_data_source.since`), the previous one keeps the days before; for sales the
 previous source's orders from today on are deleted and the sync/import of the new owner skips
@@ -162,7 +184,7 @@ the source. Providers today: Nuvemshop, Bling (with the status mapping), Google 
 Meta Ads, Shopify, TikTok Ads — one sheet each in `docs/apis/`, plan in
 `connectors-plan.md`.
 
-**Testar** (drawer › Conectar, for whoever manages the connector; 20 tests / 15 min per store and
+**Testar** (integration page › Conexão, for whoever manages the connector; 20 tests / 15 min per store and
 connector): `POST /connectors/:key/test` uses the stored token as it is — it never renews it, so it
 cannot race the worker's refresh; an expired token skips the probe ("unverified") — and calls the
 platform's cheapest authenticated endpoint (the provider's `test`, or `describeSettings` checking that

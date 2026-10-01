@@ -1,4 +1,5 @@
 export { Connections } from "./Connections";
+export { IntegrationPage } from "./IntegrationPage";
 export {
   getConnectionsHealth,
   getConnectionsScreen,

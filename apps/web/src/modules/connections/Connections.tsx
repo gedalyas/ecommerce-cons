@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   integrationsTabLabel,
@@ -17,8 +18,6 @@ import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { ConnectDialog } from "./ConnectDialog";
-import { ConnectorAction } from "./ConnectorAction";
-import { ConnectorDrawer } from "./ConnectorDrawer";
 import { IntegrationsCatalog } from "./IntegrationsCatalog";
 import { MyIntegrations } from "./MyIntegrations";
 import { RequestDialog } from "./RequestDialog";
@@ -84,8 +83,6 @@ export function Connections({
   const detail = summaryDetail(data.summary);
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
   const [connecting, setConnecting] = useState<StoreConnector | null>(null);
-  const [detailsKey, setDetailsKey] = useState<StoreConnector["key"] | null>(null);
-  const details = data.connectors.find((c) => c.key === detailsKey) ?? null;
   const [mapping, setMapping] = useState<StoreConnector | null>(() =>
     search.escolher && connected?.connection?.needsAccount ? connected : null,
   );
@@ -96,7 +93,9 @@ export function Connections({
         ? `${integrationsTabLabel[key]} (${mine.length})`
         : integrationsTabLabel[key],
   }));
-  const openDetails = (c: StoreConnector) => setDetailsKey(c.key);
+  const navigate = useNavigate();
+  const openDetails = (c: StoreConnector) =>
+    void navigate({ to: "/integracoes/$chave", params: { chave: c.key } });
   return (
     <div className={layout.page}>
       <PageHeader title="Integrações" subtitle="Fontes que alimentam os indicadores da loja" />
@@ -142,22 +141,6 @@ export function Connections({
 
       <RequestDialog connector={requesting} onClose={() => setRequesting(null)} />
       <ConnectDialog connector={connecting} onClose={() => setConnecting(null)} />
-      <ConnectorDrawer
-        key={detailsKey ?? "none"}
-        connector={details}
-        owners={data.owners}
-        onClose={() => setDetailsKey(null)}
-        action={
-          details && (
-            <ConnectorAction
-              connector={details}
-              onRequest={setRequesting}
-              onConnect={setConnecting}
-              onSettings={setMapping}
-            />
-          )
-        }
-      />
       <StatusMappingDialog connector={mapping} onClose={() => setMapping(null)} />
     </div>
   );

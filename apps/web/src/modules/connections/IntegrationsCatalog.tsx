@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import {
+  connectorCategories,
   connectorCategoryHint,
   connectorCategoryLabel,
   connectorKindGuide,
@@ -16,10 +17,15 @@ import { Input } from "@/shared/ui/Input";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
-import { CategoryMenu } from "./CategoryMenu";
+import { SideTabs } from "./SideTabs";
 import { ConnectorCard } from "./ConnectorCard";
 
 type Open = (connector: StoreConnector) => void;
+
+const categoryItems = connectorCategories.map((key) => ({
+  key,
+  label: connectorCategoryLabel[key],
+}));
 
 function CardGrid({ items, onOpen }: { items: StoreConnector[]; onOpen: Open }) {
   return (
@@ -156,8 +162,13 @@ export function IntegrationsCatalog({
           className="h-11 pl-9"
         />
       </label>
-      <div className="grid gap-6 @3xl:grid-cols-[200px_minmax(0,1fr)]">
-        <CategoryMenu value={category} dimmed={searching} onChange={onCategory} />
+      <div className="grid grid-cols-1 gap-6 @3xl:grid-cols-[200px_minmax(0,1fr)]">
+        <SideTabs
+          label="Categorias"
+          items={categoryItems}
+          value={searching ? null : category}
+          onChange={onCategory}
+        />
         <div className="@container min-w-0">
           {searching ? (
             <SearchResults connectors={connectors} query={query} onOpen={onOpen} />

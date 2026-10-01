@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cardStateOf, isStoreIntegration } from "./integrationRules";
+import { cardStateOf, isStoreIntegration, settingsChanged } from "./integrationRules";
 
 const connection = {
   stage: "READY" as const,
@@ -48,5 +48,32 @@ describe("isStoreIntegration", () => {
     expect(isStoreIntegration({ kind: "erp", status: "NOT_CONNECTED", connection: null })).toBe(
       false,
     );
+  });
+});
+
+describe("settingsChanged", () => {
+  const saved = {
+    statuses: [],
+    statusMap: { "6": "PAID" as const },
+    accounts: [{ id: "a", label: "Conta A" }],
+    accountId: "a",
+  };
+
+  it("is unchanged when the draft matches what was loaded", () => {
+    expect(settingsChanged(saved, { statusMap: { "6": "PAID" }, accountId: "a" })).toBe(false);
+  });
+
+  it("counts the first account as a change while none was chosen", () => {
+    expect(
+      settingsChanged(
+        { ...saved, accountId: null },
+        { statusMap: { "6": "PAID" }, accountId: "a" },
+      ),
+    ).toBe(true);
+  });
+
+  it("notices another account or another status target", () => {
+    expect(settingsChanged(saved, { statusMap: { "6": "PAID" }, accountId: "b" })).toBe(true);
+    expect(settingsChanged(saved, { statusMap: { "6": "PENDING" }, accountId: "a" })).toBe(true);
   });
 });

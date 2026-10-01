@@ -23,3 +23,21 @@ export const integrationsSearchSchema = z.object({
 export type IntegrationsSearch = z.infer<typeof integrationsSearchSchema>;
 
 export const defaultIntegrationsSearch: IntegrationsSearch = integrationsSearchSchema.parse({});
+
+export const integrationPageTabs = ["conexao", "dados", "configuracoes", "ajuda"] as const;
+export type IntegrationPageTab = (typeof integrationPageTabs)[number];
+
+export const integrationPageTabLabel: Record<IntegrationPageTab, string> = {
+  conexao: "Conexão",
+  dados: "O que puxa",
+  configuracoes: "Configurações",
+  ajuda: "Ajuda",
+};
+
+export const integrationPageSearchSchema = z.object({
+  aba: z.enum(integrationPageTabs).catch("conexao"),
+});
+export type IntegrationPageSearch = z.infer<typeof integrationPageSearchSchema>;
+
+export const defaultIntegrationPageSearch: IntegrationPageSearch =
+  integrationPageSearchSchema.parse({});

@@ -75,7 +75,7 @@ export {
 } from "./connectorCategories";
 export type { CategoryGroup, ConnectorCategory } from "./connectorCategories";
 export { areaOfDataKind, areasOfConnector, canManageConnector } from "./connectorAccess";
-export { dataKindLabel } from "./dataKinds";
+export { dataKindLabel, dataKinds } from "./dataKinds";
 export {
   blockedKinds,
   choiceProblem,
