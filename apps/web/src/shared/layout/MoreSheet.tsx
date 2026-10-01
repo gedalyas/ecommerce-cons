@@ -127,16 +127,16 @@ export function MoreSheet({
       <SheetGroup title="Infraestrutura">
         <li>
           <Link
-            to="/conexoes"
-            className={rowClass(location.pathname === "/conexoes")}
+            to="/integracoes"
+            className={rowClass(location.pathname.startsWith("/integracoes"))}
             onClick={close}
           >
             <Plug className="h-4 w-4 shrink-0" />
-            <span className="min-w-0 flex-1 truncate">Conexões</span>
+            <span className="min-w-0 flex-1 truncate">Integrações</span>
             {status.connectionsAlert && (
               <span
                 className="h-2 w-2 shrink-0 rounded-sm bg-warning"
-                aria-label="Há problema nas conexões"
+                aria-label="Há problema nas integrações"
               />
             )}
           </Link>

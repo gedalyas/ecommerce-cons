@@ -169,7 +169,7 @@ export function MarketingSocial({
           columns={accountColumns}
           rows={data.accounts}
           rowKey={(r) => `${r.platform}:${r.accountId}`}
-          emptyMessage="Conecte o Instagram e o Facebook em Conexões para ver as redes aqui."
+          emptyMessage="Conecte o Instagram e o Facebook em Integrações para ver as redes aqui."
           csvFileName="redes-sociais"
         />
       </SectionBlock>

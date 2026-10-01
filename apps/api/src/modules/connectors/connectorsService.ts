@@ -20,6 +20,7 @@ import type { Jobs } from "@/shared/jobs/jobs.types";
 import type { Mailer } from "@/shared/mail/mailer.types";
 import type { Vault } from "@/shared/crypto/vault";
 import type { Authorized, ProviderRegistry } from "./connectorProvider.types";
+import { connectionsLink } from "./connectionMail";
 import { needsAccountOf, reconnectSettings } from "./connectionSettings";
 import { signOAuthState, verifyOAuthState } from "./oauthState";
 import { defaultStatusMap } from "./blingOrders";
@@ -173,7 +174,7 @@ export async function completeCallback(
   deps: ConnectorsDependencies,
 ): Promise<{ redirectTo: string }> {
   const state = verifyOAuthState(callback.state, deps.secret);
-  const target = `${deps.appUrl.replace(/\/$/, "")}/conexoes`;
+  const target = connectionsLink(deps.appUrl);
   const failed = (reason: ConnectorErrorReason) => ({
     redirectTo: `${target}?erro=${key}&motivo=${reason}`,
   });
@@ -189,7 +190,7 @@ export async function completeCallback(
     });
     const saved = await saveConnection(state, key, authorized, deps);
     return {
-      redirectTo: `${target}?conectado=${key}${saved.needsAccount ? "&escolher=true" : ""}`,
+      redirectTo: `${target}?aba=minhas&conectado=${key}${saved.needsAccount ? "&escolher=true" : ""}`,
     };
   } catch (error) {
     console.error(error);

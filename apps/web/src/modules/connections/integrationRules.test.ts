@@ -1,0 +1,52 @@
+import { describe, expect, it } from "vitest";
+import { cardStateOf, isStoreIntegration } from "./integrationRules";
+
+const connection = {
+  stage: "READY" as const,
+  externalLabel: "Loja",
+  lastSyncAt: null,
+  lastError: null,
+  needsAccount: false,
+};
+
+describe("cardStateOf", () => {
+  it("is empty for a connector the store does not use", () => {
+    expect(cardStateOf({ kind: "erp", status: "NOT_CONNECTED", connection: null })).toBeNull();
+  });
+
+  it("is connected with a connection or a connected source", () => {
+    expect(cardStateOf({ kind: "erp", status: "NOT_CONNECTED", connection })).toBe("connected");
+    expect(cardStateOf({ kind: "erp", status: "CONNECTED", connection: null })).toBe("connected");
+  });
+
+  it("is an error when the source or the last sync failed", () => {
+    expect(cardStateOf({ kind: "erp", status: "ERROR", connection: null })).toBe("error");
+    expect(
+      cardStateOf({
+        kind: "erp",
+        status: "CONNECTED",
+        connection: { ...connection, stage: "ERROR" },
+      }),
+    ).toBe("error");
+  });
+});
+
+describe("cardStateOf, spreadsheet", () => {
+  it("marks a platform fed by a spreadsheet import", () => {
+    expect(cardStateOf({ kind: "paid_media", status: "MANUAL", connection: null })).toBe("manual");
+    expect(cardStateOf({ kind: "manual", status: "MANUAL", connection: null })).toBeNull();
+  });
+});
+
+describe("isStoreIntegration", () => {
+  it("keeps connected platforms and leaves the spreadsheet out", () => {
+    expect(isStoreIntegration({ kind: "erp", status: "CONNECTED", connection: null })).toBe(true);
+    expect(isStoreIntegration({ kind: "manual", status: "MANUAL", connection: null })).toBe(false);
+    expect(isStoreIntegration({ kind: "analytics", status: "MANUAL", connection: null })).toBe(
+      true,
+    );
+    expect(isStoreIntegration({ kind: "erp", status: "NOT_CONNECTED", connection: null })).toBe(
+      false,
+    );
+  });
+});

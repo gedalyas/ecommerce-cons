@@ -64,6 +64,16 @@ export type {
   ConnectorSettingsInput,
   ConnectorStartInput,
 } from "./connectorsSchema";
+export {
+  connectorCategories,
+  connectorCategoryHint,
+  connectorCategoryLabel,
+  connectorsOfCategory,
+  isRecommendedConnector,
+  recommendedConnectors,
+  searchConnectors,
+} from "./connectorCategories";
+export type { CategoryGroup, ConnectorCategory } from "./connectorCategories";
 export { areaOfDataKind, areasOfConnector, canManageConnector } from "./connectorAccess";
 export { dataKindLabel } from "./dataKinds";
 export {

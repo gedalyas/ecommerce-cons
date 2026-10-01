@@ -8,7 +8,7 @@ const oauthSteps = (platform: string, account: string): string[] => [
   `Clique em "Conectar" e entre com ${account}.`,
   `Na tela da ${platform}, autorize o E-commerce Insights a ler os dados.`,
   'Se houver mais de uma conta, escolha qual usar em "Configurar".',
-  "Aguarde a primeira importação: o andamento aparece aqui mesmo, em Conexões.",
+  "Aguarde a primeira importação: o andamento aparece aqui mesmo, em Integrações.",
 ];
 
 const requestSteps = (platform: string): string[] => [
@@ -89,7 +89,7 @@ export const connectorGuides: Record<ConnectorKey, ConnectorGuide> = {
     steps: [
       'Clique em "Conectar": a autorização é concluída dentro do Seller Central.',
       "Entre com a conta administradora do Seller Central (Amazon.com.br) e autorize.",
-      "Aguarde a primeira importação: o andamento aparece aqui mesmo, em Conexões.",
+      "Aguarde a primeira importação: o andamento aparece aqui mesmo, em Integrações.",
     ],
     modalities: amazonModalities,
   },

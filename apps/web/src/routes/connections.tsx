@@ -1,33 +1,29 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { z } from "zod";
-import { connectorErrorReasons } from "@ecommerce/contracts/connectors";
+import { createFileRoute, stripSearchParams, useRouter } from "@tanstack/react-router";
+import {
+  defaultIntegrationsSearch,
+  integrationsSearchSchema,
+} from "@ecommerce/contracts/connections";
 import { Connections, getConnectionsScreen } from "@/modules/connections/contract";
 import { getImportsScreen } from "@/modules/imports/contract";
 import { RequestError } from "@/shared/ui/RequestError";
 import { layout } from "@/shared/styles/spacing";
 
-const searchSchema = z.object({
-  conectado: z.string().catch(""),
-  escolher: z.boolean().catch(false),
-  erro: z.string().catch(""),
-  motivo: z.enum(connectorErrorReasons).catch("troca"),
-});
-
-export const Route = createFileRoute("/conexoes")({
-  validateSearch: searchSchema,
+export const Route = createFileRoute("/integracoes")({
+  validateSearch: integrationsSearchSchema,
+  search: { middlewares: [stripSearchParams(defaultIntegrationsSearch)] },
   head: () => ({
     meta: [
-      { title: "Conexões · E-commerce Insights" },
+      { title: "Integrações · E-commerce Insights" },
       {
         name: "description",
         content:
-          "Status das fontes de dados da loja: ERP, plataforma, mídia paga, analytics e importação manual de planilhas.",
+          "Integrações da loja: ERP, plataforma, marketplaces, anúncios, analytics e importação de planilhas.",
       },
-      { property: "og:title", content: "Conexões · E-commerce Insights" },
+      { property: "og:title", content: "Integrações · E-commerce Insights" },
       {
         property: "og:description",
         content:
-          "Fontes ativas, sincronizações, erros de autenticação e importação manual da loja.",
+          "Catálogo de integrações por categoria, as integrações da loja com status e sincronização, e as planilhas.",
       },
     ],
   }),
@@ -41,17 +37,7 @@ export const Route = createFileRoute("/conexoes")({
 
 function RouteComponent() {
   const { data, imports } = Route.useLoaderData();
-  const { conectado, escolher, erro, motivo } = Route.useSearch();
-  return (
-    <Connections
-      data={data}
-      imports={imports}
-      justConnected={conectado}
-      chooseAccount={escolher}
-      failed={erro}
-      failureReason={motivo}
-    />
-  );
+  return <Connections data={data} imports={imports} />;
 }
 
 function RouteError() {

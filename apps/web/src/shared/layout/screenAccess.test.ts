@@ -19,7 +19,7 @@ describe("canOpenPath", () => {
 
   it("keeps shared screens open and area screens behind the grant", () => {
     expect(canOpenPath("/", marketingViewer)).toBe(true);
-    expect(canOpenPath("/conexoes", marketingViewer)).toBe(true);
+    expect(canOpenPath("/integracoes", marketingViewer)).toBe(true);
     expect(canOpenPath("/marketing", marketingViewer)).toBe(true);
     expect(canOpenPath("/influenciadores", marketingViewer)).toBe(true);
     expect(canOpenPath("/dinheiro", marketingViewer)).toBe(false);
@@ -31,7 +31,7 @@ describe("isPathReleased", () => {
   it("never locks staff nor the screens outside the release list", () => {
     expect(isPathReleased("/dinheiro", null)).toBe(true);
     expect(isPathReleased("/", mvpRelease)).toBe(true);
-    expect(isPathReleased("/conexoes", mvpRelease)).toBe(true);
+    expect(isPathReleased("/integracoes", mvpRelease)).toBe(true);
     expect(isPathReleased("/loja", mvpRelease)).toBe(true);
   });
 

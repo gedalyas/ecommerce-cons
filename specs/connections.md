@@ -1,9 +1,33 @@
-# Conexões (`/conexoes`)
+# Integrações (`/integracoes`)
 
 Module: `connections` (web + API). Route loader calls `getConnectionsScreen`; the payload is
 `ConnectionsScreen` (`connectors` — the catalog with the store's status — and `summary`).
 Every store gets one `data_source` row per connector when it is created (`provisionStore`).
-Lists the connectors, one per row.
+Redesigned after Bling's Central de Extensões (`integrations-plan.md`, 2026-10-01); the old
+`/conexoes` redirects here keeping its query (OAuth links, e-mails).
+
+## Layout
+
+Title "Integrações", the outcome banners (connected / failed), the summary banner, then three
+tabs in the URL (`aba`, `integrationsSearchSchema` in `contracts/connections`; defaults stripped):
+
+- **Integrações** (`integracoes`, default) — the catalog. A wide search ("Buscar por plataforma")
+  and a category menu (`categoria`: **Gestão (ERP)** · **Vendas online** · **Marketing** —
+  `connectorCategories.ts`; the spreadsheet has no category, it lives in Planilhas). A category
+  shows its title and hint, a **Recomendados** block (`recommendedConnectors`: Bling; Mercado
+  Livre, Shopify, Nuvemshop; Meta Ads, Google Ads, GA4) and one section per connector kind, in the
+  guide's order, each a grid of cards. A card (`ConnectorCard`) is the logo, the name, a two-line
+  description and badges — **Conectada** / **Com erro** / **Por planilha** (`cardStateOf`, what Bling does not show)
+  and **Recomendado**; the whole card is the button and opens the connector drawer. Typing in
+  the search (`busca`) replaces the category with the matches grouped by category
+  (`searchConnectors`: name, description or kind, accents ignored); nothing found says so.
+  Choosing a category clears the search. The menu is a side column when the content is at
+  least 48rem wide and a row of chips otherwise (container queries, so the assistant panel
+  is accounted for); the grid goes 1 → 2 → 3 columns the same way.
+- **Minhas integrações (N)** (`minhas`) — the store's connectors (`isStoreIntegration`: a
+  connection, or a connected, failing or spreadsheet-fed source), grouped by kind, one row each (below).
+  Empty: "A loja ainda não tem integrações…" + "Ver integrações". OAuth returns land here.
+- **Planilhas** (`planilhas`) — the manual import (below).
 
 ## Summary banner
 
@@ -11,11 +35,11 @@ Above the list: "**5 de 7 fontes ativas** · 1 com erro, 1 não conectada" —
 counts derived in `connectionsSummary.ts` (connected and manual count as
 active; the detail agrees in number and disappears when nothing is wrong).
 
-## Source list
+## Rows (Minhas integrações)
 
-The catalog is rendered as numbered groups in the order a new store should follow
-(`connectorKindGuide`, Bling's niche names: 1. ERP → 2. Plataforma de e-commerce → 3.
-Marketplace → 4. Social commerce → 5. Anúncios → 6. Redes sociais → 7. Analytics → 8. Planilha).
+Rows are grouped by connector kind in the order a new store should follow
+(`connectorKindGuide`: ERP → Plataforma de e-commerce → Marketplace → Social commerce → Anúncios
+→ Redes sociais → Analytics).
 Each row carries the platform logo (`ConnectorLogo`: Simple Icons paths drawn in `currentColor`,
 a monogram when the brand is not in the open set). Catalog since 2026-09-23: Bling, Tiny (Olist),
 Omie · Shopify, Nuvemshop, VTEX · Mercado Livre, Amazon, Shopee, Magalu · TikTok Shop · Meta Ads,
@@ -29,7 +53,7 @@ customers; ad platforms provide investment, never sales. Columns (stacked cards 
 two bands below `2xl`): Fonte (name + description + "Fornece: …"),
 Status, última sincronização, and an action. The action depends on the connector: **"Conectar"** when the
 API has a provider registered for it (`availability` flipped to `oauth` — the app
-credentials are in the env), **"Solicitar conexão"** otherwise, "Importar CSV" for the manual
+credentials are in the env), **"Solicitar conexão"** otherwise, "Importar planilha" (to the Planilhas tab) for the manual
 source. A connected row shows "Sincronizar", "Desconectar" and, for connectors with
 settings (ERP status mapping, Google/Meta/TikTok account or property), "Configurar".
 
@@ -54,13 +78,13 @@ through the root route loader; the Marketing banner reads the same sources
 from the marketing service (`staleSources`).
 
 The Meta Ads error is the thread that ties screens together: the orange dot on
-the sidebar's Conexões item, the Marketing banner, the "Aquisição" pillar's
+the sidebar's Integrações item, the Marketing banner, the "Aquisição" pillar's
 data pendency and the assistant's caveat about estimated numbers all stem from
 it.
 
 ## Connector drawer
 
-"Detalhes" on each row opens a sheet (`ConnectorDrawer`) with three tabs: **Conectar** (description,
+A catalog card or "Detalhes" on a row opens a sheet (`ConnectorDrawer`) with three tabs: **Conectar** (description,
 requirements and the same action as the row), **O que puxa** (each data kind the platform
 provides and who holds it in this store — "Vem desta integração", "Hoje vem de Planilha", "Ainda
 sem fonte", from `kindOwnership` over `ConnectionsScreen.owners`) and **Ajuda** (the step-by-step
@@ -77,7 +101,7 @@ by every platform. A source claims the kinds nobody owns when it first syncs or 
 provides it and no other source owns it (`providesKind` + `conflictingOwner`), and every order
 records its `source`. A sync that finds a kind it provides owned by another source still
 finishes, then flags the connection `ERROR` with `ownerConflictMessage` ("A fonte de vendas desta
-loja é Planilha…") so Conexões explains why nothing arrives. The spreadsheet claims only the
+loja é Planilha…") so Integrações explains why nothing arrives. The spreadsheet claims only the
 kind it imported, after at least one row was written; undoing its last active import of that
 kind releases it. Disconnecting releases a connector's kinds. **Choosing another owner** (`PUT /data-sources` { kind, source | null }, area edit of the
 kind; from "O que puxa" in the drawer: "Usar esta integração" / "Deixar de usar" with a
@@ -108,21 +132,21 @@ authorization URL and the browser goes there. The platform redirects to the publ
 store, the user and the connector, the provider exchanges the code, the credentials are
 sealed (AES-256-GCM, `CREDENTIALS_KEY`) into `connection`, the data source becomes
 `CONNECTED`, any open request is closed and a `connector.backfill` job is queued. The browser
-lands back on `/conexoes?conectado=<key>` ("X conectado. O histórico está sendo importado").
+lands back on `/integracoes?aba=minhas&conectado=<key>` ("X conectado. O histórico está sendo importado").
 When the platform returned more than one account, ad account, property or Page, the
 connection stays `AUTHORIZED` with `needsAccount` and no backfill is queued: the browser lands
-on `/conexoes?conectado=<key>&escolher=true` with the picker already open ("Escolha a conta ·
+on `/integracoes?aba=minhas&conectado=<key>&escolher=true` with the picker already open ("Escolha a conta ·
 X"), the row's primary action is "Escolher conta", and saving the choice queues the backfill.
 The connect dialog lists the connector's prerequisites (`requirements` in the catalog) and,
 for domain + OAuth platforms, the address placeholder and where to find it (`domainHint`).
-A failed callback lands on `/conexoes?erro=<key>&motivo=cancelado|estado|troca`
+A failed callback lands on `/integracoes?erro=<key>&motivo=cancelado|estado|troca`
 (`connectorErrorReasonLabel`: the user cancelled or lacks permission on the platform / the
 10-minute state expired / the code exchange was refused) with a "Tentar de novo" button that
 reopens the connect dialog.
 
 When a sync fails the connection goes to `ERROR` and, on the first failure only (previous
 stage not ERROR), every CLIENT user of the store gets the e-mail "X parou de sincronizar"
-(`connectionMail.ts`) with the reason and a link to Conexões. The row then shows
+(`connectionMail.ts`) with the reason and a link to Integrações. The row then shows
 **"Reconectar"** as its primary action: the same authorization flow, but a connection that
 already synced keeps its history and its chosen account (`reconnectSettings`) and queues an
 incremental sync instead of a backfill.
@@ -158,7 +182,7 @@ has a connection, an import or orders.
 
 ## Manual import
 
-Below the list, the "Importação manual" block imports CSV files of orders, ad spend or
+The **Planilhas** tab holds the "Importação manual" block, which imports CSV files of orders, ad spend or
 traffic into the fact tables — see [imports.md](imports.md). A successful import stamps the
 matching data source (and turns a `NOT_CONNECTED` / `ERROR` source into `MANUAL`), so the
 summary above and the sidebar dot follow.

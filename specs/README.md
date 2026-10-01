@@ -19,7 +19,7 @@ because that is what ships.
 | [dashboard.md](dashboard.md)                                                       | The main screen: KPIs, alerts, maturity milestone, chart                                   |
 | [sections.md](sections.md)                                                         | Money / Marketing / Logistics / Management anatomy and pillar data                         |
 | [kpi-fidelity.md](kpi-fidelity.md)                                                 | The KPI component and the A/B/C data-fidelity seal                                         |
-| [connections.md](connections.md)                                                   | Data sources screen                                                                        |
+| [connections.md](connections.md)                                                   | Integrações screen: catalog, connectors, data owners, connecting                           |
 | [imports.md](imports.md)                                                           | Manual CSV import: kinds, templates, file rules, endpoint, screen                          |
 | [reports.md](reports.md)                                                           | Relatório: document model, sections, templates, preview endpoint, builder                  |
 | [assistant.md](assistant.md)                                                       | AI assistant panel behavior                                                                |
@@ -48,6 +48,8 @@ because that is what ships.
 | [operations-tasks.md](operations-tasks.md)                                         | Task checklist for the operations plan — tick as work lands                                |
 | [growth-plan.md](growth-plan.md)                                                   | Meeting 2026-09-22: ROAS per channel, CAC %, connections, Looker-depth Marketing, report   |
 | [growth-tasks.md](growth-tasks.md)                                                 | Task checklist for the growth plan — tick as work lands                                    |
+| [integrations-plan.md](integrations-plan.md)                                       | Integrations the Bling way: hub, page per integration, modality cards, several accounts    |
+| [integrations-tasks.md](integrations-tasks.md)                                     | Task checklist for the integrations plan — tick as work lands                              |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force; see CLAUDE.md)         |
 | [reference/](reference/)                                                           | The Arko `CLAUDE.md` files the rules derive from, and the Arko Guru/ZapSign guide          |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from         |

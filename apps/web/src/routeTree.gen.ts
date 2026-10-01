@@ -14,7 +14,7 @@ import { Route as adminLayoutRouteImport } from './routes/adminLayout'
 import { Route as assistantRouteImport } from './routes/assistant'
 import { Route as registerRouteImport } from './routes/register'
 import { Route as customersRouteImport } from './routes/customers'
-import { Route as connectionsRouteImport } from './routes/connections'
+import { Route as legacyConnectionsRouteImport } from './routes/legacyConnections'
 import { Route as storeOnboardingRouteImport } from './routes/storeOnboarding'
 import { Route as moneyRouteImport } from './routes/money'
 import { Route as underDevelopmentRouteImport } from './routes/underDevelopment'
@@ -22,6 +22,7 @@ import { Route as loginRouteImport } from './routes/login'
 import { Route as forgotPasswordRouteImport } from './routes/forgotPassword'
 import { Route as managementRouteImport } from './routes/management'
 import { Route as influencersRouteImport } from './routes/influencers'
+import { Route as connectionsRouteImport } from './routes/connections'
 import { Route as logisticsRouteImport } from './routes/logistics'
 import { Route as storeRouteImport } from './routes/store'
 import { Route as storeArchivedRouteImport } from './routes/storeArchived'
@@ -60,7 +61,7 @@ const customersRoute = customersRouteImport.update({
   path: '/clientes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const connectionsRoute = connectionsRouteImport.update({
+const legacyConnectionsRoute = legacyConnectionsRouteImport.update({
   id: '/conexoes',
   path: '/conexoes',
   getParentRoute: () => rootRouteImport,
@@ -98,6 +99,11 @@ const managementRoute = managementRouteImport.update({
 const influencersRoute = influencersRouteImport.update({
   id: '/influenciadores',
   path: '/influenciadores',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const connectionsRoute = connectionsRouteImport.update({
+  id: '/integracoes',
+  path: '/integracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const logisticsRoute = logisticsRouteImport.update({
@@ -167,7 +173,7 @@ export interface FileRoutesByFullPath {
   '/assistente': typeof assistantRoute
   '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
-  '/conexoes': typeof connectionsRoute
+  '/conexoes': typeof legacyConnectionsRoute
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/em-desenvolvimento': typeof underDevelopmentRoute
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
+  '/integracoes': typeof connectionsRoute
   '/logistica': typeof logisticsRoute
   '/loja': typeof storeRoute
   '/loja-arquivada': typeof storeArchivedRoute
@@ -193,7 +200,7 @@ export interface FileRoutesByTo {
   '/assistente': typeof assistantRoute
   '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
-  '/conexoes': typeof connectionsRoute
+  '/conexoes': typeof legacyConnectionsRoute
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/em-desenvolvimento': typeof underDevelopmentRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
+  '/integracoes': typeof connectionsRoute
   '/logistica': typeof logisticsRoute
   '/loja': typeof storeRoute
   '/loja-arquivada': typeof storeArchivedRoute
@@ -221,7 +229,7 @@ export interface FileRoutesById {
   '/assistente': typeof assistantRoute
   '/cadastro': typeof registerRoute
   '/clientes': typeof customersRoute
-  '/conexoes': typeof connectionsRoute
+  '/conexoes': typeof legacyConnectionsRoute
   '/configurar-loja': typeof storeOnboardingRoute
   '/dinheiro': typeof moneyRoute
   '/em-desenvolvimento': typeof underDevelopmentRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/esqueci-senha': typeof forgotPasswordRoute
   '/gestao': typeof managementRoute
   '/influenciadores': typeof influencersRoute
+  '/integracoes': typeof connectionsRoute
   '/logistica': typeof logisticsRoute
   '/loja': typeof storeRoute
   '/loja-arquivada': typeof storeArchivedRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/esqueci-senha'
     | '/gestao'
     | '/influenciadores'
+    | '/integracoes'
     | '/logistica'
     | '/loja'
     | '/loja-arquivada'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/esqueci-senha'
     | '/gestao'
     | '/influenciadores'
+    | '/integracoes'
     | '/logistica'
     | '/loja'
     | '/loja-arquivada'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/esqueci-senha'
     | '/gestao'
     | '/influenciadores'
+    | '/integracoes'
     | '/logistica'
     | '/loja'
     | '/loja-arquivada'
@@ -331,7 +343,7 @@ export interface RootRouteChildren {
   assistantRoute: typeof assistantRoute
   registerRoute: typeof registerRoute
   customersRoute: typeof customersRoute
-  connectionsRoute: typeof connectionsRoute
+  legacyConnectionsRoute: typeof legacyConnectionsRoute
   storeOnboardingRoute: typeof storeOnboardingRoute
   moneyRoute: typeof moneyRoute
   underDevelopmentRoute: typeof underDevelopmentRoute
@@ -339,6 +351,7 @@ export interface RootRouteChildren {
   forgotPasswordRoute: typeof forgotPasswordRoute
   managementRoute: typeof managementRoute
   influencersRoute: typeof influencersRoute
+  connectionsRoute: typeof connectionsRoute
   logisticsRoute: typeof logisticsRoute
   storeRoute: typeof storeRoute
   storeArchivedRoute: typeof storeArchivedRoute
@@ -391,7 +404,7 @@ declare module '@tanstack/react-router' {
       id: '/conexoes'
       path: '/conexoes'
       fullPath: '/conexoes'
-      preLoaderRoute: typeof connectionsRouteImport
+      preLoaderRoute: typeof legacyConnectionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/configurar-loja': {
@@ -441,6 +454,13 @@ declare module '@tanstack/react-router' {
       path: '/influenciadores'
       fullPath: '/influenciadores'
       preLoaderRoute: typeof influencersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integracoes': {
+      id: '/integracoes'
+      path: '/integracoes'
+      fullPath: '/integracoes'
+      preLoaderRoute: typeof connectionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logistica': {
@@ -552,7 +572,7 @@ const rootRouteChildren: RootRouteChildren = {
   assistantRoute: assistantRoute,
   registerRoute: registerRoute,
   customersRoute: customersRoute,
-  connectionsRoute: connectionsRoute,
+  legacyConnectionsRoute: legacyConnectionsRoute,
   storeOnboardingRoute: storeOnboardingRoute,
   moneyRoute: moneyRoute,
   underDevelopmentRoute: underDevelopmentRoute,
@@ -560,6 +580,7 @@ const rootRouteChildren: RootRouteChildren = {
   forgotPasswordRoute: forgotPasswordRoute,
   managementRoute: managementRoute,
   influencersRoute: influencersRoute,
+  connectionsRoute: connectionsRoute,
   logisticsRoute: logisticsRoute,
   storeRoute: storeRoute,
   storeArchivedRoute: storeArchivedRoute,

@@ -1,18 +1,12 @@
+import { foldForSearch } from "../shared/searchText";
 import type { AdminUser, ConsultantSummary } from "./admin.types";
 
 export type AdminUsersFilter = { query: string; consultantId: string };
 
-const normalize = (text: string) =>
-  text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-
 export function matchesUserQuery(user: Pick<AdminUser, "name" | "email">, query: string): boolean {
-  const needle = normalize(query);
+  const needle = foldForSearch(query);
   if (!needle) return true;
-  return normalize(user.name).includes(needle) || normalize(user.email).includes(needle);
+  return foldForSearch(user.name).includes(needle) || foldForSearch(user.email).includes(needle);
 }
 
 export function filterAdminUsers(users: AdminUser[], filter: AdminUsersFilter): AdminUser[] {

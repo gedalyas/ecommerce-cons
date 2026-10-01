@@ -130,7 +130,7 @@ export function switchNotice(
 export function ownerConflictMessage(kind: DataKind, owner: DataOwner): string {
   const label = dataKindLabel[kind].toLowerCase();
   if (owner === "system") {
-    return `Esta loja desligou a fonte de ${label}. Para usar uma fonte, escolha em Conexões.`;
+    return `Esta loja desligou a fonte de ${label}. Para usar uma fonte, escolha em Integrações.`;
   }
-  return `A fonte de ${label} desta loja é ${connectorOf(owner).label}. Para usar outra fonte, troque em Conexões.`;
+  return `A fonte de ${label} desta loja é ${connectorOf(owner).label}. Para usar outra fonte, troque em Integrações.`;
 }

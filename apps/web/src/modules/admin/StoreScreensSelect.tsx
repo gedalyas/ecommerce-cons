@@ -54,7 +54,7 @@ export function StoreScreensSelect({
       <span className={cn(textClass.meta, "truncate text-muted-foreground sm:max-w-56")}>
         {released.length > 0
           ? released.map((screen) => storeScreenLabel[screen]).join(", ")
-          : "Só o dashboard e as conexões"}
+          : "Só o dashboard e as integrações"}
       </span>
     </div>
   );

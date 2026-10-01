@@ -78,19 +78,22 @@ export function Sidebar({ status, account }: { status: ShellStatus; account: She
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link to="/conexoes" className={cn(linkClass(pathname === "/conexoes"), "relative")}>
+            <Link
+              to="/integracoes"
+              className={cn(linkClass(pathname.startsWith("/integracoes")), "relative")}
+            >
               <Plug className="h-4 w-4 shrink-0" />
-              <span className="hidden flex-1 truncate xl:inline">Conexões</span>
+              <span className="hidden flex-1 truncate xl:inline">Integrações</span>
               {status.connectionsAlert && (
                 <span
                   className="absolute right-2 top-2 h-2 w-2 rounded-sm bg-warning xl:static xl:right-auto xl:top-auto"
-                  aria-label="Há problema nas conexões"
+                  aria-label="Há problema nas integrações"
                 />
               )}
             </Link>
           </TooltipTrigger>
           <TooltipContent side="right" className="xl:hidden">
-            Conexões
+            Integrações
           </TooltipContent>
         </Tooltip>
         {isOwner && (

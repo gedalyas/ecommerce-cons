@@ -42,7 +42,7 @@ describe("conflictingOwner", () => {
 describe("ownerConflictMessage", () => {
   it("names the kind and the owner in Portuguese", () => {
     expect(ownerConflictMessage("sales", "bling")).toBe(
-      "A fonte de vendas desta loja é Bling. Para usar outra fonte, troque em Conexões.",
+      "A fonte de vendas desta loja é Bling. Para usar outra fonte, troque em Integrações.",
     );
   });
 });
@@ -170,7 +170,7 @@ describe("a kind switched off by the store", () => {
     expect(unclaimedKinds(["sales"], owners)).toEqual([]);
     expect(conflictingOwner("sales", "bling", owners)).toBe("system");
     expect(ownerConflictMessage("sales", "system")).toBe(
-      "Esta loja desligou a fonte de vendas. Para usar uma fonte, escolha em Conexões.",
+      "Esta loja desligou a fonte de vendas. Para usar uma fonte, escolha em Integrações.",
     );
     expect(kindOwnership(["sales"], "bling", owners)[0]?.text).toBe("Ainda sem fonte");
   });

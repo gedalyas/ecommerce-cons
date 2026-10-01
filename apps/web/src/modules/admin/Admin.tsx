@@ -100,7 +100,9 @@ export function Admin({
       <PageHeader
         title="Administração"
         subtitle={
-          isAdmin ? "Lojas, consultores, convites e conexões" : "Suas lojas, convites e conexões"
+          isAdmin
+            ? "Lojas, consultores, convites e integrações"
+            : "Suas lojas, convites e integrações"
         }
       />
       <div className={cn(layout.headerGap, layout.blockStack)}>
@@ -148,7 +150,7 @@ export function Admin({
               { key: "users", header: "Usuários", align: "right", render: (r) => String(r.users) },
               {
                 key: "requests",
-                header: "Conexões pedidas",
+                header: "Integrações pedidas",
                 align: "right",
                 render: (r) => String(r.pendingRequests),
               },

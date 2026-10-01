@@ -8,7 +8,7 @@ export function DataReadinessBanner() {
       <AlertBanner
         action={
           <Button asChild size="sm" variant="outline">
-            <Link to="/conexoes">Ver conexões</Link>
+            <Link to="/integracoes">Ver integrações</Link>
           </Button>
         }
       >

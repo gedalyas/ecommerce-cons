@@ -53,7 +53,7 @@ export function StoreArchiveButton({
         className="max-w-md"
       >
         <p className={cn(textClass.body, "text-foreground")}>
-          O cliente perde o acesso até a loja ser reativada. Os dados, as conexões e o
+          O cliente perde o acesso até a loja ser reativada. Os dados, as integrações e o
           acompanhamento ficam guardados; a consultoria continua vendo a loja.
         </p>
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

@@ -42,10 +42,10 @@ function StaleSourceBanner({ source }: { source: StaleSource }) {
     <AlertBanner
       action={
         <Link
-          to="/conexoes"
+          to="/integracoes"
           className="text-[13px] font-semibold text-primary underline underline-offset-2"
         >
-          Ir para Conexões
+          Ir para Integrações
         </Link>
       }
     >

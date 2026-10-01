@@ -4,5 +4,5 @@ export const contextBySection: Record<string, string> = {
   "/marketing": "Aquisição",
   "/logistica": "Estoque e fulfillment",
   "/gestao": "Blindagem",
-  "/conexoes": "Conexões",
+  "/integracoes": "Integrações",
 };
