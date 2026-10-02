@@ -30,4 +30,7 @@ categoria, preco`), `productsWriteService` writes variant cost/price/stock and p
       source carries no coupon, first-partnership empty message; marketplace relay e-mails left
       out of the customers export and Origem = marketplace without UTM; "Taxas e custos de
       venda" label and the shipping cost per order accrued per business unit (2026-10-02)
-- [ ] B3 Release: smoke per screen, default released screens, boards and specs
+- [x] B3 Release: new stores open every screen but the Assistente (`defaultReleasedScreens`,
+      written on creation; decision `2026-10-02-new-stores-open-every-screen-but-the-assistant`);
+      smoke of every screen on a store with spreadsheet/connector data only and on a new empty
+      store; pilot board M4 ticked (2026-10-02)

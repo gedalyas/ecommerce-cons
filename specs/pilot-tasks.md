@@ -110,7 +110,9 @@ Released screens per store.
       `/em-desenvolvimento?tela=`; root guard redirects a locked path; assistant panel and
       FAB hidden when locked; staff sees everything with an eye-off mark; "Telas liberadas"
       column on `/admin` › Lojas (2026-09-19)
-- [ ] M4 Release Dinheiro / Logística / Gestão per pilot store as each screen matures
+- [x] M4 Release Dinheiro / Logística / Gestão per pilot store as each screen matures — the
+      M4 round (`m4-plan.md`) made every screen but the Assistente usable and new stores open
+      them by default; pilot stores created before get them from staff in /admin (2026-10-02)
 - [x] M5 No mock reaches the pilot client: the hardcoded `CreativePresence` block (fake
       Instagram feed, creatives, landing pages, "consistência 68%") and its `extra` plumbing
       removed; the "Presença e criativos" pillar reads Seguidores / Alcance / Taxa de

@@ -62,7 +62,10 @@ back to the dashboard) instead of the screen.
 - **The set** (`contracts/auth/storeScreens.ts`, Prisma enum `StoreScreen`): Assistente,
   Dinheiro, Marketing, Logística, Gestão, Pedidos, Produtos, Clientes, Metas, Métricas,
   Influenciadores. Dashboard, Conexões and `/loja` are always open. Stored as
-  `Client.releasedScreens`, default `[MARKETING, ORDERS]` for every new store.
+  `Client.releasedScreens`. A new store opens every screen except Assistente
+  (`defaultReleasedScreens`, written by `storeService` on creation — decision
+  `decisions/2026-10-02-new-stores-open-every-screen-but-the-assistant.md`); stores created
+  before 2026-10-02 keep their list.
 - **Who sees what.** `screenReleaseOf(user, store)`: `null` (everything) for `ADMIN` and
   `CONSULTANT`, the store's list for any `CLIENT` — owner or member. A member sees the
   intersection: what the grant lets in, then what the store released. Staff browsing the

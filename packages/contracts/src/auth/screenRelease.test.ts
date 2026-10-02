@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { isScreenReleased, orderedScreens, screenReleaseOf } from "./screenRelease";
 import { defaultReleasedScreens } from "./storeScreens";
 
-const store = { releasedScreens: defaultReleasedScreens };
+const store = { releasedScreens: ["MARKETING", "ORDERS"] as const };
 
 describe("screenReleaseOf", () => {
   it("never restricts staff", () => {
@@ -25,8 +25,14 @@ describe("isScreenReleased", () => {
   });
 
   it("checks the list otherwise", () => {
-    expect(isScreenReleased(defaultReleasedScreens, "ORDERS")).toBe(true);
-    expect(isScreenReleased(defaultReleasedScreens, "MONEY")).toBe(false);
+    expect(isScreenReleased(store.releasedScreens, "ORDERS")).toBe(true);
+    expect(isScreenReleased(store.releasedScreens, "MONEY")).toBe(false);
+  });
+
+  it("opens every screen but the assistant to a new store", () => {
+    expect(isScreenReleased(defaultReleasedScreens, "MONEY")).toBe(true);
+    expect(isScreenReleased(defaultReleasedScreens, "INFLUENCERS")).toBe(true);
+    expect(isScreenReleased(defaultReleasedScreens, "ASSISTANT")).toBe(false);
   });
 });
 

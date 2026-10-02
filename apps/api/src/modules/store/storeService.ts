@@ -1,4 +1,4 @@
-import type { StoreSummary } from "@ecommerce/contracts/auth";
+import { defaultReleasedScreens, type StoreSummary } from "@ecommerce/contracts/auth";
 import { connectorCatalog, connectorKindLabel } from "@ecommerce/contracts/connectors";
 import { engagementTemplate, milestoneTemplate } from "@ecommerce/contracts/consulting";
 import type { Store, StoreProfileParsed } from "@ecommerce/contracts/store";
@@ -89,7 +89,7 @@ export async function createStore(
   const slug = await uniqueSlug(input.name);
   const store = await prismaClient.$transaction(async (tx) => {
     const created = await tx.client.create({
-      data: { ...input, slug, onboardedAt: now },
+      data: { ...input, slug, onboardedAt: now, releasedScreens: [...defaultReleasedScreens] },
       select: storeSelect,
     });
     await provisionStore(tx, created.id, provisionPlan());
