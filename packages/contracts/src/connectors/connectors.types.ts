@@ -49,6 +49,9 @@ export const connectionStageHint: Record<ConnectionStage, string> = {
 };
 
 export type ConnectionSummary = {
+  id: string;
+  name: string;
+  accountId: string;
   stage: ConnectionStage;
   externalLabel: string;
   lastSyncAt: string | null;
@@ -58,7 +61,7 @@ export type ConnectionSummary = {
 
 export const needsAccountHint = "Escolha a conta para começar a importação.";
 
-export const connectorErrorReasons = ["cancelado", "estado", "troca"] as const;
+export const connectorErrorReasons = ["cancelado", "estado", "troca", "duplicada"] as const;
 export type ConnectorErrorReason = (typeof connectorErrorReasons)[number];
 
 export const connectorErrorReasonLabel: Record<ConnectorErrorReason, string> = {
@@ -68,6 +71,8 @@ export const connectorErrorReasonLabel: Record<ConnectorErrorReason, string> = {
     "O link de retorno expirou (ele vale por 10 minutos). Comece de novo pelo botão Conectar.",
   troca:
     "A plataforma autorizou, mas recusou a troca do código pelo acesso. Tente de novo; se persistir, fale com sua consultoria.",
+  duplicada:
+    "Essa conta já está ligada a outra integração do mesmo tipo nesta loja. Edite a integração existente.",
 };
 
 export type StoreConnector = Connector & {
@@ -75,10 +80,13 @@ export type StoreConnector = Connector & {
   syncLabel: string;
   request: ConnectionRequest | null;
   connection: ConnectionSummary | null;
+  connections: ConnectionSummary[];
   canManage: boolean;
 };
 
 export const statusMappingTargets = ["PAID", "PENDING", "CANCELLED", "REFUNDED", "IGNORE"] as const;
+export type ConnectorAccountSummary = { id: string; family: ConnectorKey; label: string };
+
 export type StatusMappingTarget = (typeof statusMappingTargets)[number];
 
 export const statusMappingTargetLabel: Record<StatusMappingTarget, string> = {

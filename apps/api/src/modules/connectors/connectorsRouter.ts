@@ -32,12 +32,13 @@ export function createConnectorsRouter(
   const controller = connectorsController(deps);
   router.post("/connectors/:key/authorize", asyncHandler(controller.authorize));
   router.post("/connectors/:key/credentials", asyncHandler(controller.credentials));
-  router.post("/connectors/:key/sync", asyncHandler(controller.sync));
-  router.post("/connectors/:key/test", tests, asyncHandler(controller.test));
-  router.get("/connectors/:key/settings", asyncHandler(controller.settings));
-  router.put("/connectors/:key/settings", asyncHandler(controller.saveSettings));
+  router.post("/connectors/:key/connections", asyncHandler(controller.create));
+  router.post("/connectors/:key/connections/:id/sync", asyncHandler(controller.sync));
+  router.post("/connectors/:key/connections/:id/test", tests, asyncHandler(controller.test));
+  router.get("/connectors/:key/connections/:id/settings", asyncHandler(controller.settings));
+  router.put("/connectors/:key/connections/:id/settings", asyncHandler(controller.saveSettings));
+  router.delete("/connectors/:key/connections/:id", asyncHandler(controller.remove));
   router.put("/data-sources", switches, asyncHandler(controller.chooseSource));
-  router.delete("/connectors/:key", asyncHandler(controller.remove));
   router.get("/data-readiness", asyncHandler(controller.readiness));
   return router;
 }

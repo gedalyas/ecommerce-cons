@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { hasControlCharacter } from "../shared/plainText";
 import { connectorKeys } from "./connectorCatalog";
 import { exclusiveDataKinds } from "./dataSourceRules";
 import { connectionRequestStatuses, statusMappingTargets } from "./connectors.types";
@@ -20,9 +21,33 @@ export const connectionRequestInputSchema = z.object({
 });
 export type ConnectionRequestInput = z.infer<typeof connectionRequestInputSchema>;
 
+const MAX_INTEGRATION_NAME = 60;
+
+const integrationNameSchema = z
+  .string()
+  .trim()
+  .min(1, "Dê um nome à integração.")
+  .max(MAX_INTEGRATION_NAME, "Nome longo demais.")
+  .refine((name) => !hasControlCharacter(name), "Use só letras, números e pontuação no nome.");
+
+const connectionIdSchema = z.string().trim().min(1).max(64);
+
+export const connectionParamsSchema = z.object({
+  key: z.enum(connectorKeys),
+  id: connectionIdSchema,
+});
+
 export const connectorStartSchema = z.object({
   domain: z.string().trim().max(120).default(""),
+  name: integrationNameSchema.nullable().default(null),
+  connectionId: connectionIdSchema.nullable().default(null),
 });
+
+export const connectionCreateSchema = z.object({
+  accountId: connectionIdSchema,
+  name: integrationNameSchema,
+});
+export type ConnectionCreateInput = z.infer<typeof connectionCreateSchema>;
 export type ConnectorStartInput = z.infer<typeof connectorStartSchema>;
 
 export const connectorCredentialsSchema = z.object({

@@ -3,6 +3,7 @@ import type { ConnectionsHealth, ConnectionsScreen } from "@ecommerce/contracts/
 import type { ConnectionCheck } from "@ecommerce/contracts/connectors";
 import {
   connectionRequestInputSchema,
+  connectionParamsSchema,
   connectorKeySchema,
   connectorSettingsSchema,
   connectorStartSchema,
@@ -50,7 +51,10 @@ export const startConnectorFn = createServerFn({ method: "POST" })
       try {
         const { url } = await apiFetch<{ url: string }>(
           `/connectors/${encodeURIComponent(data.key)}/authorize`,
-          { method: "POST", body: { domain: data.domain } },
+          {
+            method: "POST",
+            body: { domain: data.domain, name: data.name, connectionId: data.connectionId },
+          },
         );
         return { ok: true, url };
       } catch (error) {
@@ -63,28 +67,28 @@ export const startConnectorFn = createServerFn({ method: "POST" })
     },
   );
 
+const integrationPath = (data: { key: string; id: string }) =>
+  `/connectors/${encodeURIComponent(data.key)}/connections/${encodeURIComponent(data.id)}`;
+
 export const syncConnectorFn = createServerFn({ method: "POST" })
-  .validator((input: unknown) => connectorKeySchema.parse(input))
+  .validator((input: unknown) => connectionParamsSchema.parse(input))
   .handler(({ data }) =>
     plain(
-      () =>
-        apiFetch<unknown>(`/connectors/${encodeURIComponent(data.key)}/sync`, { method: "POST" }),
+      () => apiFetch<unknown>(`${integrationPath(data)}/sync`, { method: "POST" }),
       "Não foi possível sincronizar agora.",
     ),
   );
 
 export const getConnectorSettings = createServerFn({ method: "GET" })
-  .validator((input: unknown) => connectorKeySchema.parse(input))
-  .handler(({ data }) =>
-    apiFetch<ConnectorSettings>(`/connectors/${encodeURIComponent(data.key)}/settings`),
-  );
+  .validator((input: unknown) => connectionParamsSchema.parse(input))
+  .handler(({ data }) => apiFetch<ConnectorSettings>(`${integrationPath(data)}/settings`));
 
 export const saveConnectorSettingsFn = createServerFn({ method: "POST" })
-  .validator((input: unknown) => connectorKeySchema.merge(connectorSettingsSchema).parse(input))
+  .validator((input: unknown) => connectionParamsSchema.merge(connectorSettingsSchema).parse(input))
   .handler(({ data }) =>
     plain(
       () =>
-        apiFetch<void>(`/connectors/${encodeURIComponent(data.key)}/settings`, {
+        apiFetch<void>(`${integrationPath(data)}/settings`, {
           method: "PUT",
           body: { statusMap: data.statusMap, accountId: data.accountId },
         }),
@@ -93,10 +97,10 @@ export const saveConnectorSettingsFn = createServerFn({ method: "POST" })
   );
 
 export const disconnectConnectorFn = createServerFn({ method: "POST" })
-  .validator((input: unknown) => connectorKeySchema.parse(input))
+  .validator((input: unknown) => connectionParamsSchema.parse(input))
   .handler(({ data }) =>
     plain(
-      () => apiFetch<void>(`/connectors/${encodeURIComponent(data.key)}`, { method: "DELETE" }),
+      () => apiFetch<void>(integrationPath(data), { method: "DELETE" }),
       "Não foi possível desconectar agora.",
     ),
   );
@@ -131,13 +135,10 @@ export const requestConnectionFn = createServerFn({ method: "POST" })
   });
 
 export const testConnectionFn = createServerFn({ method: "POST" })
-  .validator((input: unknown) => connectorKeySchema.parse(input))
+  .validator((input: unknown) => connectionParamsSchema.parse(input))
   .handler(({ data }) =>
     attempt(
-      () =>
-        apiFetch<ConnectionCheck>(`/connectors/${encodeURIComponent(data.key)}/test`, {
-          method: "POST",
-        }),
+      () => apiFetch<ConnectionCheck>(`${integrationPath(data)}/test`, { method: "POST" }),
       "Não foi possível testar a conexão agora.",
     ),
   );

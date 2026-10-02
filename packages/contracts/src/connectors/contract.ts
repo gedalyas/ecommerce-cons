@@ -39,6 +39,7 @@ export type {
   ConnectionSummary,
   ConnectorErrorReason,
   ConnectorAccountOption,
+  ConnectorAccountSummary,
   ConnectorSettings,
   ConnectorStatusOption,
   DataReadiness,
@@ -47,6 +48,8 @@ export type {
   StoreConnector,
 } from "./connectors.types";
 export {
+  connectionCreateSchema,
+  connectionParamsSchema,
   connectionRequestInputSchema,
   connectionRequestResolveSchema,
   connectorCallbackSchema,
@@ -57,6 +60,7 @@ export {
   connectorStartSchema,
 } from "./connectorsSchema";
 export type {
+  ConnectionCreateInput,
   ConnectionRequestInput,
   ConnectionRequestResolveInput,
   ConnectorCredentialsInput,

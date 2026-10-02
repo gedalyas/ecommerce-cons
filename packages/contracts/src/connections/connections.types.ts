@@ -1,6 +1,10 @@
 import type { DataOwners } from "../connectors/dataSourceRules";
 import type { ConnectorKey } from "../connectors/connectorCatalog";
-import type { DataSourceStatus, StoreConnector } from "../connectors/connectors.types";
+import type {
+  ConnectorAccountSummary,
+  DataSourceStatus,
+  StoreConnector,
+} from "../connectors/connectors.types";
 
 export type DataSourceState = {
   connectorKey: ConnectorKey;
@@ -22,6 +26,7 @@ export type ConnectionsScreen = {
   summary: ConnectionsSummary;
   canRequest: boolean;
   owners: DataOwners;
+  accounts: ConnectorAccountSummary[];
 };
 
 export type ConnectionsHealth = { hasError: boolean };

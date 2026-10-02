@@ -49,8 +49,23 @@ platform family and external id — and owns the sealed credentials. An **integr
 stage, cursor and settings. Mercado Livre and Mercado Livre Full of the same seller share one
 account and one token; the worker renews the account's token with a compare-and-set
 (`refreshRace.ts`). Orders record the integration that wrote them (`sales_order.connection_id`).
-See `decisions/2026-10-01-connector-account-apart-from-integration.md`. Until slice 4b the screens
-still address one integration per connector key (the oldest).
+See `decisions/2026-10-01-connector-account-apart-from-integration.md`.
+
+Endpoints per integration (each checks the store and the connector's area; another store's or
+another connector's id answers 404): `POST /connectors/:key/connections/:id/sync`,
+`POST …/:id/test`, `GET|PUT …/:id/settings`, `DELETE /connectors/:key/connections/:id` (removes
+that integration and its account when nothing else uses it; the data kinds are released and the
+source shows "não conectado" only when no integration of the key is left). `POST
+/connectors/:key/authorize` takes `{ domain, name, connectionId }`: the signed state carries the
+integration to reconnect or the name of a new one; the same seller reuses its account, and an
+account that already holds that connector under another integration fails with
+`motivo=duplicada`. Platforms that report no seller id (Bling, and the ad platforms' fallbacks)
+get one account per login (`accountExternalId`). `POST /connectors/:key/connections
+{ accountId, name }` adds an integration to an account the store already has, without a new
+login (Mercado Livre Full on the "ML Matriz" account): 404 for an account of another platform or
+store, 409 when the account already has it. `ConnectionsScreen` lists every integration per
+connector (`connections`, oldest first; `connection` is the first) and the store's `accounts`.
+Audit lines name the integration: "Conectou Mercado Livre Full (Full Matriz)".
 
 ## Summary banner
 
@@ -209,7 +224,7 @@ Meta Ads, Shopify, TikTok Ads — one sheet each in `docs/apis/`, plan in
 `connectors-plan.md`.
 
 **Testar** (integration page › Conexão, for whoever manages the connector; 20 tests / 15 min per store and
-connector): `POST /connectors/:key/test` uses the stored token as it is — it never renews it, so it
+connector): `POST /connectors/:key/connections/:id/test` uses the stored token as it is — it never renews it, so it
 cannot race the worker's refresh; an expired token skips the probe ("unverified") — and calls the
 platform's cheapest authenticated endpoint (the provider's `test`, or `describeSettings` checking that
 the chosen account is still visible). It counts the `raw_record` rows fetched in the last 7 days per

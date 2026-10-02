@@ -13,6 +13,7 @@ import {
   type ConnectionRequest,
   type ConnectionRequestInput,
   type ConnectionSummary,
+  type ConnectorAccountSummary,
   type ConnectorKey,
   type StoreConnector,
 } from "@ecommerce/contracts/connectors";
@@ -69,7 +70,10 @@ export async function dataSourcesFor(
   }));
 }
 
-export type ConnectionsOf = (clientId: string) => Promise<Map<ConnectorKey, ConnectionSummary>>;
+export type ConnectionsOf = (clientId: string) => Promise<{
+  byKey: Map<ConnectorKey, ConnectionSummary[]>;
+  accounts: ConnectorAccountSummary[];
+}>;
 export type ConnectorSources = { connectionsOf: ConnectionsOf; liveKeys: readonly ConnectorKey[] };
 
 export async function storeConnectorsFor(
@@ -96,7 +100,8 @@ export async function storeConnectorsFor(
       status: source?.status ?? "NOT_CONNECTED",
       syncLabel: source?.syncLabel ?? "—",
       request: openRequest.get(connector.key) ?? null,
-      connection: connections.get(connector.key) ?? null,
+      connection: connections.byKey.get(connector.key)?.[0] ?? null,
+      connections: connections.byKey.get(connector.key) ?? [],
       canManage: canManageConnector(access, connector),
     };
   });
@@ -106,11 +111,19 @@ export async function connectionsScreen(
   auth: AuthContext,
   sources: ConnectorSources,
 ): Promise<ConnectionsScreen> {
+  const integrations = await sources.connectionsOf(auth.clientId);
+  const preloaded = { ...sources, connectionsOf: () => Promise.resolve(integrations) };
   const [connectors, owners] = await Promise.all([
-    storeConnectorsFor(auth.clientId, sources, auth.access),
+    storeConnectorsFor(auth.clientId, preloaded, auth.access),
     dataOwnersOf(auth.clientId),
   ]);
-  return { connectors, summary: connectionsSummaryOf(connectors), canRequest: true, owners };
+  return {
+    connectors,
+    summary: connectionsSummaryOf(connectors),
+    canRequest: true,
+    owners,
+    accounts: integrations.accounts,
+  };
 }
 
 export async function connectionsHealth(clientId: string): Promise<ConnectionsHealth> {

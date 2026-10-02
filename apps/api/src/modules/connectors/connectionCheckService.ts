@@ -1,10 +1,10 @@
-import { connectionOfKey } from "./connectorAccountsService";
+import { connectionOf } from "./connectorAccountsService";
+import { integrationLabel } from "./integrationLabel";
 import { prismaClient } from "@ecommerce/database/client";
 import {
   accountCheck,
   CHECK_WINDOW_DAYS,
   connectionVerdict,
-  connectorOf,
   receivedKindLabel,
   receivedKinds,
   type AccessResult,
@@ -55,11 +55,12 @@ async function receivedSince(connectionId: string, since: Date): Promise<Receive
 export async function checkConnection(
   auth: AuthContext,
   key: ConnectorKey,
+  id: string,
   deps: ConnectorsDependencies,
 ): Promise<ConnectionCheck> {
   const provider = providerOf(deps, key);
-  const row = await connectionOfKey(auth.clientId, key);
-  if (!row) throw notFound("Conexão não encontrada");
+  const row = await connectionOf(auth.clientId, key, id);
+  if (!row) throw notFound("Integração não encontrada");
   const credentials = deps.vault.open<Credentials>(row.account.credentials);
   const access: AccessResult = credentialsExpired(credentials, deps.now())
     ? { status: "unverified" }
@@ -71,7 +72,7 @@ export async function checkConnection(
   const verdict = connectionVerdict(access, received);
   await recordActivity(auth, auth.clientId, {
     action: "CONNECTION_TESTED",
-    connector: connectorOf(key).label,
+    connector: integrationLabel(key, row.name),
     result: verdict.text,
   });
   return { access, received, lastSyncAt: row.lastSyncAt?.toISOString() ?? null, verdict };

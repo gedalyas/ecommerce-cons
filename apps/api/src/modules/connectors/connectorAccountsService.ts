@@ -6,11 +6,24 @@ export const withAccount = {
   account: { select: { id: true, credentials: true, externalId: true, externalLabel: true } },
 } as const;
 
-export function connectionOfKey(clientId: string, key: ConnectorKey) {
+export function connectionOf(clientId: string, key: ConnectorKey, id: string) {
   return prismaClient.connection.findFirst({
-    where: { clientId, connectorKey: key },
-    orderBy: { createdAt: "asc" },
+    where: { id, clientId, connectorKey: key },
     include: withAccount,
+  });
+}
+
+export function connectionOnAccount(accountId: string, key: ConnectorKey) {
+  return prismaClient.connection.findUnique({
+    where: { accountId_connectorKey: { accountId, connectorKey: key } },
+    include: withAccount,
+  });
+}
+
+export function accountOf(clientId: string, accountId: string) {
+  return prismaClient.connectorAccount.findFirst({
+    where: { id: accountId, clientId },
+    select: { id: true, family: true, externalLabel: true },
   });
 }
 
@@ -77,6 +90,7 @@ export function saveIntegration(input: {
   key: ConnectorKey;
   accountId: string;
   userId: string;
+  name: string | null;
   settings: Record<string, unknown> | null;
 }): Promise<{ id: string }> {
   const data = {
@@ -98,7 +112,7 @@ export function saveIntegration(input: {
     data: {
       clientId: input.clientId,
       connectorKey: input.key,
-      name: connectorOf(input.key).label,
+      name: input.name ?? connectorOf(input.key).label,
       ...data,
     },
     select: { id: true },

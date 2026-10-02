@@ -56,7 +56,9 @@ export function ConnectionTest({ connector }: { connector: StoreConnector }) {
   const run = async () => {
     setBusy(true);
     try {
-      const result = await test({ data: { key: connector.key } });
+      const result = await test({
+        data: { key: connector.key, id: connector.connection?.id ?? "" },
+      });
       setCheck(result.ok ? result.value : null);
       setError(result.ok ? null : result.message);
     } catch {

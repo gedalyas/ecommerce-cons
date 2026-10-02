@@ -15,7 +15,7 @@ Status: **approved 2026-10-01 — before M4 (`m4-plan.md`).**
       owns the credentials (one per store, platform and external id), `connection` becomes the
       integration (name, modality, cursor) — modalities of one seller share one token; refresh
       race handled; orders record their `connectionId`
-- [ ] 4b — API and contracts per integration: routes by connection id, authorize with a name,
+- [x] 4b — API and contracts per integration: routes by connection id, authorize with a name,
       a new integration on an existing account, `StoreConnector.connections[]`, audit with the name;
       providers that use a constant external id (Bling "bling", fallbacks "ga4", "meta"…) need the
       real account id first, or two logins of one platform merge into one account

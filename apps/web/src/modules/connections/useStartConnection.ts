@@ -14,7 +14,14 @@ export function useStartConnection(connector: StoreConnector | null) {
     if (!connector) return;
     setBusy(true);
     setError(null);
-    const result = await start({ data: { key: connector.key, domain } });
+    const result = await start({
+      data: {
+        key: connector.key,
+        domain,
+        name: null,
+        connectionId: connector.connection?.id ?? null,
+      },
+    });
     if (!result.ok) {
       setBusy(false);
       setError(result.message);

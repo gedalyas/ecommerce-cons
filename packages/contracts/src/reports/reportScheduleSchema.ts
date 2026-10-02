@@ -1,18 +1,11 @@
 import { z } from "zod";
+import { hasControlCharacter } from "../shared/plainText";
 import {
   MAX_SCHEDULE_DAY,
   MAX_SCHEDULE_RECIPIENTS,
   reportFrequencies,
 } from "./reportSchedule.types";
 import { reportSectionKeys } from "./reports.types";
-
-const DEL = 127;
-const FIRST_PRINTABLE = 32;
-
-const isControlCharacter = (char: string) => {
-  const code = char.charCodeAt(0);
-  return code < FIRST_PRINTABLE || code === DEL;
-};
 
 export const reportScheduleSchema = z
   .object({
@@ -21,10 +14,7 @@ export const reportScheduleSchema = z
       .trim()
       .min(1, "Dê um nome à automação.")
       .max(80, "Nome longo demais.")
-      .refine(
-        (name) => ![...name].some(isControlCharacter),
-        "Use só letras, números e pontuação no nome.",
-      ),
+      .refine((name) => !hasControlCharacter(name), "Use só letras, números e pontuação no nome."),
     sections: z
       .array(z.enum(reportSectionKeys, { message: "Seção desconhecida." }))
       .min(1, "Escolha ao menos uma seção.")

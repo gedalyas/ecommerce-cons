@@ -12,18 +12,23 @@ import { settingsChanged } from "./integrationRules";
 
 type Draft = Pick<ConnectorSettings, "statusMap" | "accountId">;
 
-function useLoadedSettings(key: ConnectorKey | null) {
+type Target = { key: ConnectorKey; id: string };
+
+function useLoadedSettings(target: Target | null) {
   const load = useServerFn(getConnectorSettings);
   const [settings, setSettings] = useState<ConnectorSettings | null>(null);
   const [draft, setDraft] = useState<Draft>({ statusMap: {}, accountId: null });
   const [initialAccountId, setInitialAccountId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const key = target?.key ?? null;
+  const id = target?.id ?? null;
+
   useEffect(() => {
-    if (!key) return;
+    if (!key || !id) return;
     setSettings(null);
     setError(null);
-    void load({ data: { key } })
+    void load({ data: { key, id } })
       .then((loaded) => {
         const first = loaded.accountId ?? loaded.accounts[0]?.id ?? null;
         setSettings(loaded);
@@ -31,7 +36,7 @@ function useLoadedSettings(key: ConnectorKey | null) {
         setInitialAccountId(first);
       })
       .catch(() => setError("Não foi possível ler as configurações da plataforma."));
-  }, [key, load]);
+  }, [key, id, load]);
 
   const markSaved = (saved: Draft) => {
     setSettings((prev) => (prev ? { ...prev, ...saved } : prev));
@@ -42,18 +47,19 @@ function useLoadedSettings(key: ConnectorKey | null) {
 }
 
 export function useConnectorSettings(connector: StoreConnector | null) {
-  const key = connector?.key ?? null;
-  const loaded = useLoadedSettings(key);
+  const target =
+    connector?.connection != null ? { key: connector.key, id: connector.connection.id } : null;
+  const loaded = useLoadedSettings(target);
   const save = useServerFn(saveConnectorSettingsFn);
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const { settings, draft, setDraft, initialAccountId } = loaded;
 
   const submit = async (): Promise<boolean> => {
-    if (!key) return false;
+    if (!target) return false;
     setBusy(true);
     loaded.setError(null);
-    const result = await save({ data: { key, ...draft } });
+    const result = await save({ data: { ...target, ...draft } });
     setBusy(false);
     if (!result.ok) {
       loaded.setError(result.message);

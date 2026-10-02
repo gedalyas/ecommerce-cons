@@ -76,6 +76,7 @@ function ConnectionButtons({
 }) {
   const failed = connector.connection?.stage === "ERROR";
   const needsAccount = connector.connection?.needsAccount ?? false;
+  const connectionId = connector.connection?.id ?? "";
   const sync = useServerFn(syncConnectorFn);
   const remove = useServerFn(disconnectConnectorFn);
   const router = useRouter();
@@ -110,7 +111,7 @@ function ConnectionButtons({
         variant="outline"
         size="sm"
         disabled={busy || needsAccount || connector.connection?.stage === "IMPORTING"}
-        onClick={() => void run(() => sync({ data: { key: connector.key } }))}
+        onClick={() => void run(() => sync({ data: { key: connector.key, id: connectionId } }))}
       >
         Sincronizar
       </Button>
@@ -118,7 +119,7 @@ function ConnectionButtons({
         variant="ghost"
         size="sm"
         disabled={busy}
-        onClick={() => void run(() => remove({ data: { key: connector.key } }))}
+        onClick={() => void run(() => remove({ data: { key: connector.key, id: connectionId } }))}
       >
         Desconectar
       </Button>

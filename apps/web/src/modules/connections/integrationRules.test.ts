@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { cardStateOf, isStoreIntegration, nextActive, settingsChanged } from "./integrationRules";
 
 const connection = {
+  id: "c1",
+  name: "Bling",
+  accountId: "a1",
   stage: "READY" as const,
   externalLabel: "Loja",
   lastSyncAt: null,
