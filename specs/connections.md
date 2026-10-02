@@ -19,7 +19,10 @@ tabs in the URL (`aba`, `integrationsSearchSchema` in `contracts/connections`; d
   guide's order, each a grid of cards. A card (`ConnectorCard`) is the logo, the name, a two-line
   description and badges — **Conectada** / **Com erro** / **Por planilha** (`cardStateOf`, what Bling does not show)
   and **Recomendado**; the whole card is the button and opens the integration page. Typing in
-  the search (`busca`) replaces the category with the matches grouped by category
+  the search (`busca`) opens a suggestions panel under the field (`searchSuggestions`, up to six:
+  logo, name, "Em <tipo>"; ↑/↓ choose, Enter opens the chosen one or just closes the panel, Esc
+  closes; footer "Não encontrou o que procurava? Conte para sua consultoria qual plataforma você
+  usa." — there is no endpoint for a platform outside the catalog) and replaces the category with the matches grouped by category
   (`searchConnectors`: name, description or kind, accents ignored); nothing found says so.
   Choosing a category clears the search. The menu is a side column when the content is at
   least 48rem wide and a row of chips otherwise (container queries, so the assistant panel

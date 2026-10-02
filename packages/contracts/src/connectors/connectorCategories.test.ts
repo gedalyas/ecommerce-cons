@@ -5,6 +5,7 @@ import {
   isRecommendedConnector,
   recommendedConnectors,
   searchConnectors,
+  searchSuggestions,
 } from "./connectorCategories";
 import { connectorCatalog } from "./connectorCatalog";
 
@@ -69,5 +70,16 @@ describe("searchConnectors", () => {
 
   it("finds nothing for an unknown platform", () => {
     expect(searchConnectors(connectorCatalog, "xyzzy")).toEqual([]);
+  });
+});
+
+describe("searchSuggestions", () => {
+  it("lists the matches in catalog order, up to the limit", () => {
+    const keys = searchSuggestions(connectorCatalog, "mercado", 2).map((c) => c.key);
+    expect(keys).toEqual(["mercado_livre", "mercado_livre_full"]);
+  });
+
+  it("suggests nothing for an empty query", () => {
+    expect(searchSuggestions(connectorCatalog, "  ", 6)).toEqual([]);
   });
 });

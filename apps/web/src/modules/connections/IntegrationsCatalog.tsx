@@ -1,4 +1,3 @@
-import { Search } from "lucide-react";
 import {
   connectorCategories,
   connectorCategoryHint,
@@ -13,12 +12,12 @@ import {
   type ConnectorCategory,
   type StoreConnector,
 } from "@ecommerce/contracts/connectors";
-import { Input } from "@/shared/ui/Input";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
 import { SideTabs } from "./SideTabs";
 import { ConnectorCard } from "./ConnectorCard";
+import { IntegrationSearch } from "./IntegrationSearch";
 
 type Open = (connector: StoreConnector) => void;
 
@@ -148,20 +147,7 @@ export function IntegrationsCatalog({
   const searching = query.trim().length > 0;
   return (
     <div className="@container flex flex-col gap-6">
-      <label className="relative block">
-        <span className="sr-only">Buscar integração</span>
-        <Search
-          aria-hidden
-          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-        />
-        <Input
-          type="search"
-          value={query}
-          onChange={(e) => onQuery(e.target.value)}
-          placeholder="Buscar por plataforma: Bling, Mercado Livre, Meta Ads…"
-          className="h-11 pl-9"
-        />
-      </label>
+      <IntegrationSearch connectors={connectors} query={query} onQuery={onQuery} onOpen={onOpen} />
       <div className="grid grid-cols-1 gap-6 @3xl:grid-cols-[200px_minmax(0,1fr)]">
         <SideTabs
           label="Categorias"

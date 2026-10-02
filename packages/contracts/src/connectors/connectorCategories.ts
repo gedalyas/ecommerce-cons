@@ -75,3 +75,14 @@ export function searchConnectors<T extends Catalogued>(
     .map((category) => connectorsOfCategory(found, category))
     .filter((group) => group.sections.length > 0);
 }
+
+export function searchSuggestions<T extends Catalogued>(
+  connectors: readonly T[],
+  query: string,
+  limit: number,
+): T[] {
+  if (!foldForSearch(query)) return [];
+  return searchConnectors(connectors, query)
+    .flatMap((group) => group.sections.flatMap((section) => section.items))
+    .slice(0, limit);
+}

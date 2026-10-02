@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cardStateOf, isStoreIntegration, settingsChanged } from "./integrationRules";
+import { cardStateOf, isStoreIntegration, nextActive, settingsChanged } from "./integrationRules";
 
 const connection = {
   stage: "READY" as const,
@@ -75,5 +75,21 @@ describe("settingsChanged", () => {
   it("notices another account or another status target", () => {
     expect(settingsChanged(saved, { statusMap: { "6": "PAID" }, accountId: "b" })).toBe(true);
     expect(settingsChanged(saved, { statusMap: { "6": "PENDING" }, accountId: "a" })).toBe(true);
+  });
+});
+
+describe("nextActive", () => {
+  it("starts at the first item going down and at the last going up", () => {
+    expect(nextActive(-1, 1, 6)).toBe(0);
+    expect(nextActive(-1, -1, 6)).toBe(5);
+  });
+
+  it("wraps around the list", () => {
+    expect(nextActive(5, 1, 6)).toBe(0);
+    expect(nextActive(0, -1, 6)).toBe(5);
+  });
+
+  it("selects nothing in an empty list", () => {
+    expect(nextActive(2, 1, 0)).toBe(-1);
   });
 });

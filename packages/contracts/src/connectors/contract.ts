@@ -72,6 +72,7 @@ export {
   isRecommendedConnector,
   recommendedConnectors,
   searchConnectors,
+  searchSuggestions,
 } from "./connectorCategories";
 export type { CategoryGroup, ConnectorCategory } from "./connectorCategories";
 export { familyOf, keepsOrderFor } from "./connectorModalities";
