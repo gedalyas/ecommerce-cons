@@ -1,3 +1,4 @@
+import { connectionOfKey } from "./connectorAccountsService";
 import { prismaClient } from "@ecommerce/database/client";
 import {
   accountCheck,
@@ -57,15 +58,12 @@ export async function checkConnection(
   deps: ConnectorsDependencies,
 ): Promise<ConnectionCheck> {
   const provider = providerOf(deps, key);
-  const row = await prismaClient.connection.findUnique({
-    where: { clientId_connectorKey: { clientId: auth.clientId, connectorKey: key } },
-    select: { id: true, credentials: true, settings: true, externalLabel: true, lastSyncAt: true },
-  });
+  const row = await connectionOfKey(auth.clientId, key);
   if (!row) throw notFound("Conexão não encontrada");
-  const credentials = deps.vault.open<Credentials>(row.credentials);
+  const credentials = deps.vault.open<Credentials>(row.account.credentials);
   const access: AccessResult = credentialsExpired(credentials, deps.now())
     ? { status: "unverified" }
-    : await probeAccess(provider, credentials, row.settings, row.externalLabel);
+    : await probeAccess(provider, credentials, row.settings, row.account.externalLabel);
   const received = await receivedSince(
     row.id,
     new Date(deps.now().getTime() - CHECK_WINDOW_DAYS * DAY_MS),

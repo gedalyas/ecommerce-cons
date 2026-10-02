@@ -33,12 +33,17 @@ import type {
   SyncCursor,
 } from "./connectorProvider.types";
 import { connectionFailedMail, connectionsLink } from "./connectionMail";
+import { latestCredentials, saveRefreshed, withAccount } from "./connectorAccountsService";
+import { credentialsAfterRefresh, type RefreshOutcome } from "./refreshRace";
 import { BACKFILL_QUEUE, SYNC_QUEUE, type ConnectorsDependencies } from "./connectorsService";
 
 const SYNC_ALL_QUEUE = "connector.sync-all";
 const HOURLY = "0 * * * *";
 const RAW_CHUNK = 200;
 const ERROR_LIMIT = 500;
+const REFRESH_SETTLE_MS = 1500;
+
+const settle = (ms: number) => new Promise((done) => setTimeout(done, ms));
 
 type JobData = { connectionId: string; reprocess?: boolean };
 
@@ -69,8 +74,7 @@ type ConnectionRow = {
   id: string;
   clientId: string;
   connectorKey: string;
-  externalId: string;
-  credentials: string;
+  account: { id: string; externalId: string; credentials: string };
   syncCursor: unknown;
   settings: unknown;
   authorizedBy: string | null;
@@ -110,7 +114,7 @@ function contextOf(
   return {
     connectionId: row.id,
     clientId: row.clientId,
-    externalId: row.externalId,
+    externalId: row.account.externalId,
     credentials,
     cursor: (row.syncCursor ?? {}) as SyncCursor,
     settings: (row.settings ?? {}) as Record<string, unknown>,
@@ -121,7 +125,10 @@ function contextOf(
     listRaw: (kind, skip, take) => listRaw(row.id, kind, skip, take),
     writeOrders: async (orders) =>
       provides("sales") && (await ownerOf(row.clientId, "sales")) === key
-        ? writeSyncedOrders(row.clientId, ordersSince(orders, cuts.sales), key)
+        ? writeSyncedOrders(row.clientId, ordersSince(orders, cuts.sales), {
+            source: key,
+            connectionId: row.id,
+          })
         : 0,
     writeAdSpend: (rows) =>
       provides("ad_spend") ? writeSyncedAdSpend(row.clientId, rows) : Promise.resolve(0),
@@ -145,15 +152,27 @@ async function credentialsOf(
   provider: ConnectorProvider,
   deps: ConnectorsDependencies,
 ): Promise<Credentials> {
-  const stored = deps.vault.open<Credentials>(row.credentials);
+  const read = row.account.credentials;
+  const stored = deps.vault.open<Credentials>(read);
   if (!provider.refresh) return stored;
-  const refreshed = await provider.refresh(stored, deps.now());
+  const resolve = async (outcome: RefreshOutcome, own: Credentials | null) => {
+    const latest = await latestCredentials(row.account.id);
+    const use = credentialsAfterRefresh({ outcome, read, latest });
+    return use === "latest" && latest ? deps.vault.open<Credentials>(latest) : own;
+  };
+  let refreshed: Credentials | null;
+  try {
+    refreshed = await provider.refresh(stored, deps.now());
+  } catch (error) {
+    const recovered =
+      (await resolve("failed", null)) ??
+      (await settle(REFRESH_SETTLE_MS).then(() => resolve("failed", null)));
+    if (recovered) return recovered;
+    throw error;
+  }
   if (!refreshed) return stored;
-  await prismaClient.connection.update({
-    where: { id: row.id },
-    data: { credentials: deps.vault.seal(refreshed) },
-  });
-  return refreshed;
+  if (await saveRefreshed(row.account.id, read, deps.vault.seal(refreshed))) return refreshed;
+  return (await resolve("conflict", refreshed)) ?? refreshed;
 }
 
 async function finish(
@@ -261,7 +280,10 @@ async function fail(row: ConnectionRow, error: unknown, deps: ConnectorsDependen
 }
 
 async function run(data: JobData, mode: "backfill" | "sync", deps: ConnectorsDependencies) {
-  const row = await prismaClient.connection.findUnique({ where: { id: data.connectionId } });
+  const row = await prismaClient.connection.findUnique({
+    where: { id: data.connectionId },
+    include: withAccount,
+  });
   if (!row) return;
   const provider = deps.providers.get(row.connectorKey as ConnectorKey);
   if (!provider) return;

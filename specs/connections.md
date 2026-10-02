@@ -41,6 +41,17 @@ Orders API cannot tell it apart yet). Each connects, syncs and is configured on 
 the platform's app and callback; its logo is the platform's. Modalities of one platform share
 the one-source-per-kind rule ("Vem de Mercado Livre, da mesma plataforma").
 
+## Accounts and integrations (2026-10-01)
+
+A **connector account** (`connector_account`) is the seller's login on a platform — one per store,
+platform family and external id — and owns the sealed credentials. An **integration**
+(`connection`) is a connector key (or a marketplace modality) on an account, with its own name,
+stage, cursor and settings. Mercado Livre and Mercado Livre Full of the same seller share one
+account and one token; the worker renews the account's token with a compare-and-set
+(`refreshRace.ts`). Orders record the integration that wrote them (`sales_order.connection_id`).
+See `decisions/2026-10-01-connector-account-apart-from-integration.md`. Until slice 4b the screens
+still address one integration per connector key (the oldest).
+
 ## Summary banner
 
 Above the list: "**5 de 7 fontes ativas** · 1 com erro, 1 não conectada" —

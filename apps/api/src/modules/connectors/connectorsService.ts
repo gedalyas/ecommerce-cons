@@ -22,6 +22,12 @@ import type { Mailer } from "@/shared/mail/mailer.types";
 import type { Vault } from "@/shared/crypto/vault";
 import type { Authorized, ProviderRegistry } from "./connectorProvider.types";
 import { connectionsLink } from "./connectionMail";
+import {
+  connectionOfKey,
+  dropIfOrphan,
+  saveIntegration,
+  upsertAccount,
+} from "./connectorAccountsService";
 import { needsAccountOf, reconnectSettings } from "./connectionSettings";
 import { signOAuthState, verifyOAuthState } from "./oauthState";
 import { defaultStatusMap } from "./blingOrders";
@@ -109,32 +115,32 @@ async function saveConnection(
 ): Promise<{ id: string; needsAccount: boolean }> {
   const provider = providerOf(deps, key);
   const now = deps.now();
-  const existing = await prismaClient.connection.findUnique({
-    where: { clientId_connectorKey: { clientId: owner.clientId, connectorKey: key } },
-    select: { lastSyncAt: true, settings: true },
-  });
+  const existing = await connectionOfKey(owner.clientId, key);
   const settings = reconnectSettings(authorized.settings ?? null, existing?.settings ?? null);
   const needsAccount = needsAccountOf(settings);
-  const data = {
+  const account = await upsertAccount({
+    clientId: owner.clientId,
+    key,
     authPattern: authPatternEnum[provider.authPattern] ?? "OAUTH",
     externalId: authorized.externalId,
     externalLabel: authorized.externalLabel,
-    credentials: deps.vault.seal(authorized.credentials),
-    stage: "AUTHORIZED" as const,
-    lastError: null,
-    authorizedBy: owner.userId,
-    ...(settings ? { settings: settings as Prisma.InputJsonObject } : {}),
-  };
-  const connection = await prismaClient.connection.upsert({
-    where: { clientId_connectorKey: { clientId: owner.clientId, connectorKey: key } },
-    create: { clientId: owner.clientId, connectorKey: key, ...data },
-    update: data,
-    select: { id: true },
+    sealedCredentials: deps.vault.seal(authorized.credentials),
+    userId: owner.userId,
   });
+  const connection = await saveIntegration({
+    existing,
+    clientId: owner.clientId,
+    key,
+    accountId: account.id,
+    userId: owner.userId,
+    settings,
+  });
+  if (existing?.accountId !== account.id)
+    await dropIfOrphan(owner.clientId, existing?.accountId ?? null);
   await stampConnected(owner.clientId, key, now);
   await recordAuthorized(owner, key, authorized.externalLabel);
   if (needsAccount) return { id: connection.id, needsAccount };
-  if (existing?.lastSyncAt) {
+  if (existing?.lastSyncAt && existing.accountId === account.id) {
     await deps.jobs.send(
       SYNC_QUEUE,
       { connectionId: connection.id },
@@ -213,12 +219,16 @@ export async function connectWithCredentials(
 }
 
 export async function disconnect(auth: AuthContext, key: ConnectorKey): Promise<void> {
-  const existing = await prismaClient.connection.findUnique({
-    where: { clientId_connectorKey: { clientId: auth.clientId, connectorKey: key } },
-    select: { id: true, externalLabel: true },
-  });
+  const existing = await connectionOfKey(auth.clientId, key);
   if (!existing) throw notFound("Conexão não encontrada");
-  await prismaClient.connection.delete({ where: { id: existing.id } });
+  const removed = await prismaClient.connection.findMany({
+    where: { clientId: auth.clientId, connectorKey: key },
+    select: { accountId: true },
+  });
+  await prismaClient.connection.deleteMany({
+    where: { clientId: auth.clientId, connectorKey: key },
+  });
+  for (const { accountId } of removed) await dropIfOrphan(auth.clientId, accountId);
   await releaseDataKinds(auth.clientId, key);
   await prismaClient.dataSource.updateMany({
     where: { clientId: auth.clientId, connectorKey: key },
@@ -227,7 +237,7 @@ export async function disconnect(auth: AuthContext, key: ConnectorKey): Promise<
   await recordActivity(auth, auth.clientId, {
     action: "CONNECTION_REMOVED",
     connector: connectorOf(key).label,
-    account: existing.externalLabel,
+    account: existing.account.externalLabel,
   });
 }
 
@@ -236,10 +246,7 @@ export async function triggerSync(
   key: ConnectorKey,
   deps: ConnectorsDependencies,
 ): Promise<void> {
-  const existing = await prismaClient.connection.findUnique({
-    where: { clientId_connectorKey: { clientId: auth.clientId, connectorKey: key } },
-    select: { id: true, stage: true },
-  });
+  const existing = await connectionOfKey(auth.clientId, key);
   if (!existing) throw notFound("Conexão não encontrada");
   const queue = existing.stage === "AUTHORIZED" ? BACKFILL_QUEUE : SYNC_QUEUE;
   await deps.jobs.send(queue, { connectionId: existing.id }, { singletonKey: existing.id });
@@ -248,7 +255,7 @@ export async function triggerSync(
 const summarySelect = {
   connectorKey: true,
   stage: true,
-  externalLabel: true,
+  account: { select: { externalLabel: true } },
   lastSyncAt: true,
   lastError: true,
   settings: true,
@@ -258,7 +265,7 @@ const toSummary = (
   c: Prisma.ConnectionGetPayload<{ select: typeof summarySelect }>,
 ): ConnectionSummary => ({
   stage: c.stage,
-  externalLabel: c.externalLabel,
+  externalLabel: c.account.externalLabel,
   lastSyncAt: c.lastSyncAt?.toISOString() ?? null,
   lastError: c.lastError,
   needsAccount: needsAccountOf(c.settings),
@@ -269,16 +276,14 @@ export async function connectionSummariesFor(
 ): Promise<Map<ConnectorKey, ConnectionSummary>> {
   const rows = await prismaClient.connection.findMany({
     where: { clientId },
+    orderBy: { createdAt: "desc" },
     select: summarySelect,
   });
   return new Map(rows.map((r) => [r.connectorKey as ConnectorKey, toSummary(r)]));
 }
 
 async function connectionRow(auth: AuthContext, key: ConnectorKey) {
-  const row = await prismaClient.connection.findUnique({
-    where: { clientId_connectorKey: { clientId: auth.clientId, connectorKey: key } },
-    select: { id: true, credentials: true, settings: true, stage: true, lastSyncAt: true },
-  });
+  const row = await connectionOfKey(auth.clientId, key);
   if (!row) throw notFound("Conexão não encontrada");
   return row;
 }
@@ -291,7 +296,7 @@ export async function connectorSettings(
   const provider = providerOf(deps, key);
   if (!provider.describeSettings) throw new HttpError(422, "Este conector não tem configurações.");
   const row = await connectionRow(auth, key);
-  const described = await provider.describeSettings(deps.vault.open(row.credentials));
+  const described = await provider.describeSettings(deps.vault.open(row.account.credentials));
   const stored = (row.settings ?? {}) as StoredSettings;
   const statuses = described.statuses ?? [];
   return {

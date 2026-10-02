@@ -58,9 +58,13 @@ export async function undoableJobIds(clientId: string): Promise<Set<string>> {
 }
 
 async function restoreOrder(tx: Tx, clientId: string, number: string, snapshot: OrderSnapshot) {
-  const { items, placedAt, paidAt, ...rest } = snapshot;
+  const { items, placedAt, paidAt, connectionId, ...rest } = snapshot;
+  const linked =
+    connectionId != null &&
+    (await tx.connection.count({ where: { id: connectionId, clientId } })) > 0;
   const data = {
     ...rest,
+    connectionId: linked ? connectionId : null,
     source: rest.source ?? null,
     fulfillment: rest.fulfillment ?? null,
     placedAt: new Date(placedAt),

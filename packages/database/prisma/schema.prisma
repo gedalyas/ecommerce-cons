@@ -522,13 +522,18 @@ model Order {
   itemsCount             Int              @map("items_count")
   /// Who wrote the order: a connector key ("bling") or "manual_csv"; null before 2026-09-23.
   source                 String?
+  /// The integration that wrote the order (several accounts of one platform); null for
+  /// spreadsheets, the seed and orders written before 2026-10-01.
+  connectionId           String?          @map("connection_id")
 
-  client   Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  customer Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  items    OrderItem[]
+  client     Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  connection Connection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  items      OrderItem[]
 
   @@unique([clientId, number])
   @@index([clientId, placedAt])
+  @@index([connectionId])
   @@index([clientId, financialStatus, placedAt])
   @@index([customerId, placedAt])
   @@map("sales_order")
@@ -860,6 +865,7 @@ model Client {
   subscription         Subscription?
   contract             Contract?
   connections          Connection[]
+  connectorAccounts    ConnectorAccount[]
   dashboardLayouts     DashboardLayout[]
   reportSchedules      ReportSchedule[]
 
@@ -1111,33 +1117,59 @@ enum ConnectionStage {
   @@map("connection_stage")
 }
 
-/// A store's live link to a platform: the sealed credentials, the external account and the
-/// ingestion stage the Conexões stepper shows. `DataSource` stays the display row.
-model Connection {
+/// A seller's login on a platform (one per store, platform and external account): the sealed
+/// credentials every integration of that login shares, so modalities never fight for a token.
+model ConnectorAccount {
   id            String                @id @default(cuid())
   clientId      String                @map("client_id")
-  connectorKey  String                @map("connector_key")
+  /// The platform's connector key (`familyOf`): mercado_livre for Mercado Livre and its Full.
+  family        String
   authPattern   ConnectionAuthPattern @map("auth_pattern")
-  /// Store id, ad account id, property id… on the platform.
+  /// Seller id, user id, store id… on the platform.
   externalId    String                @map("external_id")
   externalLabel String                @map("external_label")
   /// AES-256-GCM sealed JSON (tokens, secrets). Never leaves the API.
   credentials   String
-  stage         ConnectionStage       @default(AUTHORIZED)
-  /// Provider-specific incremental cursor (e.g. { orders: "2026-09-01T00:00:00Z" }).
-  syncCursor    Json?                 @map("sync_cursor")
-  /// Per-connection settings the user edits (e.g. the ERP status mapping).
-  settings      Json?
-  lastSyncAt    DateTime?             @map("last_sync_at")
-  lastError     String?               @map("last_error")
   authorizedBy  String?               @map("authorized_by")
   createdAt     DateTime              @default(now()) @map("created_at")
   updatedAt     DateTime              @updatedAt @map("updated_at")
 
-  client     Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  rawRecords RawRecord[]
+  client      Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  connections Connection[]
 
-  @@unique([clientId, connectorKey])
+  @@unique([clientId, family, externalId])
+  @@unique([id, clientId])
+  @@map("connector_account")
+}
+
+/// One integration of a store (a connector or a marketplace modality on an account): its name,
+/// the ingestion stage the stepper shows, the cursor and the settings. `DataSource` stays the
+/// display row per connector key.
+model Connection {
+  id           String          @id @default(cuid())
+  clientId     String          @map("client_id")
+  accountId    String          @map("account_id")
+  connectorKey String          @map("connector_key")
+  /// The store's name for this integration ("ML Matriz").
+  name         String
+  stage        ConnectionStage @default(AUTHORIZED)
+  /// Provider-specific incremental cursor (e.g. { orders: "2026-09-01T00:00:00Z" }).
+  syncCursor   Json?           @map("sync_cursor")
+  /// Per-connection settings the user edits (e.g. the ERP status mapping).
+  settings     Json?
+  lastSyncAt   DateTime?       @map("last_sync_at")
+  lastError    String?         @map("last_error")
+  authorizedBy String?         @map("authorized_by")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  client     Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  account    ConnectorAccount @relation(fields: [accountId, clientId], references: [id, clientId], onDelete: Cascade)
+  rawRecords RawRecord[]
+  orders     Order[]
+
+  @@unique([accountId, connectorKey])
+  @@index([clientId, connectorKey])
   @@map("connection")
 }
 

@@ -118,7 +118,10 @@ async function process({ clientId, kind, table, undo }: ProcessInput): Promise<P
   switch (mapped.kind) {
     case "ORDERS": {
       const orders = ordersSince(mapped.orders, await sinceOf(clientId, "sales"));
-      const written = await persistOrders(clientId, orders, undo, "manual_csv");
+      const written = await persistOrders(clientId, orders, undo, {
+        source: "manual_csv",
+        connectionId: null,
+      });
       const imported = orders.filter((_, i) => i < written).reduce((s, o) => s + o.rows.length, 0);
       return {
         counts: { total, imported, rejected },

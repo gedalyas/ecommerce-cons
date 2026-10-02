@@ -42,6 +42,7 @@ export type OrderSnapshot = {
   orderNumberForCustomer: number;
   itemsCount: number;
   source?: string | null;
+  connectionId?: string | null;
   items: OrderItemSnapshot[];
 };
 
