@@ -1,3 +1,4 @@
+import { amazonBuyerDomain } from "@ecommerce/contracts/customers";
 import type { FinancialStatus, ProcessingMethod } from "@ecommerce/database/enums";
 import type { OrderInput } from "@/modules/imports/contract";
 
@@ -34,7 +35,6 @@ export type AmazonOrderItem = {
 export const AMAZON_CHANNEL = "Amazon";
 const GATEWAY = "Amazon Pay";
 const DEFAULT_CATEGORY = "Sem categoria";
-const BUYER_EMAIL_DOMAIN = "comprador.amazon.com.br";
 
 const statusOf: Record<string, FinancialStatus> = {
   Shipped: "PAID",
@@ -104,7 +104,7 @@ export function amazonMethodOf(details: string[] | null | undefined): Processing
 
 export function amazonBuyerEmailOf(order: AmazonOrder): string {
   const email = order.BuyerInfo?.BuyerEmail?.trim().toLowerCase();
-  return email || `${order.AmazonOrderId.toLowerCase()}@${BUYER_EMAIL_DOMAIN}`;
+  return email || `${order.AmazonOrderId.toLowerCase()}@${amazonBuyerDomain}`;
 }
 
 export function amazonOrderInputOf(order: AmazonOrder): OrderInput | null {

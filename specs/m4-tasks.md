@@ -25,5 +25,9 @@ categoria, preco`), `productsWriteService` writes variant cost/price/stock and p
       trailing twelve months; Gestão's Concentração de receita is live by sales channel
       (`revenueConcentration`) over the global period, with the "seu consultor preenche" banner
       (`awaitsConsultant`) (2026-10-02)
-- [ ] B2 Clientes, Influenciadores, Dinheiro fixes
+- [x] B2 Clientes, Influenciadores, Dinheiro fixes: coupons count only inside their own
+      validity and each order once (per partnership and in the total), notice when the sales
+      source carries no coupon, first-partnership empty message; marketplace relay e-mails left
+      out of the customers export and Origem = marketplace without UTM; "Taxas e custos de
+      venda" label and the shipping cost per order accrued per business unit (2026-10-02)
 - [ ] B3 Release: smoke per screen, default released screens, boards and specs

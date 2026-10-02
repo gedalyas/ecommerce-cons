@@ -9,7 +9,13 @@ import type {
   CustomersSearch,
 } from "@ecommerce/contracts/customers";
 import { customersLtvCac, customersRepurchase } from "./repurchaseService";
-import { refreshCustomerAggregates, rfmFilterOptions, rfmPage, rfmSegments } from "./rfmService";
+import {
+  refreshCustomerAggregates,
+  rfmFilterOptions,
+  rfmPage,
+  rfmSegments,
+  refreshAcquisitionSources,
+} from "./rfmService";
 
 export async function customersScreen(
   clientId: string,
@@ -40,10 +46,10 @@ export async function customersExport(
 }
 
 export async function refreshCustomers(clientId: string): Promise<number> {
+  await refreshAcquisitionSources(clientId);
   return refreshCustomerAggregates(clientId);
 }
 
-/** Recompra 90 dias and LTV 12 meses - the Marketing › Retenção pillar reads them through the route. */
 export async function retentionSummary(clientId: string): Promise<RetentionSummary> {
   const today = new Date(`${currentDay()}T00:00:00.000Z`);
   const days = (n: number) => new Date(today.getTime() - n * 86_400_000).toISOString().slice(0, 10);

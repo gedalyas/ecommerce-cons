@@ -13,7 +13,9 @@ This is the screen that connects analysis with action: the filtered list is
 the audience of a campaign.
 
 1. **Filter panel** (`RfmFilters.tsx`, `rfmWhere` in `rfmService.ts`):
-   Segmentos RFM · Origem (first order's UTM source or marketplace) · Dias sem
+   Segmentos RFM · Origem (recomputed on every customers refresh by
+   `refreshAcquisitionSources` from the first paid order: its UTM source, or the marketplace's
+   name when it came from a marketplace without UTM) · Dias sem
    comprar (bands até 30 / 31–60 / 61–90 / 91–180 / 181+) · Gateway · Método ·
    Estado · Cidade · Comprou / Não comprou (products; stackable through
    multi-select) · Cupons with the **Incluir quem usou / Excluir quem usou**
@@ -29,7 +31,9 @@ the audience of a campaign.
    (24k customers ≈ 2 s), reproducing the seed exactly.
 3. **Clientes** table — Nome · E-mail · Telefone · Segmento RFM · Pedidos ·
    Total vendido · Última compra · Origem · Cidade / UF; server-side paging
-   and sorting; "Exportar CSV" downloads the whole filtered set (up to 5.000).
+   and sorting; "Exportar CSV" downloads the whole filtered set (up to 5.000) except the
+   addresses made up for marketplace buyers (`marketplaceRelayDomains`: Mercado Livre and Amazon
+   relays, left out in the SQL before the row cap), which would only pollute an ads audience.
 
 Segment rules (`rfmSegments.ts`, tested): Campeões (R≥4, F≥3, M≥4) · Não
 pode perder (R≤2, F≥3) · Leais (F≥3) · Potenciais leais (R≥4, F=2) · Novos

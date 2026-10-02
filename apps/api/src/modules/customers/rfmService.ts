@@ -1,13 +1,14 @@
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import { currentDay } from "@/shared/config/clock";
-import type {
-  RfmCustomerRow,
-  RfmFilterOptions,
-  RfmPage,
-  RfmSegmentShare,
-  CustomersSearch,
-  CustomersSortField,
-  InactivityBand,
+import {
+  marketplaceRelayDomains,
+  type RfmCustomerRow,
+  type RfmFilterOptions,
+  type RfmPage,
+  type RfmSegmentShare,
+  type CustomersSearch,
+  type CustomersSortField,
+  type InactivityBand,
 } from "@ecommerce/contracts/customers";
 import { frequencyScore, quintileScorer, rfmSegmentLabels, segmentFor } from "./rfmSegments";
 
@@ -39,7 +40,6 @@ const bandCondition = (band: InactivityBand) => {
   }
 };
 
-/** An EXISTS over the customer's paid orders with the given extra condition. */
 const hasOrder = (condition: Prisma.Sql, negate = false) => Prisma.sql`
   and ${negate ? Prisma.sql`not` : Prisma.empty} exists (
     select 1 from sales_order o where o.customer_id = c.id and o.financial_status = 'PAID' ${condition}
@@ -54,7 +54,6 @@ const boughtProducts = (productIds: string[], negate: boolean) =>
       )
     : Prisma.empty;
 
-/** The whole filter panel as one WHERE fragment on the `c` (customer) alias. */
 export const rfmWhere = (clientId: string, s: CustomersSearch) => Prisma.sql`
   c.client_id = ${clientId} and c.orders_count > 0
   ${inList(Prisma.sql`c.rfm_segment`, s.segmento)}
@@ -99,7 +98,10 @@ export async function rfmPage(
   s: CustomersSearch,
   options: { forExport?: boolean } = {},
 ): Promise<RfmPage> {
-  const where = rfmWhere(clientId, s);
+  const audienceOnly = options.forExport
+    ? Prisma.sql`and split_part(lower(c.email), '@', 2) <> all(${[...marketplaceRelayDomains]}::text[])`
+    : Prisma.empty;
+  const where = Prisma.sql`${rfmWhere(clientId, s)} ${audienceOnly}`;
   const pageSize = options.forExport ? MAX_EXPORT_ROWS : s.porPagina;
   const page = options.forExport ? 1 : s.pagina;
   const direction = s.direcao === "asc" ? Prisma.sql`asc` : Prisma.sql`desc`;
@@ -156,7 +158,6 @@ export async function rfmPage(
   };
 }
 
-/** Customers and revenue per segment, after the filters. */
 export async function rfmSegments(
   clientId: string,
   s: CustomersSearch,
@@ -245,10 +246,6 @@ export async function rfmFilterOptions(clientId: string): Promise<RfmFilterOptio
   };
 }
 
-/**
- * Recomputes every customer's aggregates and RFM scores from the paid orders.
- * Runs in chunks so a 30k-customer base updates in seconds.
- */
 export async function refreshCustomerAggregates(clientId: string): Promise<number> {
   const today = new Date(`${currentDay()}T00:00:00.000Z`);
   const rows = await prismaClient.$queryRaw<
@@ -311,4 +308,20 @@ export async function refreshCustomerAggregates(clientId: string): Promise<numbe
     `;
   }
   return buyers.length;
+}
+
+export async function refreshAcquisitionSources(clientId: string): Promise<void> {
+  await prismaClient.$executeRaw`
+    update customer c set acquisition_source = f.origin
+    from (
+      select distinct on (o.customer_id) o.customer_id,
+        case when o.utm_source is not null then o.utm_source
+             when o.sales_platform = 'MARKETPLACE' then o.channel end as origin
+      from sales_order o
+      where o.client_id = ${clientId} and o.financial_status = 'PAID'
+      order by o.customer_id, o.placed_at
+    ) f
+    where c.id = f.customer_id and c.client_id = ${clientId}
+      and c.acquisition_source is distinct from f.origin
+  `;
 }

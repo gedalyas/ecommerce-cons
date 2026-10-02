@@ -62,18 +62,3 @@ export const emptyActivity: InfluencerActivity = {
   newCustomers: 0,
   repeatOrders: 0,
 };
-
-export function sumActivity(items: readonly InfluencerActivity[]): InfluencerActivity {
-  return items.reduce(
-    (t, a) => ({
-      orders: t.orders + a.orders,
-      revenue: t.revenue + a.revenue,
-      productRevenue: t.productRevenue + a.productRevenue,
-      shippingRevenue: t.shippingRevenue + a.shippingRevenue,
-      customers: t.customers + a.customers,
-      newCustomers: t.newCustomers + a.newCustomers,
-      repeatOrders: t.repeatOrders + a.repeatOrders,
-    }),
-    emptyActivity,
-  );
-}

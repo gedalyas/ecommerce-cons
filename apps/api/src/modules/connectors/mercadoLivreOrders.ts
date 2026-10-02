@@ -1,3 +1,4 @@
+import { mercadoLivreBuyerDomain } from "@ecommerce/contracts/customers";
 import type { FinancialStatus, ProcessingMethod } from "@ecommerce/database/enums";
 import type { OrderInput } from "@/modules/imports/contract";
 
@@ -52,7 +53,6 @@ export type MercadoLivreShipment = {
 export const MERCADO_LIVRE_CHANNEL = "Mercado Livre";
 const GATEWAY = "Mercado Pago";
 const DEFAULT_CATEGORY = "Sem categoria";
-const BUYER_EMAIL_DOMAIN = "comprador.mercadolivre.com.br";
 
 const statusOf: Record<string, FinancialStatus> = {
   paid: "PAID",
@@ -83,7 +83,7 @@ export function mercadoLivreBuyerEmailOf(buyer: MercadoLivreOrder["buyer"]): str
   const email = buyer?.email?.trim().toLowerCase();
   if (email) return email;
   const id = buyer?.id;
-  return id === null || id === undefined ? null : `${id}@${BUYER_EMAIL_DOMAIN}`;
+  return id === null || id === undefined ? null : `${id}@${mercadoLivreBuyerDomain}`;
 }
 
 export function mercadoLivreProvinceOf(shipment: MercadoLivreShipment | null | undefined) {

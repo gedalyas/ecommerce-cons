@@ -1,22 +1,17 @@
 import type { InfluencerStatus } from "@ecommerce/database/enums";
-import { prismaClient } from "@ecommerce/database/client";
+import { Prisma, prismaClient } from "@ecommerce/database/client";
 import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { resolvePeriod, type Window } from "@ecommerce/contracts/shared/periodWindow";
+import { ownerOf } from "@/modules/connections/contract";
+import { emptyActivity, influencerCost, repurchaseRateOf, roiOf } from "./influencerCost";
 import {
-  emptyActivity,
-  influencerCost,
-  repurchaseRateOf,
-  roiOf,
-  sumActivity,
-} from "./influencerCost";
-import type {
-  Influencer,
-  InfluencerActivity,
-  InfluencerCoupon,
-  InfluencerRow,
-  InfluencersScreen,
-  InfluencerParsed,
-  InfluencersSearch,
+  couponSourceNotice,
+  type Influencer,
+  type InfluencerActivity,
+  type InfluencerRow,
+  type InfluencersScreen,
+  type InfluencerParsed,
+  type InfluencersSearch,
 } from "@ecommerce/contracts/influencers";
 
 const isoDay = (d: Date) => d.toISOString().slice(0, 10);
@@ -115,7 +110,7 @@ export async function deleteInfluencer(clientId: string, id: string) {
 }
 
 type ActivityRow = {
-  code: string;
+  influencer_id: string | null;
   orders: number;
   revenue: number;
   product_revenue: number;
@@ -125,50 +120,69 @@ type ActivityRow = {
   repeat_orders: number;
 };
 
-async function activityByCoupon(clientId: string, w: Window): Promise<Map<string, ActivityRow>> {
-  const rows = await prismaClient.$queryRaw<ActivityRow[]>`
-    select code, count(*)::int as orders,
-      coalesce(sum(o.total_price), 0)::float8 as revenue,
-      coalesce(sum(o.product_revenue), 0)::float8 as product_revenue,
-      coalesce(sum(o.shipping_revenue), 0)::float8 as shipping_revenue,
-      count(distinct o.customer_id)::int as customers,
-      count(*) filter (where o.order_number_for_customer = 1)::int as new_customers,
-      count(*) filter (where o.order_number_for_customer >= 2)::int as repeat_orders
-    from sales_order o, unnest(o.discount_codes) as code
-    where o.client_id = ${clientId} and o.financial_status = 'PAID'
-      and o.placed_at >= ${w.start} and o.placed_at < ${w.end}
-    group by 1
-  `;
-  return new Map(rows.map((r) => [r.code, r]));
-}
+const activityOfRow = (r: ActivityRow): InfluencerActivity => ({
+  orders: r.orders,
+  revenue: r.revenue,
+  productRevenue: r.product_revenue,
+  shippingRevenue: r.shipping_revenue,
+  customers: r.customers,
+  newCustomers: r.new_customers,
+  repeatOrders: r.repeat_orders,
+});
 
-const couponActive = (coupon: InfluencerCoupon, calendar: { inicio: string; fim: string }) =>
-  (coupon.activeFrom == null || coupon.activeFrom <= calendar.fim) &&
-  (coupon.activeUntil == null || coupon.activeUntil >= calendar.inicio);
-
-const activityOf = (
-  influencer: Influencer,
-  byCoupon: Map<string, ActivityRow>,
-  calendar: { inicio: string; fim: string },
-): InfluencerActivity =>
-  sumActivity(
-    influencer.coupons
-      .filter((c) => couponActive(c, calendar))
-      .map((c) => byCoupon.get(c.code))
-      .map((r) =>
-        r
-          ? {
-              orders: r.orders,
-              revenue: r.revenue,
-              productRevenue: r.product_revenue,
-              shippingRevenue: r.shipping_revenue,
-              customers: r.customers,
-              newCustomers: r.new_customers,
-              repeatOrders: r.repeat_orders,
-            }
-          : emptyActivity,
-      ),
+const couponValues = (influencers: readonly Influencer[]) =>
+  influencers.flatMap((i) =>
+    i.coupons.map(
+      (c) => Prisma.sql`(${i.id}, ${c.code}, ${c.activeFrom}::date, ${c.activeUntil}::date)`,
+    ),
   );
+
+type CouponActivity = { byInfluencer: Map<string, InfluencerActivity>; total: InfluencerActivity };
+
+async function couponActivity(
+  clientId: string,
+  w: Window,
+  influencers: readonly Influencer[],
+): Promise<CouponActivity> {
+  const values = couponValues(influencers);
+  if (values.length === 0) return { byInfluencer: new Map(), total: emptyActivity };
+  const rows = await prismaClient.$queryRaw<ActivityRow[]>`
+    with coupon(influencer_id, code, active_from, active_until) as (
+      values ${Prisma.join(values)}
+    ),
+    matched as (
+      select distinct c.influencer_id, o.id, o.total_price, o.product_revenue,
+        o.shipping_revenue, o.customer_id, o.order_number_for_customer
+      from sales_order o
+      join coupon c on c.code = any(o.discount_codes)
+        and (c.active_from is null or o.placed_at >= c.active_from)
+        and (c.active_until is null or o.placed_at < c.active_until + interval '1 day')
+      where o.client_id = ${clientId} and o.financial_status = 'PAID'
+        and o.placed_at >= ${w.start} and o.placed_at < ${w.end}
+    ),
+    per_order as (
+      select distinct on (id) null::text as influencer_id, id, total_price, product_revenue,
+        shipping_revenue, customer_id, order_number_for_customer
+      from matched
+    )
+    select influencer_id, count(*)::int as orders,
+      coalesce(sum(total_price), 0)::float8 as revenue,
+      coalesce(sum(product_revenue), 0)::float8 as product_revenue,
+      coalesce(sum(shipping_revenue), 0)::float8 as shipping_revenue,
+      count(distinct customer_id)::int as customers,
+      count(*) filter (where order_number_for_customer = 1)::int as new_customers,
+      count(*) filter (where order_number_for_customer >= 2)::int as repeat_orders
+    from (select * from matched union all select * from per_order) t
+    group by influencer_id
+  `;
+  const total = rows.find((r) => r.influencer_id === null);
+  return {
+    byInfluencer: new Map(
+      rows.flatMap((r) => (r.influencer_id ? [[r.influencer_id, activityOfRow(r)] as const] : [])),
+    ),
+    total: total ? activityOfRow(total) : emptyActivity,
+  };
+}
 
 export async function influencersScreen(
   clientId: string,
@@ -176,38 +190,43 @@ export async function influencersScreen(
 ): Promise<InfluencersScreen> {
   const period = resolvePeriod(search);
   const calendar = { inicio: search.inicio, fim: search.fim };
-  const [stored, byCoupon] = await Promise.all([
-    prismaClient.influencer.findMany({ where: { clientId }, include, orderBy: { name: "asc" } }),
-    activityByCoupon(clientId, period.current),
-  ]);
+  const stored = await prismaClient.influencer.findMany({
+    where: { clientId },
+    include,
+    orderBy: { name: "asc" },
+  });
   const all = stored.map(toInfluencer);
   const query = search.busca.trim().toLowerCase();
-  const rows: InfluencerRow[] = all
+  const visible = all
     .filter((i) => i.status === search.status)
-    .filter((i) => !query || `${i.name} ${i.handle}`.toLowerCase().includes(query))
-    .map((i) => {
-      const activity = activityOf(i, byCoupon, calendar);
-      const cost = influencerCost(i.rules, calendar, activity);
-      return {
-        ...i,
-        ...activity,
-        cost,
-        roi: roiOf(activity.revenue, cost),
-        repurchaseRate: repurchaseRateOf(activity),
-      };
-    });
-  const activity = sumActivity(rows);
+    .filter((i) => !query || `${i.name} ${i.handle}`.toLowerCase().includes(query));
+  const [{ byInfluencer, total }, salesSource] = await Promise.all([
+    couponActivity(clientId, period.current, visible),
+    ownerOf(clientId, "sales"),
+  ]);
+  const rows: InfluencerRow[] = visible.map((i) => {
+    const activity = byInfluencer.get(i.id) ?? emptyActivity;
+    const cost = influencerCost(i.rules, calendar, activity);
+    return {
+      ...i,
+      ...activity,
+      cost,
+      roi: roiOf(activity.revenue, cost),
+      repurchaseRate: repurchaseRateOf(activity),
+    };
+  });
   const cost = rows.reduce((s, r) => s + r.cost, 0);
   const counts = { ACTIVE: 0, PAUSED: 0, ARCHIVED: 0 };
   for (const i of all) counts[i.status] += 1;
   return {
     rows,
     totals: {
-      ...activity,
+      ...total,
       cost,
-      roi: roiOf(activity.revenue, cost),
-      repurchaseRate: repurchaseRateOf(activity),
+      roi: roiOf(total.revenue, cost),
+      repurchaseRate: repurchaseRateOf(total),
     },
     counts,
+    couponNotice: couponSourceNotice(salesSource),
   };
 }

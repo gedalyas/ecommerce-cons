@@ -87,4 +87,5 @@ export type InfluencersScreen = {
   rows: InfluencerRow[];
   totals: InfluencerTotals;
   counts: Record<InfluencerStatus, number>;
+  couponNotice: string | null;
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeDays, influencerCost, roiOf, ruleCost, sumActivity } from "./influencerCost";
+import { activeDays, influencerCost, roiOf, ruleCost } from "./influencerCost";
 import type { InfluencerRule } from "@ecommerce/contracts/influencers";
 
 const window = { inicio: "2026-08-01", fim: "2026-08-31" };
@@ -52,7 +52,7 @@ describe("ruleCost", () => {
   });
 });
 
-describe("influencerCost, roiOf and sumActivity", () => {
+describe("influencerCost and roiOf", () => {
   it("adds the rules and derives ROI", () => {
     const cost = influencerCost(
       [rule({ type: "MONTHLY", value: 1000 }), rule({ type: "PERCENT_OF_TOTAL", value: 10 })],
@@ -62,6 +62,5 @@ describe("influencerCost, roiOf and sumActivity", () => {
     expect(cost).toBeCloseTo(2018.48, 2);
     expect(roiOf(10_000, 2_000)).toBe(400);
     expect(roiOf(10_000, 0)).toBeNull();
-    expect(sumActivity([activity, activity]).orders).toBe(80);
   });
 });

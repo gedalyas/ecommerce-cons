@@ -16,7 +16,9 @@ partnerships: two active ones on the existing coupons INSTA10 and AMIGA15, one p
 ## Analytics (`influencersService.ts`, cost in `influencerCost.ts`, tested)
 
 - **Revenue side** — paid orders whose `discount_codes` contain one of the partnership's coupons,
-  as long as the coupon is active inside the period: Total de vendas (orders), Receita total,
+  placed inside both the period and that coupon's own validity (active from / until), each order
+  counted once even with two of the partnership's codes; the Total row counts each order once
+  across partnerships (one SQL over the visible partnerships): Total de vendas (orders), Receita total,
   Receita de frete, Receita de produtos, Clientes, Novos clientes (first order of the customer),
   Taxa de recompra (orders that were a second or later purchase ÷ orders).
 - **Cost side** — the rules applied over the period, clipped to each rule's validity: a fixed fee
@@ -42,3 +44,10 @@ partnerships: two active ones on the existing coupons INSTA10 and AMIGA15, one p
 
 Server functions: `getInfluencersScreen` (GET), `createInfluencerFn`, `updateInfluencerFn`,
 `deleteInfluencerFn` (POST).
+
+## Notices
+
+- A store whose sales source does not carry the coupon (Bling, Amazon) sees a banner saying the
+  partnerships get no attributed sales (`couponSourceNotice`, tested).
+- With no partnership registered, the table's empty message invites the first one
+  (`influencersEmptyMessage`).

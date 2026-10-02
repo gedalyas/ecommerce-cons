@@ -85,7 +85,7 @@ export const engagementTemplate: AreaTemplate[] = [
         key: "costs",
         title: "Custos e taxas",
         kpis: [
-          live("sellingCostRate", "Taxa média do adquirente", "down"),
+          live("sellingCostRate", "Taxas e custos de venda", "down"),
           live("shippingCostPerOrder", "Custo de frete / pedido", "down"),
           live("cogsRate", "CMV", "down"),
         ],

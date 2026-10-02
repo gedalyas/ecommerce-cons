@@ -10,8 +10,10 @@ of `sections.md`; the controls row (`PeriodSelector` + `ChannelToggle`) and the
 
 The two pillars of the section (Organização, Custos e taxas) read from the
 `section`/`pillar` tables (seeded from `moneyFixture.ts`), with four KPIs replaced by live DRE indicators of the
-period: Margem de contribuição, CMV, Taxa média do adquirente (the
-"taxas e custos de venda" rate) and Custo de frete / pedido. They carry
+period: Margem de contribuição, CMV, Taxas e custos de venda (the selling-cost rules over
+revenue — it was labelled "Taxa média do adquirente", which it never measured alone) and Custo de
+frete / pedido (the shipping rules accrued on each business unit's own orders: a marketplace
+freight rule counts on the marketplace orders, an e-commerce one on the store's). They carry
 fidelity B ("calculado sobre pedidos pagos e as regras de custo informadas
 pelo cliente"). The other KPIs (caixa livre, ciclo de caixa, despesa fixa /
 receita) stay on the seeded values until their sources exist.

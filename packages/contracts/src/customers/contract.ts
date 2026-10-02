@@ -1,3 +1,4 @@
+export { amazonBuyerDomain, marketplaceRelayDomains, mercadoLivreBuyerDomain } from "./buyerEmails";
 export type {
   CustomersAggregate,
   CustomersBucket,

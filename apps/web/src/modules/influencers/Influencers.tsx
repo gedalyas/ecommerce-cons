@@ -2,6 +2,7 @@ import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { AlertBanner } from "@/shared/ui/AlertBanner";
 import { Button } from "@/shared/ui/Button";
 import { DataTable } from "@/shared/ui/DataTable";
 import { Dialog } from "@/shared/ui/Dialog";
@@ -18,9 +19,12 @@ import type { PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { InfluencerForm } from "./InfluencerForm";
 import { influencerColumns } from "./influencerColumns";
 import {
+  influencersEmptyMessage,
   influencerStatusLabel,
   influencerStatuses,
   type Influencer,
+  type InfluencerParsed,
+  type InfluencersSearch,
   type InfluencerRow,
   type InfluencersScreen,
 } from "@ecommerce/contracts/influencers";
@@ -29,7 +33,6 @@ import {
   deleteInfluencerFn,
   updateInfluencerFn,
 } from "./influencersController";
-import type { InfluencerParsed, InfluencersSearch } from "@ecommerce/contracts/influencers";
 
 type Editing =
   | { kind: "new" }
@@ -133,6 +136,8 @@ export function Influencers({ data }: { data: InfluencersScreen }) {
 
         <TabBar tabs={tabs} value={search.status} onChange={(status) => patch({ status })} />
 
+        {data.couponNotice && <AlertBanner>{data.couponNotice}</AlertBanner>}
+
         <SectionBlock
           title="Hub de influenciadores"
           description="Receita e clientes vêm dos pedidos pagos com os cupons da parceria dentro da vigência; o custo aplica as regras de remuneração sobre o período."
@@ -153,7 +158,9 @@ export function Influencers({ data }: { data: InfluencersScreen }) {
             rowKey={(r) => r.id}
             initialSort={{ key: "revenue", direction: "desc" }}
             csvFileName={`influenciadores-${period.inicio}-${period.fim}`}
-            emptyMessage="Nenhum influenciador neste status."
+            emptyMessage={influencersEmptyMessage(
+              data.counts.ACTIVE + data.counts.PAUSED + data.counts.ARCHIVED,
+            )}
           />
         </SectionBlock>
       </div>

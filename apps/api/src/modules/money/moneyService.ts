@@ -129,16 +129,21 @@ const factsFrom = (
   };
 };
 
-const shippingCostOf = (facts: DreFacts, rules: readonly CostRule[], calendar: CostWindow) =>
+const shippingCostOf = (
+  orders: OrdersAggregate,
+  adSpend: number,
+  rules: readonly CostRule[],
+  calendar: CostWindow,
+) =>
   rules
     .filter((r) => r.category === "COGS" && r.subcategory === "shipping")
     .reduce(
       (sum, r) =>
         sum +
         ruleAmount(r, calendar, {
-          ecommerce: { orders: facts.orders, revenue: facts.revenue },
-          marketplace: { orders: 0, revenue: 0 },
-          adSpend: facts.adSpend,
+          ecommerce: orders.ecommerce,
+          marketplace: orders.marketplace,
+          adSpend,
         }),
       0,
     );
@@ -214,10 +219,13 @@ async function windowDre(
   const current = factsFrom(orders, ads, rules, calendar);
   const previous =
     prevOrders && previousCalendar ? factsFrom(prevOrders, prevAds, rules, previousCalendar) : null;
-  const indicatorsOf = (f: DreFacts, c: CostWindow) =>
-    computeDreIndicators(f, computeDre(f), shippingCostOf(f, rules, c));
-  const cur = indicatorsOf(current, calendar);
-  const prev = previous && previousCalendar ? indicatorsOf(previous, previousCalendar) : null;
+  const indicatorsOf = (f: DreFacts, o: OrdersAggregate, c: CostWindow) =>
+    computeDreIndicators(f, computeDre(f), shippingCostOf(o, f.adSpend, rules, c));
+  const cur = indicatorsOf(current, orders, calendar);
+  const prev =
+    previous && prevOrders && previousCalendar
+      ? indicatorsOf(previous, prevOrders, previousCalendar)
+      : null;
   return {
     indicators: indicatorDefinitions.map((d) => ({
       ...d,
