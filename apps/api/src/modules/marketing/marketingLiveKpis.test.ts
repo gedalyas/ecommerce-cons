@@ -44,6 +44,7 @@ describe("marketingLiveKpis", () => {
           "shippingCostPerOrder",
           "stockOutRate",
           "coverageDays",
+          "revenueConcentration",
         ].includes(k),
     );
     for (const key of marketingKeys) expect(kpis[key], key).toBeDefined();

@@ -20,6 +20,7 @@ export const liveKpiKeys = [
   "ltv12Months",
   "stockOutRate",
   "coverageDays",
+  "revenueConcentration",
 ] as const;
 export type LiveKpiKey = (typeof liveKpiKeys)[number];
 
@@ -185,11 +186,7 @@ export const engagementTemplate: AreaTemplate[] = [
         key: "shielding",
         title: "Blindagem",
         kpis: [
-          manual(
-            "revenueConcentration",
-            "Concentração de receita",
-            "Receita do maior canal sobre o total",
-          ),
+          live("revenueConcentration", "Concentração de receita", "down"),
           manual("cashMonths", "Meses de caixa", "Meses que o caixa cobre sem receita"),
         ],
       },

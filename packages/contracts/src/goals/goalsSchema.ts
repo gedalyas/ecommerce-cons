@@ -3,16 +3,13 @@ import { z } from "zod";
 export const goalsTabs = ["resumo", "planejamento"] as const;
 export type GoalsTab = (typeof goalsTabs)[number];
 
-/** Years the planning grid offers. */
-export const planYears = [2025, 2026, 2027] as const;
-const firstYear = planYears[0];
-const lastYear = planYears[planYears.length - 1]!;
+const firstYear = 2020;
+const lastYear = 2100;
 
 export const goalsSearchSchema = z.object({
   aba: z.enum(goalsTabs).catch("resumo"),
-  /** Resumo: measure from the first day of the year to the end of the period. */
   acumulado: z.boolean().catch(false),
-  ano: z.number().int().min(firstYear).max(lastYear).catch(2026),
+  ano: z.number().int().min(firstYear).max(lastYear).nullable().catch(null),
 });
 
 export type GoalsSearch = z.infer<typeof goalsSearchSchema>;
@@ -37,7 +34,3 @@ export const goalPlanSchema = z.object({
 });
 
 export type GoalPlanInput = z.infer<typeof goalPlanSchema>;
-
-export const suggestSchema = z.object({
-  year: z.number().int().min(firstYear).max(lastYear),
-});

@@ -1,4 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { AlertBanner } from "@/shared/ui/AlertBanner";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
@@ -107,6 +108,8 @@ export function Analysis({ data }: { data: AnalysisScreen }) {
             : " · Sem comparação"}
         </p>
 
+        {data.sourceNotice && <AlertBanner>{data.sourceNotice}</AlertBanner>}
+
         <SectionBlock
           title={narrative.title}
           meta={
@@ -124,8 +127,7 @@ export function Analysis({ data }: { data: AnalysisScreen }) {
           <p className={textClass.body}>{narrative.diagnosis}</p>
           <p className={cn(textClass.body, "mt-3")}>{narrative.levers}</p>
           <p className={cn(textClass.meta, "mt-4 text-muted-foreground")}>
-            Texto gerado por regras a partir da árvore de drivers calculada nos dois períodos. Com
-            uma chave de IA configurada, a mesma árvore vira uma narrativa em linguagem natural.
+            Texto gerado por regras a partir da árvore de drivers calculada nos dois períodos.
           </p>
         </SectionBlock>
 

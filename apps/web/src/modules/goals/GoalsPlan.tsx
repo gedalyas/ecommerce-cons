@@ -45,7 +45,6 @@ const monthLabel = (year: number, month: number) =>
 
 const derivedLabel = new Map(goalDefinitions.map((d) => [d.key, d]));
 
-/** The year grid: six typed rows per month, eight derived rows below them. */
 export function GoalsPlan({
   data,
   onPatch,
@@ -112,9 +111,9 @@ export function GoalsPlan({
 
   const onSuggest = () =>
     run(async () => {
-      const suggested = await suggest({ data: { year: data.year } });
+      const suggested = await suggest();
       if (suggested.length === 0) {
-        setError(`Sem histórico em ${data.year - 1} para sugerir um plano.`);
+        setError("Sem vendas nos últimos 12 meses para sugerir um plano.");
         return;
       }
       setMonths(twelve(suggested));

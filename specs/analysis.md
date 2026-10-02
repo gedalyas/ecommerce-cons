@@ -53,8 +53,10 @@ coupons for repurchase, and so on.
    badge (conversion uses the Prax sessions → paid range, ROAS the quality bands, otherwise
    "Benchmark indisponível"), a title with the variation, a diagnosis paragraph (the move, the
    two strongest drivers with before → after, the market reading) and a levers paragraph. A
-   footnote says the text is rule-generated from the driver tree; with an AI key the same tree
-   would become natural language.
+   footnote says the text is rule-generated from the driver tree. Above the card, a warning
+   when the metric needs a source the store lacks (`metricSourceNotice`, tested): sessions,
+   conversion and cost per session need traffic (GA4 or spreadsheet); ROAS, ROI, CPA, CAC and
+   CPC need paid media — so a missing source never reads as a real zero.
 4. **Headline KPI** — the metric in capitals, the value, the variation, and the
    `TimeSeriesChart` with the comparison as a dashed line.
 5. **Drivers** — one tile per driver: value, variation and the previous value, green when it

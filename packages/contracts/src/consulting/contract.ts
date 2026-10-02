@@ -1,4 +1,5 @@
 export { pillarStatusLabel, pillarStatuses } from "./consulting.types";
+export { awaitingConsultantNotice, awaitsConsultant } from "./sectionRules";
 export type {
   ConsultingMetric,
   ConsultingPillar,

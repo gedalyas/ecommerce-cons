@@ -93,4 +93,5 @@ export type AnalysisScreen = {
   narrative: AnalysisNarrative;
   drivers: DriverReading[];
   comparison: { inicio: string; fim: string } | null;
+  sourceNotice: string | null;
 };

@@ -19,7 +19,8 @@ export const Route = createFileRoute("/gestao")({
       },
     ],
   }),
-  loader: () => getManagementScreen(),
+  loaderDeps: ({ search }) => search,
+  loader: ({ deps }) => getManagementScreen({ data: deps }),
   component: RouteComponent,
   errorComponent: RouteError,
 });

@@ -16,3 +16,4 @@ export type {
 export { analysisSearchSchema, defaultAnalysisSearch } from "./analysisSchema";
 export type { AnalysisSearch } from "./analysisSchema";
 export { computeValues, driverDefinitions, metricDefinitions } from "./driverTrees";
+export { metricSourceNotice } from "./metricSources";

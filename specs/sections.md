@@ -46,6 +46,16 @@ milestone block lives).
 | Gestão    | Delegação             | not-started | pending: process mapping incomplete      |
 | Gestão    | Tecnologia            | blocked     |                                          |
 
+## Gestão
+
+**Concentração de receita** (Blindagem) is live: the largest sales channel's share of the paid
+revenue in the global period (`revenueConcentration`, tested — Loja, Mercado Livre, Amazon…,
+from `salesByChannel`, the store's own channels joined into "Site" as in Marketing › Canais),
+compared with the previous window; the sub-note names the channel. It was a manual indicator
+before 2026-10-02; values typed for it then are no longer shown. The
+route reads the global period. When the client sees no manual indicator filled yet
+(`awaitsConsultant`), a banner says the consultant fills them in the follow-up meetings.
+
 ## Marketing data tabs
 
 Since Stage 6 the Marketing route has `?aba=visao|resumo|campanhas|descontos`.

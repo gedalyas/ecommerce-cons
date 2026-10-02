@@ -19,6 +19,11 @@ categoria, preco`), `productsWriteService` writes variant cost/price/stock and p
       every sync and writes through the new `SyncContext.writeProducts` (`persistProducts`), only
       when Bling owns products (stock only when it owns stock). ML/Amazon items without SKU were
       already keyed by the listing id / ASIN (2026-10-02)
-- [ ] B1 Métricas, Metas, Gestão ready to release
+- [x] B1 Métricas, Metas, Gestão ready to release: Métricas warns when the metric lacks its
+      source (`metricSourceNotice`) and drops the AI-key promise; Metas offers last/this/next
+      year from the clock (`planYearsAround`, `ano` null = current) and suggests from the
+      trailing twelve months; Gestão's Concentração de receita is live by sales channel
+      (`revenueConcentration`) over the global period, with the "seu consultor preenche" banner
+      (`awaitsConsultant`) (2026-10-02)
 - [ ] B2 Clientes, Influenciadores, Dinheiro fixes
 - [ ] B3 Release: smoke per screen, default released screens, boards and specs

@@ -26,7 +26,13 @@ import type {
   AnalysisSearch,
 } from "@ecommerce/contracts/analysis";
 import { benchmarkFor } from "./benchmarks";
-import { computeValues, driverDefinitions, metricDefinitions } from "@ecommerce/contracts/analysis";
+import {
+  computeValues,
+  driverDefinitions,
+  metricDefinitions,
+  metricSourceNotice,
+} from "@ecommerce/contracts/analysis";
+import { ownerOf } from "@/modules/connections/contract";
 import { narrativeOf } from "./narrative";
 
 type Calendar = { inicio: string; fim: string };
@@ -138,6 +144,21 @@ const pointsOf = (
   key: keyof AnalysisValues,
 ): SeriesPoint[] => rows.map((r) => ({ bucket: r.bucket, value: r.values[key] ?? 0 }));
 
+async function sourceNoticeFor(
+  clientId: string,
+  metric: AnalysisSearch["metrica"],
+  current: AnalysisValues,
+) {
+  const [traffic, adSpend] = await Promise.all([
+    ownerOf(clientId, "traffic"),
+    ownerOf(clientId, "ad_spend"),
+  ]);
+  return metricSourceNotice(metric, {
+    traffic: traffic !== null || (current.sessions ?? 0) > 0,
+    ad_spend: adSpend !== null || (current.adSpend ?? 0) > 0,
+  });
+}
+
 export async function analysisScreen(
   clientId: string,
   search: PeriodSearch & AnalysisSearch,
@@ -182,5 +203,6 @@ export async function analysisScreen(
     narrative: narrativeOf(definition, headline, drivers, benchmark),
     drivers,
     comparison: previousCalendar,
+    sourceNotice: await sourceNoticeFor(clientId, definition.key, current),
   };
 }

@@ -36,11 +36,10 @@ export type {
 } from "./goals.types";
 export {
   goalsTabs,
-  planYears,
   goalsSearchSchema,
   defaultGoalsSearch,
   goalMonthSchema,
   goalPlanSchema,
-  suggestSchema,
 } from "./goalsSchema";
+export { planYearOf, planYearsAround, trailingTwelveMonths } from "./planCalendar";
 export type { GoalsTab, GoalsSearch, GoalPlanInput } from "./goalsSchema";

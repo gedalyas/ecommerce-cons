@@ -27,7 +27,9 @@ import {
   type GoalsScreen,
   type GoalsSummary,
   type GoalValues,
-  planYears,
+  planYearOf,
+  planYearsAround,
+  trailingTwelveMonths,
   type GoalPlanInput,
   type GoalsSearch,
 } from "@ecommerce/contracts/goals";
@@ -161,7 +163,7 @@ async function goalsSummary(
 }
 
 async function goalsPlanning(clientId: string, year: number): Promise<GoalsPlanning> {
-  return { year, years: [...planYears], months: await planOf(clientId, year) };
+  return { year, years: planYearsAround(currentDay(), year), months: await planOf(clientId, year) };
 }
 
 export async function goalsScreen(
@@ -172,7 +174,10 @@ export async function goalsScreen(
     case "resumo":
       return { aba: "resumo", summary: await goalsSummary(clientId, search) };
     case "planejamento":
-      return { aba: "planejamento", planning: await goalsPlanning(clientId, search.ano) };
+      return {
+        aba: "planejamento",
+        planning: await goalsPlanning(clientId, planYearOf(search.ano, currentDay())),
+      };
   }
 }
 
@@ -213,9 +218,8 @@ const averageMonth = (months: GoalMonth[]): Omit<GoalMonth, "month"> => {
   };
 };
 
-export async function suggestPlan(clientId: string, year: number): Promise<GoalMonth[]> {
-  const previous = year - 1;
-  const w = toWindow({ inicio: `${previous}-01-01`, fim: `${previous}-12-31` });
+export async function suggestPlan(clientId: string, today: string): Promise<GoalMonth[]> {
+  const w = toWindow(trailingTwelveMonths(today));
   const [rules, orders, traffic, ads] = await Promise.all([
     costRulesFor(clientId),
     ordersByBucket(clientId, w, "month", null),
@@ -233,11 +237,12 @@ export async function suggestPlan(clientId: string, year: number): Promise<GoalM
     if (!om || om.orders === 0) continue;
     const am = a.get(month);
     const spend = am?.spend ?? 0;
-    const last = new Date(Date.UTC(previous, month, 0)).getUTCDate();
+    const year = Number(om.bucket.slice(0, 4));
+    const last = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const mm = String(month).padStart(2, "0");
     const costs = expandCosts(
       rules,
-      { inicio: `${previous}-${mm}-01`, fim: `${previous}-${mm}-${last}` },
+      { inicio: `${year}-${mm}-01`, fim: `${year}-${mm}-${last}` },
       { ecommerce: om.ecommerce, marketplace: om.marketplace, adSpend: spend },
     );
     months.push(

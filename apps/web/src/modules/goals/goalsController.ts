@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   goalPlanSchema,
   goalsSearchSchema,
-  suggestSchema,
   type GoalMonth,
   type GoalsScreen,
 } from "@ecommerce/contracts/goals";
@@ -20,6 +19,6 @@ export const saveGoalPlan = createServerFn({ method: "POST" })
   .validator((input: unknown) => goalPlanSchema.parse(input))
   .handler(async ({ data }) => apiFetch<GoalMonth[]>("/goals/plan", { method: "PUT", body: data }));
 
-export const suggestGoalPlan = createServerFn({ method: "GET" })
-  .validator((input: unknown) => suggestSchema.parse(input))
-  .handler(async ({ data }) => apiFetch<GoalMonth[]>("/goals/suggestion", { query: data }));
+export const suggestGoalPlan = createServerFn({ method: "GET" }).handler(async () =>
+  apiFetch<GoalMonth[]>("/goals/suggestion"),
+);
