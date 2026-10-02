@@ -5,6 +5,7 @@ import {
   integrationsTabs,
   summaryDetail,
   type ConnectionsScreen,
+  type IntegrationPageSearch,
   type IntegrationsSearch,
 } from "@ecommerce/contracts/connections";
 import { connectorErrorReasonLabel, type StoreConnector } from "@ecommerce/contracts/connectors";
@@ -20,7 +21,6 @@ import { cn } from "@/shared/utils/cn";
 import { ConnectDialog } from "./ConnectDialog";
 import { IntegrationsCatalog } from "./IntegrationsCatalog";
 import { MyIntegrations } from "./MyIntegrations";
-import { RequestDialog } from "./RequestDialog";
 import { StatusMappingDialog } from "./StatusMappingDialog";
 import { IntegrationInstancesDialog } from "./IntegrationInstancesDialog";
 import { asIntegration, integrationsOf, isStoreIntegration } from "./integrationRules";
@@ -89,7 +89,6 @@ export function Connections({
   const failed = data.connectors.find((c) => c.key === search.erro) ?? null;
   const mine = integrationsOf(data.connectors.filter(isStoreIntegration));
   const detail = summaryDetail(data.summary);
-  const [requesting, setRequesting] = useState<StoreConnector | null>(null);
   const [connecting, setConnecting] = useState<StoreConnector | null>(null);
   const [mapping, setMapping] = useState<StoreConnector | null>(() =>
     search.escolher && connected?.connection?.needsAccount ? connected : null,
@@ -103,12 +102,12 @@ export function Connections({
   }));
   const navigate = useNavigate();
   const [instances, setInstances] = useState<StoreConnector | null>(null);
-  const openPage = (c: StoreConnector, search: { conta?: string; nova?: boolean } = {}) =>
-    void navigate({ to: "/integracoes/$chave", params: { chave: c.key }, search });
+  const openPage = (
+    c: StoreConnector,
+    search: { conta?: string; nova?: boolean; aba?: IntegrationPageSearch["aba"] } = {},
+  ) => void navigate({ to: "/integracoes/$chave", params: { chave: c.key }, search });
   const openCard = (c: StoreConnector) =>
     c.connections.length > 0 ? setInstances(c) : openPage(c);
-  const openDetails = (c: StoreConnector) =>
-    openPage(c, c.connection ? { conta: c.connection.id } : {});
   return (
     <div className={layout.page}>
       <PageHeader title="Integrações" subtitle="Fontes que alimentam os indicadores da loja" />
@@ -143,16 +142,17 @@ export function Connections({
           <MyIntegrations
             connectors={mine}
             onBrowse={() => patch({ aba: "integracoes" })}
-            onRequest={setRequesting}
-            onConnect={setConnecting}
-            onSettings={setMapping}
-            onDetails={openDetails}
+            onOpen={(c, aba) =>
+              openPage(c, {
+                ...(c.connection ? { conta: c.connection.id } : {}),
+                ...(aba ? { aba } : {}),
+              })
+            }
           />
         )}
         {search.aba === "planilhas" && <ImportPanel data={imports} />}
       </div>
 
-      <RequestDialog connector={requesting} onClose={() => setRequesting(null)} />
       <ConnectDialog connector={connecting} onClose={() => setConnecting(null)} />
       <StatusMappingDialog connector={mapping} onClose={() => setMapping(null)} />
       <IntegrationInstancesDialog

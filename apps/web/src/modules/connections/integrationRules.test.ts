@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   accountChoices,
   asIntegration,
+  integrationStatusOf,
+  splitByLink,
   cardStateOf,
   integrationsOf,
   isStoreIntegration,
@@ -169,5 +171,28 @@ describe("asIntegration", () => {
     expect(asIntegration(platform, failing)).toMatchObject({ status: "ERROR", syncLabel: "ontem" });
     expect(asIntegration(platform, matriz)).toMatchObject({ status: "CONNECTED" });
     expect(asIntegration(platform, null)).toMatchObject({ status: "CONNECTED", connection: null });
+  });
+});
+
+describe("integrationStatusOf", () => {
+  it("reads the integration's stage", () => {
+    expect(integrationStatusOf(connection)).toBe("ready");
+    expect(integrationStatusOf({ ...connection, stage: "IMPORTING" })).toBe("syncing");
+    expect(integrationStatusOf({ ...connection, stage: "ERROR" })).toBe("error");
+    expect(integrationStatusOf({ ...connection, stage: "AUTHORIZED", needsAccount: true })).toBe(
+      "account",
+    );
+  });
+});
+
+describe("splitByLink", () => {
+  it("sets apart sources with no live integration, keeping spreadsheet-fed ones", () => {
+    const live = { connection, status: "CONNECTED" as const };
+    const lost = { connection: null, status: "ERROR" as const };
+    const sheet = { connection: null, status: "MANUAL" as const };
+    expect(splitByLink([live, lost, sheet])).toEqual({
+      linked: [live, sheet],
+      disconnected: [lost],
+    });
   });
 });

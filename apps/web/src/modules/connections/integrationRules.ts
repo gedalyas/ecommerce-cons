@@ -70,3 +70,28 @@ export function accountChoices(
     .filter((a) => a.family === family)
     .map((a) => ({ ...a, taken: connections.some((c) => c.accountId === a.id) }));
 }
+
+export type IntegrationStatus = "ready" | "syncing" | "error" | "account";
+
+export const integrationStatusLabel: Record<IntegrationStatus, string> = {
+  ready: "Conectada",
+  syncing: "Sincronizando",
+  error: "Erro",
+  account: "Escolha a conta",
+};
+
+export function integrationStatusOf(connection: ConnectionSummary): IntegrationStatus {
+  if (connection.stage === "ERROR") return "error";
+  if (connection.needsAccount) return "account";
+  return connection.stage === "READY" ? "ready" : "syncing";
+}
+
+export function splitByLink<T extends Pick<StoreConnector, "connection" | "status">>(
+  integrations: readonly T[],
+): { linked: T[]; disconnected: T[] } {
+  const disconnected = integrations.filter((c) => !c.connection && c.status !== "MANUAL");
+  return {
+    linked: integrations.filter((c) => !disconnected.includes(c)),
+    disconnected,
+  };
+}

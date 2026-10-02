@@ -2,7 +2,7 @@
 
 Board for `integrations-plan.md`. Tick as work lands; one commit per slice, checks green before each.
 
-Status: **approved 2026-10-01 — before M4 (`m4-plan.md`).**
+Status: **done 2026-10-01 — every slice landed; next: M4 (`m4-plan.md`).**
 
 - [x] 1 — Integrations hub: `/integracoes` (redirect from `/conexoes`), tabs Integrações ·
       Minhas integrações · Planilhas, search, category menu, recommended, card grid, "Conectada"
@@ -21,4 +21,4 @@ Status: **approved 2026-10-01 — before M4 (`m4-plan.md`).**
       real account id first, or two logins of one platform merge into one account
 - [x] 4c — Screens for several accounts: Bling's "editar existente ou configurar nova" modal, name,
       account choice, integration selector on the page
-- [ ] 5 — Minhas integrações cards (status, last sync, ⋮, "Desconectadas") and the Planilhas tab
+- [x] 5 — Minhas integrações cards (status, last sync, ⋮, "Desconectadas") and the Planilhas tab

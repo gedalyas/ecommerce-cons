@@ -27,8 +27,15 @@ tabs in the URL (`aba`, `integrationsSearchSchema` in `contracts/connections`; d
   Choosing a category clears the search. The menu is a side column when the content is at
   least 48rem wide and a row of chips otherwise (container queries, so the assistant panel
   is accounted for); the grid goes 1 → 2 → 3 columns the same way.
-- **Minhas integrações (N)** (`minhas`) — the store's connectors (`isStoreIntegration`: a
-  connection, or a connected, failing or spreadsheet-fed source), grouped by kind, one row each (below).
+- **Minhas integrações (N)** (`minhas`) — the store's integrations as cards, grouped by
+  category (2 per row when the content is wide enough), one card per integration
+  (`integrationsOf`): logo, the integration's name, the platform and the account, its status
+  (`integrationStatusOf`: **Conectada** · **Sincronizando** · **Erro** · **Escolha a conta**;
+  "Por planilha" for platforms fed by a spreadsheet) and its own last sync. The card opens the
+  integration page on that integration; the ⋮ menu (for whoever manages it) has Testar and
+  Configurar (to those sections), Sincronizar and **Desconectar** in red behind a confirmation
+  ("Os dados já importados continuam nos painéis"). Sources whose platform has no live
+  integration any more fall in the **Desconectadas (N)** accordion, dimmed (`splitByLink`).
   Empty: "A loja ainda não tem integrações…" + "Ver integrações". OAuth returns land here.
 - **Planilhas** (`planilhas`) — the manual import (below).
 
@@ -78,7 +85,7 @@ chosen one. **Nova integração** asks for the name (required, up to 60) and the
 account the store already has for that platform (the default when one is free; accounts that
 already hold this connector are disabled) creates it with "Criar integração" and no new login, or
 "Conectar outra conta" shows the usual onboarding and authorizes with the name. Minhas
-integrações lists one row per integration, with its name next to the platform.
+integrações shows one card per integration (below).
 
 ## Summary banner
 
@@ -86,42 +93,29 @@ Above the list: "**5 de 7 fontes ativas** · 1 com erro, 1 não conectada" —
 counts derived in `connectionsSummary.ts` (connected and manual count as
 active; the detail agrees in number and disappears when nothing is wrong).
 
-## Rows (Minhas integrações)
+## Connector kinds
 
-Rows are grouped by connector kind in the order a new store should follow
+Connectors are grouped by kind in the order a new store should follow
 (`connectorKindGuide`: ERP → Plataforma de e-commerce → Marketplace → Social commerce → Anúncios
 → Redes sociais → Analytics).
-Each row carries the platform logo (`ConnectorLogo`: Simple Icons paths drawn in `currentColor`,
-a monogram when the brand is not in the open set). Catalog since 2026-09-23: Bling, Tiny (Olist),
-Omie · Shopify, Nuvemshop, VTEX · Mercado Livre, Mercado Livre Full, Amazon, Amazon FBA Classic,
-Amazon FBA Onsite, Shopee, Magalu · TikTok Shop · Meta Ads,
+Cards carry the platform logo (`ConnectorLogo`: Simple Icons paths drawn in `currentColor`, a
+monogram when the brand is not in the open set; a modality uses its platform's). Catalog since
+2026-09-23: Bling, Tiny (Olist), Omie · Shopify, Nuvemshop, VTEX · Mercado Livre, Mercado Livre
+Full, Amazon, Amazon FBA Classic, Amazon FBA Onsite, Shopee, Magalu · TikTok Shop · Meta Ads,
 Google Ads, TikTok Ads, Mercado Ads, Amazon Ads, Shopee Ads · Instagram e Facebook · Google
-Analytics 4 · Planilha, each with a one-line hint; empty groups are
-hidden. Each connector declares the **data kinds it can provide** (`provides`, closed set
-`dataKinds` in `contracts/connectors`: Vendas · Produtos · Estoque · Clientes · Investimento em
-anúncios · Tráfego do site · Redes sociais). **Vendas only from an ERP or the spreadsheet**
+Analytics 4 · Planilha, each with a one-line hint; empty groups are hidden. Each connector
+declares the **data kinds it can provide** (`provides`, closed set `dataKinds` in
+`contracts/connectors`: Vendas · Produtos · Estoque · Clientes · Investimento em anúncios ·
+Tráfego do site · Redes sociais). **Vendas only from an ERP or the spreadsheet**
 (`growth-plan.md`, 2026-09-22): storefronts and marketplaces provide products, stock and
-customers; ad platforms provide investment, never sales. Columns (stacked cards below `md`,
-two bands below `2xl`): Fonte (name + description + "Fornece: …"),
-Status, última sincronização, and an action. The action depends on the connector: **"Conectar"** when the
-API has a provider registered for it (`availability` flipped to `oauth` — the app
-credentials are in the env), **"Solicitar conexão"** otherwise, "Importar planilha" (to the Planilhas tab) for the manual
-source. A connected row shows "Sincronizar", "Desconectar" and, for connectors with
-settings (ERP status mapping, Google/Meta/TikTok account or property), "Configurar".
-
-| Source                | Category          | Status                       | Sync             |
-| --------------------- | ----------------- | ---------------------------- | ---------------- |
-| Bling                 | ERP               | connected                    | hoje às 03:12    |
-| Loja                  | Plataforma        | connected                    | hoje às 03:14    |
-| Meta Ads              | Mídia paga        | error (Erro de autenticação) | há 6 dias        |
-| Google Ads            | Mídia paga        | connected                    | hoje às 03:20    |
-| Google Analytics      | Analytics         | connected                    | hoje às 03:20    |
-| Instagram             | Social            | not-connected                | —                |
-| Extrato do adquirente | Importação manual | manual                       | enviado em 02/08 |
+customers; ad platforms provide investment, never sales. A connector is connectable
+("Conectar com X") when the API has a provider registered for it (`availability` flipped to
+`oauth` — the app credentials are in the env), "Solicitar conexão" otherwise, and the spreadsheet
+points to Planilhas.
 
 Status is the Prisma enum `DataSourceStatus` (`CONNECTED` / `ERROR` /
-`NOT_CONNECTED` / `MANUAL`), mapped to icon + color in `statusMeta`; labels
-are Portuguese. The sync column is derived from `lastSyncedAt` and the demo
+`NOT_CONNECTED` / `MANUAL`) per connector key; an integration's own state comes from its
+stage (`integrationStatusOf`). The last sync is derived from `lastSyncedAt` and the demo
 clock by `syncLabel.ts`: "hoje às 03:12" on the same day, "ontem", "há N dias",
 "enviado em 02/08" for a manual import, "—" when never synced.
 
@@ -136,7 +130,7 @@ it.
 
 ## Integration page (`/integracoes/$chave`)
 
-A catalog card or "Detalhes" on a row opens the integration's own page (`IntegrationPage`): a
+A catalog card or a card on Minhas integrações opens the integration's own page (`IntegrationPage`): a
 "‹ Integrações" link back, the big logo, name, description and the state badge, then four
 sections (`aba`: `conexao` default · `dados` · `configuracoes` · `ajuda`) as a side menu when the
 content is at least 48rem wide and a row of chips otherwise. An unknown key says "Integração não
@@ -147,7 +141,7 @@ encontrada" with a link to the catalog.
   (marked *) for domain + OAuth platforms and a full-width **"Conectar com X"** that starts the
   authorization. Not built yet: the steps and "Solicitar conexão" (or the request's status).
   Spreadsheet: a link to Planilhas. Connected: the account, the stage stepper (with the last
-  sync), the row's actions (Reconectar, Configurar → Configurações, Sincronizar, Desconectar) and
+  sync), the actions (Reconectar, Configurar → Configurações, Sincronizar, Desconectar) and
   **Testar**. People without the area see a sentence instead of the button.
 - **O que puxa** — every data kind, ✓ when the platform provides it and struck through when it
   does not; provided kinds show who holds them in this store ("Vem desta integração", "Hoje vem
@@ -164,7 +158,7 @@ encontrada" with a link to the catalog.
 
 Every section but Ajuda ends with the box "Tem dúvidas sobre essa integração?" and "Ver manual".
 The settings dialog stays for the account choice after an OAuth return (`escolher=true`) and the
-row's "Configurar" on Minhas integrações.
+"Configurar" in the Conexão section.
 
 ## Data owners
 
