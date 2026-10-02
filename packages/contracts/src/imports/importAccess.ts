@@ -7,14 +7,18 @@ export const areaOfImportKind: Record<ImportKind, AccessArea> = {
   ORDERS: "DATA",
   AD_SPEND: "MARKETING",
   TRAFFIC: "MARKETING",
+  PRODUCTS: "DATA",
 };
 
 export const dataKindOfImport: Record<ImportKind, DataKind> = {
   ORDERS: "sales",
   AD_SPEND: "ad_spend",
   TRAFFIC: "traffic",
+  PRODUCTS: "products",
 };
 
 export function editableImportKinds(access: AreaAccess): ImportKind[] {
-  return importKinds.filter((kind) => canEditArea(access, areaOfImportKind[kind]));
+  return importKinds.filter(
+    (kind) => kind !== "PRODUCTS" && canEditArea(access, areaOfImportKind[kind]),
+  );
 }

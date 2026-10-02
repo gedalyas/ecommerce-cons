@@ -32,10 +32,6 @@ const dateOf = (iso: string) => new Date(`${iso}T00:00:00.000Z`);
 const platformFor = (channel: Channel): SalesPlatform | null =>
   channel === "ecommerce" ? "ECOMMERCE" : channel === "marketplace" ? "MARKETPLACE" : null;
 
-// ---------------------------------------------------------------------------
-// Cost registry
-// ---------------------------------------------------------------------------
-
 const toRow = (r: {
   id: string;
   name: string;
@@ -60,7 +56,6 @@ const toRow = (r: {
   endDate: r.endDate ? isoDay(r.endDate) : null,
 });
 
-/** Every cost rule of the client, in the shape the cost engine consumes. */
 export async function costRulesFor(clientId: string): Promise<CostRuleRow[]> {
   const rows = await prismaClient.costExpense.findMany({
     where: { clientId },
@@ -113,10 +108,6 @@ export async function deleteCost(clientId: string, id: string): Promise<void> {
   await prismaClient.costExpense.delete({ where: { id, clientId } });
 }
 
-// ---------------------------------------------------------------------------
-// DRE
-// ---------------------------------------------------------------------------
-
 const factsFrom = (
   orders: OrdersAggregate,
   ads: AdSpendAggregate | null,
@@ -138,7 +129,6 @@ const factsFrom = (
   };
 };
 
-/** What the shipping cost rules alone accrue - feeds "custo de frete por pedido". */
 const shippingCostOf = (facts: DreFacts, rules: readonly CostRule[], calendar: CostWindow) =>
   rules
     .filter((r) => r.category === "COGS" && r.subcategory === "shipping")
@@ -196,7 +186,12 @@ async function windowDre(
   clientId: string,
   search: PeriodSearch,
   rules: readonly CostRule[],
-): Promise<{ indicators: DreIndicator[]; current: DreFacts; previous: DreFacts | null }> {
+): Promise<{
+  indicators: DreIndicator[];
+  current: DreFacts;
+  previous: DreFacts | null;
+  costCoverage: number | null;
+}> {
   const period = resolvePeriod(search);
   const platform = platformFor(search.canal);
   const mediaApplies = search.canal !== "marketplace";
@@ -230,6 +225,7 @@ async function windowDre(
     })),
     current,
     previous,
+    costCoverage: orders.costCoverage,
   };
 }
 
@@ -240,7 +236,7 @@ export async function moneyDre(clientId: string, search: PeriodSearch): Promise<
   const platform = platformFor(search.canal);
   const mediaApplies = search.canal !== "marketplace";
   const buckets = bucketWindows(period.current, period.por);
-  const [{ indicators, current, previous }, orders, ads] = await Promise.all([
+  const [{ indicators, current, previous, costCoverage }, orders, ads] = await Promise.all([
     windowDre(clientId, search, rules),
     ordersByBucket(clientId, period.current, unit, platform),
     mediaApplies ? adSpendByBucket(clientId, period.current, unit) : [],
@@ -253,6 +249,7 @@ export async function moneyDre(clientId: string, search: PeriodSearch): Promise<
     captured: 0,
     capturedOrders: 0,
     cogs: 0,
+    costCoverage: null,
     repeatOrders: 0,
     productRevenue: 0,
     items: 0,
@@ -268,6 +265,7 @@ export async function moneyDre(clientId: string, search: PeriodSearch): Promise<
   const previousLines = previous ? computeDre(previous) : null;
   return {
     indicators,
+    costCoverage,
     matrix: {
       buckets: buckets.map((b) => b.bucket),
       rows: dreLineKeys.map((key) => ({
@@ -281,11 +279,6 @@ export async function moneyDre(clientId: string, search: PeriodSearch): Promise<
   };
 }
 
-/**
- * What the "Vendas e marketing" rules accrue over the period, one line per
- * subcategory and business unit. Marketing reads it through the route: money
- * already depends on marketing for the ad spend, so the arrow cannot go back.
- */
 export async function marketingCostLines(
   clientId: string,
   search: PeriodSearch,
@@ -326,8 +319,12 @@ async function moneyTab(
 ): Promise<MoneyTabData> {
   switch (search.aba) {
     case "visao": {
-      const rules = await costRulesFor(clientId);
-      return { aba: "visao", indicators: (await windowDre(clientId, search, rules)).indicators };
+      const { indicators, costCoverage } = await windowDre(
+        clientId,
+        search,
+        await costRulesFor(clientId),
+      );
+      return { aba: "visao", indicators, costCoverage };
     }
     case "dre":
       return { aba: "dre", dre: await moneyDre(clientId, search) };

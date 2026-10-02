@@ -79,3 +79,31 @@ describe("marketplace stock", () => {
     expect(deriveInventory(facts(), "2026-09-10").marketplaceStock).toBe(false);
   });
 });
+
+describe("untracked stock", () => {
+  const row = deriveInventory(facts({ stockQty: null, lastSaleAt: null }), "2026-09-10");
+
+  it("projects nothing and never reports a stock-out", () => {
+    expect(row.daysToZero).toBeNull();
+    expect(row.stockValue).toBeNull();
+    expect(row.revenuePotential).toBeNull();
+    expect(row.daysOutOfStock).toBeNull();
+    expect(row.stockOutCostPerDay).toBeNull();
+  });
+
+  it("stays out of rupture and coverage", () => {
+    const health = inventoryHealth([
+      row,
+      deriveInventory(facts({ variantId: "b", stockQty: 0 }), "2026-09-10"),
+    ]);
+    expect(health.variants).toBe(1);
+    expect(health.untracked).toBe(1);
+    expect(health.stockOutRate).toBe(100);
+  });
+
+  it("has no rupture rate when no variant is tracked", () => {
+    const health = inventoryHealth([row]);
+    expect(health.stockOutRate).toBeNull();
+    expect(health.coverageDays).toBeNull();
+  });
+});

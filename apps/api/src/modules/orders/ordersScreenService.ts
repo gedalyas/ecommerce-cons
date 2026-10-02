@@ -60,10 +60,6 @@ const summaryDefinitions: Omit<OrdersSummaryMetric, "metric">[] = [
   { key: "shipping", label: "Frete", unit: "currency", goodWhen: "up" },
 ];
 
-// ---------------------------------------------------------------------------
-// Resumo
-// ---------------------------------------------------------------------------
-
 async function sourceRows(
   clientId: string,
   w: Window,
@@ -162,10 +158,6 @@ export async function ordersSummary(
   };
 }
 
-// ---------------------------------------------------------------------------
-// Aprovação
-// ---------------------------------------------------------------------------
-
 const dimensionColumn: Record<ApprovalDimensionKey, Prisma.Sql> = {
   status: Prisma.sql`o.financial_status::text`,
   metodo: Prisma.sql`o.processing_method::text`,
@@ -261,10 +253,6 @@ export async function ordersApproval(
   };
 }
 
-// ---------------------------------------------------------------------------
-// Filtros dinâmicos (only the values present in the period)
-// ---------------------------------------------------------------------------
-
 export async function ordersFilterOptions(
   clientId: string,
   search: PeriodSearch,
@@ -303,18 +291,19 @@ export async function ordersFilterOptions(
   };
 }
 
-// ---------------------------------------------------------------------------
-// Lista
-// ---------------------------------------------------------------------------
+const orderCost = Prisma.sql`left join lateral (
+  select case when count(*) = count(i.unit_cost) then sum(i.quantity * i.unit_cost)::float8 end as cost
+  from order_item i where i.order_id = o.id
+) oc on true`;
 
 const sortColumn: Record<OrdersSortField, Prisma.Sql> = {
   placedAt: Prisma.sql`o.placed_at`,
   number: Prisma.sql`o.number`,
   total: Prisma.sql`o.total_price`,
   items: Prisma.sql`o.items_count`,
-  cost: Prisma.sql`cost`,
-  grossProfit: Prisma.sql`(o.total_price - coalesce(cost, 0))`,
-  margin: Prisma.sql`((o.total_price - coalesce(cost, 0)) / nullif(o.total_price, 0))`,
+  cost: Prisma.sql`oc.cost`,
+  grossProfit: Prisma.sql`(o.total_price - oc.cost)`,
+  margin: Prisma.sql`((o.total_price - oc.cost) / nullif(o.total_price, 0))`,
 };
 
 const MAX_EXPORT_ROWS = 5000;
@@ -356,9 +345,10 @@ export async function ordersList(
       select o.id, o.number, o.placed_at, o.channel, ${sourceExpression} as source,
         o.financial_status::text as status, c.name as customer_name, c.email, c.phone,
         o.total_price::float8 as total, o.items_count as items,
-        (select sum(i.quantity * i.unit_cost)::float8 from order_item i where i.order_id = o.id) as cost
+        oc.cost
       from sales_order o
       join customer c on c.id = o.customer_id
+      ${orderCost}
       where ${where} ${searchFilter}
       order by ${sortColumn[search.ordenar]} ${direction} nulls last, o.placed_at desc
       limit ${pageSize} offset ${(page - 1) * pageSize}
@@ -400,10 +390,6 @@ export async function ordersList(
     sort: { field: search.ordenar, direction: search.direcao },
   };
 }
-
-// ---------------------------------------------------------------------------
-// One loader per screen: only the active tab's data travels
-// ---------------------------------------------------------------------------
 
 export async function ordersScreen(
   clientId: string,

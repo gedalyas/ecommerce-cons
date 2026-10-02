@@ -1,5 +1,6 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback } from "react";
+import { AlertBanner } from "@/shared/ui/AlertBanner";
 import { DataTable, type DataTableColumn } from "@/shared/ui/DataTable";
 import { metricToTile } from "@/shared/ui/metricToTile";
 import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
@@ -11,6 +12,7 @@ import { layout } from "@/shared/styles/spacing";
 import { radiusClass } from "@/shared/styles/radius";
 import { textClass } from "@/shared/styles/typography";
 import { cn } from "@/shared/utils/cn";
+import { costCoverageNotice } from "@ecommerce/contracts/orders";
 import {
   formatCurrency,
   formatNumber,
@@ -31,8 +33,10 @@ import {
 } from "./productsColumns";
 import { ProductsFilters } from "./ProductsFilters";
 import {
+  productsCostCoverage,
   salesWindows,
   stockChips,
+  stockSourceNotice,
   type ProductsSearch,
   type SalesWindow,
   type StockChip,
@@ -146,6 +150,7 @@ export function Products({ data }: { data: ProductsScreen }) {
 
         {data.aba === "resumo" && (
           <>
+            <Notice text={stockSourceNotice(data.summary.stock)} />
             <MetricTileGroup
               metrics={data.summary.metrics.map((m) =>
                 metricToTile({
@@ -222,6 +227,7 @@ export function Products({ data }: { data: ProductsScreen }) {
 
         {data.aba === "lista" && (
           <>
+            <Notice text={costCoverageNotice(productsCostCoverage(data.list.rows))} />
             <ProductsFilters options={data.list.options} search={search} onPatch={patch} />
             <SectionBlock
               title="Análise ABC"
@@ -277,6 +283,7 @@ export function Products({ data }: { data: ProductsScreen }) {
               />
             </div>
             <ProductsFilters options={data.inventory.options} search={search} onPatch={patch} />
+            <Notice text={stockSourceNotice(data.inventory.stock)} />
             <SectionBlock
               title="Estoque por variante"
               description="Posição atual, independente do período: velocidade, dias para zerar, valor imobilizado e o custo de cada ruptura."
@@ -300,12 +307,16 @@ export function Products({ data }: { data: ProductsScreen }) {
   );
 }
 
+function Notice({ text }: { text: string | null }) {
+  return text ? <AlertBanner>{text}</AlertBanner> : null;
+}
+
 function filterInventory(rows: InventoryRow[], chip: StockChip, window: SalesWindow) {
   const base =
     chip === "risco"
       ? rows.filter((r) => r.daysToZero != null && r.daysToZero <= 15)
       : chip === "sem-estoque"
-        ? rows.filter((r) => r.stockQty <= 0)
+        ? rows.filter((r) => r.stockQty !== null && r.stockQty <= 0)
         : rows;
   return [...base].sort((a, b) => soldIn(b, window) - soldIn(a, window));
 }

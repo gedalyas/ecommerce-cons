@@ -3,7 +3,13 @@ import type { SalesPlatform } from "@ecommerce/database/enums";
 import type { ChannelSales } from "@ecommerce/contracts/marketing";
 import type { BreakdownSlice } from "@ecommerce/contracts/shared/metric.types";
 import { isoDay, type Window } from "@ecommerce/contracts/shared/periodWindow";
-import type { OrdersAggregate, OrdersBucket, OrdersFilters } from "@ecommerce/contracts/orders";
+import {
+  costCoverage,
+  knownCogs,
+  type OrdersAggregate,
+  type OrdersBucket,
+  type OrdersFilters,
+} from "@ecommerce/contracts/orders";
 
 export const platformFilter = (platform: SalesPlatform | null) =>
   platform ? Prisma.sql`and o.sales_platform = ${platform}::sales_platform` : Prisma.empty;
@@ -55,20 +61,34 @@ type AggregateRow = {
   marketplace_revenue: number;
 };
 
-const toAggregate = (r: AggregateRow | undefined, cogs: number): OrdersAggregate => ({
-  revenue: r?.revenue ?? 0,
-  orders: r?.orders ?? 0,
-  captured: r?.captured ?? 0,
-  capturedOrders: r?.captured_orders ?? 0,
-  cogs,
-  repeatOrders: r?.repeat_orders ?? 0,
-  productRevenue: r?.product_revenue ?? 0,
-  items: r?.items ?? 0,
-  discounts: r?.discounts ?? 0,
-  shipping: r?.shipping ?? 0,
-  ecommerce: { orders: r?.ecommerce_orders ?? 0, revenue: r?.ecommerce_revenue ?? 0 },
-  marketplace: { orders: r?.marketplace_orders ?? 0, revenue: r?.marketplace_revenue ?? 0 },
-});
+type CostRow = { cogs: number; costed_revenue: number; items_revenue: number };
+
+const noCost: CostRow = { cogs: 0, costed_revenue: 0, items_revenue: 0 };
+
+const costColumns = Prisma.sql`
+  coalesce(sum(i.quantity * i.unit_cost), 0)::float8 as cogs,
+  coalesce(sum(i.quantity * i.unit_price) filter (where i.unit_cost is not null), 0)::float8 as costed_revenue,
+  coalesce(sum(i.quantity * i.unit_price), 0)::float8 as items_revenue
+`;
+
+const toAggregate = (r: AggregateRow | undefined, cost: CostRow): OrdersAggregate => {
+  const coverage = costCoverage(cost.costed_revenue, cost.items_revenue);
+  return {
+    revenue: r?.revenue ?? 0,
+    orders: r?.orders ?? 0,
+    captured: r?.captured ?? 0,
+    capturedOrders: r?.captured_orders ?? 0,
+    cogs: knownCogs(cost.cogs, coverage),
+    costCoverage: coverage,
+    repeatOrders: r?.repeat_orders ?? 0,
+    productRevenue: r?.product_revenue ?? 0,
+    items: r?.items ?? 0,
+    discounts: r?.discounts ?? 0,
+    shipping: r?.shipping ?? 0,
+    ecommerce: { orders: r?.ecommerce_orders ?? 0, revenue: r?.ecommerce_revenue ?? 0 },
+    marketplace: { orders: r?.marketplace_orders ?? 0, revenue: r?.marketplace_revenue ?? 0 },
+  };
+};
 
 const aggregateColumns = Prisma.sql`
   coalesce(sum(o.total_price) filter (where o.financial_status = 'PAID'), 0)::float8 as revenue,
@@ -93,18 +113,18 @@ export async function ordersAggregate(
   filters: OrdersFilters | null = null,
 ): Promise<OrdersAggregate> {
   const where = ordersWhere(clientId, w, platform, filters);
-  const [rows, cogs] = await Promise.all([
+  const [rows, cost] = await Promise.all([
     prismaClient.$queryRaw<AggregateRow[]>`
       select ${aggregateColumns} from sales_order o where ${where}
     `,
-    prismaClient.$queryRaw<{ cogs: number }[]>`
-      select coalesce(sum(i.quantity * i.unit_cost), 0)::float8 as cogs
+    prismaClient.$queryRaw<CostRow[]>`
+      select ${costColumns}
       from order_item i
       join sales_order o on o.id = i.order_id
       where ${where} and o.financial_status = 'PAID'
     `,
   ]);
-  return toAggregate(rows[0], cogs[0]?.cogs ?? 0);
+  return toAggregate(rows[0], cost[0] ?? noCost);
 }
 
 export async function ordersByBucket(
@@ -115,7 +135,7 @@ export async function ordersByBucket(
   filters: OrdersFilters | null = null,
 ): Promise<OrdersBucket[]> {
   const where = ordersWhere(clientId, w, platform, filters);
-  const [rows, cogsRows] = await Promise.all([
+  const [rows, costRows] = await Promise.all([
     prismaClient.$queryRaw<(AggregateRow & { bucket: Date })[]>`
       select date_trunc(${unit}, o.placed_at) as bucket, ${aggregateColumns}
       from sales_order o
@@ -123,19 +143,18 @@ export async function ordersByBucket(
       group by 1
       order by 1
     `,
-    prismaClient.$queryRaw<{ bucket: Date; cogs: number }[]>`
-      select date_trunc(${unit}, o.placed_at) as bucket,
-        coalesce(sum(i.quantity * i.unit_cost), 0)::float8 as cogs
+    prismaClient.$queryRaw<(CostRow & { bucket: Date })[]>`
+      select date_trunc(${unit}, o.placed_at) as bucket, ${costColumns}
       from order_item i
       join sales_order o on o.id = i.order_id
       where ${where} and o.financial_status = 'PAID'
       group by 1
     `,
   ]);
-  const cogsByBucket = new Map(cogsRows.map((r) => [isoDay(r.bucket), r.cogs]));
+  const costByBucket = new Map(costRows.map((r) => [isoDay(r.bucket), r]));
   return rows.map((r) => {
     const bucket = isoDay(r.bucket);
-    return { bucket, ...toAggregate(r, cogsByBucket.get(bucket) ?? 0) };
+    return { bucket, ...toAggregate(r, costByBucket.get(bucket) ?? noCost) };
   });
 }
 

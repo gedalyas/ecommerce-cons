@@ -204,6 +204,18 @@ export const importTemplates: Record<ImportKind, ImportTemplate> = {
       },
     ],
   },
+  PRODUCTS: {
+    kind: "PRODUCTS",
+    description:
+      "Uma linha por SKU. Custo, estoque e categoria substituem o que o produto já tinha; o custo novo também vale para os pedidos que estavam sem custo.",
+    columns: [
+      { key: "sku", header: "sku", required: true, type: "text", example: "MANTA-AZUL-M" },
+      { key: "name", header: "produto", required: false, type: "text", example: "Manta tricô" },
+      { key: "cost", header: "custo", required: false, type: "number", example: "48,90" },
+      { key: "stock", header: "estoque", required: false, type: "integer", example: "32" },
+      { key: "category", header: "categoria", required: false, type: "text", example: "Mantas" },
+    ],
+  },
 };
 
 export function requiredHeaders(kind: ImportKind): string[] {

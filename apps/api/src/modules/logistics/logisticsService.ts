@@ -1,6 +1,6 @@
 import type { LiveKpiValues } from "@ecommerce/contracts/consulting";
 import type { LogisticsScreen } from "@ecommerce/contracts/logistics";
-import type { InventoryHealth } from "@ecommerce/contracts/products";
+import { stockSourceNotice, type InventoryHealth } from "@ecommerce/contracts/products";
 import { formatNumber } from "@ecommerce/contracts/shared/format";
 import { metricValue } from "@ecommerce/contracts/shared/metricValue";
 import { sectionFor } from "@/modules/consulting/contract";
@@ -12,8 +12,11 @@ export function logisticsLiveKpis(inventory: InventoryHealth): LiveKpiValues {
       metric: metricValue("percent", inventory.stockOutRate, null),
       goodWhen: "down",
       fidelity: "A",
-      fidelityNote: "Nível A — saldo de estoque por variante sincronizado da plataforma.",
-      subNote: `${formatNumber(inventory.outOfStock)} de ${formatNumber(inventory.variants)} variantes zeradas`,
+      fidelityNote: "Nível A — saldo de estoque por variante informado por conector ou planilha.",
+      subNote:
+        inventory.variants === 0
+          ? (stockSourceNotice(inventory) ?? "Nenhuma variante cadastrada")
+          : `${formatNumber(inventory.outOfStock)} de ${formatNumber(inventory.variants)} variantes zeradas`,
     },
     coverageDays: {
       metric: metricValue("days", inventory.coverageDays, null),

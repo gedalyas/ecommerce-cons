@@ -105,3 +105,10 @@ describe("marketplace stock", () => {
     ).toBeNull();
   });
 });
+
+describe("untracked stock", () => {
+  it("never warns about a variant whose stock nobody informed", () => {
+    expect(lowStockRiskAlert([variant({ stockQty: null, sold30: 60 })])).toBeNull();
+    expect(keyVariantsUnavailableAlert([variant({ stockQty: null, sold90: 200 })])).toBeNull();
+  });
+});

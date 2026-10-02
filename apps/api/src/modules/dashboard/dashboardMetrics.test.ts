@@ -79,3 +79,12 @@ describe("computeDashboardMetrics", () => {
     expect(empty.contributionMargin).toBeNull();
   });
 });
+
+describe("unknown cost of goods", () => {
+  it("leaves profit and contribution margin empty instead of 100% margin", () => {
+    const m = computeDashboardMetrics({ ...facts, cogs: null }, "todos");
+    expect(m.netProfit).toBeNull();
+    expect(m.contributionMargin).toBeNull();
+    expect(m.totalSold).toBe(100_000);
+  });
+});

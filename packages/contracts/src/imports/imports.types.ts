@@ -1,10 +1,11 @@
-export const importKinds = ["ORDERS", "AD_SPEND", "TRAFFIC"] as const;
+export const importKinds = ["ORDERS", "AD_SPEND", "TRAFFIC", "PRODUCTS"] as const;
 export type ImportKind = (typeof importKinds)[number];
 
 export const importKindLabel: Record<ImportKind, string> = {
   ORDERS: "Pedidos",
   AD_SPEND: "Mídia paga",
   TRAFFIC: "Tráfego do site",
+  PRODUCTS: "Produtos",
 };
 
 export const importStatuses = ["DONE", "PARTIAL", "FAILED", "UNDONE"] as const;

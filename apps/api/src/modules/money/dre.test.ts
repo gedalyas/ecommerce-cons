@@ -51,3 +51,29 @@ describe("computeDreIndicators", () => {
     expect(i.shippingCostPerOrder).toBeNull();
   });
 });
+
+describe("unknown cost of goods", () => {
+  const lines = computeDre({ ...facts, cogs: null });
+
+  it("leaves the cost-dependent lines empty instead of treating the cost as zero", () => {
+    expect(lines.cogs).toBeNull();
+    expect(lines.totalCosts).toBeNull();
+    expect(lines.grossProfit).toBeNull();
+    expect(lines.contributionMargin).toBeNull();
+    expect(lines.netProfit).toBeNull();
+  });
+
+  it("keeps the lines that do not depend on it", () => {
+    expect(lines.revenue).toBe(100_000);
+    expect(lines.sellingCosts).toBe(7_000);
+    expect(lines.marketingExpenses).toBe(20_000);
+  });
+
+  it("leaves the margins empty", () => {
+    const i = computeDreIndicators({ ...facts, cogs: null }, lines, 0);
+    expect(i.grossMargin).toBeNull();
+    expect(i.netMargin).toBeNull();
+    expect(i.cogsRate).toBeNull();
+    expect(i.marketingRate).toBe(20);
+  });
+});

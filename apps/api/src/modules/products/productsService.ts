@@ -17,7 +17,6 @@ export type CatalogFilters = Pick<
 const inList = (column: Prisma.Sql, values: string[]) =>
   values.length ? Prisma.sql`and ${column} = any(${values}::text[])` : Prisma.empty;
 
-/** Catalog filters, on the `p` (product) alias. */
 export const catalogFilter = (filters: CatalogFilters | null) =>
   filters
     ? Prisma.sql`
@@ -31,7 +30,6 @@ export const catalogFilter = (filters: CatalogFilters | null) =>
 const platformFilter = (platform: SalesPlatform | null) =>
   platform ? Prisma.sql`and o.sales_platform = ${platform}::sales_platform` : Prisma.empty;
 
-/** Every product of the catalog with its paid sales in the window (zero when none). */
 export async function productSales(
   clientId: string,
   w: Window,
@@ -48,16 +46,17 @@ export async function productSales(
       collection: string | null;
       units: number;
       revenue: number;
-      cost: number;
+      cost: number | null;
       orders: number;
-      stock_qty: number;
+      stock_qty: number | null;
     }[]
   >`
     with sales as (
       select i.product_id,
         sum(i.quantity)::int as units,
         sum(i.quantity * i.unit_price)::float8 as revenue,
-        coalesce(sum(i.quantity * i.unit_cost), 0)::float8 as cost,
+        case when count(*) = count(i.unit_cost)
+          then sum(i.quantity * i.unit_cost)::float8 end as cost,
         count(distinct o.id)::int as orders
       from order_item i
       join sales_order o on o.id = i.order_id
@@ -67,11 +66,16 @@ export async function productSales(
       group by i.product_id
     ),
     stock as (
-      select product_id, sum(stock_qty)::int as stock_qty from product_variant group by product_id
+      select v.product_id,
+        case when count(*) = count(v.stock_qty) then sum(v.stock_qty)::int end as stock_qty
+      from product_variant v
+      join product p on p.id = v.product_id and p.client_id = ${clientId}
+      group by v.product_id
     )
     select p.id as product_id, p.name, p.category, p.subcategory, p.brand, p.collection,
-      coalesce(s.units, 0) as units, coalesce(s.revenue, 0) as revenue, coalesce(s.cost, 0) as cost,
-      coalesce(s.orders, 0) as orders, coalesce(st.stock_qty, 0) as stock_qty
+      coalesce(s.units, 0) as units, coalesce(s.revenue, 0) as revenue,
+      case when s.product_id is null then 0 else s.cost end as cost,
+      coalesce(s.orders, 0) as orders, st.stock_qty
     from product p
     left join sales s on s.product_id = p.id
     left join stock st on st.product_id = p.id
@@ -93,7 +97,6 @@ export async function productSales(
   }));
 }
 
-/** Every variant with its stock and the fixed sales windows, relative to `today`. */
 export async function inventoryFacts(
   clientId: string,
   today: Date,
@@ -109,7 +112,7 @@ export async function inventoryFacts(
       subcategory: string | null;
       brand: string | null;
       collection: string | null;
-      stock_qty: number;
+      stock_qty: number | null;
       price: number;
       cost: number | null;
       last_sale_at: Date | null;
@@ -123,6 +126,7 @@ export async function inventoryFacts(
     with sold as (
       select i.variant_id,
         sum(i.quantity)::int as sold_total,
+        max(o.placed_at) as last_sale_at,
         sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '90 days')::int as sold_90,
         sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '30 days')::int as sold_30,
         sum(i.quantity) filter (where o.placed_at >= ${today}::timestamp - interval '7 days')::int as sold_7,
@@ -134,7 +138,7 @@ export async function inventoryFacts(
     )
     select v.id as variant_id, p.name as product_name, v.name as variant_name, v.sku,
       p.category, p.subcategory, p.brand, p.collection,
-      v.stock_qty, v.price::float8 as price, v.cost::float8 as cost, v.last_sale_at,
+      v.stock_qty, v.price::float8 as price, v.cost::float8 as cost, s.last_sale_at,
       coalesce(s.sold_total, 0) as sold_total, coalesce(s.sold_90, 0) as sold_90,
       coalesce(s.sold_30, 0) as sold_30, coalesce(s.sold_7, 0) as sold_7,
       coalesce(s.sold_30_marketplace, 0) as sold_30_marketplace
@@ -165,7 +169,6 @@ export async function inventoryFacts(
   }));
 }
 
-/** Pairs of products that appear in the same paid order, most frequent first. */
 export async function boughtTogether(
   clientId: string,
   w: Window,

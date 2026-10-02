@@ -1,28 +1,28 @@
 import type { CostTotals, DreIndicatorKey, DreLineKey } from "@ecommerce/contracts/money";
 
-/** What one window (or bucket) contributes to the DRE, already summed. */
 export type DreFacts = {
   revenue: number;
   productRevenue: number;
   discounts: number;
   shipping: number;
   orders: number;
-  cogs: number;
+  cogs: number | null;
   adSpend: number;
   adPlatformFee: number;
   costs: CostTotals;
 };
 
-export type DreLines = Record<DreLineKey, number>;
+export type DreLines = Record<DreLineKey, number | null>;
 
-/** The managerial income statement, line by line. */
+const minus = (a: number | null, b: number) => (a === null ? null : a - b);
+
 export function computeDre(f: DreFacts): DreLines {
   const productRevenue = f.productRevenue - f.discounts;
   const sellingCosts = f.costs.cogs;
-  const totalCosts = f.cogs + sellingCosts;
-  const grossProfit = f.revenue - totalCosts;
+  const totalCosts = f.cogs === null ? null : f.cogs + sellingCosts;
+  const grossProfit = totalCosts === null ? null : f.revenue - totalCosts;
   const marketingExpenses = f.adSpend + f.adPlatformFee + f.costs.salesMarketing;
-  const contributionMargin = grossProfit - marketingExpenses;
+  const contributionMargin = minus(grossProfit, marketingExpenses);
   const operatingExpenses = f.costs.operational;
   return {
     revenue: f.revenue,
@@ -35,14 +35,15 @@ export function computeDre(f: DreFacts): DreLines {
     marketingExpenses,
     contributionMargin,
     operatingExpenses,
-    netProfit: contributionMargin - operatingExpenses,
+    netProfit: minus(contributionMargin, operatingExpenses),
   };
 }
 
-const pct = (numerator: number, denominator: number) =>
-  denominator > 0 ? (numerator / denominator) * 100 : null;
+const pct = (numerator: number | null, denominator: number | null) =>
+  numerator !== null && denominator !== null && denominator > 0
+    ? (numerator / denominator) * 100
+    : null;
 
-/** Ratios the Dinheiro pillars and the "Indicadores gerenciais" row show. */
 export function computeDreIndicators(
   f: DreFacts,
   lines: DreLines,

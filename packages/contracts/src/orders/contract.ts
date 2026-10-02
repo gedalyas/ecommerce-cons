@@ -1,4 +1,5 @@
 export { ordersSummaryKeys } from "./orders.types";
+export { costCoverage, costCoverageNotice, knownCogs } from "./costCoverage";
 export type {
   OrdersAggregate,
   OrdersBucket,

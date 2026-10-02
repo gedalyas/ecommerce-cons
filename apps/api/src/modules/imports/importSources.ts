@@ -14,6 +14,7 @@ export const connectorKeysOfKind: Record<ImportKind, ConnectorKey[]> = {
   ORDERS: [],
   AD_SPEND: Object.values(adPlatformConnector),
   TRAFFIC: ["ga4"],
+  PRODUCTS: [],
 };
 
 export function sourcesStampedBy(kind: ImportKind, platforms: AdPlatform[]): ConnectorKey[] {

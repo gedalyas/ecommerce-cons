@@ -109,6 +109,8 @@ function mapTable(kind: ImportKind, table: Table): { total: number; mapped: Mapp
       return { total, mapped: { kind, ...mapAdSpend(table.header, table.rows) } };
     case "TRAFFIC":
       return { total, mapped: { kind, ...mapTraffic(table.header, table.rows) } };
+    case "PRODUCTS":
+      throw new HttpError(422, "A importação de produtos ainda não está disponível.");
   }
 }
 

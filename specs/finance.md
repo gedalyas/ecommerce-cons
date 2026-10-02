@@ -40,6 +40,15 @@ receita) stay on the seeded values until their sources exist.
    = Lucro líquido
    ```
 
+   **Unknown cost.** When less than 90% of the item revenue of the window (or bucket) has a
+   unit cost, CMV is null and so are Custos totais, Lucro bruto, Margem de contribuição and
+   Lucro líquido, with their margins ("—", never a 100% margin). From 90% up the lines use the
+   known costs.
+   Visão and DRE show a warning above the content (`costCoverageNotice` from
+   `ordersAggregate.costCoverage`): "Cadastre o custo dos produtos…" or "Só N% da receita de
+   produtos tem custo cadastrado…" / "o CMV fica um pouco abaixo do real" — decision
+   `decisions/2026-10-02-unknown-cost-and-stock-are-not-zero.md`.
+
 ## Custos (`?aba=custos`)
 
 The registry that feeds the DRE, the margins and the profit everywhere.

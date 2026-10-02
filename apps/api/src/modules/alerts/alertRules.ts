@@ -73,12 +73,14 @@ export function productSalesDropAlerts(products: ProductWeekPair[]): AlertItem[]
 const variantLabel = (v: VariantStock) =>
   v.variantName ? `${v.productName} · ${v.variantName}` : v.productName;
 
+const tracked = (variants: VariantStock[]) =>
+  variants.filter(
+    (v): v is VariantStock & { stockQty: number } => !v.marketplaceStock && v.stockQty !== null,
+  );
+
 export function lowStockRiskAlert(variants: VariantStock[]): AlertItem | null {
-  const atRisk = variants
-    .filter(
-      (v) =>
-        !v.marketplaceStock && v.stockQty > 0 && v.sold30 >= alertThresholds.lowStockMinimumSold30,
-    )
+  const atRisk = tracked(variants)
+    .filter((v) => v.stockQty > 0 && v.sold30 >= alertThresholds.lowStockMinimumSold30)
     .map((v) => ({ variant: v, days: coverageDays(v.stockQty, v.sold30) ?? Infinity }))
     .filter((x) => x.days < alertThresholds.lowStockCoverageDays)
     .sort((a, b) => a.days - b.days);
@@ -96,8 +98,8 @@ export function lowStockRiskAlert(variants: VariantStock[]): AlertItem | null {
 }
 
 export function keyVariantsUnavailableAlert(variants: VariantStock[]): AlertItem | null {
-  const selling = variants
-    .filter((v) => !v.marketplaceStock && v.sold90 > 0)
+  const selling = tracked(variants)
+    .filter((v) => v.sold90 > 0)
     .sort((a, b) => b.sold90 - a.sold90);
   const keyCount = Math.max(1, Math.ceil(selling.length * alertThresholds.keyVariantShare));
   const unavailable = selling.slice(0, keyCount).filter((v) => v.stockQty === 0);

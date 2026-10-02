@@ -29,7 +29,6 @@ export const dreIndicatorKeys = [
 ] as const;
 export type DreIndicatorKey = (typeof dreIndicatorKeys)[number];
 
-/** A cost or expense rule as the cost engine consumes it (dates as ISO `YYYY-MM-DD`). */
 export type CostRule = {
   id: string;
   name: string;
@@ -37,23 +36,19 @@ export type CostRule = {
   category: CostCategory;
   subcategory: string;
   frequency: CostFrequency;
-  /** BRL, or percentage points for the PERCENT_* frequencies. */
   value: number;
   startDate: string;
   endDate: string | null;
 };
 
-/** A rule as the registry table shows it. */
 export type CostRuleRow = CostRule & { description: string };
 
-/** The activity a percentage/per-order rule applies to, split by business unit. */
 export type CostActivity = {
   ecommerce: { orders: number; revenue: number };
   marketplace: { orders: number; revenue: number };
   adSpend: number;
 };
 
-/** What the rules add up to over a window, by DRE line. */
 export type CostTotals = {
   cogs: number;
   salesMarketing: number;
@@ -72,26 +67,25 @@ export type DreIndicator = {
 export type DreMatrixRow = {
   key: DreLineKey;
   label: string;
-  /** Indentation level in the statement (0 = total line). */
   level: number;
   values: (number | null)[];
-  total: number;
+  total: number | null;
   previousTotal: number | null;
 };
 
 export type MoneyDre = {
   indicators: DreIndicator[];
+  costCoverage: number | null;
   matrix: { buckets: string[]; rows: DreMatrixRow[] };
 };
 
 export type MoneyTabData =
-  | { aba: Extract<MoneyTab, "visao">; indicators: DreIndicator[] }
+  | { aba: Extract<MoneyTab, "visao">; indicators: DreIndicator[]; costCoverage: number | null }
   | { aba: Extract<MoneyTab, "dre">; dre: MoneyDre }
   | { aba: Extract<MoneyTab, "custos">; rules: CostRuleRow[] };
 
 export type MoneyScreen = { section: ConsultingSection } & MoneyTabData;
 
-/** A "Vendas e marketing" line accrued over a period, as the Marketing screen consumes it. */
 export type MarketingCostLine = {
   key: string;
   label: string;

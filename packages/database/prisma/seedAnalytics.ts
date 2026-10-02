@@ -1075,7 +1075,6 @@ type VariantRow = {
   price: number;
   cost: number;
   stockQty: number;
-  lastSaleAt: Date | null;
   /** Generator-only: relative sales weight. */
   weight: number;
   /** Generator-only: units sold in the last 90 days, to size stock. */
@@ -1260,7 +1259,6 @@ function buildCatalog(rng: Rng, clientId: string) {
         price,
         cost: round2(price * rng.float(0.42, 0.56)),
         stockQty: 0,
-        lastSaleAt: null,
         // Cheaper items sell more often, which is what keeps the ticket near R$ 268.
         weight:
           popularity * Math.pow(120 / price, 0.9) * (vi === 0 ? 1 : 0.7) * rng.float(0.7, 1.3),
@@ -1500,7 +1498,6 @@ function buildOrders(rng: Rng, clientId: string, variants: VariantRow[]) {
         customer.totalSpent = round2(customer.totalSpent + totalPrice);
         paidOrdersByCustomer.set(customer.id, customer.ordersCount);
         for (const { variant, quantity } of chosen.values()) {
-          variant.lastSaleAt = placedAt;
           if (daysBetween(placedAt, TODAY) <= 90) variant.unitsLast90 += quantity;
         }
       }
@@ -2013,7 +2010,10 @@ export async function seedAnalytics(prisma: PrismaClient, clientId: string) {
 
   await prisma.product.createMany({ data: data.products });
   await prisma.productVariant.createMany({
-    data: data.variants.map(({ weight: _w, unitsLast90: _u, ...v }) => v),
+    data: data.variants.map(({ weight: _w, unitsLast90: _u, ...v }) => ({
+      ...v,
+      stockUpdatedAt: TODAY,
+    })),
   });
   await insertInChunks(data.customers, 2000, (chunk) =>
     prisma.customer.createMany({ data: chunk }),

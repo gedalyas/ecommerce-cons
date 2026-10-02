@@ -8,7 +8,7 @@ export type DashboardFacts = {
   orders: number;
   ecommerceOrders: number;
   ecommerceRevenue: number;
-  cogs: number;
+  cogs: number | null;
   repeatOrders: number;
   customers: number;
   newCustomers: number;
@@ -25,8 +25,8 @@ const ratio = (numerator: number, denominator: number) =>
 
 export function computeDashboardMetrics(facts: DashboardFacts, channel: Channel): DashboardValues {
   const investment = facts.adSpend + facts.adPlatformFee + facts.costs.salesMarketing;
-  const goodsAndFees = facts.cogs + facts.costs.cogs;
-  const contribution = facts.revenue - goodsAndFees - investment;
+  const contribution =
+    facts.cogs === null ? null : facts.revenue - facts.cogs - facts.costs.cogs - investment;
   const paidMediaApplies = channel !== "marketplace";
 
   return {
@@ -40,9 +40,9 @@ export function computeDashboardMetrics(facts: DashboardFacts, channel: Channel)
     mer: paidMediaApplies ? ratio(facts.revenue, investment) : null,
     cac: paidMediaApplies ? cacPercent(investment, facts.revenue) : null,
     cpa: paidMediaApplies ? ratio(investment, facts.orders) : null,
-    netProfit: contribution - facts.costs.operational,
+    netProfit: contribution === null ? null : contribution - facts.costs.operational,
     customers: facts.customers,
-    contributionMargin: percent(contribution, facts.revenue),
+    contributionMargin: contribution === null ? null : percent(contribution, facts.revenue),
     repurchaseRate: percent(facts.repeatOrders, facts.orders),
   };
 }

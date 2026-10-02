@@ -14,7 +14,9 @@ const days = (v: number | null) => (v == null ? "—" : `${formatNumber(v, v < 1
 const day = (iso: string | null) =>
   iso ? formatDate(iso, { day: "2-digit", month: "2-digit", year: "2-digit" }) : "—";
 
-export const stockHealthLabel: Record<ProductRow["stockHealth"], string> = {
+const quantity = (v: number | null) => (v == null ? "—" : formatNumber(v));
+
+export const stockHealthLabel: Record<NonNullable<ProductRow["stockHealth"]>, string> = {
   ok: "OK",
   risco: "Risco",
   "sem-estoque": "Sem estoque",
@@ -28,7 +30,6 @@ const nameColumn: DataTableColumn<ProductRow> = {
   className: "whitespace-nowrap font-semibold",
 };
 
-/** The Lista tab columns: ABC class, catalog, stock health and the sales economics. */
 export const productColumns: DataTableColumn<ProductRow>[] = [
   nameColumn,
   {
@@ -48,8 +49,8 @@ export const productColumns: DataTableColumn<ProductRow>[] = [
   {
     key: "stockHealth",
     header: "Saúde do estoque",
-    render: (r) => stockHealthLabel[r.stockHealth],
-    csv: (r) => stockHealthLabel[r.stockHealth],
+    render: (r) => (r.stockHealth ? stockHealthLabel[r.stockHealth] : "—"),
+    csv: (r) => (r.stockHealth ? stockHealthLabel[r.stockHealth] : null),
     sortValue: (r) => r.stockHealth,
   },
   {
@@ -111,7 +112,6 @@ export const productColumns: DataTableColumn<ProductRow>[] = [
   },
 ];
 
-/** Compact columns for the Resumo volume tables. */
 export const volumeColumns: DataTableColumn<ProductRow>[] = [
   nameColumn,
   {
@@ -161,13 +161,12 @@ const variantColumns: DataTableColumn<InventoryRow>[] = [
     key: "stockQty",
     header: "Estoque",
     align: "right",
-    render: (r) => formatNumber(r.stockQty),
+    render: (r) => quantity(r.stockQty),
     csv: (r) => r.stockQty,
     sortValue: (r) => r.stockQty,
   },
 ];
 
-/** Resumo › Risco de estoque. */
 export const riskColumns: DataTableColumn<InventoryRow>[] = [
   ...variantColumns,
   {
@@ -196,7 +195,6 @@ export const riskColumns: DataTableColumn<InventoryRow>[] = [
   },
 ];
 
-/** Resumo › Produtos fora de estoque. */
 export const outOfStockColumns: DataTableColumn<InventoryRow>[] = [
   ...variantColumns,
   {
@@ -225,7 +223,6 @@ export const outOfStockColumns: DataTableColumn<InventoryRow>[] = [
   },
 ];
 
-/** Estoque tab: the full stock position per variant. */
 export const inventoryColumns: DataTableColumn<InventoryRow>[] = [
   ...variantColumns,
   {

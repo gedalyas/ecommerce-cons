@@ -3,12 +3,8 @@ import { metricToTile } from "@/shared/ui/metricToTile";
 import { MetricTileGroup } from "@/shared/ui/MetricTileGroup";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
 import { cn } from "@/shared/utils/cn";
-import {
-  formatCurrency,
-  formatDate,
-  formatPeriodLabel,
-  formatVariation,
-} from "@ecommerce/contracts/shared/format";
+import { formatMetric } from "@ecommerce/contracts/shared/metricFormat";
+import { formatDate, formatPeriodLabel, formatVariation } from "@ecommerce/contracts/shared/format";
 import { variationOf } from "@ecommerce/contracts/shared/metricValue";
 import type { Granularity, PeriodSearch } from "@ecommerce/contracts/shared/period";
 import type { DreMatrixRow, MoneyDre as MoneyDreData } from "@ecommerce/contracts/money";
@@ -29,7 +25,6 @@ const bucketHeader = (bucket: string, por: Granularity) => {
 
 const round2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);
 
-/** Indicadores gerenciais + the managerial income statement as a metric × bucket matrix. */
 export function MoneyDre({
   data,
   period,
@@ -71,7 +66,7 @@ export function MoneyDre({
       align: "right",
       render: (r) => (
         <span className={cn(r.level === 0 && "font-semibold")}>
-          {formatCurrency(r.total)}
+          {formatMetric(r.total, "currency")}
           {r.previousTotal != null && variationOf(r.total, r.previousTotal) != null && (
             <span className="ml-2 text-[12px] text-muted-foreground">
               {formatVariation(variationOf(r.total, r.previousTotal)!)}
@@ -86,8 +81,8 @@ export function MoneyDre({
       key: bucket,
       header: bucketHeader(bucket, period.por),
       align: "right" as const,
-      render: (r: DreMatrixRow) => formatCurrency(r.values[i] ?? 0),
-      csv: (r: DreMatrixRow) => round2(r.values[i] ?? 0),
+      render: (r: DreMatrixRow) => formatMetric(r.values[i] ?? null, "currency"),
+      csv: (r: DreMatrixRow) => round2(r.values[i] ?? null),
       className: "whitespace-nowrap",
     })),
   ];

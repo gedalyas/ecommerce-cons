@@ -35,7 +35,7 @@ export type VariantStock = {
   productName: string;
   variantName: string | null;
   sku: string;
-  stockQty: number;
+  stockQty: number | null;
   sold30: number;
   sold90: number;
   marketplaceStock: boolean;

@@ -21,7 +21,8 @@ period** — it is a snapshot with fixed sales windows. Then the `TabBar`.
    30-day pace: Produto · Variante · SKU · Estoque · Vendas diárias estimadas ·
    Dias para zerar · Data estimada de falta.
 4. **Produtos fora de estoque** — stock = 0: Dias desde a última venda ·
-   Última venda · Receita perdida (historical pace × price × days out).
+   Última venda (the last PAID order with the variant) · Receita perdida (historical pace ×
+   price × days out).
 5. **Produtos comprados juntos** — pairs in the same paid order of the
    period: Produto 1 · Produto 2 · Vezes comprados juntos · Valor médio do
    pacote.
@@ -40,6 +41,12 @@ Catalog filters (`MultiSelect`), then:
    Total vendido · % das vendas · Lucro · Preço médio · Custo · Margem.
    Sessões and Taxa de conversão por produto are a **data pending**: they
    need GA4 by product page, which the model does not carry yet.
+   A product whose items in the window are not all costed has Custo, Lucro and Margem "—"
+   (`case when count(*) = count(unit_cost)`); a notice above the tables names the share of the
+   revenue that has a cost, or asks for it when none has (`productsCostCoverage` +
+   `costCoverageNotice`). The rule is all-or-nothing per product (and per order on Pedidos),
+   while the period's CMV on Dinheiro accepts 90% coverage: a product's margin is one number
+   the client acts on, so a partial cost there would mislead without a notice beside it.
 
 ## Estoque (`?aba=estoque`)
 
@@ -58,11 +65,22 @@ plus the catalog filters. One row per variant (`deriveInventory`, tested):
 | Receita perdida desde ruptura       | dias desde a última venda × velocidade histórica × preço     |
 | Custo de ruptura/dia                | velocidade histórica × (preço − custo)                       |
 
+## Unknown stock
+
+`stock_qty` is null until a source informs it (the products spreadsheet, Bling); a variant
+created by an order starts at null, never 0. An untracked variant shows "—" in Estoque and Saúde
+do estoque, has no projections, and stays out of rupture, coverage, Resumo's "em risco" / "sem
+estoque" lists and the stock alerts. `InventoryHealth.untracked` counts them and
+`stockSourceNotice` (contracts, tested) shows "Sem fonte de estoque…" on Resumo and Estoque when
+nothing is tracked, or how many variants are left out when some are — decision
+`decisions/2026-10-02-unknown-cost-and-stock-are-not-zero.md`.
+
 ## Logística
 
 `inventoryHealthFor` (products the API module `contract.ts`) feeds the Logística
-pillars: **Ruptura de estoque** = variants with stock 0 ÷ variants (A, from
-the ERP balance) and **Cobertura de estoque** = total stock ÷ Σ daily
+pillars: **Ruptura de estoque** = variants with stock 0 ÷ tracked variants (A, from
+the balance a connector or spreadsheet informed; the sub-note asks for a stock source when none
+is tracked) and **Cobertura de estoque** = total stock ÷ Σ daily
 velocity (B). The other Logística KPIs stay on fixtures.
 
 ## Data flow

@@ -75,3 +75,16 @@ describe("summarizeAbc", () => {
     ]);
   });
 });
+
+describe("unknown cost and stock", () => {
+  const [row] = classifyAbc([product("p", 100, { cost: null, stockQty: null })], 30);
+
+  it("leaves profit and margin empty", () => {
+    expect(row!.profit).toBeNull();
+    expect(row!.margin).toBeNull();
+  });
+
+  it("does not call an untracked stock empty", () => {
+    expect(row!.stockHealth).toBeNull();
+  });
+});

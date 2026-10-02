@@ -110,10 +110,11 @@ export async function productsScreen(
             .sort((a, b) => a.daysToZero! - b.daysToZero!)
             .slice(0, 20),
           outOfStock: inventory
-            .filter((r) => !r.marketplaceStock && r.stockQty <= 0)
+            .filter((r) => !r.marketplaceStock && r.stockQty !== null && r.stockQty <= 0)
             .sort((a, b) => (b.lostRevenueSinceStockOut ?? 0) - (a.lostRevenueSinceStockOut ?? 0))
             .slice(0, 20),
           boughtTogether: pairs,
+          stock: inventoryHealth(inventory),
         },
       };
     }
@@ -129,12 +130,11 @@ export async function productsScreen(
         inventoryRows(clientId, filters),
         productsFilterOptions(clientId),
       ]);
-      return { aba: "estoque", inventory: { rows, options } };
+      return { aba: "estoque", inventory: { rows, options, stock: inventoryHealth(rows) } };
     }
   }
 }
 
-/** Rupture share and coverage for Logística, over the whole catalog. */
 export async function inventoryHealthFor(clientId: string): Promise<InventoryHealth> {
   return inventoryHealth(await inventoryRows(clientId, null));
 }

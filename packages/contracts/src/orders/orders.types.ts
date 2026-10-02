@@ -1,20 +1,14 @@
 import type { BreakdownSlice, MetricUnit, MetricValue, Series } from "../shared/metric.types";
 import type { OrdersFilterKey, OrdersSortField, OrdersTab } from "./ordersSchema";
 
-/** Paid-order totals over a window (or one bucket of it), already split by sales platform. */
 export type OrdersAggregate = {
-  /** Paid revenue (total_price of PAID orders). */
   revenue: number;
-  /** Paid orders. */
   orders: number;
-  /** Revenue of every order regardless of payment state. */
   captured: number;
   capturedOrders: number;
-  /** Cost of goods sold for the paid orders (qty × unit cost). */
-  cogs: number;
-  /** Paid orders that are the customer's second or later order. */
+  cogs: number | null;
+  costCoverage: number | null;
   repeatOrders: number;
-  /** Product revenue (before discounts), units, discounts and shipping of the paid orders. */
   productRevenue: number;
   items: number;
   discounts: number;
@@ -25,7 +19,6 @@ export type OrdersAggregate = {
 
 export type OrdersBucket = OrdersAggregate & { bucket: string };
 
-/** Row-level filters of the Pedidos screens (values as stored, labels resolved in the UI). */
 export type OrdersFilters = Record<OrdersFilterKey, string[]> & { busca: string };
 
 export type OrdersFilterOption = { value: string; label: string };
@@ -85,7 +78,6 @@ export type ApprovalRow = {
 };
 
 export type OrdersApproval = {
-  /** Paid ÷ captured revenue per bucket, in percent. */
   approvalSeries: Series;
   dimensions: {
     key: ApprovalDimensionKey;
@@ -121,7 +113,6 @@ export type OrdersListPage = {
   sort: { field: OrdersSortField; direction: "asc" | "desc" };
 };
 
-/** What the `/pedidos` loader returns: only the active tab's data. */
 export type RegionRow = {
   key: string;
   label: string;

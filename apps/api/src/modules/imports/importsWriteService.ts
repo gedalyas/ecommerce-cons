@@ -129,7 +129,7 @@ async function variantFor(
       name: item.productName,
       category: item.category,
       variants: {
-        create: { sku: item.sku, price: item.unitPrice, cost: item.unitCost, stockQty: 0 },
+        create: { sku: item.sku, price: item.unitPrice, cost: item.unitCost },
       },
     },
     select: { id: true, variants: { select: { id: true }, take: 1 } },

@@ -8,6 +8,7 @@ const aggregate: OrdersAggregate = {
   captured: 100_000,
   capturedOrders: 340,
   cogs: 45_000,
+  costCoverage: 100,
   repeatOrders: 45,
   productRevenue: 92_000,
   items: 510,

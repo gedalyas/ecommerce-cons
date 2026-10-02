@@ -1,4 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { AlertBanner } from "@/shared/ui/AlertBanner";
 import { PageHeader } from "@/shared/ui/PageHeader";
 import { PillarCard } from "@/shared/ui/PillarCard";
 import { TabBar } from "@/shared/ui/TabBar";
@@ -7,6 +8,7 @@ import { layout } from "@/shared/styles/spacing";
 import { cn } from "@/shared/utils/cn";
 import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import type { MoneyScreen, MoneyTab } from "@ecommerce/contracts/money";
+import { costCoverageNotice } from "@ecommerce/contracts/orders";
 import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
 import { MoneyCosts } from "./MoneyCosts";
 import { MoneyDre } from "./MoneyDre";
@@ -30,6 +32,12 @@ export function Money({ data }: { data: MoneyScreen }) {
   const comparisonLabel = comparison
     ? `vs ${formatPeriodLabel(comparison.inicio, comparison.fim)}`
     : "sem comparação";
+  const costNotice =
+    data.aba === "visao"
+      ? costCoverageNotice(data.costCoverage)
+      : data.aba === "dre"
+        ? costCoverageNotice(data.dre.costCoverage)
+        : null;
 
   return (
     <div className={layout.page}>
@@ -37,6 +45,8 @@ export function Money({ data }: { data: MoneyScreen }) {
 
       <div className={cn(layout.headerGap, layout.blockStack)}>
         <TabBar tabs={tabs} value={search.aba} onChange={setTab} />
+
+        {costNotice && <AlertBanner>{costNotice}</AlertBanner>}
 
         {data.aba === "visao" && (
           <div className={layout.groupStack}>

@@ -3,7 +3,6 @@ import type { ProductsFilterKey, ProductsTab } from "./productsSchema";
 
 export type AbcClass = "A" | "B" | "C";
 
-/** One product's sales over a window, with the catalog attributes the filters use. */
 export type ProductSales = {
   productId: string;
   name: string;
@@ -13,19 +12,18 @@ export type ProductSales = {
   collection: string | null;
   units: number;
   revenue: number;
-  cost: number;
+  cost: number | null;
   orders: number;
-  stockQty: number;
+  stockQty: number | null;
 };
 
 export type ProductRow = ProductSales & {
   abcClass: AbcClass;
-  /** Share of the revenue of every product in the window, in percent. */
   revenueShare: number;
-  profit: number;
+  profit: number | null;
   averagePrice: number | null;
   margin: number | null;
-  stockHealth: "ok" | "risco" | "sem-estoque";
+  stockHealth: "ok" | "risco" | "sem-estoque" | null;
 };
 
 export type AbcSummary = {
@@ -60,7 +58,6 @@ export type BoughtTogetherRow = {
   averageBundle: number;
 };
 
-/** One variant's stock position, with the sales windows and the derived projections. */
 export type InventoryRow = {
   variantId: string;
   productName: string;
@@ -70,7 +67,7 @@ export type InventoryRow = {
   subcategory: string | null;
   brand: string | null;
   collection: string | null;
-  stockQty: number;
+  stockQty: number | null;
   price: number;
   cost: number | null;
   lastSaleAt: string | null;
@@ -80,12 +77,11 @@ export type InventoryRow = {
   sold7: number;
   sold30Marketplace: number;
   marketplaceStock: boolean;
-  /** Units per day over the last 30 days (90 when the last 30 had none). */
   velocity: number;
   daysToZero: number | null;
   stockOutDate: string | null;
   stockValue: number | null;
-  revenuePotential: number;
+  revenuePotential: number | null;
   daysOutOfStock: number | null;
   lostRevenueSinceStockOut: number | null;
   stockOutCostPerDay: number | null;
@@ -98,6 +94,7 @@ export type ProductsSummary = {
   atRisk: InventoryRow[];
   outOfStock: InventoryRow[];
   boughtTogether: BoughtTogetherRow[];
+  stock: InventoryHealth;
 };
 
 export type ProductsList = {
@@ -108,6 +105,7 @@ export type ProductsList = {
 
 export type ProductsInventory = {
   rows: InventoryRow[];
+  stock: InventoryHealth;
   options: ProductsFilterOptions;
 };
 
@@ -116,9 +114,9 @@ export type ProductsScreen =
   | { aba: Extract<ProductsTab, "lista">; list: ProductsList }
   | { aba: Extract<ProductsTab, "estoque">; inventory: ProductsInventory };
 
-/** What Logística needs from the stock: rupture share and coverage in days. */
 export type InventoryHealth = {
   variants: number;
+  untracked: number;
   outOfStock: number;
   stockOutRate: number | null;
   coverageDays: number | null;

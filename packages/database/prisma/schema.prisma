@@ -106,6 +106,7 @@ enum ImportKind {
   ORDERS
   AD_SPEND
   TRAFFIC
+  PRODUCTS
 
   @@map("import_kind")
 }
@@ -440,8 +441,9 @@ model ProductVariant {
   price      Decimal   @db.Decimal(12, 2)
   /// Unit cost (CMV). Null when the client has not informed it.
   cost       Decimal?  @db.Decimal(12, 2)
-  stockQty   Int       @map("stock_qty")
-  lastSaleAt DateTime? @map("last_sale_at")
+  /// Units on hand. Null when no source (connector or spreadsheet) has informed it.
+  stockQty       Int?      @map("stock_qty")
+  stockUpdatedAt DateTime? @map("stock_updated_at")
 
   product Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   items   OrderItem[]
