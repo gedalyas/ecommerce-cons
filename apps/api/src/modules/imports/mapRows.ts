@@ -11,8 +11,14 @@ import type {
   ProcessingMethod,
   SalesPlatform,
 } from "@ecommerce/database/enums";
-import type { AdSpendRow, OrderInput, OrderLine, TrafficRow } from "./importRows.types";
-import { collectRows, type RowReader } from "./rowReader";
+import type {
+  AdSpendRow,
+  OrderInput,
+  OrderLine,
+  ProductSheetRow,
+  TrafficRow,
+} from "./importRows.types";
+import { collectRows, RowError, type RowReader } from "./rowReader";
 
 const financialStatusOf: Record<(typeof orderStatusOptions)[number], FinancialStatus> = {
   pago: "PAID",
@@ -170,4 +176,61 @@ export function mapTraffic(
 ): { rows: TrafficRow[]; errors: ImportRowError[] } {
   const { parsed, errors } = collectRows("TRAFFIC", header, rows, trafficRowOf);
   return { rows: parsed, errors };
+}
+
+const MAX_MONEY = 9_999_999_999.99;
+const MAX_STOCK = 2_147_483_647;
+
+const MAX_TEXT = { sku: 100, name: 200, category: 100 } as const;
+
+const isMoney = (value: number | null) => value === null || (value >= 0 && value <= MAX_MONEY);
+
+const tooLong = (row: Pick<ProductSheetRow, keyof typeof MAX_TEXT>) =>
+  (Object.keys(MAX_TEXT) as (keyof typeof MAX_TEXT)[]).some(
+    (key) => (row[key]?.length ?? 0) > MAX_TEXT[key],
+  );
+
+export function latestBySku(rows: ProductSheetRow[]): ProductSheetRow[] {
+  const latest = new Map<string, ProductSheetRow>();
+  for (const row of rows) {
+    latest.delete(row.sku);
+    latest.set(row.sku, row);
+  }
+  return [...latest.values()];
+}
+
+export function productRowOf(r: RowReader): ProductSheetRow {
+  const product = {
+    row: r.row,
+    sku: r.text("sku"),
+    name: r.optionalText("name"),
+    category: r.optionalText("category"),
+    cost: r.optionalNumber("cost"),
+    stock: r.optionalInteger("stock"),
+    price: r.optionalNumber("price"),
+  };
+  const { row: _row, sku: _sku, ...values } = product;
+  if (Object.values(values).every((v) => v === null)) {
+    throw new RowError(
+      `Linha ${r.row}: informe ao menos custo, estoque, preço, categoria ou nome.`,
+    );
+  }
+  if (!isMoney(product.cost) || !isMoney(product.price)) {
+    throw new RowError(`Linha ${r.row}: custo e preço precisam estar entre 0 e 9.999.999.999.`);
+  }
+  if (tooLong(product)) {
+    throw new RowError(`Linha ${r.row}: SKU, nome ou categoria longo demais.`);
+  }
+  if (product.stock !== null && Math.abs(product.stock) > MAX_STOCK) {
+    throw new RowError(`Linha ${r.row}: estoque fora do limite aceito.`);
+  }
+  return product;
+}
+
+export function mapProducts(
+  header: string[],
+  rows: string[][],
+): { rows: ProductSheetRow[]; errors: ImportRowError[] } {
+  const { parsed, errors } = collectRows("PRODUCTS", header, rows, productRowOf);
+  return { rows: latestBySku(parsed), errors };
 }

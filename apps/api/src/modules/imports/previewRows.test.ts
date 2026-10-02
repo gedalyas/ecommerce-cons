@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { IMPORT_PREVIEW_ROWS } from "@ecommerce/contracts/imports";
-import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
-import { adSpendPreview, ordersPreview, trafficPreview } from "./previewRows";
+import type { AdSpendRow, OrderInput, ProductSheetRow, TrafficRow } from "./importRows.types";
+import { adSpendPreview, ordersPreview, productsPreview, trafficPreview } from "./previewRows";
 
 const order = (number: string, placedAt: string): OrderInput => ({
   number,
@@ -93,5 +93,30 @@ describe("adSpendPreview / trafficPreview", () => {
     expect(adSpendPreview([ad]).sample[0]?.["spend"]).toBe(150);
     expect(adSpendPreview([ad]).sample[0]?.["platform"]).toBe("Meta Ads");
     expect(trafficPreview([traffic]).sample[0]?.["sessions"]).toBe(420);
+  });
+});
+
+describe("productsPreview", () => {
+  const product = (sku: string): ProductSheetRow => ({
+    row: 2,
+    sku,
+    name: null,
+    category: "Mantas",
+    cost: 10,
+    stock: null,
+    price: null,
+  });
+
+  it("counts products without a date span and samples the first rows", () => {
+    const body = productsPreview(Array.from({ length: 12 }, (_, i) => product(`S${i}`)));
+    expect(body.summary).toEqual({ count: 12, label: "produtos", from: null, to: null });
+    expect(body.sample).toHaveLength(Math.min(12, IMPORT_PREVIEW_ROWS));
+    expect(body.sample[0]).toEqual({
+      sku: "S0",
+      name: null,
+      cost: 10,
+      stock: null,
+      category: "Mantas",
+    });
   });
 });

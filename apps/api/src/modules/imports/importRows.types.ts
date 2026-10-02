@@ -35,6 +35,16 @@ export type OrderLine = {
   unitCost: number | null;
 };
 
+export type ProductSheetRow = {
+  row: number;
+  sku: string;
+  name: string | null;
+  category: string | null;
+  cost: number | null;
+  stock: number | null;
+  price: number | null;
+};
+
 export type OrderItemInput = {
   sku: string;
   productName: string;

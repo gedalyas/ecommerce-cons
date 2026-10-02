@@ -117,12 +117,16 @@ async function variantFor(
   clientId: string,
   item: OrderInput["items"][number],
   undo: UndoRecorder,
-): Promise<{ productId: string; variantId: string }> {
+): Promise<{ productId: string; variantId: string; cost: number | null }> {
   const existing = await tx.productVariant.findFirst({
     where: { sku: item.sku, product: { clientId } },
-    select: { id: true, productId: true },
+    orderBy: { id: "asc" },
+    select: { id: true, productId: true, cost: true },
   });
-  if (existing) return { productId: existing.productId, variantId: existing.id };
+  if (existing) {
+    const cost = existing.cost === null ? null : num(existing.cost);
+    return { productId: existing.productId, variantId: existing.id, cost };
+  }
   const product = await tx.product.create({
     data: {
       clientId,
@@ -135,7 +139,7 @@ async function variantFor(
     select: { id: true, variants: { select: { id: true }, take: 1 } },
   });
   undo.add({ entity: "PRODUCT", key: product.id, previous: null });
-  return { productId: product.id, variantId: product.variants[0]!.id };
+  return { productId: product.id, variantId: product.variants[0]!.id, cost: item.unitCost };
 }
 
 async function writeOrder(
@@ -156,13 +160,13 @@ async function writeOrder(
   });
   const items = [];
   for (const item of order.items) {
-    const ids = await variantFor(tx, clientId, item, undo);
+    const { cost, ...ids } = await variantFor(tx, clientId, item, undo);
     items.push({
       ...ids,
       sku: item.sku,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
-      unitCost: item.unitCost,
+      unitCost: item.unitCost ?? cost,
     });
   }
   const data = {

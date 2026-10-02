@@ -10,6 +10,7 @@ import { formatPeriodLabel } from "@ecommerce/contracts/shared/format";
 import type { MoneyScreen, MoneyTab } from "@ecommerce/contracts/money";
 import { costCoverageNotice } from "@ecommerce/contracts/orders";
 import { pillarActionOf, sectionOf } from "@/modules/consulting/contract";
+import { ProductsSheetLink } from "@/modules/imports/contract";
 import { MoneyCosts } from "./MoneyCosts";
 import { MoneyDre } from "./MoneyDre";
 
@@ -46,7 +47,7 @@ export function Money({ data }: { data: MoneyScreen }) {
       <div className={cn(layout.headerGap, layout.blockStack)}>
         <TabBar tabs={tabs} value={search.aba} onChange={setTab} />
 
-        {costNotice && <AlertBanner>{costNotice}</AlertBanner>}
+        {costNotice && <AlertBanner action={<ProductsSheetLink />}>{costNotice}</AlertBanner>}
 
         {data.aba === "visao" && (
           <div className={layout.groupStack}>

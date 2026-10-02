@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mapAdSpend, mapOrders, mapTraffic } from "./mapRows";
+import { latestBySku, mapAdSpend, mapOrders, mapProducts, mapTraffic } from "./mapRows";
 
 const ordersHeader = [
   "numero",
@@ -224,5 +224,58 @@ describe("mapTraffic", () => {
       [["2026-09-05", "Google", "CPC", "420"]],
     );
     expect(rows[0]).toMatchObject({ source: "google", medium: "cpc", sessions: 420, users: 420 });
+  });
+});
+
+describe("mapProducts", () => {
+  const header = ["sku", "produto", "custo", "estoque", "categoria", "preco"];
+
+  it("reads cost, stock, category and price, leaving blanks as unknown", () => {
+    const { rows, errors } = mapProducts(header, [
+      ["A-1", "Manta", "48,90", "32", "Mantas", "129,90"],
+      ["A-2", "", "12", "", "", ""],
+    ]);
+    expect(errors).toEqual([]);
+    expect(rows[0]).toMatchObject({ sku: "A-1", cost: 48.9, stock: 32, price: 129.9 });
+    expect(rows[1]).toMatchObject({ sku: "A-2", name: null, stock: null, category: null });
+  });
+
+  it("rejects a row that informs nothing beyond the SKU", () => {
+    const { rows, errors } = mapProducts(header, [["A-3", "", "", "", "", ""]]);
+    expect(rows).toEqual([]);
+    expect(errors[0]?.message).toMatch(/Linha 2: informe ao menos/);
+  });
+
+  it("rejects a negative or oversized value and a broken stock", () => {
+    const { errors } = mapProducts(header, [
+      ["A-4", "", "-3", "", "", ""],
+      ["A-5", "", "", "dez", "", ""],
+      ["A-6", "", "", "3000000000", "", ""],
+      ["A-7", "", "", "", "", "99999999999"],
+    ]);
+    expect(errors.map((e) => e.row)).toEqual([2, 3, 4, 5]);
+  });
+});
+
+describe("latestBySku", () => {
+  it("keeps the last row of a repeated SKU", () => {
+    const { rows } = mapProducts(
+      ["sku", "custo", "categoria"],
+      [
+        ["A-1", "10", ""],
+        ["B-1", "", "Vasos"],
+        ["A-1", "12", ""],
+      ],
+    );
+    expect(rows.map((r) => [r.sku, r.cost])).toEqual([
+      ["B-1", null],
+      ["A-1", 12],
+    ]);
+    expect(latestBySku([])).toEqual([]);
+  });
+
+  it("rejects an oversized text", () => {
+    const { errors } = mapProducts(["sku", "produto"], [["A-1", "x".repeat(201)]]);
+    expect(errors[0]?.message).toMatch(/longo demais/);
   });
 });

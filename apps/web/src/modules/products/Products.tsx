@@ -31,6 +31,7 @@ import {
   riskColumns,
   volumeColumns,
 } from "./productsColumns";
+import { ProductsSheetLink } from "@/modules/imports/contract";
 import { ProductsFilters } from "./ProductsFilters";
 import {
   productsCostCoverage,
@@ -308,7 +309,7 @@ export function Products({ data }: { data: ProductsScreen }) {
 }
 
 function Notice({ text }: { text: string | null }) {
-  return text ? <AlertBanner>{text}</AlertBanner> : null;
+  return text ? <AlertBanner action={<ProductsSheetLink />}>{text}</AlertBanner> : null;
 }
 
 function filterInventory(rows: InventoryRow[], chip: StockChip, window: SalesWindow) {

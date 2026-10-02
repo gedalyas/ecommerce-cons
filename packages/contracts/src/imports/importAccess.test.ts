@@ -3,7 +3,7 @@ import { editableImportKinds } from "./importAccess";
 
 describe("editableImportKinds", () => {
   it("is every kind for unrestricted access", () => {
-    expect(editableImportKinds(null)).toEqual(["ORDERS", "AD_SPEND", "TRAFFIC"]);
+    expect(editableImportKinds(null)).toEqual(["ORDERS", "AD_SPEND", "TRAFFIC", "PRODUCTS"]);
   });
 
   it("follows the edit grants of the member", () => {
@@ -11,6 +11,7 @@ describe("editableImportKinds", () => {
       "AD_SPEND",
       "TRAFFIC",
     ]);
+    expect(editableImportKinds([{ area: "DATA", level: "edit" }])).toEqual(["ORDERS", "PRODUCTS"]);
     expect(editableImportKinds([{ area: "DATA", level: "view" }])).toEqual([]);
   });
 });

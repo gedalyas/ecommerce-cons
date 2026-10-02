@@ -6,7 +6,16 @@ import type {
   SalesPlatform,
 } from "@ecommerce/database/enums";
 
-export const undoEntities = ["ORDER", "CUSTOMER", "PRODUCT", "AD_SPEND_DAY", "TRAFFIC"] as const;
+export const undoEntities = [
+  "ORDER",
+  "CUSTOMER",
+  "PRODUCT",
+  "AD_SPEND_DAY",
+  "TRAFFIC",
+  "VARIANT",
+  "PRODUCT_INFO",
+  "ITEM_COST",
+] as const;
 export type UndoEntity = (typeof undoEntities)[number];
 
 export type OrderItemSnapshot = {
@@ -47,6 +56,15 @@ export type OrderSnapshot = {
 };
 
 export type CustomerSnapshot = { name: string };
+
+export type VariantSnapshot = {
+  price: number;
+  cost: number | null;
+  stockQty: number | null;
+  stockUpdatedAt: string | null;
+};
+
+export type ProductInfoSnapshot = { name: string; category: string };
 
 export type AdSpendSnapshot = {
   campaignId: string;
@@ -92,7 +110,10 @@ export type UndoEntry =
   | { entity: "CUSTOMER"; key: string; previous: CustomerSnapshot | null }
   | { entity: "PRODUCT"; key: string; previous: null }
   | { entity: "AD_SPEND_DAY"; key: string; previous: AdSpendSnapshot[] | null }
-  | { entity: "TRAFFIC"; key: string; previous: TrafficSnapshot | null };
+  | { entity: "TRAFFIC"; key: string; previous: TrafficSnapshot | null }
+  | { entity: "VARIANT"; key: string; previous: VariantSnapshot }
+  | { entity: "PRODUCT_INFO"; key: string; previous: ProductInfoSnapshot }
+  | { entity: "ITEM_COST"; key: string; previous: string[] };
 
 export type AdSpendDayKey = { platform: AdPlatform; date: string; accountId: string | null };
 export type TrafficKey = { date: string; source: string; medium: string };
@@ -105,4 +126,7 @@ export type UndoPlan = {
   productsToDelete: string[];
   adSpendDays: { key: AdSpendDayKey; rows: AdSpendSnapshot[] }[];
   traffic: { key: TrafficKey; previous: TrafficSnapshot | null }[];
+  variantsToRestore: { variantId: string; snapshot: VariantSnapshot }[];
+  productsToRestore: { productId: string; snapshot: ProductInfoSnapshot }[];
+  itemCostsToClear: string[];
 };

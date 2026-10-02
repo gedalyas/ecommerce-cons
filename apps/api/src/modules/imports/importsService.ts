@@ -35,12 +35,19 @@ import { HttpError, notFound } from "@/shared/http/httpError";
 import { CsvLimitError, decodeCsvBuffer, hasBinaryContent, parseCsv } from "./csvParse";
 import { rememberLayout, rememberedMapping } from "./importLayoutService";
 import { importOutcome, type ImportCounts } from "./importOutcome";
-import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
+import type { AdSpendRow, OrderInput, ProductSheetRow, TrafficRow } from "./importRows.types";
 import { sourcesStampedBy } from "./importSources";
 import { saveUndoEntries, undoImport, undoableJobIds } from "./importsUndoService";
 import { persistAdSpend, persistOrders, persistTraffic } from "./importsWriteService";
-import { mapAdSpend, mapOrders, mapTraffic } from "./mapRows";
-import { adSpendPreview, ordersPreview, trafficPreview, type PreviewBody } from "./previewRows";
+import { mapAdSpend, mapOrders, mapProducts, mapTraffic } from "./mapRows";
+import {
+  adSpendPreview,
+  ordersPreview,
+  productsPreview,
+  trafficPreview,
+  type PreviewBody,
+} from "./previewRows";
+import { persistProducts } from "./productsWriteService";
 import { undoRecorder, type UndoRecorder } from "./undoRecorder";
 import { extensionOf } from "./uploadRules";
 import { readXlsxTable } from "./xlsxReader";
@@ -54,11 +61,18 @@ const HISTORY_SIZE = 20;
 type Mapped =
   | { kind: "ORDERS"; orders: OrderInput[]; errors: ImportRowError[] }
   | { kind: "AD_SPEND"; rows: AdSpendRow[]; errors: ImportRowError[] }
-  | { kind: "TRAFFIC"; rows: TrafficRow[]; errors: ImportRowError[] };
+  | { kind: "TRAFFIC"; rows: TrafficRow[]; errors: ImportRowError[] }
+  | { kind: "PRODUCTS"; rows: ProductSheetRow[]; errors: ImportRowError[] };
 
 type Processed = { counts: ImportCounts; errors: ImportRowError[]; sources: ConnectorKey[] };
 type Table = { header: string[]; rows: string[][] };
-type ProcessInput = { clientId: string; kind: ImportKind; table: Table; undo: UndoRecorder };
+type ProcessInput = {
+  clientId: string;
+  kind: ImportKind;
+  table: Table;
+  undo: UndoRecorder;
+  now: Date;
+};
 
 export async function readTable(file: UploadedFile): Promise<Table> {
   const table =
@@ -110,13 +124,17 @@ function mapTable(kind: ImportKind, table: Table): { total: number; mapped: Mapp
     case "TRAFFIC":
       return { total, mapped: { kind, ...mapTraffic(table.header, table.rows) } };
     case "PRODUCTS":
-      throw new HttpError(422, "A importação de produtos ainda não está disponível.");
+      return { total, mapped: { kind, ...mapProducts(table.header, table.rows) } };
   }
 }
 
-async function process({ clientId, kind, table, undo }: ProcessInput): Promise<Processed> {
+async function process({ clientId, kind, table, undo, now }: ProcessInput): Promise<Processed> {
   const { total, mapped } = mapTable(kind, table);
-  const rejected = mapped.errors.length;
+  const outcome = (imported: number, sources = sourcesStampedBy(kind, [])): Processed => ({
+    counts: { total, imported, rejected: mapped.errors.length },
+    errors: mapped.errors,
+    sources,
+  });
   switch (mapped.kind) {
     case "ORDERS": {
       const orders = ordersSince(mapped.orders, await sinceOf(clientId, "sales"));
@@ -124,33 +142,22 @@ async function process({ clientId, kind, table, undo }: ProcessInput): Promise<P
         source: "manual_csv",
         connectionId: null,
       });
-      const imported = orders.filter((_, i) => i < written).reduce((s, o) => s + o.rows.length, 0);
-      return {
-        counts: { total, imported, rejected },
-        errors: mapped.errors,
-        sources: sourcesStampedBy(kind, []),
-      };
+      return outcome(orders.filter((_, i) => i < written).reduce((s, o) => s + o.rows.length, 0));
     }
-    case "AD_SPEND": {
-      const imported = await persistAdSpend(clientId, mapped.rows, undo);
-      return {
-        counts: { total, imported, rejected },
-        errors: mapped.errors,
-        sources: sourcesStampedBy(
+    case "AD_SPEND":
+      return outcome(
+        await persistAdSpend(clientId, mapped.rows, undo),
+        sourcesStampedBy(
           kind,
           mapped.rows.map((r) => r.platform),
         ),
-      };
-    }
+      );
     case "TRAFFIC": {
       const rows = daysSince(mapped.rows, await sinceOf(clientId, "traffic"));
-      const imported = await persistTraffic(clientId, rows, undo);
-      return {
-        counts: { total, imported, rejected },
-        errors: mapped.errors,
-        sources: sourcesStampedBy(kind, []),
-      };
+      return outcome(await persistTraffic(clientId, rows, undo));
     }
+    case "PRODUCTS":
+      return outcome(await persistProducts(clientId, mapped.rows, undo, now));
   }
 }
 
@@ -162,6 +169,8 @@ function previewBodyOf(mapped: Mapped): PreviewBody {
       return adSpendPreview(mapped.rows);
     case "TRAFFIC":
       return trafficPreview(mapped.rows);
+    case "PRODUCTS":
+      return productsPreview(mapped.rows);
   }
 }
 
@@ -267,7 +276,7 @@ export async function runImport(
   const table = templateTableOf(kind, source, mapping);
   await claimForSpreadsheet(clientId, kind);
   const undo = undoRecorder();
-  const { counts, errors, sources } = await process({ clientId, kind, table, undo });
+  const { counts, errors, sources } = await process({ clientId, kind, table, undo, now });
   const status = importOutcome(counts);
   if (counts.imported === 0) await releaseIfNoImportLeft(clientId, kind);
   if (counts.imported > 0) {

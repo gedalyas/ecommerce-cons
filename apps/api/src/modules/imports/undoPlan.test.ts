@@ -101,6 +101,27 @@ describe("undoPlanOf", () => {
   });
 });
 
+describe("products spreadsheet undo", () => {
+  it("restores the variants it changed and clears the costs it filled", () => {
+    const snapshot = {
+      price: 99,
+      cost: null,
+      stockQty: null,
+      stockUpdatedAt: null,
+    };
+    const info = { name: "Manta", category: "Sem categoria" };
+    const plan = undoPlanOf([
+      { entity: "VARIANT", key: "v1", previous: snapshot },
+      { entity: "PRODUCT_INFO", key: "p1", previous: info },
+      { entity: "ITEM_COST", key: "v1", previous: ["i1", "i2"] },
+      { entity: "ITEM_COST", key: "v2", previous: ["i3"] },
+    ]);
+    expect(plan.variantsToRestore).toEqual([{ variantId: "v1", snapshot }]);
+    expect(plan.productsToRestore).toEqual([{ productId: "p1", snapshot: info }]);
+    expect(plan.itemCostsToClear).toEqual(["i1", "i2", "i3"]);
+  });
+});
+
 describe("adSpendScopes", () => {
   it("replaces a spreadsheet day whole and a connector day per account", () => {
     const scopes = adSpendScopes([

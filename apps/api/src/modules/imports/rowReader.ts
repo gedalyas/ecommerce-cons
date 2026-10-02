@@ -90,6 +90,10 @@ export class RowReader {
     return parsed;
   }
 
+  optionalInteger(key: string): number | null {
+    return this.raw(key) === "" ? null : this.integer(key);
+  }
+
   date(key: string): string {
     const value = this.text(key);
     const parsed = parseImportDate(value);

@@ -59,6 +59,9 @@ export function undoPlanOf(entries: UndoEntry[]): UndoPlan {
     productsToDelete: [],
     adSpendDays: [],
     traffic: [],
+    variantsToRestore: [],
+    productsToRestore: [],
+    itemCostsToClear: [],
   };
   for (const entry of entries) {
     switch (entry.entity) {
@@ -80,6 +83,15 @@ export function undoPlanOf(entries: UndoEntry[]): UndoPlan {
         break;
       case "TRAFFIC":
         plan.traffic.push({ key: parseTrafficKey(entry.key), previous: entry.previous });
+        break;
+      case "VARIANT":
+        plan.variantsToRestore.push({ variantId: entry.key, snapshot: entry.previous });
+        break;
+      case "PRODUCT_INFO":
+        plan.productsToRestore.push({ productId: entry.key, snapshot: entry.previous });
+        break;
+      case "ITEM_COST":
+        for (const id of entry.previous) plan.itemCostsToClear.push(id);
         break;
     }
   }

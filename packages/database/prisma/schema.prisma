@@ -151,7 +151,7 @@ model ImportJob {
 model ImportUndo {
   id       String @id @default(cuid())
   jobId    String @map("job_id")
-  /// ORDER · CUSTOMER · PRODUCT · AD_SPEND_DAY · TRAFFIC (closed set in the API).
+  /// ORDER · CUSTOMER · PRODUCT · AD_SPEND_DAY · TRAFFIC · VARIANT · PRODUCT_INFO · ITEM_COST (closed set in the API).
   entity   String
   key      String
   previous Json?

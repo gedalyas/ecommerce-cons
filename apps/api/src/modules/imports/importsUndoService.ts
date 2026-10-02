@@ -128,6 +128,42 @@ async function undoTraffic(clientId: string, plan: UndoPlan) {
   }
 }
 
+async function undoProducts(clientId: string, plan: UndoPlan) {
+  for (const group of chunks(plan.itemCostsToClear)) {
+    await prismaClient.orderItem.updateMany({
+      where: { id: { in: group }, order: { clientId } },
+      data: { unitCost: null },
+    });
+  }
+  for (const group of chunks(plan.variantsToRestore)) {
+    await prismaClient.$transaction(async (tx) => {
+      for (const { variantId, snapshot } of group) {
+        const { price, cost, stockQty, stockUpdatedAt } = snapshot;
+        await tx.productVariant.updateMany({
+          where: { id: variantId, product: { clientId } },
+          data: {
+            price,
+            cost,
+            stockQty,
+            stockUpdatedAt: stockUpdatedAt ? new Date(stockUpdatedAt) : null,
+          },
+        });
+      }
+    });
+  }
+  for (const group of chunks(plan.productsToRestore)) {
+    await prismaClient.$transaction(async (tx) => {
+      for (const { productId, snapshot } of group) {
+        const { name, category } = snapshot;
+        await tx.product.updateMany({
+          where: { id: productId, clientId },
+          data: { name, category },
+        });
+      }
+    });
+  }
+}
+
 async function restampSources(
   clientId: string,
   keys: string[],
@@ -195,6 +231,7 @@ export async function undoImport(clientId: string, id: string, now: Date): Promi
   await undoOrders(clientId, plan);
   await undoAdSpend(clientId, plan);
   await undoTraffic(clientId, plan);
+  await undoProducts(clientId, plan);
   await prismaClient.importJob.update({
     where: { id: job.id },
     data: { status: "UNDONE", undoneAt: now },

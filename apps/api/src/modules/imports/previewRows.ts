@@ -6,7 +6,7 @@ import {
 } from "@ecommerce/contracts/imports";
 import { adPlatformLabel } from "@ecommerce/contracts/marketing";
 import { financialStatusLabel, labelFor } from "@ecommerce/contracts/orders";
-import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
+import type { AdSpendRow, OrderInput, ProductSheetRow, TrafficRow } from "./importRows.types";
 
 export type PreviewBody = {
   summary: ImportPreviewSummary;
@@ -106,6 +106,33 @@ export function trafficPreview(rows: TrafficRow[]): PreviewBody {
       sessions: r.sessions,
       users: r.users,
       beginCheckout: r.beginCheckout,
+    })),
+  };
+}
+
+export const productsColumns: ImportPreviewColumn[] = [
+  column("sku", "SKU"),
+  column("name", "Produto"),
+  column("cost", "Custo", "currency"),
+  column("stock", "Estoque", "integer"),
+  column("category", "Categoria"),
+];
+
+export function productsPreview(rows: ProductSheetRow[]): PreviewBody {
+  return {
+    summary: {
+      count: rows.length,
+      label: rows.length === 1 ? "produto" : "produtos",
+      from: null,
+      to: null,
+    },
+    columns: productsColumns,
+    sample: rows.slice(0, IMPORT_PREVIEW_ROWS).map((r) => ({
+      sku: r.sku,
+      name: r.name,
+      cost: r.cost,
+      stock: r.stock,
+      category: r.category,
     })),
   };
 }

@@ -67,7 +67,8 @@ plus the catalog filters. One row per variant (`deriveInventory`, tested):
 
 ## Unknown stock
 
-`stock_qty` is null until a source informs it (the products spreadsheet, Bling); a variant
+`stock_qty` is null until a source informs it (the products spreadsheet — `specs/imports.md` ›
+Produtos — or Bling); a variant
 created by an order starts at null, never 0. An untracked variant shows "—" in Estoque and Saúde
 do estoque, has no projections, and stays out of rupture, coverage, Resumo's "em risco" / "sem
 estoque" lists and the stock alerts. `InventoryHealth.untracked` counts them and

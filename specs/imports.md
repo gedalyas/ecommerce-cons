@@ -12,6 +12,17 @@ Modules: `apps/api/src/modules/imports` (upload, parsing, persistence, history) 
 | `ORDERS`   | Pedidos         | `sales_order` + `order_item`; `customer` and `product`/`product_variant` created on demand | order replaced by `numero` (items replaced), customer by e-mail, variant by SKU                           |
 | `AD_SPEND` | Mídia paga      | `ad_spend_daily`                                                                           | the (plataforma, data) pairs present in the file are replaced whole (connector rows of that day included) |
 | `TRAFFIC`  | Tráfego do site | `traffic_daily`                                                                            | upsert by (data, origem, meio)                                                                            |
+| `PRODUCTS` | Produtos        | `product_variant` (cost, price, stock + `stock_updated_at`), `product` (name, category)    | variant by SKU; a blank cell keeps the current value; an unknown SKU creates the product                  |
+
+**Produtos** (`sku*, produto, custo, estoque, categoria, preco`): a row must inform at least one
+value besides the SKU; cost and price go from 0 to 9.999.999.999, SKU / name / category have a
+length cap, and a SKU repeated in the file keeps its last row. Writes go in batches of 200 SKUs
+(one lookup and one cost fill per batch). A cost also fills `order_item.unit_cost`
+of that variant's items that had none, and from then on any order item written without a cost
+(connectors bring none) takes the variant's cost. Undoing the products import clears only the
+items it filled; items written afterwards keep the cost they were written with (it was the
+known cost at that moment). The import claims the `products` data kind for
+the spreadsheet (one source per kind).
 
 Headers are Portuguese, accent- and case-insensitive (`Preço Unitário` → `preco_unitario`).
 Required columns are marked with `*` on the screen; the model CSV ("Baixar modelo") has the
@@ -89,7 +100,9 @@ mapped rows as typed cells: text, date, integer, currency — the web formats th
 `POST /imports/:id/undo` — undoes an import. While writing, the import records in
 `import_undo` what it touched (`previous = null` for a created row, the JSON of the replaced
 row otherwise): orders with their items, customers (name), products created for unknown
-SKUs, ad-spend days (platform + date) and traffic rows. Only the most recent non-undone job
+SKUs, ad-spend days (platform + date), traffic rows, and for Produtos the variants it changed
+(`VARIANT`: price, cost, stock and its date; `PRODUCT_INFO`: name and category, once per product) and the order items whose
+cost it filled (`ITEM_COST`, cleared back to null). Only the most recent non-undone job
 of its kind can be undone (409 otherwise — a later import may have overwritten the same
 keys); snapshots are kept for the three latest jobs per kind, so undoing twice in a row
 works, and purged beyond that. Undo deletes the created rows, restores the replaced ones
@@ -102,7 +115,7 @@ carries `undoneAt` and `canUndo`.
 
 ## Screen
 
-Inside Conexões: kind selector (Pedidos · Mídia paga · Tráfego do site), the template's
+Inside Integrações › Planilhas: kind selector (Pedidos · Mídia paga · Tráfego do site · Produtos), the template's
 description and columns, "Baixar modelo", the drop zone ("Arraste a planilha aqui ou selecione um
 arquivo · Formatos aceitos: .csv e .xlsx (Excel) · até 10 MB"), the "Conferir …" button, for a free layout the
 "Conferir colunas" card (one select per template field, required ones bold with `*`, "Não usar",
