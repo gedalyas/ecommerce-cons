@@ -1,4 +1,9 @@
-import type { ConnectorSettings, StoreConnector } from "@ecommerce/contracts/connectors";
+import type {
+  ConnectionSummary,
+  ConnectorAccountSummary,
+  ConnectorSettings,
+  StoreConnector,
+} from "@ecommerce/contracts/connectors";
 
 type CardState = "connected" | "error" | "manual" | null;
 
@@ -26,4 +31,42 @@ export function nextActive(current: number, step: 1 | -1, count: number): number
   if (count === 0) return -1;
   if (current < 0) return step === 1 ? 0 : count - 1;
   return (current + step + count) % count;
+}
+
+export function selectedIntegration(
+  connections: readonly ConnectionSummary[],
+  wanted: { conta: string; nova: boolean },
+): ConnectionSummary | null {
+  if (wanted.nova) return null;
+  return connections.find((c) => c.id === wanted.conta) ?? connections[0] ?? null;
+}
+
+export function asIntegration<
+  T extends Pick<StoreConnector, "connection" | "status" | "syncLabel">,
+>(connector: T, connection: ConnectionSummary | null): T {
+  if (!connection) return { ...connector, connection };
+  const status = connection.stage === "ERROR" ? "ERROR" : "CONNECTED";
+  return { ...connector, connection, status, syncLabel: connection.syncLabel };
+}
+
+export function integrationsOf<
+  T extends Pick<StoreConnector, "connections" | "connection" | "status" | "syncLabel">,
+>(connectors: readonly T[]): T[] {
+  return connectors.flatMap((c) =>
+    c.connections.length === 0
+      ? [c]
+      : c.connections.map((connection) => asIntegration(c, connection)),
+  );
+}
+
+export type AccountChoice = ConnectorAccountSummary & { taken: boolean };
+
+export function accountChoices(
+  accounts: readonly ConnectorAccountSummary[],
+  family: string,
+  connections: readonly ConnectionSummary[],
+): AccountChoice[] {
+  return accounts
+    .filter((a) => a.family === family)
+    .map((a) => ({ ...a, taken: connections.some((c) => c.accountId === a.id) }));
 }

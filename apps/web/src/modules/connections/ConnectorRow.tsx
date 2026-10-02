@@ -44,7 +44,12 @@ export function ConnectorRow({
       <div className="min-w-0 md:w-full 2xl:w-auto 2xl:flex-1">
         <div className="flex items-center gap-3">
           <ConnectorLogo connectorKey={c.key} label={c.label} />
-          <div className={cn(textClass.body, "font-semibold text-foreground")}>{c.label}</div>
+          <div className={cn(textClass.body, "min-w-0 font-semibold text-foreground")}>
+            {c.label}
+            {c.connection && c.connection.name !== c.label && (
+              <span className="font-normal text-muted-foreground"> · {c.connection.name}</span>
+            )}
+          </div>
           <button
             type="button"
             onClick={() => onDetails(c)}

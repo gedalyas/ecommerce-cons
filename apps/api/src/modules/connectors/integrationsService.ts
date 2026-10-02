@@ -11,7 +11,8 @@ import {
 } from "@ecommerce/contracts/connectors";
 import { Prisma, prismaClient } from "@ecommerce/database/client";
 import { recordActivity } from "@/modules/audit/contract";
-import { releaseDataKinds } from "@/modules/connections/contract";
+import { releaseDataKinds, syncLabelOf } from "@/modules/connections/contract";
+import { currentDay } from "@/shared/config/clock";
 import type { AuthContext } from "@/shared/http/auth.types";
 import { HttpError, notFound } from "@/shared/http/httpError";
 import { defaultStatusMap } from "./blingOrders";
@@ -174,11 +175,13 @@ const summarySelect = {
 
 const toSummary = (
   c: Prisma.ConnectionGetPayload<{ select: typeof summarySelect }>,
+  today: string,
 ): ConnectionSummary => ({
   id: c.id,
   name: c.name,
   accountId: c.accountId,
   stage: c.stage,
+  syncLabel: syncLabelOf(c.stage === "ERROR" ? "ERROR" : "CONNECTED", c.lastSyncAt, today),
   externalLabel: c.account.externalLabel,
   lastSyncAt: c.lastSyncAt?.toISOString() ?? null,
   lastError: c.lastError,
@@ -206,7 +209,7 @@ export async function connectionSummariesFor(clientId: string): Promise<StoreInt
   const byKey = new Map<ConnectorKey, ConnectionSummary[]>();
   for (const row of rows) {
     const key = row.connectorKey as ConnectorKey;
-    byKey.set(key, [...(byKey.get(key) ?? []), toSummary(row)]);
+    byKey.set(key, [...(byKey.get(key) ?? []), toSummary(row, currentDay())]);
   }
   return {
     byKey,

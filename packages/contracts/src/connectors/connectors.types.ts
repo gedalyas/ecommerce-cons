@@ -53,6 +53,7 @@ export type ConnectionSummary = {
   name: string;
   accountId: string;
   stage: ConnectionStage;
+  syncLabel: string;
   externalLabel: string;
   lastSyncAt: string | null;
   lastError: string | null;

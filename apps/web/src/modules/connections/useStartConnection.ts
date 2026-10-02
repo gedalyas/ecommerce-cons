@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { StoreConnector } from "@ecommerce/contracts/connectors";
 import { startConnectorFn } from "./connectionsController";
 
-export function useStartConnection(connector: StoreConnector | null) {
+export function useStartConnection(connector: StoreConnector | null, name: string | null = null) {
   const start = useServerFn(startConnectorFn);
   const [domain, setDomain] = useState("");
   const [busy, setBusy] = useState(false);
@@ -18,8 +18,8 @@ export function useStartConnection(connector: StoreConnector | null) {
       data: {
         key: connector.key,
         domain,
-        name: null,
-        connectionId: connector.connection?.id ?? null,
+        name,
+        connectionId: name ? null : (connector.connection?.id ?? null),
       },
     });
     if (!result.ok) {

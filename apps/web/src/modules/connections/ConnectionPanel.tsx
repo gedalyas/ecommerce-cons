@@ -55,8 +55,14 @@ function Requirements({ items }: { items: string[] }) {
   );
 }
 
-function OAuthOnboarding({ connector }: { connector: StoreConnector }) {
-  const start = useStartConnection(connector);
+export function OAuthOnboarding({
+  connector,
+  name = null,
+}: {
+  connector: StoreConnector;
+  name?: string | null;
+}) {
+  const start = useStartConnection(connector, name);
   const hint = connector.domainHint;
   return (
     <div className="flex flex-col gap-5">
@@ -82,7 +88,7 @@ function OAuthOnboarding({ connector }: { connector: StoreConnector }) {
       )}
       <Button
         className="h-11 w-full"
-        disabled={!start.canSubmit}
+        disabled={!start.canSubmit || name === ""}
         onClick={() => void start.submit()}
       >
         {start.busy ? "Abrindo…" : `Conectar com ${connector.label}`}

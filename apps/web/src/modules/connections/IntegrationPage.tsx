@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, LifeBuoy } from "lucide-react";
 import { useState } from "react";
 import {
@@ -6,10 +6,11 @@ import {
   integrationPageTabs,
   type ConnectionsScreen,
 } from "@ecommerce/contracts/connections";
-import type { StoreConnector } from "@ecommerce/contracts/connectors";
+import { familyOf, type StoreConnector } from "@ecommerce/contracts/connectors";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
 import { SectionBlock } from "@/shared/ui/SectionBlock";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select";
 import { radiusClass } from "@/shared/styles/radius";
 import { layout } from "@/shared/styles/spacing";
 import { textClass } from "@/shared/styles/typography";
@@ -22,7 +23,13 @@ import { HelpPanel } from "./HelpPanel";
 import { RequestDialog } from "./RequestDialog";
 import { SettingsPanel } from "./SettingsPanel";
 import { SideTabs } from "./SideTabs";
-import { cardStateOf } from "./integrationRules";
+import { NewIntegrationPanel } from "./NewIntegrationPanel";
+import {
+  accountChoices,
+  asIntegration,
+  cardStateOf,
+  selectedIntegration,
+} from "./integrationRules";
 import { useIntegrationPageSearch } from "./useIntegrationPageSearch";
 
 const tabItems = integrationPageTabs.map((key) => ({ key, label: integrationPageTabLabel[key] }));
@@ -75,6 +82,63 @@ function Header({ connector }: { connector: StoreConnector }) {
   );
 }
 
+function IntegrationPicker({
+  connector,
+  selectedId,
+  onChoose,
+  onNew,
+}: {
+  connector: StoreConnector;
+  selectedId: string | null;
+  onChoose: (id: string) => void;
+  onNew: (() => void) | null;
+}) {
+  if (connector.connections.length < 2 && !onNew) return null;
+  return (
+    <div className="flex flex-wrap items-end gap-3">
+      {connector.connections.length > 1 && (
+        <div className="grid min-w-0 flex-1 gap-1 sm:max-w-sm">
+          <span className={cn(textClass.label, "text-muted-foreground")}>Integração</span>
+          <Select value={selectedId ?? ""} onValueChange={onChoose}>
+            <SelectTrigger aria-label="Integração">
+              <SelectValue placeholder="Escolha" />
+            </SelectTrigger>
+            <SelectContent>
+              {connector.connections.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name} · {c.externalLabel || "Conta"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+      {onNew && (
+        <Button variant="outline" onClick={onNew}>
+          Configurar nova
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function NewIntegration({
+  connector,
+  screen,
+  onCreated,
+}: {
+  connector: StoreConnector;
+  screen: ConnectionsScreen;
+  onCreated: (id: string) => void;
+}) {
+  const choices = accountChoices(screen.accounts, familyOf(connector.key), connector.connections);
+  return (
+    <SectionBlock title="Nova integração" bodyClassName={layout.cardPadding}>
+      <NewIntegrationPanel connector={connector} choices={choices} onCreated={onCreated} />
+    </SectionBlock>
+  );
+}
+
 export function IntegrationPage({
   connector,
   screen,
@@ -82,34 +146,62 @@ export function IntegrationPage({
   connector: StoreConnector;
   screen: ConnectionsScreen;
 }) {
-  const { tab, setTab } = useIntegrationPageSearch();
+  const router = useRouter();
+  const { search, setTab, choose, startNew } = useIntegrationPageSearch();
+  const tab = search.aba;
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
   const [connecting, setConnecting] = useState<StoreConnector | null>(null);
+  const canAddNew = connector.canManage && connector.availability === "oauth";
+  const creating = search.nova && canAddNew;
+  const selected = selectedIntegration(connector.connections, { ...search, nova: creating });
+  const shown = asIntegration(connector, selected);
   return (
     <div className={layout.page}>
       <div className={cn(layout.headerGap, layout.blockStack)}>
-        <Header connector={connector} />
-        <div className="@container">
-          <div className="grid grid-cols-1 gap-6 @3xl:grid-cols-[200px_minmax(0,1fr)]">
-            <SideTabs label="Seções" items={tabItems} value={tab} onChange={setTab} />
-            <div className="flex min-w-0 flex-col gap-4">
-              <SectionBlock title={integrationPageTabLabel[tab]} bodyClassName={layout.cardPadding}>
-                {tab === "conexao" && (
-                  <ConnectionPanel
-                    connector={connector}
-                    onRequest={setRequesting}
-                    onConnect={setConnecting}
-                    onSettings={() => setTab("configuracoes")}
-                  />
-                )}
-                {tab === "dados" && <DataKindsPanel connector={connector} owners={screen.owners} />}
-                {tab === "configuracoes" && <SettingsPanel connector={connector} />}
-                {tab === "ajuda" && <HelpPanel connector={connector} />}
-              </SectionBlock>
-              {tab !== "ajuda" && <HelpBox onHelp={() => setTab("ajuda")} />}
+        <Header connector={shown} />
+        <IntegrationPicker
+          connector={connector}
+          selectedId={creating ? null : (selected?.id ?? null)}
+          onChoose={choose}
+          onNew={canAddNew && !creating ? startNew : null}
+        />
+        {creating ? (
+          <NewIntegration
+            connector={connector}
+            screen={screen}
+            onCreated={(id) => {
+              choose(id);
+              void router.invalidate();
+            }}
+          />
+        ) : (
+          <div className="@container">
+            <div className="grid grid-cols-1 gap-6 @3xl:grid-cols-[200px_minmax(0,1fr)]">
+              <SideTabs label="Seções" items={tabItems} value={tab} onChange={setTab} />
+              <div className="flex min-w-0 flex-col gap-4">
+                <SectionBlock
+                  title={integrationPageTabLabel[tab]}
+                  bodyClassName={layout.cardPadding}
+                >
+                  {tab === "conexao" && (
+                    <ConnectionPanel
+                      connector={shown}
+                      onRequest={setRequesting}
+                      onConnect={setConnecting}
+                      onSettings={() => setTab("configuracoes")}
+                    />
+                  )}
+                  {tab === "dados" && <DataKindsPanel connector={shown} owners={screen.owners} />}
+                  {tab === "configuracoes" && (
+                    <SettingsPanel key={selected?.id ?? "none"} connector={shown} />
+                  )}
+                  {tab === "ajuda" && <HelpPanel connector={shown} />}
+                </SectionBlock>
+                {tab !== "ajuda" && <HelpBox onHelp={() => setTab("ajuda")} />}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       <RequestDialog connector={requesting} onClose={() => setRequesting(null)} />
       <ConnectDialog connector={connecting} onClose={() => setConnecting(null)} />

@@ -6,16 +6,21 @@ export function useIntegrationPageSearch() {
   const search = useSearch({ from: "/integracoes/$chave" });
   const navigate = useNavigate();
 
-  const setTab = useCallback(
-    (aba: IntegrationPageSearch["aba"]) => {
+  const patch = useCallback(
+    (next: Partial<IntegrationPageSearch>) => {
       void navigate({
         to: ".",
-        search: (prev: Record<string, unknown>) => ({ ...prev, aba }),
+        search: (prev: Record<string, unknown>) => ({ ...prev, ...next }),
         replace: true,
       });
     },
     [navigate],
   );
 
-  return { tab: search.aba, setTab };
+  return {
+    search,
+    setTab: (aba: IntegrationPageSearch["aba"]) => patch({ aba }),
+    choose: (conta: string) => patch({ conta, nova: false, aba: "conexao" }),
+    startNew: () => patch({ nova: true, conta: "", aba: "conexao" }),
+  };
 }

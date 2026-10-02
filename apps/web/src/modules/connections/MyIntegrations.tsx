@@ -41,7 +41,11 @@ export function MyIntegrations({ connectors, onBrowse, ...handlers }: Props) {
         <SectionBlock key={group.kind} title={connectorKindLabel[group.kind]} bodyClassName="p-0">
           <ul className="divide-y divide-border">
             {group.items.map((c) => (
-              <ConnectorRow key={c.key} connector={c} {...handlers} />
+              <ConnectorRow
+                key={`${c.key}:${c.connection?.id ?? ""}`}
+                connector={c}
+                {...handlers}
+              />
             ))}
           </ul>
         </SectionBlock>

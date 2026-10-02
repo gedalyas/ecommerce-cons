@@ -3,6 +3,7 @@ import type { ConnectionsHealth, ConnectionsScreen } from "@ecommerce/contracts/
 import type { ConnectionCheck } from "@ecommerce/contracts/connectors";
 import {
   connectionRequestInputSchema,
+  connectionCreateSchema,
   connectionParamsSchema,
   connectorKeySchema,
   connectorSettingsSchema,
@@ -140,5 +141,18 @@ export const testConnectionFn = createServerFn({ method: "POST" })
     attempt(
       () => apiFetch<ConnectionCheck>(`${integrationPath(data)}/test`, { method: "POST" }),
       "Não foi possível testar a conexão agora.",
+    ),
+  );
+
+export const createIntegrationFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => connectorKeySchema.merge(connectionCreateSchema).parse(input))
+  .handler(({ data }) =>
+    attempt(
+      () =>
+        apiFetch<{ id: string }>(`/connectors/${encodeURIComponent(data.key)}/connections`, {
+          method: "POST",
+          body: { accountId: data.accountId, name: data.name },
+        }),
+      "Não foi possível criar a integração agora.",
     ),
   );

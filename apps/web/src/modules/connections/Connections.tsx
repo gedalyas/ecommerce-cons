@@ -22,7 +22,8 @@ import { IntegrationsCatalog } from "./IntegrationsCatalog";
 import { MyIntegrations } from "./MyIntegrations";
 import { RequestDialog } from "./RequestDialog";
 import { StatusMappingDialog } from "./StatusMappingDialog";
-import { isStoreIntegration } from "./integrationRules";
+import { IntegrationInstancesDialog } from "./IntegrationInstancesDialog";
+import { asIntegration, integrationsOf, isStoreIntegration } from "./integrationRules";
 import { useIntegrationsSearch } from "./useIntegrationsSearch";
 
 function OutcomeBanners({
@@ -77,9 +78,16 @@ export function Connections({
   imports: ImportsScreen;
 }) {
   const { search, patch } = useIntegrationsSearch();
-  const connected = data.connectors.find((c) => c.key === search.conectado) ?? null;
+  const connectedPlatform = data.connectors.find((c) => c.key === search.conectado) ?? null;
+  const connected = connectedPlatform
+    ? asIntegration(
+        connectedPlatform,
+        connectedPlatform.connections.find((c) => c.id === search.integracao) ??
+          connectedPlatform.connection,
+      )
+    : null;
   const failed = data.connectors.find((c) => c.key === search.erro) ?? null;
-  const mine = data.connectors.filter(isStoreIntegration);
+  const mine = integrationsOf(data.connectors.filter(isStoreIntegration));
   const detail = summaryDetail(data.summary);
   const [requesting, setRequesting] = useState<StoreConnector | null>(null);
   const [connecting, setConnecting] = useState<StoreConnector | null>(null);
@@ -94,8 +102,13 @@ export function Connections({
         : integrationsTabLabel[key],
   }));
   const navigate = useNavigate();
+  const [instances, setInstances] = useState<StoreConnector | null>(null);
+  const openPage = (c: StoreConnector, search: { conta?: string; nova?: boolean } = {}) =>
+    void navigate({ to: "/integracoes/$chave", params: { chave: c.key }, search });
+  const openCard = (c: StoreConnector) =>
+    c.connections.length > 0 ? setInstances(c) : openPage(c);
   const openDetails = (c: StoreConnector) =>
-    void navigate({ to: "/integracoes/$chave", params: { chave: c.key } });
+    openPage(c, c.connection ? { conta: c.connection.id } : {});
   return (
     <div className={layout.page}>
       <PageHeader title="Integrações" subtitle="Fontes que alimentam os indicadores da loja" />
@@ -123,7 +136,7 @@ export function Connections({
             query={search.busca}
             onCategory={(categoria) => patch({ categoria, busca: "" })}
             onQuery={(busca) => patch({ busca })}
-            onOpen={openDetails}
+            onOpen={openCard}
           />
         )}
         {search.aba === "minhas" && (
@@ -142,6 +155,13 @@ export function Connections({
       <RequestDialog connector={requesting} onClose={() => setRequesting(null)} />
       <ConnectDialog connector={connecting} onClose={() => setConnecting(null)} />
       <StatusMappingDialog connector={mapping} onClose={() => setMapping(null)} />
+      <IntegrationInstancesDialog
+        connector={instances}
+        canAddNew={instances?.canManage === true && instances.availability === "oauth"}
+        onEdit={(c, connection) => openPage(c, { conta: connection.id })}
+        onNew={(c) => openPage(c, { nova: true })}
+        onClose={() => setInstances(null)}
+      />
     </div>
   );
 }

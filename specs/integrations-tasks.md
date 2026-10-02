@@ -19,6 +19,6 @@ Status: **approved 2026-10-01 — before M4 (`m4-plan.md`).**
       a new integration on an existing account, `StoreConnector.connections[]`, audit with the name;
       providers that use a constant external id (Bling "bling", fallbacks "ga4", "meta"…) need the
       real account id first, or two logins of one platform merge into one account
-- [ ] 4c — Screens for several accounts: Bling's "editar existente ou configurar nova" modal, name,
+- [x] 4c — Screens for several accounts: Bling's "editar existente ou configurar nova" modal, name,
       account choice, integration selector on the page
 - [ ] 5 — Minhas integrações cards (status, last sync, ⋮, "Desconectadas") and the Planilhas tab

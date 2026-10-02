@@ -16,6 +16,7 @@ export const integrationsSearchSchema = z.object({
   categoria: z.enum(connectorCategories).catch("gestao"),
   busca: z.string().catch(""),
   conectado: z.string().catch(""),
+  integracao: z.string().max(64).catch(""),
   escolher: z.boolean().catch(false),
   erro: z.string().catch(""),
   motivo: z.enum(connectorErrorReasons).catch("troca"),
@@ -36,6 +37,8 @@ export const integrationPageTabLabel: Record<IntegrationPageTab, string> = {
 
 export const integrationPageSearchSchema = z.object({
   aba: z.enum(integrationPageTabs).catch("conexao"),
+  conta: z.string().max(64).catch(""),
+  nova: z.boolean().catch(false),
 });
 export type IntegrationPageSearch = z.infer<typeof integrationPageSearchSchema>;
 

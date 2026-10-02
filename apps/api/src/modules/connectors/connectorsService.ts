@@ -246,7 +246,7 @@ export async function completeCallback(
     });
     const saved = await saveConnection(state, key, authorized, deps, state);
     return {
-      redirectTo: `${target}?aba=minhas&conectado=${key}${saved.needsAccount ? "&escolher=true" : ""}`,
+      redirectTo: `${target}?aba=minhas&conectado=${key}&integracao=${saved.id}${saved.needsAccount ? "&escolher=true" : ""}`,
     };
   } catch (error) {
     if (error instanceof DuplicateIntegration) return failed("duplicada");

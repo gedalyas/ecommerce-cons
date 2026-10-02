@@ -67,6 +67,19 @@ store, 409 when the account already has it. `ConnectionsScreen` lists every inte
 connector (`connections`, oldest first; `connection` is the first) and the store's `accounts`.
 Audit lines name the integration: "Conectou Mercado Livre Full (Full Matriz)".
 
+## Several integrations of one platform (screens, 2026-10-01)
+
+Clicking the card of a platform the store already uses opens Bling's modal, "Você já tem
+integrações de X": each integration (name, account, stage) with **Editar**, and **Configurar
+nova** for whoever manages a platform the API can authorize. The integration page reads `conta`
+(which integration; the first by default) and `nova` from the URL: with more than one integration
+a selector sits under the header next to **Configurar nova**, and every section works on the
+chosen one. **Nova integração** asks for the name (required, up to 60) and the account: an
+account the store already has for that platform (the default when one is free; accounts that
+already hold this connector are disabled) creates it with "Criar integração" and no new login, or
+"Conectar outra conta" shows the usual onboarding and authorizes with the name. Minhas
+integrações lists one row per integration, with its name next to the platform.
+
 ## Summary banner
 
 Above the list: "**5 de 7 fontes ativas** · 1 com erro, 1 não conectada" —
