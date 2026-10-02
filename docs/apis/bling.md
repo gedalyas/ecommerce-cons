@@ -32,7 +32,8 @@ Base: `https://www.bling.com.br/Api/v3`.
 | ----------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | Pedidos de venda  | `GET /pedidos/vendas`         | `id`, `numero`, `data`, `dataSaida`, `total`, `totalProdutos`, `desconto`, `transporte.frete`, `situacao.id`, `loja.id` (canal), `contato{id,nome}`, `itens[]{codigo, descricao, quantidade, valor, produto.id}`, `parcelas[].formaPagamento` | `dataAlteracaoInicial/Final`, `pagina` + `limite` (100) |
 | Detalhe do pedido | `GET /pedidos/vendas/{id}`    | itens completos e pagamentos (a listagem vem resumida)                                                                                                                                                                                        | —                                                       |
-| Produtos          | `GET /produtos`               | `id`, `codigo` (SKU), `nome`, `preco`, `precoCusto`, `estoque.saldoVirtualTotal`, `categoria`                                                                                                                                                 | `dataAlteracaoInicial`                                  |
+| Produtos          | `GET /produtos`               | `id`, `codigo` (SKU), `nome`, `preco`, `precoCusto`, `estoque.saldoVirtualTotal`, `categoria.id`                                                                                                                                              | `pagina` + `limite` (100); lido inteiro a cada sync     |
+| Categorias        | `GET /categorias/produtos`    | `id`, `descricao`; a listagem de produtos não traz a categoria, então o backfill lista `GET /produtos?idCategoria=` de cada uma                                                                                                               | `pagina` + `limite` (100)                               |
 | Contatos          | `GET /contatos`               | `id`, `nome`, `email`, `celular`, `endereco{municipio, uf}`                                                                                                                                                                                   | `dataAlteracaoInicial`                                  |
 | Situações         | `GET /situacoes/modulos/{id}` | situações do módulo Vendas — base da **tela de mapeamento** (Pago / Pendente / Cancelado)                                                                                                                                                     | —                                                       |
 | Canais            | `GET /canais-venda`           | nome do canal por `loja.id`                                                                                                                                                                                                                   | —                                                       |
@@ -68,3 +69,16 @@ confirmar formato e assinatura. Não obrigatório: o sync incremental resolve.
 ## No código
 
 Implementado em `blingProvider.ts` (K3): token com Basic, refresh 10 min antes de expirar, lista por `dataAlteracaoInicial/Final` + detalhe por pedido, contatos em cache no `raw_record`, mapeamento de situações em `Connection.settings.statusMap` (tela "Configurar" em Conexões); salvar o mapeamento re-mapeia os pedidos guardados.
+
+Produtos (M4 A3): depois dos pedidos, no backfill e no máximo a cada 6 h (cursor `products`),
+`pullProducts` lê todas as páginas de `/produtos` e grava pelo `writeProducts` do `SyncContext` (o mesmo
+`persistProducts` da planilha de produtos): custo (`precoCusto`), preço, estoque
+(`saldoVirtualTotal`, arredondado), nome e categoria; SKU novo vira produto e o custo preenche
+os itens de pedido sem custo. Custo ou preço 0 contam como não informados; produto sem `codigo`
+é ignorado. Só grava se o Bling é a fonte de produtos da loja, e o estoque só se também for a de
+estoque — conferido a cada página gravada (`blingProducts.ts`, testado). A lista é lida inteira porque mudar o saldo não altera a
+`dataAlteracao` do produto. A categoria só vem no backfill e no reprocessamento (a listagem por
+`idCategoria` custa uma volta por categoria); no sync comum ela fica como está. Uma falha nos
+produtos não derruba o sync dos pedidos (fica no log com o id da conexão). Valores que a
+coluna não comporta (custo ou preço acima de 9.999.999.999, estoque acima de um `int`) contam
+como não informados.

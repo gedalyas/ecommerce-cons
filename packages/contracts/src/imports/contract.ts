@@ -8,6 +8,7 @@ export {
   importStatusLabel,
   importStatuses,
 } from "./imports.types";
+export { isMoneyInRange, isStockInRange, productTextLimits } from "./productLimits";
 export type {
   ColumnMapping,
   ImportExtension,

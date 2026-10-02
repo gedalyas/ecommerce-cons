@@ -1,5 +1,10 @@
 export { createImportsRouter } from "./importsRouter";
-export { writeSyncedAdSpend, writeSyncedOrders, writeSyncedTraffic } from "./syncWriteService";
+export {
+  writeSyncedAdSpend,
+  writeSyncedOrders,
+  writeSyncedProducts,
+  writeSyncedTraffic,
+} from "./syncWriteService";
 export { writeSyncedSocial } from "./socialWriteService";
 export { writeSyncedKeywords, writeSyncedTrafficDetail } from "./trafficDetailWriteService";
 export { trafficDetailSince } from "./trafficDetailRules";
@@ -8,6 +13,7 @@ export type {
   KeywordRow,
   OrderInput,
   OrderItemInput,
+  ProductSheetRow,
   SocialDailyRow,
   SocialInput,
   SocialPostInput,

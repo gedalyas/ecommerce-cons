@@ -1,5 +1,8 @@
 import {
   adPlatformOptions,
+  isMoneyInRange,
+  isStockInRange,
+  productTextLimits,
   orderStatusOptions,
   processingMethodOptions,
   salesPlatformOptions,
@@ -178,16 +181,11 @@ export function mapTraffic(
   return { rows: parsed, errors };
 }
 
-const MAX_MONEY = 9_999_999_999.99;
-const MAX_STOCK = 2_147_483_647;
+type TextKey = keyof typeof productTextLimits;
 
-const MAX_TEXT = { sku: 100, name: 200, category: 100 } as const;
-
-const isMoney = (value: number | null) => value === null || (value >= 0 && value <= MAX_MONEY);
-
-const tooLong = (row: Pick<ProductSheetRow, keyof typeof MAX_TEXT>) =>
-  (Object.keys(MAX_TEXT) as (keyof typeof MAX_TEXT)[]).some(
-    (key) => (row[key]?.length ?? 0) > MAX_TEXT[key],
+const tooLong = (row: Pick<ProductSheetRow, TextKey>) =>
+  (Object.keys(productTextLimits) as TextKey[]).some(
+    (key) => (row[key]?.length ?? 0) > productTextLimits[key],
   );
 
 export function latestBySku(rows: ProductSheetRow[]): ProductSheetRow[] {
@@ -215,13 +213,13 @@ export function productRowOf(r: RowReader): ProductSheetRow {
       `Linha ${r.row}: informe ao menos custo, estoque, preço, categoria ou nome.`,
     );
   }
-  if (!isMoney(product.cost) || !isMoney(product.price)) {
+  if (!isMoneyInRange(product.cost) || !isMoneyInRange(product.price)) {
     throw new RowError(`Linha ${r.row}: custo e preço precisam estar entre 0 e 9.999.999.999.`);
   }
   if (tooLong(product)) {
     throw new RowError(`Linha ${r.row}: SKU, nome ou categoria longo demais.`);
   }
-  if (product.stock !== null && Math.abs(product.stock) > MAX_STOCK) {
+  if (!isStockInRange(product.stock)) {
     throw new RowError(`Linha ${r.row}: estoque fora do limite aceito.`);
   }
   return product;

@@ -1,10 +1,11 @@
-import type { AdSpendRow, OrderInput, TrafficRow } from "./importRows.types";
+import type { AdSpendRow, OrderInput, ProductSheetRow, TrafficRow } from "./importRows.types";
 import {
   persistAdSpend,
   persistOrders,
   persistTraffic,
   type OrderOrigin,
 } from "./importsWriteService";
+import { persistProducts } from "./productsWriteService";
 import { undoRecorder } from "./undoRecorder";
 
 export function writeSyncedOrders(
@@ -21,4 +22,12 @@ export function writeSyncedAdSpend(clientId: string, rows: AdSpendRow[]): Promis
 
 export function writeSyncedTraffic(clientId: string, rows: TrafficRow[]): Promise<number> {
   return persistTraffic(clientId, rows, undoRecorder());
+}
+
+export function writeSyncedProducts(
+  clientId: string,
+  rows: ProductSheetRow[],
+  now: Date,
+): Promise<number> {
+  return persistProducts(clientId, rows, undoRecorder(), now);
 }

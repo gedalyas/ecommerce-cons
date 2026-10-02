@@ -18,10 +18,12 @@ import {
   writeSyncedAdSpend,
   writeSyncedKeywords,
   writeSyncedOrders,
+  writeSyncedProducts,
   writeSyncedSocial,
   writeSyncedTraffic,
   writeSyncedTrafficDetail,
   trafficDetailSince,
+  type ProductSheetRow,
 } from "@/modules/imports/contract";
 import type { Jobs } from "@/shared/jobs/jobs.types";
 import type {
@@ -100,6 +102,17 @@ async function readRaw<T>(connectionId: string, kind: RawKind, externalId: strin
   return (row?.payload as T | undefined) ?? null;
 }
 
+const productsWriter =
+  (clientId: string, key: ConnectorKey, now: Date) => async (rows: ProductSheetRow[]) => {
+    const [products, stock] = await Promise.all([
+      ownerOf(clientId, "products"),
+      ownerOf(clientId, "stock"),
+    ]);
+    if (products !== key) return 0;
+    const known = stock === key ? rows : rows.map((r) => ({ ...r, stock: null }));
+    return writeSyncedProducts(clientId, known, now);
+  };
+
 function contextOf(
   row: ConnectionRow,
   credentials: Credentials,
@@ -120,6 +133,7 @@ function contextOf(
     settings: (row.settings ?? {}) as Record<string, unknown>,
     reprocess,
     now,
+    accepts: provides,
     saveRaw: (kind, rows) => saveRaw(row.id, now, kind, rows),
     readRaw: (kind, externalId) => readRaw(row.id, kind, externalId),
     listRaw: (kind, skip, take) => listRaw(row.id, kind, skip, take),
@@ -130,6 +144,7 @@ function contextOf(
             connectionId: row.id,
           })
         : 0,
+    writeProducts: productsWriter(row.clientId, key, now),
     writeAdSpend: (rows) =>
       provides("ad_spend") ? writeSyncedAdSpend(row.clientId, rows) : Promise.resolve(0),
     writeTraffic: (rows) =>

@@ -14,7 +14,11 @@ categoria, preco`), `productsWriteService` writes variant cost/price/stock and p
       name/category, creates unknown SKUs, fills the cost of uncosted order items; undo through
       `VARIANT` / `ITEM_COST` entries; later order items without a cost take the variant's;
       "Importar planilha de produtos" on the cost and stock notices (2026-10-02)
-- [ ] A3 Bling brings cost, stock and category; ML/Amazon items without SKU keyed by listing
+- [x] A3 Bling brings cost, stock and category: `blingProducts.ts` (tested) maps `/produtos`
+      with the category names of `/categorias/produtos`; `pullProducts` runs after the orders (backfill, then at most every 6 h) on
+      every sync and writes through the new `SyncContext.writeProducts` (`persistProducts`), only
+      when Bling owns products (stock only when it owns stock). ML/Amazon items without SKU were
+      already keyed by the listing id / ASIN (2026-10-02)
 - [ ] B1 Métricas, Metas, Gestão ready to release
 - [ ] B2 Clientes, Influenciadores, Dinheiro fixes
 - [ ] B3 Release: smoke per screen, default released screens, boards and specs

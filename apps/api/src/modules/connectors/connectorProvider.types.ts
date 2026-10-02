@@ -3,12 +3,14 @@ import type {
   ConnectorAccountOption,
   ConnectorKey,
   ConnectorStatusOption,
+  DataKind,
   ReceivedKind,
 } from "@ecommerce/contracts/connectors";
 import type {
   AdSpendRow,
   KeywordRow,
   OrderInput,
+  ProductSheetRow,
   SocialInput,
   TrafficDetail,
   TrafficRow,
@@ -43,6 +45,7 @@ export type SyncContext = {
   settings: Record<string, unknown>;
   reprocess: boolean;
   now: Date;
+  accepts(kind: DataKind): boolean;
   saveRaw(kind: RawKind, rows: RawRow[]): Promise<void>;
   readRaw<T>(kind: RawKind, externalId: string): Promise<T | null>;
   listRaw<T>(
@@ -51,6 +54,7 @@ export type SyncContext = {
     take: number,
   ): Promise<{ externalId: string; payload: T }[]>;
   writeOrders(orders: OrderInput[]): Promise<number>;
+  writeProducts(rows: ProductSheetRow[]): Promise<number>;
   writeAdSpend(rows: AdSpendRow[]): Promise<number>;
   writeTraffic(rows: TrafficRow[]): Promise<number>;
   writeKeywords(rows: KeywordRow[]): Promise<number>;

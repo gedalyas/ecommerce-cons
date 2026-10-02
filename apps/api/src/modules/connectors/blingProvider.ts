@@ -6,6 +6,13 @@ import {
   type BlingOrder,
   type BlingOrderSummary,
 } from "./blingOrders";
+import {
+  blingProductRows,
+  productsDue,
+  skuCategories,
+  type BlingCategory,
+  type BlingProduct,
+} from "./blingProducts";
 import type {
   ConnectorProvider,
   Credentials,
@@ -36,6 +43,7 @@ const MAX_PAGES = 1000;
 const REFRESH_AHEAD_MS = 10 * 60 * 1000;
 const OVERLAP_DAYS = 1;
 const ORDERS_CURSOR = "orders";
+const PRODUCTS_CURSOR = "products";
 
 class BlingError extends Error {}
 
@@ -196,6 +204,79 @@ async function pullOrders(
   return { cursor: { ...context.cursor, [ORDERS_CURSOR]: to }, written };
 }
 
+async function allPages<T>(
+  config: BlingConfig,
+  credentials: BlingCredentials,
+  path: string,
+  query: Record<string, string> = {},
+): Promise<T[]> {
+  const all: T[] = [];
+  for (let page = 1; page <= MAX_PAGES; page += 1) {
+    const rows = await blingGet<T[]>(config, credentials, path, {
+      ...query,
+      pagina: String(page),
+      limite: String(PAGE_SIZE),
+    });
+    if (!rows || rows.length === 0) break;
+    all.push(...rows);
+    if (rows.length < PAGE_SIZE) break;
+  }
+  return all;
+}
+
+async function categoryBySku(config: BlingConfig, credentials: BlingCredentials) {
+  const categories = await allPages<BlingCategory>(config, credentials, "/categorias/produtos");
+  const bySku = new Map<string, string>();
+  for (const category of categories) {
+    const products = await allPages<BlingProduct>(config, credentials, "/produtos", {
+      idCategoria: String(category.id),
+    });
+    for (const [sku, name] of skuCategories([{ category, products }])) bySku.set(sku, name);
+  }
+  return bySku;
+}
+
+async function pullProducts(
+  config: BlingConfig,
+  context: SyncContext,
+  withCategories: boolean,
+): Promise<number> {
+  const credentials = context.credentials as BlingCredentials;
+  const categories = withCategories ? await categoryBySku(config, credentials) : new Map();
+  let written = 0;
+  for (let page = 1; page <= MAX_PAGES; page += 1) {
+    const products = await blingGet<BlingProduct[]>(config, credentials, "/produtos", {
+      pagina: String(page),
+      limite: String(PAGE_SIZE),
+    });
+    if (!products || products.length === 0) break;
+    written += await context.writeProducts(blingProductRows(products, categories));
+    if (products.length < PAGE_SIZE) break;
+  }
+  return written;
+}
+
+async function syncAll(
+  config: BlingConfig,
+  context: SyncContext,
+  { from, withCategories }: { from: string; withCategories: boolean },
+): Promise<SyncResult> {
+  const orders = await pullOrders(config, context, from);
+  const due = withCategories || productsDue(context.cursor[PRODUCTS_CURSOR], context.now);
+  if (!due || !context.accepts("products")) return orders;
+  try {
+    const written = await pullProducts(config, context, withCategories);
+    const cursor = { ...orders.cursor, [PRODUCTS_CURSOR]: context.now.toISOString() };
+    return { cursor, written: orders.written + written };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "erro desconhecido";
+    console.error(
+      `Bling: produtos da conexão ${context.connectionId} não sincronizaram: ${reason}`,
+    );
+    return orders;
+  }
+}
+
 const RAW_PAGE = 200;
 
 async function remapStoredOrders(
@@ -262,14 +343,16 @@ export function blingProvider(config: BlingConfig): ConnectorProvider {
       statuses: await statusOptions(config, credentials as BlingCredentials),
     }),
     backfill: (context) =>
-      pullOrders(config, context, monthsAgo(context.now, config.backfillMonths)),
+      syncAll(config, context, {
+        from: monthsAgo(context.now, config.backfillMonths),
+        withCategories: true,
+      }),
     sync(context) {
       const last = context.cursor[ORDERS_CURSOR];
-      return pullOrders(
-        config,
-        context,
-        last ? daysBefore(last, OVERLAP_DAYS) : dayOf(context.now),
-      );
+      return syncAll(config, context, {
+        from: last ? daysBefore(last, OVERLAP_DAYS) : dayOf(context.now),
+        withCategories: context.reprocess,
+      });
     },
   };
 }
