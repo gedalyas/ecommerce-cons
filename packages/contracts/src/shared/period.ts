@@ -164,7 +164,7 @@ export function resolveComparison(search: PeriodSearch): DateRange | null {
 
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 
-function isIsoDate(value: unknown): value is string {
+export function isIsoDate(value: unknown): value is string {
   return (
     typeof value === "string" &&
     isoDatePattern.test(value) &&

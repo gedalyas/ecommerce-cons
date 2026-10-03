@@ -62,7 +62,7 @@ order.
 an empty one; pilot board and specs say what is ready; the ready screens join the default
 released set for a new store. Per-store release stays with staff in /admin.
 
-### Task C — A real assistant: its own plan after B (stays locked).
+### Task C — A real assistant: its own plan, [assistant-plan.md](assistant-plan.md).
 
 ## Verification (per slice)
 

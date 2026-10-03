@@ -88,6 +88,10 @@ export function auditSummary(detail: AuditDetail): string {
       return `Enviou o relatório "${detail.name}" para ${detail.recipients} ${detail.recipients === 1 ? "destinatário" : "destinatários"}`;
     case "IMPORT_MAPPING_SUGGESTED":
       return `Pediu à IA as colunas de ${detail.kind.toLowerCase()} (${detail.fileName}): ${detail.fields} campos sugeridos`;
+    case "ASSISTANT_ASKED":
+      return detail.consulted.length > 0
+        ? `Perguntou ao assistente (consultou ${detail.consulted.join(", ")})`
+        : "Perguntou ao assistente";
     case "PILLAR_UPDATED":
       return `Atualizou o pilar ${detail.pillar}: ${detail.status.toLowerCase()}`;
     case "MANUAL_KPI_SET":

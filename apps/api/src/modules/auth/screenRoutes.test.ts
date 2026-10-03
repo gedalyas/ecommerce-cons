@@ -10,11 +10,12 @@ describe("screenRoutePrefixes", () => {
     expect(all.length).toBe(new Set(all).size);
     for (const prefix of all) {
       expect(prefix).toMatch(/^\/[a-z-]+$/);
-      expect(areaGuarded).toContain(prefix);
+      if (!screenRoutePrefixes.ASSISTANT.includes(prefix)) expect(areaGuarded).toContain(prefix);
     }
   });
 
-  it("leaves the assistant to the web, which has no API behind it", () => {
-    expect(screenRoutePrefixes.ASSISTANT).toEqual([]);
+  it("guards the assistant by screen only, since each of its tools checks the area", () => {
+    expect(screenRoutePrefixes.ASSISTANT).toEqual(["/assistant"]);
+    expect(Object.values(areaRoutePrefixes).flat()).not.toContain("/assistant");
   });
 });

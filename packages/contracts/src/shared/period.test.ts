@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   defaultPeriodSearchFor,
   fromIsoDate,
+  isIsoDate,
   matchingPreset,
   parsePeriodSearch,
   periodPresets,
@@ -62,6 +63,16 @@ describe("resolveComparison", () => {
       inicio: "2025-09-01",
       fim: "2025-09-10",
     });
+  });
+});
+
+describe("isIsoDate", () => {
+  it("accepts a real calendar day only", () => {
+    expect(isIsoDate("2026-02-28")).toBe(true);
+    expect(isIsoDate("2026-02-30")).toBe(false);
+    expect(isIsoDate("2026-13-01")).toBe(false);
+    expect(isIsoDate("01/02/2026")).toBe(false);
+    expect(isIsoDate(20260201)).toBe(false);
   });
 });
 

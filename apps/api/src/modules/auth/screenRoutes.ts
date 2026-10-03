@@ -1,7 +1,7 @@
 import type { StoreScreen } from "@ecommerce/contracts/auth";
 
 export const screenRoutePrefixes: Record<StoreScreen, readonly string[]> = {
-  ASSISTANT: [],
+  ASSISTANT: ["/assistant"],
   MONEY: ["/money"],
   MARKETING: ["/marketing"],
   LOGISTICS: ["/logistics"],

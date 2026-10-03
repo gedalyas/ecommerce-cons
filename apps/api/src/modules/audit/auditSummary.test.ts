@@ -58,6 +58,12 @@ describe("auditSummary", () => {
         fields: 9,
       }),
     ).toBe("Pediu à IA as colunas de pedidos (p.xlsx): 9 campos sugeridos");
+    expect(auditSummary({ action: "ASSISTANT_ASKED", consulted: ["dinheiro", "produtos"] })).toBe(
+      "Perguntou ao assistente (consultou dinheiro, produtos)",
+    );
+    expect(auditSummary({ action: "ASSISTANT_ASKED", consulted: [] })).toBe(
+      "Perguntou ao assistente",
+    );
     expect(auditSummary({ action: "REPORT_SCHEDULE_CREATED", name: "Segunda" })).toBe(
       'Criou a automação de relatório "Segunda"',
     );

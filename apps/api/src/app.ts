@@ -3,6 +3,7 @@ import express, { type Express } from "express";
 import { createAnthropic, type AnthropicClient } from "@/shared/ai/createAnthropic";
 import { createAnalysisRouter } from "@/modules/analysis/contract";
 import { createAdminRouter, visibleClientIds } from "@/modules/admin/contract";
+import { createAssistantRouter } from "@/modules/assistant/contract";
 import { createStaffActivityRouter, createStoreActivityRouter } from "@/modules/audit/contract";
 import {
   createBillingRouter,
@@ -120,6 +121,7 @@ function storeRouters(
     }),
     createConsultingRouter({ now }),
     createImportsRouter({ now, rateLimited, anthropic }),
+    createAssistantRouter({ rateLimited, anthropic }),
     createReportsRouter({ costLinesFor: marketingCostLines, now, rateLimited }),
     createStoreActivityRouter({ visibleStoresOf: visibleClientIds }),
     createBillingRouter(billing),

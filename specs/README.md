@@ -52,6 +52,8 @@ because that is what ships.
 | [integrations-tasks.md](integrations-tasks.md)                                     | Task checklist for the integrations plan — tick as work lands                              |
 | [m4-plan.md](m4-plan.md)                                                           | M4: real cost and stock, fixes to release the locked screens to the pilots                 |
 | [m4-tasks.md](m4-tasks.md)                                                         | Task checklist for the M4 plan — tick as work lands                                        |
+| [assistant-plan.md](assistant-plan.md)                                             | Task C: a real assistant answering from read-only tools over the store's data              |
+| [assistant-tasks.md](assistant-tasks.md)                                           | Task checklist for the assistant plan — tick as work lands                                 |
 | [architecture.md](architecture.md)                                                 | Folder architecture: modules + contracts + cycle ratchet (in force; see CLAUDE.md)         |
 | [reference/](reference/)                                                           | The Arko `CLAUDE.md` files the rules derive from, and the Arko Guru/ZapSign guide          |
 | [architecture-reference.md](architecture-reference.md)                             | Reference dossier from arko_frontend/arko_backend the architecture is adapted from         |
