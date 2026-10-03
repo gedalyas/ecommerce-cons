@@ -27,9 +27,7 @@ export const storeScreenLabel: Record<StoreScreen, string> = {
   INFLUENCERS: "Influenciadores",
 };
 
-export const defaultReleasedScreens: readonly StoreScreen[] = storeScreens.filter(
-  (screen) => screen !== "ASSISTANT",
-);
+export const defaultReleasedScreens: readonly StoreScreen[] = storeScreens;
 
 export const UNDER_DEVELOPMENT_LABEL = "Em desenvolvimento";
 export const UNDER_DEVELOPMENT_MESSAGE =

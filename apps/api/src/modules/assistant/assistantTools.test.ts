@@ -6,6 +6,7 @@ import {
   toolPeriodOf,
   toolSearchOf,
   toolsFor,
+  visibleSections,
 } from "./assistantTools";
 
 const selected = { inicio: "2026-09-01", fim: "2026-09-30" };
@@ -36,6 +37,7 @@ describe("toolsFor", () => {
       "data_sources",
       "products_sales",
       "customers_retention",
+      "consultant_plan",
     ]);
   });
 });
@@ -90,9 +92,24 @@ describe("toolCallKey", () => {
     );
   });
 
+  it("reads the consultant's plan once whatever period is asked", () => {
+    expect(toolCallKey("consultant_plan", selected)).toBe("consultant_plan");
+  });
+
   it("reads the sources once whatever period is asked", () => {
     expect(toolCallKey("data_sources", selected)).toBe(
       toolCallKey("data_sources", { inicio: "2026-01-01", fim: "2026-01-31" }),
     );
+  });
+});
+
+describe("visibleSections", () => {
+  it("shows the owner and staff every consulting area of a fully released store", () => {
+    expect(visibleSections(null, null)).toEqual(["money", "marketing", "logistics", "management"]);
+  });
+
+  it("keeps a member to the areas granted and the screens released", () => {
+    expect(visibleSections([{ area: "MARKETING", level: "view" }], null)).toEqual(["marketing"]);
+    expect(visibleSections(null, ["MARKETING", "ORDERS"])).toEqual(["marketing"]);
   });
 });

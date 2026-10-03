@@ -7,6 +7,7 @@ import {
   type ScreenRelease,
   type StoreScreen,
 } from "@ecommerce/contracts/auth";
+import { sectionKeys, type SectionKey } from "@ecommerce/contracts/consulting";
 import {
   isIsoDate,
   rangeLength,
@@ -23,6 +24,7 @@ const assistantToolNames = [
   "marketing_channels",
   "customers_retention",
   "goals_progress",
+  "consultant_plan",
 ] as const;
 export type AssistantToolName = (typeof assistantToolNames)[number];
 
@@ -34,6 +36,7 @@ export const assistantToolLabel: Record<AssistantToolName, string> = {
   marketing_channels: "canais de venda",
   customers_retention: "clientes",
   goals_progress: "metas",
+  consultant_plan: "plano da consultoria",
 };
 
 type ToolNeed = { area: AccessArea | null; screen: StoreScreen | null };
@@ -46,7 +49,18 @@ const toolNeeds: Record<AssistantToolName, ToolNeed> = {
   marketing_channels: { area: "MARKETING", screen: "MARKETING" },
   customers_retention: { area: "DATA", screen: "CUSTOMERS" },
   goals_progress: { area: "MANAGEMENT", screen: "GOALS" },
+  consultant_plan: { area: null, screen: null },
 };
+
+const sectionNeeds: Record<SectionKey, ToolNeed> = {
+  money: { area: "MONEY", screen: "MONEY" },
+  marketing: { area: "MARKETING", screen: "MARKETING" },
+  logistics: { area: "LOGISTICS", screen: "LOGISTICS" },
+  management: { area: "MANAGEMENT", screen: "MANAGEMENT" },
+};
+
+const isVisible = ({ area, screen }: ToolNeed, access: AreaAccess, release: ScreenRelease) =>
+  (!area || canViewArea(access, area)) && (!screen || isScreenReleased(release, screen));
 
 export type AssistantToolDefinition = {
   name: AssistantToolName;
@@ -112,6 +126,14 @@ const definitions: AssistantToolDefinition[] = [
     "Buyers in the period (total and first-time) and the store's retention: repurchase rate over " +
       "the last 90 days and 12-month lifetime value.",
   ),
+  {
+    name: "consultant_plan",
+    description:
+      "The consulting plan for the areas the user can see: each pillar's status, the indicators " +
+      "the consultant filled in by hand (value, change, note), the open recommendations with due " +
+      "date and owner, and the progress of each milestone criterion.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
   withPeriod(
     "goals_progress",
     "The store's goals for the period against what was achieved: actual, goal, progress and " +
@@ -124,8 +146,11 @@ export function canUseTool(
   access: AreaAccess,
   release: ScreenRelease,
 ): boolean {
-  const { area, screen } = toolNeeds[name];
-  return (!area || canViewArea(access, area)) && (!screen || isScreenReleased(release, screen));
+  return isVisible(toolNeeds[name], access, release);
+}
+
+export function visibleSections(access: AreaAccess, release: ScreenRelease): SectionKey[] {
+  return sectionKeys.filter((key) => isVisible(sectionNeeds[key], access, release));
 }
 
 export function toolsFor(access: AreaAccess, release: ScreenRelease): AssistantToolDefinition[] {
@@ -161,6 +186,8 @@ export function toolSearchOf(period: DateRange, canal: Channel): PeriodSearch {
   return { ...period, por: "mes", comparar: "periodo-anterior", canal };
 }
 
+const periodlessTools: readonly AssistantToolName[] = ["data_sources", "consultant_plan"];
+
 export function toolCallKey(name: AssistantToolName, period: DateRange): string {
-  return name === "data_sources" ? name : `${name}:${period.inicio}:${period.fim}`;
+  return periodlessTools.includes(name) ? name : `${name}:${period.inicio}:${period.fim}`;
 }

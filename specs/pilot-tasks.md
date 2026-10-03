@@ -119,6 +119,9 @@ Released screens per store.
       engajamento live from `social_daily` (`marketingLiveKpis` + test) instead of manual
       values; CSV template examples no longer name "Aurora". The assistant's canned
       conversation stays (screen locked in the MVP) (2026-09-20)
+- [x] M6 The Assistente answers from the store's real data (Task C, `assistant-plan.md`):
+      read-only tools, origin and caveats on every answer; new stores open it by default
+      (2026-10-03)
 
 ## R — Every screen usable on a phone
 

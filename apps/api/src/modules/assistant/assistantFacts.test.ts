@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DataSourceState } from "@ecommerce/contracts/connections";
+import type { ConsultingSection } from "@ecommerce/contracts/consulting";
 import type { DashboardOverview } from "@ecommerce/contracts/dashboard";
 import type { GoalsSummary } from "@ecommerce/contracts/goals";
 import type { SalesChannelRow } from "@ecommerce/contracts/marketing";
@@ -7,6 +8,7 @@ import type { MoneyDre } from "@ecommerce/contracts/money";
 import type { ProductSales } from "@ecommerce/contracts/products";
 import {
   channelsFacts,
+  consultantFacts,
   customersFacts,
   goalsFacts,
   moneyFacts,
@@ -197,5 +199,102 @@ describe("goalsFacts", () => {
   it("says when the period has no goals", () => {
     const summary: GoalsSummary = { cards: [], window: period, elapsed: 50, empty: true };
     expect(goalsFacts(summary)).toEqual({ period, goals: "No goals set for this period." });
+  });
+});
+
+describe("consultantFacts", () => {
+  const section: ConsultingSection = {
+    key: "money",
+    title: "Dinheiro",
+    subtitle: "",
+    canEdit: false,
+    pillars: [
+      {
+        key: "organization",
+        title: "Organização",
+        status: "in-progress",
+        kpis: [
+          {
+            key: "contributionMarginRate",
+            label: "Margem de contribuição",
+            source: "live",
+            live: null,
+          },
+          {
+            key: "freeCash",
+            label: "Caixa livre",
+            source: "manual",
+            hint: "",
+            manual: {
+              value: "R$ 40 mil",
+              delta: null,
+              note: "Fechamento de setembro",
+              updatedAt: "2026-09-30",
+            },
+            fidelity: "B",
+          },
+          {
+            key: "cashCycle",
+            label: "Ciclo de caixa",
+            source: "manual",
+            hint: "",
+            manual: null,
+            fidelity: null,
+          },
+        ],
+        recommendations: [
+          {
+            id: "1",
+            pillarKey: "organization",
+            text: "Separar contas",
+            dueDate: "2026-10-10",
+            owner: "Dono",
+            doneAt: null,
+          },
+          {
+            id: "2",
+            pillarKey: "organization",
+            text: "Feito",
+            dueDate: "2026-09-01",
+            owner: "Dono",
+            doneAt: "2026-09-02",
+          },
+        ],
+      },
+    ],
+  };
+
+  it("keeps the consultant's indicators and the open recommendations of each pillar", () => {
+    const facts = consultantFacts(
+      [section],
+      [
+        {
+          key: "predictableMargin",
+          name: "Margem previsível",
+          hint: "",
+          progress: 50,
+          achieved: false,
+          note: "",
+        },
+      ],
+    );
+    expect(facts.areas[0]?.pillars[0]).toEqual({
+      pillar: "Organização",
+      status: "in-progress",
+      dataPending: null,
+      manualIndicators: [
+        {
+          label: "Caixa livre",
+          value: "R$ 40 mil",
+          change: null,
+          consultantNote: "Fechamento de setembro",
+          updatedAt: "2026-09-30",
+        },
+      ],
+      openRecommendations: [{ text: "Separar contas", dueDate: "2026-10-10", owner: "Dono" }],
+    });
+    expect(facts.milestone).toEqual([
+      { criterion: "Margem previsível", achieved: false, progressPercent: 50, note: "" },
+    ]);
   });
 });

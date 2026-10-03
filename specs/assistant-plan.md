@@ -26,8 +26,8 @@ Decisions (Davi, 2026-10-03): the conversation lives only in the browser; the mo
 - The final answer is structured (`output_config.format`): `{ area, pillar, text, caveats[] }`;
   the API turns area + pillar into the label shown above the bubble ("Marketing · Aquisição").
 - Limits: at most 4 tool rounds, 8 lookups per question (a repeated lookup reuses its result),
-  60 s per question, `max_tokens` 1024, history of 12 messages of up to 2,000 characters, 30
-  questions per 15 min per user and store and 60 per person across stores. Text the store's data
+  60 s per question, `max_tokens` 1024, history of 12 messages of up to 2,000 characters, 60
+  questions per 15 min per store (all its people together) and 40 per person across stores. Text the store's data
   brings (product names, alerts) is clipped to 160 characters before it reaches the model.
 - No key: 503 "O assistente não está disponível agora."
 - Audit: `ASSISTANT_ASKED` with the tools used, never the question's text.
@@ -47,7 +47,8 @@ Decisions (Davi, 2026-10-03): the conversation lives only in the browser; the mo
   screen; the staged messages, attachment and audio go; empty state with suggested questions,
   origin label, caveats, "Limpar conversa", unavailable and error messages; 390px.
 - **C3 — Consultant plan and release** (contracts, api, specs): `consultant_plan` tool (pillar
-  status, manual KPIs with the consultant's note, open recommendations, milestone criteria);
+  status, manual KPIs with the consultant's note, open recommendations, milestone criteria) for
+  the consulting areas the user can see;
   `defaultReleasedScreens` becomes every screen; `assistant.md` rewritten; decision record.
 
 ## Verification

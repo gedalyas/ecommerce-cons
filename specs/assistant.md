@@ -48,7 +48,9 @@ There are no attachments and no audio: the only upload in the product is the CSV
 
 1. **Real numbers only.** The model sees only what its tools return: overview KPIs and alerts,
    data sources, the DRE, best-selling products and stock health, sales by channel, customers and
-   retention, goals. Each tool needs the area and the screen visible to whoever asks; otherwise it
+   retention, goals, and the consultant's plan (pillar status, the indicators and notes the
+   consultant filled in, open recommendations, milestone criteria) for the consulting areas the
+   user can see. Each tool needs the area and the screen visible to whoever asks; otherwise it
    answers "no access".
 2. **Origin.** The structured answer names an area (overview, orders, products, customers, goals
    or a consulting area) and, for a consulting area, a pillar of the engagement template; the API
@@ -57,7 +59,7 @@ There are no attachments and no audio: the only upload in the product is the CSV
    "imported by hand", "not connected") and the cost and stock notices; the model must turn the
    ones its answer depends on into caveats.
 
-Limits: 4 tool rounds, 8 lookups and 60 s per question; 30 questions per store and user and 60
-per person every 15 minutes. Without `ANTHROPIC_API_KEY` the API answers 503 and the bubble says
+Limits: 4 tool rounds, 8 lookups and 60 s per question; 60 questions per store (everyone in it
+together) and 40 per person (across stores) every 15 minutes. Without `ANTHROPIC_API_KEY` the API answers 503 and the bubble says
 the assistant is not available. Each answered question is recorded as `ASSISTANT_ASKED` with the
 areas consulted, never the question.

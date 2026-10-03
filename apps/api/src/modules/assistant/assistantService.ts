@@ -17,6 +17,7 @@ import { defaultMarketingSearch } from "@ecommerce/contracts/marketing";
 import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
 import { resolvePeriod } from "@ecommerce/contracts/shared/periodWindow";
 import { recordActivity } from "@/modules/audit/contract";
+import { milestoneCriteriaFor, sectionFor } from "@/modules/consulting/contract";
 import { dataSourcesFor } from "@/modules/connections/contract";
 import { customersAggregate, retentionSummary } from "@/modules/customers/contract";
 import { dashboardOverview } from "@/modules/dashboard/contract";
@@ -31,6 +32,7 @@ import { HttpError } from "@/shared/http/httpError";
 import { answerFormat, replyOfAnswer } from "./assistantAnswer";
 import {
   channelsFacts,
+  consultantFacts,
   customersFacts,
   goalsFacts,
   moneyFacts,
@@ -47,6 +49,7 @@ import {
   toolPeriodOf,
   toolSearchOf,
   toolsFor,
+  visibleSections,
   type AssistantToolDefinition,
   type AssistantToolName,
 } from "./assistantTools";
@@ -78,6 +81,15 @@ async function marketingChannels(clientId: string, search: PeriodSearch) {
   return "salesChannels" in screen ? channelsFacts(period, screen.salesChannels) : null;
 }
 
+async function consultantPlan(auth: AuthContext) {
+  const keys = visibleSections(auth.access, auth.release);
+  const [sections, criteria] = await Promise.all([
+    Promise.all(keys.map((key) => sectionFor(auth.clientId, key, {}, false))),
+    milestoneCriteriaFor(auth.clientId),
+  ]);
+  return consultantFacts(sections, criteria);
+}
+
 async function factsOf(auth: AuthContext, tool: AssistantToolName, search: PeriodSearch) {
   const { clientId } = auth;
   const period = { inicio: search.inicio, fim: search.fim };
@@ -106,6 +118,8 @@ async function factsOf(auth: AuthContext, tool: AssistantToolName, search: Perio
       ]);
       return customersFacts(period, aggregate, retention);
     }
+    case "consultant_plan":
+      return consultantPlan(auth);
     case "goals_progress": {
       const screen = await goalsScreen(clientId, { ...search, ...defaultGoalsSearch });
       return screen.aba === "resumo" ? goalsFacts(screen.summary) : null;

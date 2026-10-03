@@ -1,4 +1,9 @@
 import type { DataSourceState } from "@ecommerce/contracts/connections";
+import type {
+  ConsultingMetric,
+  ConsultingSection,
+  MilestoneCriterion,
+} from "@ecommerce/contracts/consulting";
 import type { DataSourceStatus } from "@ecommerce/contracts/connectors";
 import type { CustomersAggregate, RetentionSummary } from "@ecommerce/contracts/customers";
 import type { DashboardOverview } from "@ecommerce/contracts/dashboard";
@@ -159,6 +164,45 @@ export function goalsFacts(summary: GoalsSummary) {
       goal: rounded(c.goal),
       progressPercent: rounded(c.progress),
       pacingPercent: rounded(c.pacing),
+    })),
+  };
+}
+
+const manualIndicatorOf = (kpi: ConsultingMetric) =>
+  kpi.source === "manual" && kpi.manual
+    ? [
+        {
+          label: kpi.label,
+          value: clipped(kpi.manual.value),
+          change: kpi.manual.delta === null ? null : clipped(kpi.manual.delta),
+          consultantNote: clipped(kpi.manual.note),
+          updatedAt: kpi.manual.updatedAt,
+        },
+      ]
+    : [];
+
+export function consultantFacts(
+  sections: readonly ConsultingSection[],
+  criteria: readonly MilestoneCriterion[],
+) {
+  return {
+    areas: sections.map((section) => ({
+      area: section.title,
+      pillars: section.pillars.map((pillar) => ({
+        pillar: pillar.title,
+        status: pillar.status,
+        dataPending: pillar.dataPending ? clipped(pillar.dataPending) : null,
+        manualIndicators: pillar.kpis.flatMap(manualIndicatorOf),
+        openRecommendations: pillar.recommendations
+          .filter((r) => r.doneAt === null)
+          .map((r) => ({ text: clipped(r.text), dueDate: r.dueDate, owner: clipped(r.owner) })),
+      })),
+    })),
+    milestone: criteria.map((c) => ({
+      criterion: c.name,
+      achieved: c.achieved,
+      progressPercent: rounded(c.progress),
+      note: clipped(c.note),
     })),
   };
 }

@@ -62,10 +62,11 @@ back to the dashboard) instead of the screen.
 - **The set** (`contracts/auth/storeScreens.ts`, Prisma enum `StoreScreen`): Assistente,
   Dinheiro, Marketing, Logística, Gestão, Pedidos, Produtos, Clientes, Metas, Métricas,
   Influenciadores. Dashboard, Conexões and `/loja` are always open. Stored as
-  `Client.releasedScreens`. A new store opens every screen except Assistente
-  (`defaultReleasedScreens`, written by `storeService` on creation — decision
-  `decisions/2026-10-02-new-stores-open-every-screen-but-the-assistant.md`); stores created
-  before 2026-10-02 keep their list.
+  `Client.releasedScreens`. A new store opens every screen, the Assistente included
+  (`defaultReleasedScreens`, written by `storeService` on creation — decisions
+  `decisions/2026-10-02-new-stores-open-every-screen-but-the-assistant.md` and
+  `decisions/2026-10-03-assistant-answers-from-read-only-tools.md`); stores created before
+  that keep their list, and staff release the rest in `/admin`.
 - **Who sees what.** `screenReleaseOf(user, store)`: `null` (everything) for `ADMIN` and
   `CONSULTANT`, the store's list for any `CLIENT` — owner or member. A member sees the
   intersection: what the grant lets in, then what the store released. Staff browsing the
@@ -79,7 +80,7 @@ back to the dashboard) instead of the screen.
   (`auth/screenRoutes.ts`) and answers 403 with the "Em desenvolvimento" message. The web's
   root guard redirects a locked path to the placeholder before any loader runs
   (`shared/layout/screenAccess.ts`); the assistant's docked panel and button disappear when
-  `ASSISTANT` is locked (it has no API behind it, so the web is its only guard).
+  `ASSISTANT` is locked, and `POST /assistant/messages` answers 403 like any other screen.
 
 ## The administration area
 

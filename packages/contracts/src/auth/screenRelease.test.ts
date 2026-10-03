@@ -29,10 +29,10 @@ describe("isScreenReleased", () => {
     expect(isScreenReleased(store.releasedScreens, "MONEY")).toBe(false);
   });
 
-  it("opens every screen but the assistant to a new store", () => {
+  it("opens every screen, the assistant included, to a new store", () => {
     expect(isScreenReleased(defaultReleasedScreens, "MONEY")).toBe(true);
     expect(isScreenReleased(defaultReleasedScreens, "INFLUENCERS")).toBe(true);
-    expect(isScreenReleased(defaultReleasedScreens, "ASSISTANT")).toBe(false);
+    expect(isScreenReleased(defaultReleasedScreens, "ASSISTANT")).toBe(true);
   });
 });
 
