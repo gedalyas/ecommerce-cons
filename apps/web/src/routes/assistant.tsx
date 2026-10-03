@@ -8,12 +8,12 @@ export const Route = createFileRoute("/assistente")({
       {
         name: "description",
         content:
-          "Converse sobre os números da loja, envie arquivos e grave áudios para analisar margem, criativos e taxas.",
+          "Pergunte sobre os números da loja: vendas, margem, canais, produtos, clientes e metas.",
       },
       { property: "og:title", content: "Assistente · E-commerce Insights" },
       {
         property: "og:description",
-        content: "Conversa longa com a IA da consultoria: margem, criativos, taxas e reuniões.",
+        content: "Respostas com os números reais da loja e as ressalvas de cada fonte.",
       },
     ],
   }),

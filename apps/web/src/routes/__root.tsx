@@ -29,9 +29,10 @@ import {
   UNDER_DEVELOPMENT_PATH,
   canOpenPath,
   isPathReleased,
+  screenOfPath,
   underDevelopmentSlugOf,
 } from "@/shared/layout/screenAccess";
-import { AssistantFab, AssistantPanel } from "@/modules/assistant/contract";
+import { AssistantFab, AssistantPanel, AssistantProvider } from "@/modules/assistant/contract";
 import { ReportButton } from "@/modules/reports/contract";
 import { SessionBanner, getSessionState, logoutFn, selectStoreFn } from "@/modules/auth/contract";
 import {
@@ -274,41 +275,47 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell
-        assistant={assistantReleased ? <AssistantPanel /> : null}
-        assistantFab={assistantReleased ? <AssistantFab /> : null}
-        topBarAction={
-          pathname === "/" ? <ReportButton access={areaAccessOf(user)} release={release} /> : null
-        }
-        banner={
-          <>
-            {sessionBanner}
-            {status.hasSource ? null : <DataReadinessBanner />}
-          </>
-        }
-        status={status}
-        account={{
-          name: user.name,
-          access: areaAccessOf(user),
-          release,
-          onSignOut: () => void signOut(),
-          store: activeStore
-            ? {
-                id: activeStore.id,
-                name: activeStore.name,
-                isArchived: Boolean(activeStore.archivedAt),
-                releasedScreens: activeStore.releasedScreens,
-              }
-            : null,
-          stores: user.stores.map((s) => ({
-            id: s.id,
-            name: s.name,
-            isArchived: Boolean(s.archivedAt),
-            releasedScreens: s.releasedScreens,
-          })),
-          onSelectStore: (id) => void switchStore(id),
-        }}
-      />
+      <AssistantProvider
+        userId={user.id}
+        storeId={activeStore?.id ?? null}
+        screen={screenOfPath[pathname] ?? null}
+      >
+        <AppShell
+          assistant={assistantReleased ? <AssistantPanel /> : null}
+          assistantFab={assistantReleased ? <AssistantFab /> : null}
+          topBarAction={
+            pathname === "/" ? <ReportButton access={areaAccessOf(user)} release={release} /> : null
+          }
+          banner={
+            <>
+              {sessionBanner}
+              {status.hasSource ? null : <DataReadinessBanner />}
+            </>
+          }
+          status={status}
+          account={{
+            name: user.name,
+            access: areaAccessOf(user),
+            release,
+            onSignOut: () => void signOut(),
+            store: activeStore
+              ? {
+                  id: activeStore.id,
+                  name: activeStore.name,
+                  isArchived: Boolean(activeStore.archivedAt),
+                  releasedScreens: activeStore.releasedScreens,
+                }
+              : null,
+            stores: user.stores.map((s) => ({
+              id: s.id,
+              name: s.name,
+              isArchived: Boolean(s.archivedAt),
+              releasedScreens: s.releasedScreens,
+            })),
+            onSelectStore: (id) => void switchStore(id),
+          }}
+        />
+      </AssistantProvider>
     </QueryClientProvider>
   );
 }

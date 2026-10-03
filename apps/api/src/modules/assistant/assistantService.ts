@@ -7,7 +7,11 @@ import type {
 } from "@anthropic-ai/sdk/resources/messages";
 import { prismaClient } from "@ecommerce/database/client";
 import type { SalesPlatform } from "@ecommerce/database/enums";
-import type { AssistantReply, AssistantRequest } from "@ecommerce/contracts/assistant";
+import {
+  ASSISTANT_UNAVAILABLE_MESSAGE,
+  type AssistantReply,
+  type AssistantRequest,
+} from "@ecommerce/contracts/assistant";
 import { defaultGoalsSearch } from "@ecommerce/contracts/goals";
 import { defaultMarketingSearch } from "@ecommerce/contracts/marketing";
 import type { Channel, PeriodSearch } from "@ecommerce/contracts/shared/period";
@@ -52,7 +56,6 @@ const MAX_TOKENS = 1024;
 const MAX_TOOL_ROUNDS = 4;
 const MAX_TOOL_CALLS = 8;
 const QUESTION_DEADLINE_MS = 60_000;
-const UNAVAILABLE = "O assistente não conseguiu responder agora. Tente de novo em instantes.";
 const TOO_MANY_LOOKUPS =
   "Too many lookups for one question: answer with the data already gathered.";
 
@@ -178,7 +181,7 @@ async function nextMessage(anthropic: AnthropicClient, exchange: Exchange): Prom
   } catch (error) {
     if (!(error instanceof Anthropic.APIError)) throw error;
     console.error("anthropic", error.status, error.requestID);
-    throw new HttpError(502, UNAVAILABLE);
+    throw new HttpError(502, ASSISTANT_UNAVAILABLE_MESSAGE);
   }
 }
 
@@ -186,7 +189,7 @@ function replyOf(message: Message): AssistantReply {
   const text = message.content.find((block) => block.type === "text");
   const reply =
     message.stop_reason === "end_turn" && text?.type === "text" ? replyOfAnswer(text.text) : null;
-  if (!reply) throw new HttpError(502, UNAVAILABLE);
+  if (!reply) throw new HttpError(502, ASSISTANT_UNAVAILABLE_MESSAGE);
   return reply;
 }
 
@@ -237,5 +240,5 @@ export async function askAssistant(
       { role: "user", content: results },
     );
   }
-  throw new HttpError(502, UNAVAILABLE);
+  throw new HttpError(502, ASSISTANT_UNAVAILABLE_MESSAGE);
 }

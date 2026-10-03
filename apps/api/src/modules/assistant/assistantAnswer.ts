@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { AssistantReply } from "@ecommerce/contracts/assistant";
+import { ASSISTANT_MAX_TEXT, type AssistantReply } from "@ecommerce/contracts/assistant";
 import {
   areaKeyOfPillar,
   engagementTemplate,
@@ -27,7 +27,6 @@ const dataAreaLabel: Record<Exclude<AnswerArea, SectionKey>, string> = {
 };
 
 const MAX_CAVEATS = 3;
-const MAX_TEXT = 4000;
 const pillarKeys = engagementTemplate.flatMap((area) => area.pillars.map((p) => p.key));
 
 export const answerFormat = {
@@ -74,7 +73,7 @@ export function replyOfAnswer(raw: string): AssistantReply | null {
   if (!parsed.success) return null;
   const { area, pillar, text, caveats } = parsed.data;
   return {
-    text: text.slice(0, MAX_TEXT),
+    text: text.slice(0, ASSISTANT_MAX_TEXT),
     origin: originLabel(area, pillar),
     caveats: caveats
       .map((caveat) => caveat.trim())
