@@ -1,5 +1,5 @@
 import {
-  blockedKinds,
+  blockedSyncKind,
   conflictingOwner,
   connectorOf,
   daysSince,
@@ -250,8 +250,7 @@ async function notifyFailure(
   }
 }
 
-async function flagBlocked(row: ConnectionRow, blocked: readonly DataKind[], owners: DataOwners) {
-  const kind = blocked[0];
+async function flagBlocked(row: ConnectionRow, kind: DataKind | null, owners: DataOwners) {
   const owner = kind ? owners[kind] : undefined;
   if (!kind || !owner || owner === "system") return;
   await prismaClient.connection.update({
@@ -317,7 +316,7 @@ async function run(data: JobData, mode: "backfill" | "sync", deps: ConnectorsDep
     const result =
       mode === "backfill" ? await provider.backfill(context) : await provider.sync(context);
     await finish(row, result.cursor, result.written, deps);
-    await flagBlocked(row, blockedKinds(provides, key, owners), owners);
+    await flagBlocked(row, blockedSyncKind(provides, key, owners), owners);
   } catch (error) {
     await fail(row, error, deps);
     throw error;

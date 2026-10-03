@@ -167,9 +167,12 @@ per store** (`store_data_source`, unique per client and kind); investment and so
 by every platform. A source claims the kinds nobody owns when it first syncs or imports
 (`claimDataKinds`, pure `unclaimedKinds`); a sync writes a kind only when the connector
 provides it and no other source owns it (`providesKind` + `conflictingOwner`), and every order
-records its `source`. A sync that finds a kind it provides owned by another source still
-finishes, then flags the connection `ERROR` with `ownerConflictMessage` ("A fonte de vendas desta
-loja é Planilha…") so Integrações explains why nothing arrives. The spreadsheet claims only the
+records its `source`. A sync that finds **every** kind it provides owned by another source still
+finishes, then flags the connection `ERROR` with `ownerConflictMessage` ("A fonte de produtos desta
+loja é Mercado Livre Full…", `blockedSyncKind`) so Integrações explains why nothing arrives. A
+connection that writes at least one kind stays active even when others come from elsewhere — Bling
+owning sales next to Mercado Livre Full owning products and stock — and "O que puxa" says where
+each kind comes from (`kindOwnership`). The spreadsheet claims only the
 kind it imported, after at least one row was written; undoing its last active import of that
 kind releases it. Disconnecting releases a connector's kinds. **Choosing another owner** (`PUT /data-sources` { kind, source | null }, area edit of the
 kind; from "O que puxa" on the integration page: "Usar esta integração" / "Deixar de usar" with a

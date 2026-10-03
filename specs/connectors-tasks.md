@@ -5,7 +5,7 @@ note when something changed along the way. Keep this file and the plan in sync.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped
 
-Status: **K0–K7 done (2026-09-13)** — the connectors plan is complete; the platform apps and reviews (Davi) remain — last updated 2026-09-13
+Status: **K0–K7 done (2026-09-13), K8 fix (2026-10-03)** — the connectors plan is complete; the platform apps and reviews (Davi) remain — last updated 2026-10-03
 
 ---
 
@@ -138,6 +138,13 @@ Status: **K0–K7 done (2026-09-13)** — the connectors plan is complete; the p
       código" section per platform), CLAUDE.md (provider rule, worker script), README
       (worker, env per connector); "Solicitar conexão" is shown only for connectors without a
       registered provider
+
+## K8 — Fixes
+
+- [x] A connection is flagged `ERROR` for a data owner only when nothing it provides can be
+      written (`blockedSyncKind`): Bling owning sales while Mercado Livre Full owns products
+      and stock stays active, its source `CONNECTED`, and "O que puxa" says where each kind
+      comes from (2026-10-03)
 
 ## Next round
 

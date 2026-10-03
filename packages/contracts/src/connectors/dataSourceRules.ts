@@ -45,11 +45,15 @@ export function conflictingOwner(
   return owner === "system" || !sameFamily(owner, source) ? owner : null;
 }
 
-export const blockedKinds = (
+export function blockedSyncKind(
   provides: readonly DataKind[],
   source: ConnectorKey,
   owners: DataOwners,
-): DataKind[] => provides.filter((kind) => conflictingOwner(kind, source, owners) != null);
+): DataKind | null {
+  const blocked = provides.filter((kind) => conflictingOwner(kind, source, owners) != null);
+  if (blocked.length !== provides.length) return null;
+  return blocked.find((kind) => owners[kind] !== "system") ?? blocked[0] ?? null;
+}
 
 export type KindOwnership = {
   kind: DataKind;

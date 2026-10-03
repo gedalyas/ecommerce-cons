@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  blockedKinds,
+  blockedSyncKind,
   choiceProblem,
   choiceSince,
   daysSince,
@@ -75,15 +75,40 @@ describe("ownersFromRows", () => {
   });
 });
 
-describe("blockedKinds", () => {
-  it("lists what a source provides but another source owns", () => {
+describe("blockedSyncKind", () => {
+  it("blocks a source only when nothing it provides can be written", () => {
+    const fullOwnsCatalog = {
+      products: "mercado_livre_full",
+      stock: "mercado_livre_full",
+    } as const;
+    expect(blockedSyncKind(["products", "stock"], "amazon", fullOwnsCatalog)).toBe("products");
     expect(
-      blockedKinds(["sales", "products", "stock"], "bling", {
-        sales: "manual_csv",
-        products: "bling",
+      blockedSyncKind(["sales", "products", "stock", "customers"], "bling", {
+        ...fullOwnsCatalog,
+        sales: "bling",
       }),
-    ).toEqual(["sales"]);
-    expect(blockedKinds(["ad_spend"], "meta_ads", {})).toEqual([]);
+    ).toBeNull();
+  });
+
+  it("never blocks a source of shared data or one of the owner's family", () => {
+    expect(blockedSyncKind(["ad_spend"], "meta_ads", {})).toBeNull();
+    expect(
+      blockedSyncKind(["products", "stock"], "mercado_livre", {
+        products: "mercado_livre_full",
+        stock: "mercado_livre_full",
+      }),
+    ).toBeNull();
+  });
+
+  it("names a kind another source holds before one the store switched off", () => {
+    expect(
+      blockedSyncKind(["sales", "products", "stock"], "bling", {
+        sales: "system",
+        products: "mercado_livre_full",
+        stock: "mercado_livre_full",
+      }),
+    ).toBe("products");
+    expect(blockedSyncKind(["sales"], "bling", { sales: "system" })).toBe("sales");
   });
 });
 
